@@ -74,6 +74,15 @@
     <link rel="apple-touch-icon" href="/icon.png">
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <style>
+      @keyframes flash-lifecycle {
+        0%   { opacity: 0; transform: translateY(8px); }
+        6%   { opacity: 1; transform: translateY(0); }
+        85%  { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-8px); }
+      }
+      .flash-toast { animation: flash-lifecycle 8s ease forwards !important; }
+    </style>
   </head>
 
   <body class="bg-darker text-white font-sans antialiased overflow-x-hidden" data-controller="modal" data-action="keydown@window->modal#closeOnEscape">

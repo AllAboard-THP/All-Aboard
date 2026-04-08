@@ -18,3 +18,6 @@ application.register("conversation-messages", ConversationMessagesController)
 
 import TrackViewController from "./track_view_controller"
 application.register("track-view", TrackViewController)
+
+import FlashController from "./flash_controller"
+application.register("flash", FlashController)
