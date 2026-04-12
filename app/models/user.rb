@@ -22,18 +22,19 @@ class User < ApplicationRecord
   PASSWORD_REGEX    = /\A(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])/
 
   validates :full_name, presence: true
-  validates :email, format: { with: VALID_EMAIL_REGEX, message: "n'est pas une adresse valide" }
-  validates :password, format: {
-    with: PASSWORD_REGEX,
-    message: "doit contenir au moins une majuscule, un chiffre et un caractère spécial"
-  }, if: :password_required?
+  # validates :email, format: { with: VALID_EMAIL_REGEX, message: "n'est pas une adresse valide" }
+  # validates :password, format: {
+  #   with: PASSWORD_REGEX,
+  #   message: "doit contenir au moins une majuscule, un chiffre et un caractère spécial"
+  # }, if: :password_required?
 
   before_validation :populate_full_name, on: :create
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable
+         :recoverable, :rememberable, :validatable
+         # :confirmable
 
   def display_name
     full_name.presence || email.split("@").first.titleize

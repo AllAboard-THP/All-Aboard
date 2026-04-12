@@ -21,3 +21,6 @@ application.register("track-view", TrackViewController)
 
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
+
+import TagSuggestController from "./tag_suggest_controller"
+application.register("tag-suggest", TagSuggestController)

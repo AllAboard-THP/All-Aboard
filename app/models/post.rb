@@ -18,6 +18,8 @@ class Post < ApplicationRecord
 
   scope :recent_first, -> { order(created_at: :desc) }
 
+  after_update_commit :schedule_ai_summary, if: -> { saved_change_to_status? && resolved? }
+
   def liked_by?(user)
     user.present? && likes.any? { |like| like.user_id == user.id }
   end
@@ -38,4 +40,8 @@ class Post < ApplicationRecord
   private
 
   def profanity_fields = %i[title body]
+
+  def schedule_ai_summary
+    GeneratePostSummaryJob.perform_later(id)
+  end
 end

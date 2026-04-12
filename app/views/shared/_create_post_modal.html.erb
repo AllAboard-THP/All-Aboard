@@ -9,17 +9,22 @@
         </button>
       </div>
 
-      <%= form_with model: @new_post, url: posts_path, class: "space-y-4" do |form| %>
+      <%= form_with model: @new_post, url: posts_path, class: "space-y-4",
+            data: { controller: "tag-suggest", suggest_url: suggest_tags_posts_path } do |form| %>
         <%= form.hidden_field :education_level, value: current_user.education_level %>
 
         <div>
           <%= form.label :title, "Titre", class: "block text-sm font-medium mb-2 text-gray-300" %>
-          <%= form.text_field :title, placeholder: "Ex: Aide pour équation différentielle", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
+          <%= form.text_field :title, placeholder: "Ex: Erreur undefined sur ma fonction async",
+              class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary",
+              data: { tag_suggest_target: "title", action: "blur->tag-suggest#onBlur" } %>
         </div>
 
         <div>
           <%= form.label :body, "Description", class: "block text-sm font-medium mb-2 text-gray-300" %>
-          <%= form.text_area :body, rows: 4, placeholder: "Décrivez votre problème en détail...", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary resize-none" %>
+          <%= form.text_area :body, rows: 4, placeholder: "Décrivez votre problème en détail...",
+              class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary resize-none",
+              data: { tag_suggest_target: "body", action: "blur->tag-suggest#onBlur" } %>
         </div>
 
         <div>
@@ -78,8 +83,15 @@
           <div class="flex items-center gap-2 mb-2">
             <span class="text-sm font-medium text-gray-300">Sous-tags</span>
             <span class="text-xs text-gray-500 bg-white/5 px-2 py-0.5 rounded-full">optionnel · max 6</span>
+            <span class="hidden text-xs text-primary/70 ml-auto flex items-center gap-1" data-tag-suggest-target="loading">
+              <i class="fas fa-circle-notch fa-spin text-[10px]"></i> Analyse en cours…
+            </span>
           </div>
-          <%= form.text_field :tag_list, placeholder: "Ex : intégrales, limite, convergence — séparés par des virgules", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-sm" %>
+          <%= form.text_field :tag_list,
+              placeholder: "Ex : boucle for, null pointer — séparés par des virgules",
+              class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-sm",
+              data: { tag_suggest_target: "tagList" } %>
+          <div class="flex flex-wrap gap-1.5 mt-2 empty:hidden" data-tag-suggest-target="suggestions"></div>
         </div>
 
         <div class="flex items-center gap-2 p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl">

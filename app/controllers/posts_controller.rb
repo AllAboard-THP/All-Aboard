@@ -46,6 +46,18 @@ class PostsController < ApplicationController
     end
   end
 
+  def suggest_tags
+    title = params[:title].to_s.strip
+    body  = params[:body].to_s.strip
+
+    if title.blank? && body.blank?
+      return render json: { tags: [] }
+    end
+
+    tags = AiTagSuggestionService.new.suggest(title: title, body: body)
+    render json: { tags: tags }
+  end
+
   def create
     @post = current_user.posts.build(post_params.except(:tag_list))
 
