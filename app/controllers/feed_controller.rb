@@ -28,9 +28,12 @@ class FeedController < ApplicationController
 
     @recent_contributions = current_user.comments.includes(post: :subject).order(created_at: :desc).limit(5)
     @quick_tags = Tag.joins(:posts).distinct.ordered.limit(5)
-    @top_contributors = User.includes(:comments, :messages).to_a
-                            .sort_by { |user| [ -user.contribution_count, -user.rating.to_f ] }
-                            .first(3)
+    @unanswered_posts = Post.includes(:user, :subject)
+                           .where(flagged_for_moderation: false, status: "open")
+                           .left_joins(:comments)
+                           .where(comments: { id: nil })
+                           .order(created_at: :desc)
+                           .limit(5)
 
     recently_viewed_ids = (session[:recently_viewed_post_ids] || []).map(&:to_i)
     @recently_viewed = Post.includes(:user, :subject)
