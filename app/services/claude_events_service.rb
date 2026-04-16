@@ -12,7 +12,7 @@ class ClaudeEventsService
     - title        : string
     - description  : string (max 300 caractères)
     - event_type   : "hackathon" | "conference" | "meetup" | "webinar" | "other"
-    - starts_at    : "YYYY-MM-DD" (date de début)
+    - starts_at    : "YYYY-MM-DD"
     - location     : string ou null (ville/lieu)
     - online       : true | false
     - external_url : string (URL officielle)
@@ -47,7 +47,18 @@ class ClaudeEventsService
       }
     end
 
-    extract_events(response.body)
+    if response.body["error"]
+      Rails.logger.error("[ClaudeEventsService] API error: #{response.body.dig('error', 'message')}")
+      return []
+    end
+
+    text = response.body.dig("content")
+                   &.select { |b| b["type"] == "text" }
+                   &.last
+                   &.dig("text")
+                   .to_s
+
+    parse_json(text)
   rescue => e
     Rails.logger.error("[ClaudeEventsService] #{e.message}")
     []
@@ -55,16 +66,9 @@ class ClaudeEventsService
 
   private
 
-  def extract_events(body)
-    # Le dernier bloc text de la réponse contient le JSON
-    text = body.dig("content")
-               &.select { |b| b["type"] == "text" }
-               &.last
-               &.dig("text")
-               .to_s
-
-    # Extraire le tableau JSON (Claude peut ajouter du texte autour)
-    json_str = text.match(/\[.*\]/m)&.to_s
+  def parse_json(text)
+    json_str = text.match(/```(?:json)?\s*(\[.*?\])\s*```/m)&.captures&.first ||
+               text.match(/\[.*\]/m)&.to_s
     return [] if json_str.blank?
 
     JSON.parse(json_str)
