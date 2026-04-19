@@ -60,15 +60,21 @@ Turbo Streams broadcasts happen inside model callbacks or controller actions (e.
 `app/models/concerns/profanity_filter.rb` — auto-flags posts/comments on save if content matches hardcoded banned words or any `DenylistPattern` regex. Applied to Post and Comment via `include ProfanityFilter`.
 
 ### Background Jobs & Mailers
-- **FetchEventbriteEventsJob** — fetches Ticketmaster API events, runs via Solid Queue (started by `bin/dev` via Procfile.dev)
+- **FetchTechEventsJob** — fetches tech events via Claude API + web search, runs weekly via Solid Queue
 - **NotificationMailer** — sends emails for new messages, new comments, and mentor help requests; previewed in dev via `letter_opener`
 
-### Environment Variables
-Required in `.env`:
+### Secrets & Environment Variables
+Secrets are stored in **Rails encrypted credentials** (`config/credentials.yml.enc`). The only variable needed in production is:
 ```
-ADMIN_SETUP_KEY=      # one-time admin creation key
-TICKETMASTER_API_KEY=
+RAILS_MASTER_KEY=   # decrypts config/credentials.yml.enc
 ```
+
+Credentials stored (edit via `bin/rails credentials:edit`):
+- `anthropic_api_key` — Claude API key
+- `admin_setup_key` — one-time admin creation key
+- `secret_key_base` — Rails session secret
+
+For local dev, a `.env` file (gitignored) with `ANTHROPIC_API_KEY` and `ADMIN_SETUP_KEY` also works as fallback.
 
 ### CI Pipeline (`.github/workflows/ci.yml`)
 Runs on PRs to `main`: Brakeman → bundler-audit → RuboCop → Rails tests → System tests (with screenshot artifacts on failure).

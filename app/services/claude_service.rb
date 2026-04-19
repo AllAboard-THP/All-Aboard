@@ -3,7 +3,7 @@ class ClaudeService
   MODEL   = "claude-haiku-4-5-20251001"
 
   def initialize
-    @api_key = ENV["ANTHROPIC_API_KEY"]
+    @api_key = Rails.application.credentials.anthropic_api_key || ENV["ANTHROPIC_API_KEY"]
   end
 
   def message(prompt, system: nil, max_tokens: 512)

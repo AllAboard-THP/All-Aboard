@@ -23,7 +23,7 @@ class ClaudeEventsService
   PROMPT
 
   def initialize
-    @api_key = ENV["ANTHROPIC_API_KEY"]
+    @api_key = Rails.application.credentials.anthropic_api_key || ENV["ANTHROPIC_API_KEY"]
   end
 
   def fetch_events
