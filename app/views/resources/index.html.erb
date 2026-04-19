@@ -83,6 +83,9 @@
         </div>
       <% end %>
     </div>
+    <% if @pagy.pages > 1 %>
+      <div class="flex justify-center mt-6"><%== pagy_nav(@pagy) %></div>
+    <% end %>
   <% else %>
     <div class="glass rounded-2xl p-12 text-center text-gray-400">
       <i class="fas fa-book-open text-4xl mb-4 block text-emerald-400/50"></i>

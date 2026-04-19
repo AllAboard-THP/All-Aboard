@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  mount ActionCable.server => "/cable"
   devise_for :users, controllers: { confirmations: "users/confirmations", registrations: "users/registrations" }
 
   authenticated :user do

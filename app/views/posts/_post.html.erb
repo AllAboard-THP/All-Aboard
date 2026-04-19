@@ -1,7 +1,7 @@
 <% show_page = local_assigns.fetch(:show_page, false) %>
 <%= turbo_frame_tag dom_id(post, :card) do %>
-  <% current_like = post.likes.find { |like| like.user_id == current_user.id } %>
-  <% current_bookmark = post.bookmarks.find { |bookmark| bookmark.user_id == current_user.id } %>
+  <% current_like = post.likes.find { |l| l.user_id == current_user.id } %>
+  <% current_bookmark = post.bookmarks.find { |b| b.user_id == current_user.id } %>
 
   <article class="post-card glass rounded-2xl animate-slide-up">
     <div class="p-6">

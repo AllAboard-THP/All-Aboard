@@ -1,4 +1,5 @@
 module ApplicationHelper
+  include Pagy::Frontend
   def relative_time(timestamp)
     diff = Time.current - timestamp
 

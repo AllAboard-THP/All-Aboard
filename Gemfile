@@ -18,6 +18,7 @@ gem "devise"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 gem "faraday"
+gem "pagy"
 gem "nokogiri"
 gem "letter_opener"
 

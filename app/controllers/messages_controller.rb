@@ -47,6 +47,7 @@ class MessagesController < ApplicationController
       end
 
       respond_to do |format|
+        format.json { render json: @message.as_chat_json, status: :created }
         format.turbo_stream do
           render turbo_stream: turbo_stream.append(
             "#{dom_id(@conversation)}_messages",
@@ -58,6 +59,7 @@ class MessagesController < ApplicationController
       end
     else
       respond_to do |format|
+        format.json { render json: { errors: @message.errors.full_messages }, status: :unprocessable_entity }
         format.turbo_stream { head :unprocessable_entity }
         format.html { redirect_to conversation_path(@conversation), alert: @message.errors.full_messages.to_sentence }
       end

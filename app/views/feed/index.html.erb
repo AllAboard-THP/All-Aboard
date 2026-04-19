@@ -77,24 +77,13 @@
     </div>
 
     <div class="col-span-1 lg:col-span-6 space-y-6">
-      <div class="flex flex-wrap gap-4 justify-center">
-        <button type="button" class="w-20 flex flex-col items-center gap-2 cursor-pointer group" data-action="click->modal#open" data-modal-id="request-subject-modal">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent p-[2px] group-hover:scale-110 transition-transform">
-            <div class="w-full h-full rounded-2xl bg-surface flex items-center justify-center">
-              <i class="fas fa-plus text-primary"></i>
-            </div>
-          </div>
-          <span class="text-xs text-gray-400">Nouveau</span>
-        </button>
-
-        <% @subjects.first(5).each do |subject| %>
-          <%= link_to authenticated_root_path(subject: subject.slug), class: "w-20 flex flex-col items-center gap-2 cursor-pointer group" do %>
-            <div class="w-16 h-16 rounded-2xl border flex items-center justify-center transition-transform group-hover:scale-110" style="background-color: <%= "#{subject.accent_color}1F" %>; border-color: <%= "#{subject.accent_color}4D" %>; color: <%= subject.accent_color %>;">
-              <i class="fas <%= subject.icon %> text-xl"></i>
-            </div>
-            <span class="text-xs text-gray-400"><%= subject.name %></span>
-          <% end %>
-        <% end %>
+      <div data-react-component="FeedFilters"
+           data-react-props="<%= {
+             subjects:           @subjects.first(7).map { |s| { slug: s.slug, name: s.name, icon: s.icon, accent_color: s.accent_color } },
+             currentSubjectSlug: @selected_subject&.slug,
+             currentTag:         @selected_tag&.slug,
+             feedPath:           authenticated_root_path
+           }.to_json.html_safe %>">
       </div>
 
       <div class="glass rounded-2xl p-4 flex items-center gap-4">
@@ -110,6 +99,11 @@
       <div class="space-y-6">
         <% if @posts.any? %>
           <%= render @posts %>
+          <% if @pagy.pages > 1 %>
+            <div class="flex items-center justify-center gap-2 pt-2">
+              <%== pagy_nav(@pagy) %>
+            </div>
+          <% end %>
         <% else %>
           <div class="glass rounded-2xl p-10 text-center text-gray-400">
             <i class="fas fa-sparkles text-4xl text-primary mb-4"></i>
