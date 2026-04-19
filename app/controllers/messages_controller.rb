@@ -42,9 +42,10 @@ class MessagesController < ApplicationController
       @conversation.mark_read_for!(current_user)
 
       recipient = @conversation.other_participant(current_user)
-      if recipient&.notify_on_message?
-        NotificationMailer.new_message(recipient, @message).deliver_later
-      end
+      # TODO: activer quand SMTP Brevo configuré
+      # if recipient&.notify_on_message?
+      #   NotificationMailer.new_message(recipient, @message).deliver_later
+      # end
 
       respond_to do |format|
         format.json { render json: @message.as_chat_json, status: :created }

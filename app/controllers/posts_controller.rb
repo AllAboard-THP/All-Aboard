@@ -32,7 +32,8 @@ class PostsController < ApplicationController
                       .where(mentor_subjects: { subject_id: @post.subject_id })
                       .where(mentor: true)
                       .where.not(id: current_user.id)
-        mentors.each { |mentor| NotificationMailer.help_request(mentor, @post).deliver_later }
+        # TODO: activer quand SMTP Brevo configuré
+        # mentors.each { |mentor| NotificationMailer.help_request(mentor, @post).deliver_later }
       end
 
       redirect_to post_path(@post), notice: "Ta demande a été transmise aux mentors disponibles en #{@post.subject.name} !"
