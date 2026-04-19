@@ -26,6 +26,15 @@ class PostsController < ApplicationController
       redirect_to post_path(@post), alert: "Tu as déjà demandé l'aide d'un mentor pour ce post."
     else
       @post.update!(mentor_help_requested: true)
+
+      if @post.subject
+        mentors = User.joins(:mentor_subjects)
+                      .where(mentor_subjects: { subject_id: @post.subject_id })
+                      .where(mentor: true)
+                      .where.not(id: current_user.id)
+        mentors.each { |mentor| NotificationMailer.help_request(mentor, @post).deliver_later }
+      end
+
       redirect_to post_path(@post), notice: "Ta demande a été transmise aux mentors disponibles en #{@post.subject.name} !"
     end
   end

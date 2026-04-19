@@ -27,6 +27,13 @@ class AiModerationService
   BANNED_REGEX = /\b(connard|connasse|enculé|putain|salope|pute|fdp|ntm|nique|fuck|shit|bitch|asshole|nigger|cunt)\b/i
 
   def fallback_check(content)
-    content.match?(BANNED_REGEX)
+    return true if content.match?(BANNED_REGEX)
+
+    # Vérifie les patterns configurés par l'admin
+    DenylistPattern.where(active: true).any? do |pattern|
+      Regexp.new(pattern.pattern, Regexp::IGNORECASE).match?(content)
+    rescue RegexpError
+      false
+    end
   end
 end
