@@ -19,6 +19,7 @@ gem "devise"
 gem "jbuilder"
 gem "faraday"
 gem "pagy"
+gem "rack-attack"
 gem "nokogiri"
 gem "letter_opener"
 
