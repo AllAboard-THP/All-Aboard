@@ -1,5 +1,6 @@
 class Post < ApplicationRecord
   include ProfanityFilter
+  include Taggable
 
   attr_accessor :tag_list
 
@@ -26,15 +27,6 @@ class Post < ApplicationRecord
 
   def bookmarked_by?(user)
     user.present? && bookmarks.any? { |bookmark| bookmark.user_id == user.id }
-  end
-
-  def sync_tags!(raw_tags)
-    names = raw_tags.to_s.split(",").map(&:strip).reject(&:blank?).uniq.first(6)
-    self.tags = names.map do |name|
-      Tag.find_or_create_by!(slug: name.parameterize) do |tag|
-        tag.name = name
-      end
-    end
   end
 
   private

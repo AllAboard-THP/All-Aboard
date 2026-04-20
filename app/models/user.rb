@@ -59,7 +59,7 @@ class User < ApplicationRecord
   end
 
   def unread_messages_count
-    conversation_participants.includes(conversation: :messages).sum do |participant|
+    conversation_participants.includes(:conversation).sum do |participant|
       participant.conversation.unread_count_for(self)
     end
   end
