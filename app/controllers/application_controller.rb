@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :load_shared_navigation
   before_action :require_cgu_acceptance!, if: :user_signed_in?
@@ -62,6 +64,13 @@ class ApplicationController < ActionController::Base
       subject_ids = current_user.competences.pluck(:id)
       @mentor_pending_count = Resource.pending.where(subject_id: subject_ids).count +
                               Post.where(mentor_help_requested: true, subject_id: subject_ids).count
+    end
+  end
+
+  def record_not_found
+    respond_to do |format|
+      format.html { redirect_to authenticated_root_path, alert: "Cette ressource n'existe pas ou a été supprimée." }
+      format.json { render json: { error: "Not found" }, status: :not_found }
     end
   end
 
