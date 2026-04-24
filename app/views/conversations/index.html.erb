@@ -47,7 +47,7 @@
                  avatar_url:   current_user.profile_avatar
                },
                initialMessages: @messages.map(&:as_chat_json)
-             }.to_json.html_safe %>">
+             }.to_json %>">
         </div>
       </div>
     <% else %>

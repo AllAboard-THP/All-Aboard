@@ -1,7 +1,7 @@
 <div id="create-modal" data-modal-target="dialog" data-modal-container class="fixed inset-0 z-[60] hidden">
   <button type="button" class="absolute inset-0 bg-black/80 backdrop-blur-sm w-full h-full cursor-default" data-action="modal#close"></button>
   <div class="absolute inset-0 flex items-center justify-center p-4">
-    <div class="glass w-full max-w-lg rounded-2xl p-6 transform scale-100 transition-transform animate-slide-up">
+    <div class="glass w-full max-w-lg rounded-2xl p-6">
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-bold">Nouvelle requête</h3>
         <button type="button" data-action="modal#close" class="text-gray-400 hover:text-white">
@@ -15,7 +15,7 @@
              educationLevel: current_user.education_level,
              postsPath:      posts_path,
              csrfToken:      form_authenticity_token
-           }.to_json.html_safe %>">
+           }.to_json %>">
       </div>
     </div>
   </div>

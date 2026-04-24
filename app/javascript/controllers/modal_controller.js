@@ -9,6 +9,7 @@ export default class extends Controller {
     const target = modalId ? document.getElementById(modalId) : this.dialogTarget
     target?.classList.remove("hidden")
     document.body.style.overflow = "hidden"
+    document.dispatchEvent(new CustomEvent("modal:opened"))
   }
 
   close(event) {

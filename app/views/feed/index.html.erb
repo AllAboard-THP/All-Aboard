@@ -77,15 +77,6 @@
     </div>
 
     <div class="col-span-1 lg:col-span-6 space-y-6">
-      <div data-react-component="FeedFilters"
-           data-react-props="<%= {
-             subjects:           @subjects.first(7).map { |s| { slug: s.slug, name: s.name, icon: s.icon, accent_color: s.accent_color } },
-             currentSubjectSlug: @selected_subject&.slug,
-             currentTag:         @selected_tag&.slug,
-             feedPath:           authenticated_root_path
-           }.to_json.html_safe %>">
-      </div>
-
       <div class="glass rounded-2xl p-4 flex items-center gap-4">
         <img src="<%= current_user.profile_avatar %>" alt="<%= current_user.display_name %>" class="w-10 h-10 rounded-full">
         <button type="button" data-action="modal#open" class="flex-1 text-left bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-400 hover:border-primary transition-colors">

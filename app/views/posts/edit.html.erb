@@ -64,7 +64,7 @@
         </div>
         <%= form.hidden_field :code_snippet, id: "post_code_snippet_edit" %>
         <div data-react-component="CodeEditor"
-             data-react-props="<%= { fieldId: "post_code_snippet_edit", language: @post.code_language.presence || "plaintext", initialValue: @post.code_snippet.to_s }.to_json.html_safe %>">
+             data-react-props="<%= { fieldId: "post_code_snippet_edit", language: @post.code_language.presence || "plaintext", initialValue: @post.code_snippet.to_s }.to_json %>">
         </div>
       </div>
 

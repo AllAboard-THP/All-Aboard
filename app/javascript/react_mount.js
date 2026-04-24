@@ -25,6 +25,11 @@ function mountReactComponents() {
   })
 }
 
-document.addEventListener("DOMContentLoaded", mountReactComponents)
+// Appel immédiat : les modules ES s'exécutent après le parsing HTML
+mountReactComponents()
+
+// Ré-exécute après les navigations Turbo et l'ouverture de modale
 document.addEventListener("turbo:load", mountReactComponents)
 document.addEventListener("turbo:render", mountReactComponents)
+document.addEventListener("modal:opened", mountReactComponents)
+document.addEventListener("DOMContentLoaded", mountReactComponents)

@@ -18,7 +18,7 @@ const MONACO_MAP = {
   go: "go", rust: "rust", sql: "sql", bash: "shell", r: "r", json: "json"
 }
 
-export default function PostForm({ subjects, educationLevel, postsPath, csrfToken, onClose }) {
+export default function PostForm({ subjects = [], educationLevel, postsPath, csrfToken, onClose }) {
   const [step,     setStep]     = useState(0)
   const [title,    setTitle]    = useState("")
   const [body,     setBody]     = useState("")
