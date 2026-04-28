@@ -20,7 +20,7 @@ class AdminSetupController < ApplicationController
 
   def authenticate_admin_setup!
     admin_key = params[:admin_key] || session[:admin_key_verified]
-    env_key = ENV["ADMIN_SETUP_KEY"]
+    env_key = Rails.application.credentials.admin_setup_key || ENV["ADMIN_SETUP_KEY"]
 
     unless admin_key.present? && admin_key == env_key
       redirect_to root_path, alert: "Clé d'administration invalide ou manquante"

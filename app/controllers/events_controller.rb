@@ -10,8 +10,8 @@ class EventsController < ApplicationController
       end
     end
 
-    @upcoming = @events.upcoming
-    @past     = @events.past
+    @pagy_upcoming, @upcoming = pagy(@events.upcoming, limit: 9)
+    @pagy_past,     @past     = pagy(@events.past.order(starts_at: :desc), limit: 6, page_param: :past_page)
   end
 
   def show

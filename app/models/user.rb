@@ -33,7 +33,8 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable
+         :recoverable, :rememberable, :validatable
+         # :confirmable — à activer avec SMTP Brevo
 
   def display_name
     full_name.presence || email.split("@").first.titleize
@@ -58,7 +59,7 @@ class User < ApplicationRecord
   end
 
   def unread_messages_count
-    conversation_participants.includes(conversation: :messages).sum do |participant|
+    conversation_participants.includes(:conversation).sum do |participant|
       participant.conversation.unread_count_for(self)
     end
   end

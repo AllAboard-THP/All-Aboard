@@ -1,5 +1,5 @@
 class NotificationMailer < ApplicationMailer
-  default from: "noreply@studylink.app"
+  default from: -> { "StudyLink <noreply@#{Rails.application.credentials.dig(:smtp, :domain) || 'studylink.app'}>" }
 
   def new_message(recipient, message)
     @recipient    = recipient

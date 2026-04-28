@@ -1,9 +1,4 @@
-# SQLite. Versions 3.8.0 and up are supported.
-#   gem install sqlite3
-#
-#   Ensure the SQLite 3 gem is defined in your Gemfile
-#   gem "sqlite3"
-#
+# Dev & test : SQLite (pas besoin de Postgres en local)
 default: &default
   adapter: sqlite3
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
@@ -18,28 +13,30 @@ development:
     database: storage/development_queue.sqlite3
     migrations_paths: db/queue_migrate
 
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
 test:
   <<: *default
   database: storage/test.sqlite3
 
-# Store production database in the storage/ directory, which by default
-# is mounted as a persistent Docker volume in config/deploy.yml.
+# Production : PostgreSQL
 production:
-  primary:
-    <<: *default
-    database: storage/production.sqlite3
+  primary: &production_primary
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    database: studylink_production
+    username: studylink
+    password: <%= Rails.application.credentials.dig(:database, :password) %>
+    host: <%= ENV.fetch("DB_HOST", "studylink-db") %>
+    port: 5432
   cache:
-    <<: *default
-    database: storage/production_cache.sqlite3
+    <<: *production_primary
+    database: studylink_production_cache
     migrations_paths: db/cache_migrate
   queue:
-    <<: *default
-    database: storage/production_queue.sqlite3
+    <<: *production_primary
+    database: studylink_production_queue
     migrations_paths: db/queue_migrate
   cable:
-    <<: *default
-    database: storage/production_cable.sqlite3
+    <<: *production_primary
+    database: studylink_production_cable
     migrations_paths: db/cable_migrate

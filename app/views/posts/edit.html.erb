@@ -62,9 +62,10 @@
               {},
               class: "bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-gray-300 focus:outline-none focus:border-primary" %>
         </div>
-        <%= form.text_area :code_snippet, rows: 4,
-            placeholder: "Optionnel — colle ton code ici...",
-            class: "w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary resize-none font-mono text-sm" %>
+        <%= form.hidden_field :code_snippet, id: "post_code_snippet_edit" %>
+        <div data-react-component="CodeEditor"
+             data-react-props="<%= { fieldId: "post_code_snippet_edit", language: @post.code_language.presence || "plaintext", initialValue: @post.code_snippet.to_s }.to_json %>">
+        </div>
       </div>
 
       <div>

@@ -26,6 +26,16 @@ class PostsController < ApplicationController
       redirect_to post_path(@post), alert: "Tu as déjà demandé l'aide d'un mentor pour ce post."
     else
       @post.update!(mentor_help_requested: true)
+
+      if @post.subject
+        mentors = User.joins(:mentor_subjects)
+                      .where(mentor_subjects: { subject_id: @post.subject_id })
+                      .where(mentor: true)
+                      .where.not(id: current_user.id)
+        # TODO: activer quand SMTP Brevo configuré
+        # mentors.each { |mentor| NotificationMailer.help_request(mentor, @post).deliver_later }
+      end
+
       redirect_to post_path(@post), notice: "Ta demande a été transmise aux mentors disponibles en #{@post.subject.name} !"
     end
   end
@@ -44,6 +54,18 @@ class PostsController < ApplicationController
       @post.tag_list = @post.tags.map(&:name).join(", ")
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def suggest_tags
+    title = params[:title].to_s.strip
+    body  = params[:body].to_s.strip
+
+    if title.blank? && body.blank?
+      return render json: { tags: [] }
+    end
+
+    tags = AiTagSuggestionService.new.suggest(title: title, body: body)
+    render json: { tags: tags }
   end
 
   def create

@@ -132,6 +132,15 @@ body {
   padding: 0.9rem 1rem;
   border-radius: 1rem;
   box-shadow: 0 20px 40px -10px rgba(2, 6, 23, 0.5);
+  animation: flash-lifecycle 8s ease forwards;
+  pointer-events: auto;
+}
+
+@keyframes flash-lifecycle {
+  0%   { opacity: 0; transform: translateY(8px); }
+  6%   { opacity: 1; transform: translateY(0); }
+  85%  { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-8px); pointer-events: none; }
 }
 
 .flash-toast--notice {

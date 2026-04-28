@@ -2,9 +2,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
       <%= link_to authenticated_root_path, class: "flex items-center gap-3" do %>
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-          <i class="fas fa-graduation-cap text-white text-lg"></i>
-        </div>
+        <%= image_tag "icon.svg", class: "w-10 h-10", alt: "AllAboard" %>
         <span class="text-xl font-bold gradient-text">AllAboard</span>
       <% end %>
 

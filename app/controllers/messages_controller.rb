@@ -42,11 +42,13 @@ class MessagesController < ApplicationController
       @conversation.mark_read_for!(current_user)
 
       recipient = @conversation.other_participant(current_user)
-      if recipient&.notify_on_message?
-        NotificationMailer.new_message(recipient, @message).deliver_later
-      end
+      # TODO: activer quand SMTP Brevo configuré
+      # if recipient&.notify_on_message?
+      #   NotificationMailer.new_message(recipient, @message).deliver_later
+      # end
 
       respond_to do |format|
+        format.json { render json: @message.as_chat_json, status: :created }
         format.turbo_stream do
           render turbo_stream: turbo_stream.append(
             "#{dom_id(@conversation)}_messages",
@@ -58,6 +60,7 @@ class MessagesController < ApplicationController
       end
     else
       respond_to do |format|
+        format.json { render json: { errors: @message.errors.full_messages }, status: :unprocessable_entity }
         format.turbo_stream { head :unprocessable_entity }
         format.html { redirect_to conversation_path(@conversation), alert: @message.errors.full_messages.to_sentence }
       end

@@ -5,7 +5,7 @@ class ResourcesController < ApplicationController
 
   def index
     @search_query = params[:q].to_s.strip
-    @resources = Resource.includes(:user, :subject, :tags).published.order(created_at: :desc)
+    resources_scope = Resource.includes(:user, :subject, :tags).published.order(created_at: :desc)
 
     if @search_query.present?
       q = "%#{ActiveRecord::Base.sanitize_sql_like(@search_query)}%"
@@ -18,8 +18,10 @@ class ResourcesController < ApplicationController
                              )
                              .distinct
                              .pluck(:id)
-      @resources = @resources.where(id: matching_ids)
+      resources_scope = resources_scope.where(id: matching_ids)
     end
+
+    @pagy, @resources = pagy(resources_scope, limit: 12)
   end
 
   def show

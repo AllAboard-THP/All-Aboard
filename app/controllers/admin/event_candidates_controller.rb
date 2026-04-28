@@ -1,7 +1,7 @@
 class Admin::EventCandidatesController < Admin::BaseController
   def fetch
-    FetchEventbriteEventsJob.perform_later
-    redirect_to admin_event_candidates_path, notice: "Recherche lancée en arrière-plan. Les candidats apparaîtront dans quelques instants."
+    FetchTechEventsJob.perform_later
+    redirect_to admin_event_candidates_path, notice: "Recherche IA lancée en arrière-plan. Les candidats apparaîtront dans quelques instants."
   end
 
   def index

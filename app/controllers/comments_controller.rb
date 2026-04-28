@@ -31,9 +31,10 @@ class CommentsController < ApplicationController
     )
 
     if @comment.save
-      if @post.user != current_user && @post.user.notify_on_comment?
-        NotificationMailer.new_comment(@post.user, @comment).deliver_later
-      end
+      # TODO: activer quand SMTP Brevo configuré
+      # if @post.user != current_user && @post.user.notify_on_comment?
+      #   NotificationMailer.new_comment(@post.user, @comment).deliver_later
+      # end
 
       render turbo_stream: [
         turbo_stream.replace(

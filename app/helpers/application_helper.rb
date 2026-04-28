@@ -1,4 +1,5 @@
 module ApplicationHelper
+  include Pagy::Frontend
   def relative_time(timestamp)
     diff = Time.current - timestamp
 
@@ -33,7 +34,7 @@ module ApplicationHelper
     end
   end
 
-  def conversation_online?(user)
-    user.id.odd?
+  def conversation_online?(_user)
+    false
   end
 end

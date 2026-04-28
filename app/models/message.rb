@@ -10,9 +10,25 @@ class Message < ApplicationRecord
 
   after_create_commit :broadcast_to_conversation
 
+  def as_chat_json
+    {
+      id:         id,
+      body:       body,
+      user_id:    user_id,
+      user_name:  user.display_name,
+      avatar_url: user.profile_avatar,
+      created_at: created_at.iso8601,
+      type:       "message"
+    }
+  end
+
   private
 
   def broadcast_to_conversation
+    # Broadcast JSON vers le channel React
+    ConversationChannel.broadcast_to(conversation, as_chat_json)
+
+    # Garde le Turbo Stream pour les clients non-React (fallback)
     conversation.users.where.not(id: user_id).each do |recipient|
       broadcast_append_to(
         [ conversation, recipient ],

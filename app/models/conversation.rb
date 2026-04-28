@@ -32,12 +32,9 @@ class Conversation < ApplicationRecord
   end
 
   def unread_count_for(user)
-    participant = conversation_participants.find { |membership| membership.user_id == user.id }
+    participant = conversation_participants.find { |cp| cp.user_id == user.id }
     threshold = participant&.last_read_at || Time.zone.at(0)
-
-    messages.count do |message|
-      message.user_id != user.id && message.created_at > threshold
-    end
+    messages.where("user_id != ? AND created_at > ?", user.id, threshold).count
   end
 
   def mark_read_for!(user)

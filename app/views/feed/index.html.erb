@@ -29,43 +29,54 @@
       <%= render "feed/recently_viewed", recently_viewed: @recently_viewed %>
 
       <div class="glass rounded-2xl p-6">
-        <h3 class="font-semibold mb-4 text-gray-300">Top contributeurs</h3>
-        <div class="space-y-4">
-          <% @top_contributors.each do |user| %>
-            <div class="flex items-center gap-3">
-              <img src="<%= user.profile_avatar %>" alt="<%= user.display_name %>" class="w-10 h-10 rounded-full">
-              <div class="flex-1">
-                <p class="font-medium text-sm"><%= link_to user.display_name, user_path(user), class: "hover:text-primary transition-colors", data: { turbo_frame: "_top" } %></p>
-                <p class="text-xs text-gray-500"><%= user.contribution_count %> aides données</p>
-              </div>
-              <span class="text-yellow-400 text-xs"><i class="fas fa-star"></i> <%= format("%.1f", user.rating) %></span>
-            </div>
+        <div class="flex items-center gap-2 mb-4">
+          <i class="fas fa-circle-question text-orange-400 text-sm"></i>
+          <h3 class="font-semibold text-gray-300">Sans réponse</h3>
+          <% if @unanswered_posts.any? %>
+            <span class="ml-auto text-xs font-medium px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">
+              <%= @unanswered_posts.size %>
+            </span>
           <% end %>
         </div>
+
+        <% if @unanswered_posts.any? %>
+          <div class="space-y-3">
+            <% @unanswered_posts.each do |post| %>
+              <%= link_to post_path(post), class: "block group", data: { turbo_frame: "_top" } do %>
+                <div class="p-3 rounded-xl bg-white/5 hover:bg-white/8 transition-colors">
+                  <div class="flex items-center gap-1.5 mb-1">
+                    <% if post.subject %>
+                      <span class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                            style="color:<%= post.subject.accent_color %>;background-color:<%= post.subject.accent_color %>18;">
+                        <%= post.subject.name %>
+                      </span>
+                    <% end %>
+                    <% if post.urgent? %>
+                      <span class="text-[10px] text-orange-400"><i class="fas fa-exclamation-circle"></i></span>
+                    <% end %>
+                    <span class="text-[10px] text-gray-500 ml-auto"><%= relative_time(post.created_at) %></span>
+                  </div>
+                  <p class="text-xs text-gray-300 line-clamp-2 group-hover:text-white transition-colors">
+                    <%= post.title %>
+                  </p>
+                  <div class="flex items-center gap-1.5 mt-1.5">
+                    <img src="<%= post.user.profile_avatar %>" class="w-4 h-4 rounded-full">
+                    <span class="text-[10px] text-gray-500"><%= post.user.display_name %></span>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-4 text-gray-500">
+            <i class="fas fa-check-circle text-emerald-400 text-2xl mb-2 block"></i>
+            <p class="text-xs">Tous les posts ont au moins une réponse !</p>
+          </div>
+        <% end %>
       </div>
     </div>
 
     <div class="col-span-1 lg:col-span-6 space-y-6">
-      <div class="flex flex-wrap gap-4 justify-center">
-        <button type="button" class="w-20 flex flex-col items-center gap-2 cursor-pointer group" data-action="click->modal#open" data-modal-id="request-subject-modal">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent p-[2px] group-hover:scale-110 transition-transform">
-            <div class="w-full h-full rounded-2xl bg-surface flex items-center justify-center">
-              <i class="fas fa-plus text-primary"></i>
-            </div>
-          </div>
-          <span class="text-xs text-gray-400">Nouveau</span>
-        </button>
-
-        <% @subjects.first(5).each do |subject| %>
-          <%= link_to authenticated_root_path(subject: subject.slug), class: "w-20 flex flex-col items-center gap-2 cursor-pointer group" do %>
-            <div class="w-16 h-16 rounded-2xl border flex items-center justify-center transition-transform group-hover:scale-110" style="background-color: <%= "#{subject.accent_color}1F" %>; border-color: <%= "#{subject.accent_color}4D" %>; color: <%= subject.accent_color %>;">
-              <i class="fas <%= subject.icon %> text-xl"></i>
-            </div>
-            <span class="text-xs text-gray-400"><%= subject.name %></span>
-          <% end %>
-        <% end %>
-      </div>
-
       <div class="glass rounded-2xl p-4 flex items-center gap-4">
         <img src="<%= current_user.profile_avatar %>" alt="<%= current_user.display_name %>" class="w-10 h-10 rounded-full">
         <button type="button" data-action="modal#open" class="flex-1 text-left bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-400 hover:border-primary transition-colors">
@@ -79,6 +90,11 @@
       <div class="space-y-6">
         <% if @posts.any? %>
           <%= render @posts %>
+          <% if @pagy.pages > 1 %>
+            <div class="flex items-center justify-center gap-2 pt-2">
+              <%== pagy_nav(@pagy) %>
+            </div>
+          <% end %>
         <% else %>
           <div class="glass rounded-2xl p-10 text-center text-gray-400">
             <i class="fas fa-sparkles text-4xl text-primary mb-4"></i>
