@@ -1,48 +1,8 @@
 module ProfanityFilter
   extend ActiveSupport::Concern
 
-  BANNED_WORDS = %w[
-    connard connards connasse connasses
-    enculé enculés enculée enculées encule encules
-    putain putains
-    salope salopes
-    pute putes
-    merde merdes
-    bordel
-    fdp
-    ntm
-    nique niquer niqué niqués
-    baiser baiseur baiseuse
-    foutre foutez
-    bite bites
-    chatte chattes
-    couille couilles couillon couillons
-    con cons conne connes
-    cul culs
-    salopard salopards saloparde
-    ordure ordures
-    pd
-    tapette tapettes
-    grosse
-    nazi
-    fuck fucker fucking
-    shit
-    bitch bitches
-    asshole
-    bastard bastards
-    cunt
-    dick dicks
-    pussy
-    nigger
-  ].freeze
-
-  BANNED_REGEX = Regexp.new(
-    "\\b(#{BANNED_WORDS.map { |w| Regexp.escape(w) }.join("|")})\\b",
-    Regexp::IGNORECASE
-  )
-
   included do
-    validate :no_profanity
+    before_save :check_moderation
   end
 
   private
@@ -51,14 +11,12 @@ module ProfanityFilter
     []
   end
 
-  def no_profanity
-    profanity_fields.each do |field|
-      value = send(field).to_s
-      next if value.blank?
+  def check_moderation
+    return if profanity_fields.empty?
 
-      if value.match?(BANNED_REGEX)
-        errors.add(field, :profanity, message: "contient un langage inapproprié")
-      end
-    end
+    content = profanity_fields.map { |f| send(f).to_s }.reject(&:blank?).join("\n")
+    return if content.blank?
+
+    self.flagged_for_moderation = AiModerationService.new.flagged?(content)
   end
 end

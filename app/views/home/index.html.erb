@@ -1,4 +1,4 @@
-<% content_for :title, "StudyLink" %>
+<% content_for :title, "AllAboard" %>
 
 <div class="auth-shell">
   <div class="landing-grid absolute inset-0"></div>
@@ -8,7 +8,7 @@
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
           <i class="fas fa-graduation-cap text-white text-lg"></i>
         </div>
-        <span class="text-2xl font-bold gradient-text">StudyLink</span>
+        <span class="text-2xl font-bold gradient-text">AllAboard</span>
       </div>
     </div>
 
@@ -20,7 +20,7 @@
           <span class="gradient-text">s’aident vraiment</span>.
         </h1>
         <p class="text-lg text-gray-300 leading-relaxed max-w-2xl mb-8">
-          Publiez une requête, recevez des réponses ciblées, puis basculez instantanément vers une messagerie temps réel pour aller jusqu’à la résolution.
+          Publiez une requête, recevez des réponses ciblées, obtenez de l’aide de professionnels confirmés, échangez vos savoirs !
         </p>
 
         <div class="flex flex-wrap gap-3 mb-8">
@@ -33,35 +33,38 @@
 
       <div class="glass rounded-[2rem] p-8 hero-panel">
         <div class="mb-8">
-          <h2 class="text-2xl font-bold">Créer un compte</h2>
-          <p class="text-sm text-gray-400 mt-1">Rejoins la communauté StudyLink</p>
+          <h2 class="text-2xl font-bold">Connexion</h2>
+          <p class="text-sm text-gray-400 mt-1">Rentre dans ton compte AllAboard</p>
         </div>
 
-        <%= form_with url: user_registration_path, method: :post, local: true do |f| %>
+        <% if flash[:alert] %>
+          <div class="mb-4 text-sm text-red-400"> <%= flash[:alert] %> </div>
+        <% end %>
+        <% if flash[:notice] %>
+          <div class="mb-4 text-sm text-green-400"> <%= flash[:notice] %> </div>
+        <% end %>
+
+        <%= form_with url: user_session_path, method: :post, local: true do |f| %>
           <div class="space-y-4">
             <div>
-              <%= f.label :username, "Nom d’utilisateur", class: "block text-sm text-gray-400 mb-1" %>
-              <%= f.text_field :username, name: "user[username]", placeholder: "ton_pseudo", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" %>
-            </div>
-            <div>
               <%= f.label :email, "Email", class: "block text-sm text-gray-400 mb-1" %>
-              <%= f.email_field :email, name: "user[email]", placeholder: "toi@exemple.com", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" %>
+              <%= f.email_field :email, name: "user[email]", autofocus: true, autocomplete: "email", placeholder: "toi@exemple.com", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" %>
             </div>
             <div>
               <%= f.label :password, "Mot de passe", class: "block text-sm text-gray-400 mb-1" %>
-              <%= f.password_field :password, name: "user[password]", placeholder: "••••••••", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" %>
+              <%= f.password_field :password, name: "user[password]", autocomplete: "current-password", placeholder: "••••••••", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" %>
             </div>
-            <div>
-              <%= f.label :password_confirmation, "Confirmer le mot de passe", class: "block text-sm text-gray-400 mb-1" %>
-              <%= f.password_field :password_confirmation, name: "user[password_confirmation]", placeholder: "••••••••", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" %>
+            <div class="flex items-center gap-2 text-sm text-gray-300">
+              <%= f.check_box :remember_me, name: "user[remember_me]", class: "rounded bg-white/10 border-white/30 text-primary focus:ring-primary" %>
+              <%= f.label :remember_me, "Se souvenir de moi" %>
             </div>
-            <%= f.submit "S’inscrire", class: "w-full mt-2 px-6 py-3 rounded-2xl bg-primary hover:bg-primary/80 text-white font-medium transition-colors cursor-pointer" %>
+            <%= f.submit "Se connecter", class: "w-full mt-2 px-6 py-3 rounded-2xl bg-primary hover:bg-primary/80 text-white font-medium transition-colors cursor-pointer" %>
           </div>
         <% end %>
 
         <p class="text-center text-sm text-gray-500 mt-6">
-          Déjà un compte ?
-          <%= link_to "Se connecter", new_user_session_path, class: "text-primary hover:underline" %>
+          Pas encore de compte ?
+          <%= link_to "Inscris-toi", new_user_registration_path, class: "text-primary hover:underline" %>
         </p>
       </div>
     </div>

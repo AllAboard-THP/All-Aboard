@@ -1,52 +1,103 @@
+<% show_page = local_assigns.fetch(:show_page, false) %>
 <%= turbo_frame_tag dom_id(post, :card) do %>
-  <% current_like = post.likes.find { |like| like.user_id == current_user.id } %>
-  <% current_bookmark = post.bookmarks.find { |bookmark| bookmark.user_id == current_user.id } %>
+  <% current_like = post.likes.find { |l| l.user_id == current_user.id } %>
+  <% current_bookmark = post.bookmarks.find { |b| b.user_id == current_user.id } %>
 
-  <article class="post-card glass rounded-2xl overflow-hidden animate-slide-up">
+  <article class="post-card glass rounded-2xl animate-slide-up">
     <div class="p-6">
       <div class="flex justify-between items-start mb-4">
         <div class="flex items-center gap-3">
-          <img src="<%= post.user.profile_avatar %>" alt="<%= post.user.display_name %>" class="w-12 h-12 rounded-full border-2 border-primary/30">
+          <%= link_to user_path(post.user), class: "inline-flex items-center gap-3", data: { turbo_frame: "_top" } do %>
+            <img src="<%= post.user.profile_avatar %>" alt="<%= post.user.display_name %>" class="w-12 h-12 rounded-full border-2 border-primary/30">
+          <% end %>
           <div>
-            <h4 class="font-semibold"><%= post.user.display_name %></h4>
+            <h4 class="font-semibold"><%= link_to post.user.display_name, user_path(post.user), class: "text-white hover:text-primary transition-colors", data: { turbo_frame: "_top" } %></h4>
             <p class="text-xs text-gray-500"><%= relative_time(post.created_at) %> • <%= post.education_level.presence || post.user.education_level.presence || "Étudiant" %></p>
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-xs text-gray-500"><%= post.subject.name %></span>
-          <% if current_user.admin? %>
-            <%= button_to post_path(post), method: :delete, data: { turbo_confirm: "Êtes-vous sûr ?" }, class: "text-red-400 hover:text-red-300 transition-colors text-xs", form_class: "inline-block" do %>
-              <i class="fas fa-trash"></i>
-            <% end %>
+          <% if post.user == current_user || current_user.admin? %>
+            <div class="relative">
+              <button type="button"
+                      onclick="var m=this.nextElementSibling;m.classList.toggle('hidden');event.stopPropagation()"
+                      class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-gray-400 hover:text-gray-200 transition-colors">
+                <i class="fas fa-ellipsis-h text-sm"></i>
+              </button>
+              <div data-dropdown class="hidden absolute right-0 top-full mt-1 glass rounded-xl border border-white/10 py-1 z-50 min-w-[150px] shadow-xl">
+                <% if post.user == current_user %>
+                  <%= link_to edit_post_path(post), class: "flex items-center gap-2.5 px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors", data: { turbo_frame: "_top" } do %>
+                    <i class="fas fa-edit text-xs w-3.5 text-center"></i> Modifier
+                  <% end %>
+                <% end %>
+                <% if current_user.admin? %>
+                  <%= button_to delete_post_path(post), method: :post,
+                      data: { turbo_confirm: "Êtes-vous sûr ?" },
+                      class: "flex items-center gap-2.5 px-4 py-2 text-sm text-red-400 hover:bg-white/5 hover:text-red-300 transition-colors w-full text-left",
+                      form_class: "w-full" do %>
+                    <i class="fas fa-trash text-xs w-3.5 text-center"></i> Supprimer
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
           <% end %>
         </div>
       </div>
 
-      <h3 class="text-lg font-semibold mb-2"><%= post.title %></h3>
+      <h3 class="text-lg font-semibold mb-2">
+        <%= link_to post.title, post_path(post),
+                    class: "hover:text-primary transition-colors",
+                    data: {
+                      turbo_frame: "_top",
+                      controller: "track-view",
+                      "track-view-url-value": track_view_post_path(post),
+                      action: "click->track-view#track"
+                    } %>
+      </h3>
       <p class="text-gray-300 mb-4 text-sm leading-relaxed"><%= post.body %></p>
 
-      <div class="flex flex-wrap gap-2 mb-4">
-        <span class="tag-badge px-3 py-1 rounded-full text-xs font-medium" style="color: <%= post.subject.accent_color %>;">
-          #<%= post.subject.name %>
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <%# Tag principal (matière) %>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border"
+              style="color: <%= post.subject.accent_color %>; border-color: <%= post.subject.accent_color %>33; background-color: <%= post.subject.accent_color %>18;">
+          <i class="fas <%= post.subject.icon %> text-[10px]"></i>
+          <%= post.subject.name %>
         </span>
-        <% post.tags.each do |tag| %>
-          <%= link_to authenticated_root_path(tag: tag.slug), class: "tag-badge px-3 py-1 rounded-full text-xs font-medium text-primary" do %>
-            #<%= tag.name %>
+
+        <%# Séparateur si sous-tags présents %>
+        <% if post.tags.any? %>
+          <span class="text-white/15 text-xs select-none">·</span>
+          <%# Sous-tags %>
+          <% post.tags.each do |tag| %>
+            <%= link_to authenticated_root_path(tag: tag.slug),
+                        class: "px-2.5 py-1 rounded-full text-xs text-gray-400 bg-white/5 border border-white/8 hover:border-primary/40 hover:text-primary transition-colors" do %>
+              #<%= tag.name %>
+            <% end %>
           <% end %>
         <% end %>
+
         <% if post.urgent? %>
           <span class="px-3 py-1 rounded-full text-xs font-medium text-orange-400 border border-orange-400/30 bg-orange-400/10">🔥 Urgent</span>
         <% end %>
       </div>
 
       <% if post.code_snippet.present? %>
-        <pre class="bg-black/30 rounded-xl p-4 mb-4 font-mono text-sm text-green-400 border border-white/5 overflow-x-auto whitespace-pre-wrap"><%= post.code_snippet %></pre>
+        <div class="relative mb-4 rounded-xl overflow-hidden border border-white/8">
+          <% lang = post.code_language.presence || "plaintext" %>
+          <div class="flex items-center justify-between px-4 py-2 bg-black/40 border-b border-white/8">
+            <span class="text-xs text-gray-500 font-mono"><%= lang == "plaintext" ? "texte" : lang %></span>
+            <button type="button" onclick="navigator.clipboard.writeText(this.closest('.relative').querySelector('code').innerText)"
+                    class="text-xs text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-1">
+              <i class="fas fa-copy"></i> Copier
+            </button>
+          </div>
+          <pre class="!rounded-none !m-0 !border-0"><code class="language-<%= lang %>"><%= post.code_snippet %></code></pre>
+        </div>
       <% end %>
 
       <div class="flex items-center justify-between pt-4 border-t border-white/10">
         <div class="flex items-center gap-4 sm:gap-6">
           <% if current_like %>
-            <%= button_to like_path(current_like), method: :delete, class: "flex items-center gap-2 text-pink-500 transition-colors group", form_class: "inline-block" do %>
+            <%= button_to delete_like_path(current_like), method: :post, class: "flex items-center gap-2 text-pink-500 transition-colors group", form_class: "inline-block" do %>
               <i class="fas fa-heart text-xl scale-110"></i>
               <span class="text-sm"><%= post.likes_count %></span>
             <% end %>
@@ -63,7 +114,7 @@
           </span>
 
           <% if current_bookmark %>
-            <%= button_to bookmark_path(current_bookmark), method: :delete, class: "flex items-center gap-2 text-blue-400 transition-colors", form_class: "inline-block" do %>
+            <%= button_to delete_bookmark_path(current_bookmark), method: :post, class: "flex items-center gap-2 text-blue-400 transition-colors", form_class: "inline-block" do %>
               <i class="fas fa-bookmark text-xl"></i>
             <% end %>
           <% else %>
@@ -73,7 +124,20 @@
           <% end %>
         </div>
 
-        <% unless post.user == current_user %>
+        <% if post.user == current_user %>
+          <% if post.mentor_help_requested? %>
+            <span class="flex items-center gap-1.5 text-sm text-gray-500 border border-white/10 px-3 py-1.5 rounded-xl cursor-default">
+              <i class="fas fa-chalkboard-teacher"></i> Mentors alertés
+            </span>
+          <% else %>
+            <%= button_to help_mentor_post_path(post), method: :post,
+                class: "flex items-center gap-1.5 text-sm text-emerald-400 hover:text-emerald-300 font-medium transition-colors border border-emerald-400/30 hover:border-emerald-400/60 px-3 py-1.5 rounded-xl",
+                form_class: "inline-block",
+                data: { turbo_frame: "_top", turbo_confirm: "Envoyer une demande aux mentors disponibles en #{post.subject.name} ?" } do %>
+              <i class="fas fa-chalkboard-teacher"></i> HelpMentor !
+            <% end %>
+          <% end %>
+        <% else %>
           <%= button_to conversations_path(recipient_id: post.user.id, post_id: post.id), method: :post, class: "text-sm text-primary hover:text-white transition-colors font-medium", form_class: "inline-block", data: { turbo_frame: "_top" } do %>
             <i class="fas fa-lock mr-1"></i> Message privé
           <% end %>
@@ -81,15 +145,16 @@
       </div>
     </div>
 
-    <div class="bg-white/5 p-4 border-t border-white/10 space-y-4">
+    <% unless show_page %>
+    <div class="bg-white/5 p-4 border-t border-white/10 space-y-4 rounded-b-2xl">
       <% post.comments.last(2).each do |comment| %>
-        <div class="flex gap-3">
-          <img src="<%= comment.user.profile_avatar %>" alt="<%= comment.user.display_name %>" class="w-8 h-8 rounded-full">
-          <div class="flex-1">
-            <p class="text-sm"><span class="font-semibold"><%= comment.user.display_name %></span> <span class="text-gray-500 text-xs">• <%= relative_time(comment.created_at) %></span></p>
-            <p class="text-sm text-gray-300 mt-1"><%= comment.body %></p>
-          </div>
-        </div>
+        <%= render "comments/comment", comment: comment %>
+      <% end %>
+
+      <% if post.comments_count > 2 %>
+        <%= link_to post_path(post), class: "text-xs text-primary hover:underline", data: { turbo_frame: "_top" } do %>
+          Voir toutes les réponses (<%= post.comments_count %>)
+        <% end %>
       <% end %>
 
       <%= form_with model: Comment.new, url: comments_path, class: "flex gap-3 items-start" do |form| %>
@@ -101,5 +166,6 @@
         </div>
       <% end %>
     </div>
+    <% end %>
   </article>
 <% end %>

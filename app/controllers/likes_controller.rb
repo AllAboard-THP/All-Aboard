@@ -1,4 +1,5 @@
 class LikesController < ApplicationController
+  include PostReplaceable
   before_action :authenticate_user!
 
   def create
@@ -14,14 +15,5 @@ class LikesController < ApplicationController
     replace_post(post)
   end
 
-  private
-
-  def replace_post(post)
-    @post = Post.includes(:user, :subject, :tags, comments: :user, likes: :user, bookmarks: :user).find(post.id)
-    render turbo_stream: turbo_stream.replace(
-      view_context.dom_id(@post, :card),
-      partial: "posts/post",
-      locals: { post: @post }
-    )
-  end
+  alias_method :delete, :destroy
 end

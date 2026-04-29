@@ -1,5 +1,6 @@
 class Post < ApplicationRecord
   include ProfanityFilter
+  include Taggable
 
   attr_accessor :tag_list
 
@@ -18,6 +19,8 @@ class Post < ApplicationRecord
 
   scope :recent_first, -> { order(created_at: :desc) }
 
+  after_update_commit :schedule_ai_summary, if: -> { saved_change_to_status? && resolved? }
+
   def liked_by?(user)
     user.present? && likes.any? { |like| like.user_id == user.id }
   end
@@ -26,16 +29,11 @@ class Post < ApplicationRecord
     user.present? && bookmarks.any? { |bookmark| bookmark.user_id == user.id }
   end
 
-  def sync_tags!(raw_tags)
-    names = raw_tags.to_s.split(",").map(&:strip).reject(&:blank?).uniq.first(6)
-    self.tags = names.map do |name|
-      Tag.find_or_create_by!(slug: name.parameterize) do |tag|
-        tag.name = name
-      end
-    end
-  end
-
   private
 
   def profanity_fields = %i[title body]
+
+  def schedule_ai_summary
+    GeneratePostSummaryJob.perform_later(id)
+  end
 end

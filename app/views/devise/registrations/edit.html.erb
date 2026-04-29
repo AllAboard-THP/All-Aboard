@@ -10,7 +10,7 @@
       </div>
     </div>
 
-    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "space-y-5" }) do |f| %>
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "space-y-5", multipart: true }) do |f| %>
       <%= render "devise/shared/error_messages", resource: resource %>
 
       <div class="grid sm:grid-cols-2 gap-4">
@@ -40,11 +40,44 @@
       </div>
 
       <div>
+        <p class="block text-sm font-medium mb-2 text-gray-300">Ou uploader une photo de profil</p>
+        <div class="flex items-center gap-4">
+          <img src="<%= current_user.profile_avatar %>"
+               alt="<%= current_user.display_name %>"
+               id="avatar-preview"
+               class="w-14 h-14 rounded-2xl border border-white/10 object-cover">
+          <label class="cursor-pointer flex-1">
+            <div class="flex items-center gap-3 bg-white/5 border border-white/10 border-dashed rounded-xl px-4 py-3 hover:bg-white/8 hover:border-primary/40 transition-colors">
+              <i class="fas fa-cloud-arrow-up text-gray-400"></i>
+              <span class="text-sm text-gray-400" id="avatar-filename">Choisir une image (JPG, PNG, WebP — max 2 Mo)</span>
+            </div>
+            <%= f.file_field :avatar_image,
+                             accept: "image/jpeg,image/png,image/webp",
+                             class: "sr-only",
+                             id: "avatar-upload",
+                             data: { action: "change->avatar-preview#preview" } %>
+          </label>
+        </div>
+        <script>
+          document.getElementById('avatar-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('avatar-filename').textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+              document.getElementById('avatar-preview').src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+          });
+        </script>
+      </div>
+
+      <div>
         <%= f.label :email, class: "block text-sm font-medium mb-2 text-gray-300" %>
         <%= f.email_field :email, autocomplete: "email", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
       </div>
 
-      <div class="grid sm:grid-cols-3 gap-4">
+      <div class="grid sm:grid-cols-2 gap-4">
         <div>
           <%= f.label :password, "Nouveau mot de passe", class: "block text-sm font-medium mb-2 text-gray-300" %>
           <%= f.password_field :password, autocomplete: "new-password", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
@@ -53,16 +86,83 @@
           <%= f.label :password_confirmation, "Confirmation", class: "block text-sm font-medium mb-2 text-gray-300" %>
           <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
         </div>
-        <div>
-          <%= f.label :current_password, "Mot de passe actuel", class: "block text-sm font-medium mb-2 text-gray-300" %>
-          <%= f.password_field :current_password, autocomplete: "current-password", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
+      </div>
+
+      <%# Mentor competences %>
+      <% if current_user.mentor? %>
+        <div class="border border-primary/20 rounded-2xl p-6 mt-2">
+          <div class="flex items-center gap-2 mb-1">
+            <i class="fas fa-chalkboard-teacher text-primary text-base"></i>
+            <h3 class="font-semibold text-white">Mes compétences</h3>
+          </div>
+          <p class="text-xs text-gray-500 mb-4">Sélectionne les matières dans lesquelles tu peux aider les étudiants.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <% @subjects.each do |subject| %>
+              <label class="block cursor-pointer">
+                <input type="checkbox"
+                       name="user[competence_ids][]"
+                       value="<%= subject.id %>"
+                       <%= "checked" if current_user.competences.include?(subject) %>
+                       class="peer sr-only">
+                <span class="flex items-center gap-2 p-3 rounded-xl border text-sm transition-colors cursor-pointer
+                             border-white/10 bg-white/5 text-gray-400 hover:border-primary/40
+                             peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-white">
+                  <i class="fas <%= subject.icon %>" style="color: <%= subject.accent_color %>;"></i>
+                  <%= subject.name %>
+                </span>
+              </label>
+            <% end %>
+          </div>
+          <%# Champ caché pour soumettre un tableau vide si rien n'est coché %>
+          <input type="hidden" name="user[competence_ids][]" value="">
+        </div>
+      <% end %>
+
+      <%# Notification preferences %>
+      <div class="border border-white/10 rounded-2xl p-6 mt-2">
+        <div class="flex items-center gap-2 mb-4">
+          <i class="fas fa-bell text-primary text-base"></i>
+          <h3 class="font-semibold text-white">Notifications par e-mail</h3>
+        </div>
+        <div class="space-y-4">
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <%= f.check_box :notify_on_message,
+                            class: "mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50 cursor-pointer" %>
+            <div>
+              <p class="text-sm font-medium text-gray-200 group-hover:text-white transition-colors">Messages privés</p>
+              <p class="text-xs text-gray-500 mt-0.5">Recevoir un e-mail quand quelqu'un t'envoie un message privé</p>
+            </div>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <%= f.check_box :notify_on_comment,
+                            class: "mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50 cursor-pointer" %>
+            <div>
+              <p class="text-sm font-medium text-gray-200 group-hover:text-white transition-colors">Réponses sur mes posts</p>
+              <p class="text-xs text-gray-500 mt-0.5">Recevoir un e-mail quand quelqu'un répond à l'un de tes posts</p>
+            </div>
+          </label>
         </div>
       </div>
 
       <div class="flex flex-wrap gap-3 pt-4">
         <%= f.submit "Mettre à jour", class: "px-6 py-3 rounded-xl bg-primary hover:bg-primary/80 text-white font-medium transition-colors" %>
-        <%= button_to "Supprimer mon compte", registration_path(resource_name), data: { turbo_confirm: "Supprimer définitivement votre compte ?" }, method: :delete, class: "px-6 py-3 rounded-xl border border-red-400/30 text-red-300 hover:bg-red-500/10 transition-colors" %>
       </div>
     <% end %>
+
+    <div class="mt-8 border border-red-500/20 rounded-2xl p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <i class="fas fa-triangle-exclamation text-red-400 text-lg"></i>
+        <h3 class="font-semibold text-red-400">Attention !</h3>
+      </div>
+      <p class="text-sm text-gray-400 mb-5">
+        La suppression de votre compte est <span class="text-red-300 font-medium">irréversible</span>.
+        Toutes vos données (posts, commentaires, messages, conversations) seront définitivement effacées.
+      </p>
+      <%= button_to "Supprimer mon compte définitivement",
+            registration_path(resource_name),
+            method: :delete,
+            data: { turbo_confirm: "Êtes-vous sûr ? Cette action est irréversible et supprimera toutes vos données." },
+            class: "px-6 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:border-red-500/60 font-medium transition-colors" %>
+    </div>
   </div>
 </div>

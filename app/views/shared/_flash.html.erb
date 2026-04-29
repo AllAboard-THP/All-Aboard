@@ -2,7 +2,7 @@
 <% if visible_flashes.any? %>
   <div class="flash-stack">
     <% visible_flashes.each do |type, message| %>
-      <div class="flash-toast <%= type == "notice" ? "flash-toast--notice" : "flash-toast--alert" %> animate-slide-up">
+      <div class="flash-toast <%= type == "notice" ? "flash-toast--notice" : "flash-toast--alert" %> animate-slide-up" data-controller="flash">
         <p class="text-sm font-medium"><%= message %></p>
       </div>
     <% end %>

@@ -8,7 +8,7 @@
           <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
             <i class="fas fa-graduation-cap text-white text-lg"></i>
           </div>
-          <span class="text-2xl font-bold gradient-text">StudyLink</span>
+          <span class="text-2xl font-bold gradient-text">AllAboard</span>
         <% end %>
 
         <p class="uppercase tracking-[0.3em] text-xs text-primary mb-4">Création de compte</p>
@@ -40,11 +40,6 @@
           </div>
 
           <div>
-            <%= f.label :avatar_url, "Avatar URL", class: "block text-sm font-medium mb-2 text-gray-300" %>
-            <%= f.url_field :avatar_url, placeholder: "Optionnel", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
-          </div>
-
-          <div>
             <%= f.label :email, class: "block text-sm font-medium mb-2 text-gray-300" %>
             <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
           </div>
@@ -53,6 +48,7 @@
             <div>
               <%= f.label :password, "Mot de passe", class: "block text-sm font-medium mb-2 text-gray-300" %>
               <%= f.password_field :password, autocomplete: "new-password", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
+              <p class="text-xs text-gray-500 mt-1">1 majuscule, 1 chiffre, 1 caractère spécial</p>
             </div>
             <div>
               <%= f.label :password_confirmation, "Confirmation", class: "block text-sm font-medium mb-2 text-gray-300" %>

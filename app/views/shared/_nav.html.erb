@@ -2,10 +2,8 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
       <%= link_to authenticated_root_path, class: "flex items-center gap-3" do %>
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-          <i class="fas fa-graduation-cap text-white text-lg"></i>
-        </div>
-        <span class="text-xl font-bold gradient-text">StudyLink</span>
+        <%= image_tag "icon.svg", class: "w-10 h-10", alt: "AllAboard" %>
+        <span class="text-xl font-bold gradient-text">AllAboard</span>
       <% end %>
 
       <div class="hidden md:flex items-center gap-6">
@@ -16,6 +14,14 @@
         <%= link_to explore_path, class: feed_nav_classes(:explore) do %>
           <i class="fas fa-compass"></i>
           <span class="font-medium">Matières</span>
+        <% end %>
+        <%= link_to resources_path, class: feed_nav_classes(:resources) do %>
+          <i class="fas fa-book-open"></i>
+          <span class="font-medium">Ressources</span>
+        <% end %>
+        <%= link_to events_path, class: feed_nav_classes(:events) do %>
+          <i class="fas fa-calendar-alt"></i>
+          <span class="font-medium">Événements</span>
         <% end %>
         <%= link_to conversations_path, class: "#{feed_nav_classes(:messages)} relative" do %>
           <i class="fas fa-comment-dots"></i>
@@ -29,6 +35,12 @@
       </div>
 
       <div class="flex items-center gap-4">
+        <div class="relative">
+        <% if current_user.mentor? && @mentor_pending_count.to_i > 0 %>
+          <span class="absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-emerald-400 text-black text-[10px] font-bold rounded-full flex items-center justify-center z-10 pointer-events-none">
+            <%= @mentor_pending_count %>
+          </span>
+        <% end %>
         <details class="relative group">
           <summary class="list-none cursor-pointer">
             <img src="<%= current_user.profile_avatar %>" alt="<%= current_user.display_name %>" class="w-10 h-10 rounded-full border-2 border-primary">
@@ -44,6 +56,16 @@
             <%= link_to my_posts_path, class: "block px-4 py-2 text-sm rounded-lg hover:bg-white/10" do %>
               Mes posts
             <% end %>
+            <%= link_to my_bookmarks_path, class: "block px-4 py-2 text-sm rounded-lg hover:bg-white/10" do %>
+              <i class="far fa-bookmark mr-2 text-gray-400"></i>Mes sauvegardes
+            <% end %>
+            <% if current_user.mentor? %>
+              <div class="border-t border-white/10 mt-2 pt-2">
+                <%= link_to mentor_dashboard_path, class: "block px-4 py-2 text-sm rounded-lg hover:bg-emerald-500/10 text-emerald-400 font-medium" do %>
+                  <i class="fas fa-chalkboard-teacher mr-2"></i>Espace Mentor
+                <% end %>
+              </div>
+            <% end %>
             <% if current_user.admin? %>
               <div class="border-t border-white/10 mt-2 pt-2">
                 <%= link_to admin_dashboard_path, class: "block px-4 py-2 text-sm rounded-lg hover:bg-yellow-500/10 text-yellow-400 font-medium" do %>
@@ -58,6 +80,7 @@
             </div>
           </div>
         </details>
+        </div>
       </div>
     </div>
   </div>

@@ -1,22 +1,40 @@
-<div class="chat-row" data-conversation-messages-target="message" data-author-id="<%= message.user_id %>">
-  <img src="<%= message.user.profile_avatar %>" alt="<%= message.user.display_name %>" class="message-avatar w-8 h-8 rounded-full">
-  <div class="message-bubble rounded-2xl px-4 py-3">
-    <% if message.body.present? %>
-      <p class="text-sm"><%= message.body %></p>
-    <% end %>
-    <% if message.attachment.attached? %>
-      <% if message.attachment.image? %>
-        <div class="mt-2">
-          <%= image_tag message.attachment, class: "max-w-xs rounded-xl max-h-64 object-cover cursor-pointer", loading: "lazy" %>
-        </div>
-      <% else %>
-        <div class="mt-2 flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 text-xs">
-          <i class="fas fa-file text-primary"></i>
-          <%= link_to message.attachment.filename.to_s, rails_blob_path(message.attachment, disposition: :attachment), class: "text-primary hover:underline truncate max-w-[180px]", target: "_blank", rel: "noopener noreferrer" %>
-          <span class="text-white/50 ml-auto"><%= number_to_human_size(message.attachment.byte_size) %></span>
-        </div>
+<%= turbo_frame_tag dom_id(message) do %>
+  <div class="chat-row group" data-conversation-messages-target="message" data-author-id="<%= message.user_id %>">
+    <img src="<%= message.user.profile_avatar %>" alt="<%= message.user.display_name %>" class="message-avatar w-8 h-8 rounded-full">
+    <div class="message-bubble rounded-2xl px-4 py-3">
+      <% if message.body.present? %>
+        <p class="text-sm"><%= message.body %></p>
       <% end %>
+      <% if message.attachment.attached? %>
+        <% if message.attachment.image? %>
+          <div class="mt-2">
+            <%= image_tag message.attachment, class: "max-w-xs rounded-xl max-h-64 object-cover cursor-pointer", loading: "lazy" %>
+          </div>
+        <% else %>
+          <div class="mt-2 flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 text-xs">
+            <i class="fas fa-file text-primary"></i>
+            <%= link_to message.attachment.filename.to_s, rails_blob_path(message.attachment, disposition: :attachment), class: "text-primary hover:underline truncate max-w-[180px]", target: "_blank", rel: "noopener noreferrer" %>
+            <span class="text-white/50 ml-auto"><%= number_to_human_size(message.attachment.byte_size) %></span>
+          </div>
+        <% end %>
+      <% end %>
+      <span class="text-[10px] text-white/70 mt-1 block"><%= message.created_at.strftime("%H:%M") %></span>
+    </div>
+    <% viewer = local_assigns.fetch(:viewer, nil) %>
+    <% if viewer && message.user == viewer %>
+      <div class="message-actions flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity self-center">
+        <%= link_to edit_conversation_message_path(message.conversation, message),
+            class: "w-6 h-6 flex items-center justify-center rounded-md bg-white/10 hover:bg-white/20 text-gray-400 hover:text-gray-200 transition-colors",
+            title: "Modifier" do %>
+          <i class="fas fa-pen text-[10px]"></i>
+        <% end %>
+        <%= button_to [message.conversation, message, { action: :delete }], method: :post,
+            data: { turbo_confirm: "Supprimer ce message ?" },
+            class: "w-6 h-6 flex items-center justify-center rounded-md bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors",
+            title: "Supprimer" do %>
+          <i class="fas fa-trash text-[10px]"></i>
+        <% end %>
+      </div>
     <% end %>
-    <span class="text-[10px] text-white/70 mt-1 block"><%= message.created_at.strftime("%H:%M") %></span>
   </div>
-</div>
+<% end %>

@@ -26,8 +26,13 @@
       <span class="text-xs">Messages</span>
     <% end %>
 
-    <%= link_to edit_user_registration_path, class: "flex flex-col items-center gap-1 text-gray-400" do %>
-      <img src="<%= current_user.profile_avatar %>" alt="<%= current_user.display_name %>" class="w-6 h-6 rounded-full border border-white/30">
+    <%= link_to edit_user_registration_path, class: "flex flex-col items-center gap-1 text-gray-400 relative" do %>
+      <div class="relative">
+        <img src="<%= current_user.profile_avatar %>" alt="<%= current_user.display_name %>" class="w-6 h-6 rounded-full border border-white/30">
+        <% if current_user.mentor? && @mentor_pending_count.to_i > 0 %>
+          <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border border-darker"></span>
+        <% end %>
+      </div>
       <span class="text-xs">Profil</span>
     <% end %>
   </div>

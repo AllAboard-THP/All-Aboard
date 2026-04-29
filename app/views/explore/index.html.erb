@@ -20,5 +20,19 @@
         </div>
       <% end %>
     <% end %>
+
+    <button type="button" class="glass rounded-2xl p-6 hover:bg-white/5 transition-all cursor-pointer group block text-left border-2 border-dashed border-white/10 hover:border-primary/50" data-action="click->modal#open" data-modal-id="request-subject-modal">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent p-[2px] mb-4 group-hover:scale-110 transition-transform">
+        <div class="w-full h-full rounded-2xl bg-surface flex items-center justify-center">
+          <i class="fas fa-plus text-primary text-2xl"></i>
+        </div>
+      </div>
+      <h3 class="text-xl font-bold mb-2">Proposer une matière</h3>
+      <p class="text-gray-400 text-sm mb-4">Vous ne trouvez pas votre matière ? Demandez son ajout !</p>
+      <div class="flex items-center justify-between text-sm">
+        <span class="text-gray-500">Faire une demande</span>
+        <span class="text-primary group-hover:translate-x-1 transition-transform"><i class="fas fa-paper-plane"></i></span>
+      </div>
+    </button>
   </div>
 </div>
