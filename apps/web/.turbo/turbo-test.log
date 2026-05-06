@@ -1,0 +1,15 @@
+
+> web@0.0.0 test /home/toxy/dossierlinux/project/allaboard/apps/web
+> vitest run
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/toxy/dossierlinux/project/allaboard/apps/web
+
+ ✓ tests/health.test.tsx (1 test) 18ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  16:40:55
+   Duration  967ms (transform 52ms, setup 0ms, collect 126ms, tests 18ms, environment 452ms, prepare 128ms)
+
