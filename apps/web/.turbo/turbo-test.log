@@ -6,10 +6,10 @@
 
  RUN  v2.1.9 /home/toxy/dossierlinux/project/allaboard/apps/web
 
- ✓ tests/health.test.tsx (1 test) 18ms
+ ✓ tests/health.test.tsx (1 test) 19ms
 
  Test Files  1 passed (1)
       Tests  1 passed (1)
-   Start at  16:40:55
-   Duration  967ms (transform 52ms, setup 0ms, collect 126ms, tests 18ms, environment 452ms, prepare 128ms)
+   Start at  17:36:47
+   Duration  1.26s (transform 50ms, setup 0ms, collect 200ms, tests 19ms, environment 608ms, prepare 88ms)
 
