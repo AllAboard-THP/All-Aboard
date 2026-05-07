@@ -44,7 +44,6 @@ Comportement :
 ### CI (GitHub Actions)
 
 Les workflows sous [.github/workflows/](.github/workflows/) s’exécutent sur les PR et les pushes vers `main` : `lint`, `typecheck`, `test`, `build`.
-
 ## Documentation
 
 - [MOC - Parcours utilisateur](Docs/moc-parcours-utilisateur.md)
