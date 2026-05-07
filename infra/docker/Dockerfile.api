@@ -8,8 +8,8 @@ RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 FROM base AS installer
 COPY . .
 RUN pnpm install --frozen-lockfile
-RUN pnpm --filter=@allaboard/types run build
-RUN pnpm --filter=api run build
+RUN pnpm --filter=@allaboard/types exec tsc -b --force
+RUN pnpm --filter=api exec tsc -b --force
 
 FROM base AS runner
 WORKDIR /app
