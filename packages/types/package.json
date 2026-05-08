@@ -1,0 +1,27 @@
+{
+  "name": "@allaboard/types",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -b --watch",
+    "lint": "eslint .",
+    "typecheck": "tsc -b --noEmit",
+    "test": "echo \"no tests\""
+  },
+  "devDependencies": {
+    "@allaboard/config-eslint": "workspace:*",
+    "@allaboard/config-typescript": "workspace:*",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.2"
+  }
+}
