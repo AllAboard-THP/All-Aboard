@@ -1,0 +1,14 @@
+# Mirror of repo-root `.dockerignore` (Docker reads `.dockerignore` from build context root).
+.git
+.github
+node_modules
+**/node_modules
+**/.next
+**/dist
+**/coverage
+.turbo
+**/*.tsbuildinfo
+Docs
+*.md
+!README.md
+.pnpm-store
