@@ -15,8 +15,9 @@ FileUtils.chdir APP_ROOT do
   puts "== Installing dependencies =="
   system("bundle check") || system!("bundle install")
 
-  # Install JavaScript dependencies
-  system("yarn install --check-files")
+  # Install JavaScript dependencies from monorepo root (pnpm workspace)
+  repo_root = File.expand_path("../..", APP_ROOT)
+  system!("pnpm", "install", chdir: repo_root)
 
   # puts "\n== Copying sample files =="
   # unless File.exist?("config/database.yml")

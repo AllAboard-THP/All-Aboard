@@ -1,12 +1,16 @@
 {
-  "name": "app",
+  "name": "thp-final",
   "private": true,
-  "devDependencies": {
-    "esbuild": "^0.27.4",
-    "yarn": "^1.22.22"
-  },
   "scripts": {
-    "build": "esbuild app/javascript/application.js app/javascript/react_mount.js --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --loader:.js=jsx --loader:.jsx=jsx --jsx=automatic"
+    "build": "esbuild app/javascript/application.js app/javascript/react_mount.js --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --loader:.js=jsx --loader:.jsx=jsx --jsx=automatic",
+    "build:watch": "esbuild app/javascript/application.js app/javascript/react_mount.js --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --loader:.js=jsx --loader:.jsx=jsx --jsx=automatic --watch",
+    "dev": "bin/dev",
+    "lint": "bundle exec rubocop",
+    "test": "bundle exec rails test",
+    "typecheck": "bundle exec rails zeitwerk:check"
+  },
+  "devDependencies": {
+    "esbuild": "^0.27.4"
   },
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",

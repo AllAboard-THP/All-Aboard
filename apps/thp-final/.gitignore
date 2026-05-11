@@ -4,8 +4,9 @@
 # belong in git's global ignore instead:
 # `$XDG_CONFIG_HOME/git/ignore` or `~/.config/git/ignore`
 
-# Ignore bundler config.
-/.bundle
+# Bundler config (tracked so `bundle install` always uses vendor/bundle)
+/.bundle/*
+!/.bundle/config
 
 # Ignore all environment files.
 /.env*
@@ -38,3 +39,4 @@
 !/app/assets/builds/.keep
 
 /node_modules
+/vendor/bundle

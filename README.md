@@ -2,11 +2,12 @@
 
 ## Monorepo (Turborepo + pnpm)
 
-Prerequisites: **Node.js 22+**, **pnpm 9** (`corepack enable` or `npm i -g pnpm@9`).
+Prerequisites: **Node.js 22+**, **pnpm 9** (`corepack enable` or `npm i -g pnpm@9`). Pour l’app Rails historique : **Ruby** version indiquée dans [apps/thp-final/.ruby-version](apps/thp-final/.ruby-version) (Bundler).
 
 ```bash
 pnpm install
-pnpm dev          # web (3000) + api (4000)
+cd apps/thp-final && bundle install && cd ../..
+pnpm dev          # web (3000) + api (4000) — voir aussi thp-final ci-dessous
 pnpm build
 pnpm lint
 pnpm typecheck
@@ -16,15 +17,33 @@ pnpm verify       # lint + typecheck + test + build (avant commit / PR)
 
 - **web**: Next.js — `http://localhost:3000` (feed SSR appelle l’API via `API_URL`, défaut `http://127.0.0.1:4000`)
 - **api**: Fastify — `http://localhost:4000/health`, `GET /feed`
+- **thp-final**: Rails 8 — application THP (`Hotwire`, esbuild/React). Dev/test en **SQLite** (`apps/thp-final/storage/`). Postgres en production uniquement (`config/database.yml`). Démarrage :
+
+  ```bash
+  # depuis la racine du monorepo (JS + gems déjà installés)
+  pnpm --filter thp-final run dev
+  # équivalent : cd apps/thp-final && bin/dev (web + esbuild watch + Solid Queue dev)
+  ```
+
+  Le lien symbolique `apps/thp-final/pnpm-lock.yaml` pointe vers le lockfile racine : là pour que **jsbundling-rails** choisisse bien `pnpm` (et pas `yarn`) même si Yarn est présent sur la machine.
+
+  Intégration Git : [Projet-Final---All-aboard](https://github.com/AllAboard-THP/Projet-Final---All-aboard) sous forme de **subtree** dans `apps/thp-final`. Mettre à jour depuis le distant :
+
+  ```bash
+  git fetch projet-final main   # après avoir configuré ce remote SSH/HTTPS une fois
+  git subtree pull --prefix=apps/thp-final projet-final main
+  ```
 
 ### Docker (depuis la racine du repo, Docker requis)
 
 ```bash
 docker build -f infra/docker/Dockerfile.web -t allaboard-web:local .
 docker build -f infra/docker/Dockerfile.api -t allaboard-api:local .
+# Rails THP (contexte = arborescence Rails, pas la racine monorepo) :
+docker build -f apps/thp-final/Dockerfile -t allaboard-thp-final:local apps/thp-final
 ```
 
-Les Dockerfiles utilisent `turbo prune` (monorepo) puis `turbo run build --filter=…`. Voir aussi [infra/docker/](infra/docker/).
+Les Dockerfiles Node utilisent `turbo prune` (monorepo) puis `turbo run build --filter=…`. L’image Rails suit le Dockerfile standard Rails 8 sous [apps/thp-final/Dockerfile](apps/thp-final/Dockerfile). Voir aussi [infra/docker/](infra/docker/).
 
 ### Hooks Git (mode optimisé)
 
@@ -43,7 +62,7 @@ Comportement :
 
 ### CI (GitHub Actions)
 
-Les workflows sous [.github/workflows/](.github/workflows/) s’exécutent sur les PR et les pushes vers `main` : `lint`, `typecheck`, `test`, `build`.
+Les workflows sous [.github/workflows/](.github/workflows/) s’exécutent sur les PR et les pushes : après `pnpm install`, Ruby/Bundler est configuré pour `apps/thp-final`, la base SQLite de test est préparée, puis `pnpm` exécute `lint`, `typecheck`, `test`, `build` sur tout le monorepo.
 ## Documentation
 
 - [MOC - Parcours utilisateur](Docs/moc-parcours-utilisateur.md)
