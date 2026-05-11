@@ -1,0 +1,42 @@
+<div class="glass rounded-2xl p-5 hover:bg-white/5 transition-colors">
+  <div class="flex items-start gap-4">
+    <div class="shrink-0 text-center bg-white/10 rounded-xl px-3 py-2 min-w-[56px]">
+      <% if event.starts_at %>
+        <p class="text-xl font-bold text-accent leading-none"><%= event.starts_at.strftime("%d") %></p>
+        <p class="text-xs text-gray-400 uppercase"><%= I18n.l(event.starts_at, format: "%b") rescue event.starts_at.strftime("%b") %></p>
+      <% else %>
+        <p class="text-xs text-gray-500">Date ?</p>
+      <% end %>
+    </div>
+
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2 flex-wrap mb-1">
+        <h3 class="font-semibold">
+          <%= link_to event.title, event_path(event), class: "hover:text-accent transition-colors" %>
+        </h3>
+        <span class="text-xs px-2 py-0.5 bg-white/10 rounded-full"><%= event.event_type_label %></span>
+        <span class="text-xs px-2 py-0.5 bg-indigo-500/20 text-indigo-300 rounded-full"><%= event.category_label %></span>
+        <% if event.online? %>
+          <span class="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full">En ligne</span>
+        <% end %>
+      </div>
+
+      <p class="text-gray-400 text-sm line-clamp-2 mb-2"><%= event.description&.truncate(160) %></p>
+
+      <div class="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
+        <% if event.location.present? %>
+          <span><i class="fas fa-map-marker-alt mr-1"></i><%= event.location %></span>
+        <% end %>
+        <% if event.organizer.present? %>
+          <span><i class="fas fa-building mr-1"></i><%= event.organizer %></span>
+        <% end %>
+      </div>
+    </div>
+
+    <% if event.external_url.present? %>
+      <%= link_to event.external_url, target: "_blank", class: "shrink-0 px-3 py-2 bg-accent/20 hover:bg-accent/30 text-accent rounded-lg text-xs font-medium transition-colors" do %>
+        S'inscrire <i class="fas fa-external-link-alt ml-1"></i>
+      <% end %>
+    <% end %>
+  </div>
+</div>
