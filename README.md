@@ -70,3 +70,4 @@ Les workflows sous [.github/workflows/](.github/workflows/) s’exécutent sur l
 - [Proposition stack technique monorepo 2026](Docs/proposition-stack-technique-monorepo-2026.md)
 - [Plan d'initialisation Turborepo MVP](Docs/plan-initialisation-turborepo-mvp.md)
 - [Matrice de deploiement Dokploy/Coolify](Docs/matrice-deploiement-dokploy-coolify.md)
+- [Deploiement Dokploy — instance All-Aboard (domaines Web/API, `API_URL`, Postgres)](Docs/deploiement-dokploy-instance-allaboard.md)

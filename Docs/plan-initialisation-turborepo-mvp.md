@@ -136,6 +136,96 @@ Note:
 - **J11-J20**: auth + premier parcours "demande d'aide".
 - **J21-J30**: observabilite, hardening, staging + parametrage Dokploy/Coolify selon la matrice de deploiement.
 
+## Checklist de suivi d'avancement
+
+### Portee MVP (semaine 1)
+
+- [ ] `apps/web` pour le front web.
+- [ ] `apps/api` pour le backend MVP.
+- [ ] `packages/types` pour les types partages.
+- [ ] `packages/config-typescript` et `packages/config-eslint` pour standardiser le repo.
+- [ ] Pipeline Turborepo: `dev`, `build`, `lint`, `typecheck`, `test`.
+- [ ] CI minimale avec cache Turborepo.
+- [ ] Deploiement par service via Dockerfile (Dokploy ou Coolify).
+
+### Etape A - Initialiser le workspace
+
+- [ ] Initialiser `pnpm` a la racine.
+- [ ] Installer `turbo` en dependance de developpement.
+- [ ] Definir `pnpm-workspace.yaml` avec `apps/*` et `packages/*`.
+- [ ] Ajouter les scripts root `dev`, `build`, `lint`, `typecheck`, `test`.
+
+### Etape B - Configurer Turborepo
+
+- [ ] Creer `turbo.json`.
+- [ ] Configurer les dependances de taches (`build`, `typecheck`, `lint`).
+- [ ] Configurer `dev` avec `persistent: true` et `cache: false`.
+- [ ] Definir les outputs de build (`dist/**`, `.next/**`, etc.).
+
+### Etape C - TypeScript monorepo
+
+- [ ] Configurer le `tsconfig.json` root avec project references.
+- [ ] Passer chaque package TS en `composite: true`.
+- [ ] Utiliser `tsc -b` pour les builds incrementaux.
+
+### Etape D - Creer les apps MVP
+
+- [ ] Creer `apps/web`.
+- [ ] Ajouter la page health (`/health`) dans `apps/web`.
+- [ ] Ajouter une premiere page feed mock dans `apps/web`.
+- [ ] Creer `apps/api`.
+- [ ] Ajouter l'endpoint health dans `apps/api`.
+- [ ] Ajouter l'endpoint feed mock dans `apps/api`.
+- [ ] Creer `packages/types`.
+- [ ] Ajouter les types metier initiaux (`User`, `HelpRequest`, `Response`).
+
+### Etape E - Qualite minimale
+
+- [ ] Mettre en place ESLint partage via `packages/config-eslint`.
+- [ ] Mettre en place TS config partagee via `packages/config-typescript`.
+- [ ] Ajouter au moins 1 test smoke par app.
+
+### Etape F - Preparation deploiement Dokploy/Coolify
+
+- [ ] Creer un Dockerfile par service deployable (`web`, `api`, `agent`).
+- [ ] Verifier que chaque service peut etre build/deploye independamment.
+- [ ] Ajouter un `.dockerignore` monorepo optimise.
+- [ ] Configurer Dokploy/Coolify service par service (base directory, port, env vars, healthcheck).
+- [ ] Appliquer la matrice de deploiement comme reference unique.
+
+### Scripts cibles (racine)
+
+- [ ] Script `dev` operationnel.
+- [ ] Script `build` operationnel.
+- [ ] Script `lint` operationnel.
+- [ ] Script `typecheck` operationnel.
+- [ ] Script `test` operationnel.
+
+### CI MVP
+
+- [ ] Executer `pnpm install --frozen-lockfile` dans le pipeline PR.
+- [ ] Executer `turbo run lint typecheck test build` dans le pipeline PR.
+- [ ] Construire et publier les images Docker par service en CI.
+- [ ] Activer le remote cache Turborepo.
+- [ ] Appliquer la recommandation Dokploy (build+publish en CI).
+- [ ] Appliquer la configuration Coolify Dockerfile (Base Directory, env vars, ports).
+
+### Regles de gouvernance (des le jour 1)
+
+- [ ] Utiliser les dependances internes en `workspace:*`.
+- [ ] Maintenir une responsabilite claire par package.
+- [ ] Garantir que `apps/web` n'importe pas de code `db`/infra.
+- [ ] Definir des exports explicites dans chaque package.
+- [ ] Creer une ADR courte pour chaque decision structurante.
+- [ ] Respecter la regle: un service = une image = un Dockerfile = une configuration Dokploy/Coolify.
+
+### Roadmap 30 jours (MVP -> v1)
+
+- [ ] **J1-J3**: bootstrap monorepo + tooling + CI.
+- [ ] **J4-J10**: base fonctionnelle web + api + types partages.
+- [ ] **J11-J20**: auth + premier parcours "demande d'aide".
+- [ ] **J21-J30**: observabilite, hardening, staging + parametrage Dokploy/Coolify selon la matrice de deploiement.
+
 ## References
 
 - [Matrice de deploiement Dokploy/Coolify](matrice-deploiement-dokploy-coolify.md)

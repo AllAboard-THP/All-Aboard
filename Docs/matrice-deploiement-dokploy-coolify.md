@@ -17,12 +17,21 @@ Standardiser le deploiement par service de All-Aboard dans Dokploy ou Coolify, a
 - Nommage ressources: `allaboard-<service>-<env>` (ex: `allaboard-api-staging`).
 - Environnements separes: `dev`, `staging`, `prod`.
 
+## Instance Dokploy de reference (All-Aboard)
+
+Le deploiement reel sur Dokploy (projet **AllAboard monorepo website**, repo `AllAboard-THP/All-Aboard`, trois environnements `production` / `staging` / `dev`) est decrit dans **[deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md)** : branches Git par service, **domaines publics Web et API** (`allaboard.fr`), usage de `API_URL` en **interne** pour le SSR, Postgres 18 par environnement, et etat des services **Agent** / **Indexer** (en erreur tant que les apps ne sont pas presentes dans le monorepo).
+
+Points qui different encore de la cible « ideale » :
+
+- **Web** : le SSR utilise `API_URL` **interne** ; les clients externes utilisent les **URLs API publiques** documentees dans la fiche instance.
+- **Web + API** en prod suivent la branche `main`, en staging `staging`, en dev `Dev`. Les applications **Agent** et **Indexer** pointent encore sur `Dev` y compris en prod : a harmoniser lorsque le code sera pret.
+
 ## Matrice service -> deploiement
 
 | Service | Dossier app | Dockerfile | Port | Base Directory (Dokploy/Coolify) | Build Context | Type de service |
 |---|---|---|---:|---|---|---|
 | Web | `apps/web` | `infra/docker/Dockerfile.web` | 3000 | `/` | repo racine | HTTP public |
-| API | `apps/api` | `infra/docker/Dockerfile.api` | 4000 | `/` | repo racine | HTTP prive/public |
+| API | `apps/api` | `infra/docker/Dockerfile.api` | 4000 | `/` | repo racine | HTTP public dedie (`api*.allaboard.fr`) + appels internes SSR (`API_URL`) |
 | Agent | `apps/agent` | `infra/docker/Dockerfile.agent` | 4100 | `/` | repo racine | Worker/API interne |
 | Indexer | `apps/indexer` | `infra/docker/Dockerfile.indexer` | 4200 (optionnel) | `/` | repo racine | Worker (souvent non expose) |
 

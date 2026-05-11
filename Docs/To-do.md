@@ -2,11 +2,25 @@
 
 ## Priorite immediate
 
-- [ ] Ajouter un mode maintenance active par variable d'environnement
-      (`MAINTENANCE_MODE=true`) dans `apps/web` pour afficher la page "Site en
-      construction" sans creer une app separee.
-- [ ] Definir un comportement clair:
-      - `MAINTENANCE_MODE=true` -> page statique "Site en construction".
-      - `MAINTENANCE_MODE=false` -> retour a la page produit normale.
-- [ ] Documenter la variable dans `.env.example` et dans le `README.md`.
-- [ ] Valider le rendu en environnement local et en preproduction.
+- [ ] Garder la version actuelle en production tant que le MVP n'est pas
+      completement valide en staging.
+- [ ] Travailler uniquement sur l'environnement `dev` jusqu'a obtenir un MVP
+      fonctionnel bout-en-bout.
+- [ ] Definir la checklist de promotion `dev -> staging`.
+- [ ] Preparer la configuration `staging` sans deploiement (env vars,
+      domaines, healthchecks, ressources Dokploy/Coolify).
+- [ ] Formaliser la regle de release: aucun deploiement `prod` sans validation
+      fonctionnelle complete en `staging`.
+
+## Checklist promotion dev -> staging
+
+- [ ] Build monorepo OK (`turbo run build`).
+- [ ] Lint + typecheck OK (`turbo run lint typecheck`).
+- [ ] Smoke tests web/api OK (`turbo run test`).
+- [ ] Healthchecks disponibles et valides (`/health` web, api, agent si
+      expose).
+- [ ] Variables d'environnement `staging` completees et verifiees.
+- [ ] Migrations base de donnees validees sur staging.
+- [ ] Docker images par service construites (web/api/agent/indexer si
+      necessaire).
+- [ ] Rollback par tag valide pour chaque service.
