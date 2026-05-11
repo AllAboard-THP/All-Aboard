@@ -1,0 +1,87 @@
+<nav class="fixed top-0 w-full z-50 glass border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <%= link_to authenticated_root_path, class: "flex items-center gap-3" do %>
+        <%= image_tag "icon.svg", class: "w-10 h-10", alt: "AllAboard" %>
+        <span class="text-xl font-bold gradient-text">AllAboard</span>
+      <% end %>
+
+      <div class="hidden md:flex items-center gap-6">
+        <%= link_to authenticated_root_path, class: feed_nav_classes(:feed) do %>
+          <i class="fas fa-home"></i>
+          <span class="font-medium">Accueil</span>
+        <% end %>
+        <%= link_to explore_path, class: feed_nav_classes(:explore) do %>
+          <i class="fas fa-compass"></i>
+          <span class="font-medium">Matières</span>
+        <% end %>
+        <%= link_to resources_path, class: feed_nav_classes(:resources) do %>
+          <i class="fas fa-book-open"></i>
+          <span class="font-medium">Ressources</span>
+        <% end %>
+        <%= link_to events_path, class: feed_nav_classes(:events) do %>
+          <i class="fas fa-calendar-alt"></i>
+          <span class="font-medium">Événements</span>
+        <% end %>
+        <%= link_to conversations_path, class: "#{feed_nav_classes(:messages)} relative" do %>
+          <i class="fas fa-comment-dots"></i>
+          <span class="font-medium">Messages</span>
+          <% if @conversation_count.to_i.positive? %>
+            <span class="absolute -top-1 -right-2 min-w-5 h-5 px-1 bg-accent text-xs rounded-full flex items-center justify-center">
+              <%= @conversation_count %>
+            </span>
+          <% end %>
+        <% end %>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="relative">
+        <% if current_user.mentor? && @mentor_pending_count.to_i > 0 %>
+          <span class="absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-emerald-400 text-black text-[10px] font-bold rounded-full flex items-center justify-center z-10 pointer-events-none">
+            <%= @mentor_pending_count %>
+          </span>
+        <% end %>
+        <details class="relative group">
+          <summary class="list-none cursor-pointer">
+            <img src="<%= current_user.profile_avatar %>" alt="<%= current_user.display_name %>" class="w-10 h-10 rounded-full border-2 border-primary">
+          </summary>
+          <div class="absolute right-0 mt-2 w-56 glass rounded-xl shadow-2xl p-2">
+            <div class="px-3 py-2 border-b border-white/10 mb-2">
+              <p class="font-semibold text-sm"><%= current_user.display_name %></p>
+              <p class="text-xs text-gray-400"><%= current_user.email %></p>
+            </div>
+            <%= link_to edit_user_registration_path, class: "block px-4 py-2 text-sm rounded-lg hover:bg-white/10" do %>
+              Mon profil
+            <% end %>
+            <%= link_to my_posts_path, class: "block px-4 py-2 text-sm rounded-lg hover:bg-white/10" do %>
+              Mes posts
+            <% end %>
+            <%= link_to my_bookmarks_path, class: "block px-4 py-2 text-sm rounded-lg hover:bg-white/10" do %>
+              <i class="far fa-bookmark mr-2 text-gray-400"></i>Mes sauvegardes
+            <% end %>
+            <% if current_user.mentor? %>
+              <div class="border-t border-white/10 mt-2 pt-2">
+                <%= link_to mentor_dashboard_path, class: "block px-4 py-2 text-sm rounded-lg hover:bg-emerald-500/10 text-emerald-400 font-medium" do %>
+                  <i class="fas fa-chalkboard-teacher mr-2"></i>Espace Mentor
+                <% end %>
+              </div>
+            <% end %>
+            <% if current_user.admin? %>
+              <div class="border-t border-white/10 mt-2 pt-2">
+                <%= link_to admin_dashboard_path, class: "block px-4 py-2 text-sm rounded-lg hover:bg-yellow-500/10 text-yellow-400 font-medium" do %>
+                  <i class="fas fa-crown mr-2"></i>Tableau de bord Admin
+                <% end %>
+              </div>
+            <% end %>
+            <div class="border-t border-white/10 mt-2 pt-2">
+              <%= button_to destroy_user_session_path, method: :delete, class: "w-full text-left px-4 py-2 text-sm text-red-400 rounded-lg hover:bg-white/10" do %>
+                Déconnexion
+              <% end %>
+            </div>
+          </div>
+        </details>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: Mathématiques
+  slug: mathematiques
+  description: Analyse et algèbre
+  icon: fa-calculator
+  accent_color: "#60a5fa"
+  posts_count: 1
+
+two:
+  name: Informatique
+  slug: informatique
+  description: Code et algo
+  icon: fa-code
+  accent_color: "#4ade80"
+  posts_count: 1
