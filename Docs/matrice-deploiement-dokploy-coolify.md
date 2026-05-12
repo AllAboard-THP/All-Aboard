@@ -25,7 +25,7 @@ Le deploiement reel sur Dokploy (projet **AllAboard monorepo website**, repo `Al
 
 Points qui different encore de la cible « ideale » :
 
-- **Web** : le SSR utilise `API_URL` **interne** ; les clients externes utilisent les **URLs API publiques** documentees dans la fiche instance.
+- **Web** : le SSR utilise `API_URL` **interne** ; les clients externes utilisent les **URLs API publiques** documentees dans la fiche instance. **Côté Next**, le patron **BFF** `GET /api/feed` (Route Handler) sert les `useQuery` / invalidations **sans** nouvelle variable d’environnement ni CORS navigateur → Fastify pour ce flux.
 - **Web + API** en prod suivent la branche `main`, en staging `staging`, en dev `Dev`. Les applications **Agent** et **Indexer** ont encore la branche `Dev` configuree y compris en prod : a harmoniser **lors de la reactivation** du code.
 
 ## Matrice service -> deploiement

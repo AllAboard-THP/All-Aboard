@@ -27,12 +27,15 @@ Checklist détaillée et todos d’exécution : plan Cursor `web-api-tanstack_ro
 - [x] **Après SSR feed** (`types`, `lib/api-server`, page async, tests) : chemins et cache documentés ci-dessous ; README racine inchangé (comportement `pnpm dev` identique).
 - [x] **Après socle TanStack** : `providers.tsx`, `layout`, dépendance ; pas de nouvelle variable d’env (client via BFF `/api/feed`).
 - [x] **Après merge / vérif Dokploy** : smoke dev exécuté (voir *Journal*) ; pas de changement de domaines ni de nom de service à reporter dans [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md).
-- [x] **Après Phase 3 client** (`useQuery`) : `queryKey` `['feed']`, fetch same-origin vers **BFF** `/api/feed` (pas de `NEXT_PUBLIC_API_URL` requis pour ce flux) ; matrice env inchangée.
+- [x] **Après Phase 3 client** (`useQuery`, **invalidation** `invalidateQueries`) : `queryKey` `['feed']`, fetch same-origin vers **BFF** `/api/feed` ; pas de `NEXT_PUBLIC_API_URL` pour ce flux ; matrice env inchangée.
+
+### Journal (smoke / déploiement)
 
 | Date | Environnement | Note |
 |------|----------------|------|
 | 2026-05-12 | CI / local | `pnpm turbo run lint typecheck test build --filter=web --filter=api --filter=@allaboard/types` OK sur branche `feat/phase1-web-api-feed`. |
 | 2026-05-12 | Dokploy **dev** (post-merge PR #9) | MCP `application-one` : Web + API `applicationStatus: done`, derniers déploiements **done** sans `errorMessage`. Vérif HTTP : `https://dev.allaboard.fr` (SSR feed + page), `https://api-dev.allaboard.fr/feed` (JSON), `https://dev.allaboard.fr/api/feed` (BFF). Monitoring time-series vide (pas de métriques remontées dans la réponse MCP). |
+| 2026-05-12 | Doc / code | Phase 3 plan : `invalidateQueries` sur `['feed']` + tests ; doc `plan-mise-en-place`, `Docs/README`, `README` racine, `matrice` alignés (todos plan `doc-impl-*` / `phase3-client`). |
 
 ---
 
@@ -74,7 +77,7 @@ Ne pas committer de secrets ; voir [.env.example](../.env.example) à la racine 
 | UI liste SSR / erreur | `apps/web/components/home-content.tsx` |
 | BFF `GET /api/feed` | `apps/web/app/api/feed/route.ts` |
 | `QueryClientProvider` | `apps/web/app/providers.tsx`, enveloppe `apps/web/app/layout.tsx` |
-| `useQuery` exemple | `apps/web/components/feed-client-preview.tsx` — `queryKey: ['feed']`, `fetch('/api/feed')` |
+| `useQuery` + invalidation | `apps/web/components/feed-client-preview.tsx` — `queryKey: ['feed']`, `fetch('/api/feed')`, bouton **Rafraîchir** → `queryClient.invalidateQueries({ queryKey: ['feed'] })` |
 | Tests | `apps/web/tests/api-server.test.ts`, `feed-client-preview.test.tsx` |
 
 **Cache SSR** : `fetchFeed` utilise `next: { revalidate: 60 }` (ISR 1 min pour la home). Le BFF `/api/feed` utilise `cache: 'no-store'` pour refléter l’API au moment de la requête client.
@@ -103,7 +106,17 @@ Créer une branche depuis la branche d’intégration habituelle (ex. `Dev`), po
 ### 4. Extension client (quand le besoin existe)
 
 - `useQuery` avec `queryKey` stable (ex. `['feed']`), URL = `NEXT_PUBLIC_API_URL` + chemin, ou Route Handler Next en BFF pour limiter CORS.
+- **Invalidation** : `queryClient.invalidateQueries({ queryKey: ['feed'] })` pour forcer un refetch (ex. bouton « Rafraîchir » sur la home).
 - Tests avec `QueryClient` de test.
+
+### Phase 3 client — conventions TanStack (état dépôt)
+
+| Convention | Choix actuel |
+|--------------|--------------|
+| `queryKey` feed | `['feed']` — à réutiliser pour toute lecture/invalidation du même agrégat |
+| Origine fetch client | **BFF** `GET /api/feed` (same-origin) ; pas de `NEXT_PUBLIC_API_URL` tant que le client ne tape pas l’API publique directement |
+| Invalidation | `useQueryClient().invalidateQueries({ queryKey: ['feed'] })` après action utilisateur ou mutation future |
+| Auth cross-origin | Pas encore ; une **ADR** sera requise si `credentials: 'include'` vers une origine API distincte |
 
 ### 5. Post-merge Dokploy
 
