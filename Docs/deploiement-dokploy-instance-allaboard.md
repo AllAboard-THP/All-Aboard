@@ -1,6 +1,6 @@
 # Deploiement Dokploy — instance All-Aboard (reference)
 
-Ce document decrit la configuration **effective** du projet All-Aboard sur Dokploy, telle qu’observable via l’API Dokploy (MCP `user-dokploy-allaboard-mcp`). Il complete la [matrice theorique](matrice-deploiement-dokploy-coolify.md).
+Ce document decrit la configuration **effective** du projet All-Aboard sur Dokploy, telle qu’observable via l’API Dokploy (MCP `user-dokploy-allaboard-mcp`). Il complete la [matrice theorique](matrice-deploiement-dokploy-coolify.md) (conventions, **tables de variables par type** — ne pas les recopier ici).
 
 **Timeline produit / stack applicative** (ordre des phases, TanStack, auth) : [README documentation — canonique](README.md).
 
@@ -104,9 +104,9 @@ Pour du **fetch navigateur** same-origin, on peut alternativement exposer des re
 
 ## API (service Fastify)
 
-Cles d’environnement typiques : `NODE_ENV`, `APP_ENV`, `LOG_LEVEL`, `PORT=4000`.
+Cles d’environnement typiques : `NODE_ENV`, `APP_ENV`, `LOG_LEVEL`, `PORT=4000`. Grille `CORS_*` et secrets : [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md).
 
-**Exposition** : en plus du reseau interne, l’API dispose d’un **domaine Traefik dedie** par environnement (tableau ci-dessus). Configurer `CORS_ALLOWED_ORIGINS` (ou equivalent) pour autoriser explicitement l’origine Web du meme environnement (ex. `https://staging.allaboard.fr` vers `https://api-staging.allaboard.fr`).
+**Exposition** : domaine Traefik dedie par environnement (tableau *Domaines publics* ci-dessus). Pour le **SSR Web → API interne**, pas besoin de CORS. Pour un **fetch navigateur** vers `https://api-*.allaboard.fr`, configurer `CORS_ALLOWED_ORIGINS` (voir matrice). Le flux feed **home** actuel passe par le BFF Next — voir [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md).
 
 ---
 
