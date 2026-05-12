@@ -22,6 +22,8 @@ Ce fichier est la **référence unique** pour l’ordre de lecture, la **timelin
 | [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md) | Conventions déploiement + tables de variables **génériques**. |
 | [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md) | Faits observés sur l’instance Dokploy (domaines, branches, `API_URL`). |
 | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | Parcours produit (MOC), sans stack imposée. |
+| [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | Audit intégration **kit UX personnalisé** : état des lieux, **inventaire canonique §8**, phasage, risques ; illustrations + **planche kit complet** sous `audit-integration-kit-ux/assets/`. |
+| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX : phases, dépendances, vision → backlog (DoR/DoD, WBS, PRs, recette) ; document d’**exécution** lié à l’audit. |
 | [vision/README.md](vision/README.md) | Index : dataflow cible + proposition stack v1+ (hors code MVP actuel). |
 
 ---

@@ -2,7 +2,7 @@
 
 **Objectif** : une **source canonique** par sujet ; les autres fichiers **renvoient** ou complètent sans dupliquer la vérité opérationnelle.
 
-**Mise à jour** : 2026-05-12 (consolidation doc).
+**Mise à jour** : 2026-05-12 (plan intégration kit UX).
 
 ---
 
@@ -21,6 +21,8 @@
 | [dataflow-architecture.md](dataflow-architecture.md) | Dataflow **cible** multi-services (vision). |
 | [proposition-stack-technique-monorepo-2026.md](proposition-stack-technique-monorepo-2026.md) | Vision **stack v1+** (GraphQL, Prisma, etc.) — pas l’état du code MVP. |
 | [vision/README.md](vision/README.md) | Index court des docs vision (liens vers proposition + dataflow). |
+| [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | **Audit** intégration kit UX personnalisé : état des lieux, gaps, **inventaire canonique kit (§8)**, phasage, illustrations + planche complète ; complète [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) côté design system. |
+| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX : phases, dépendances, **vision → backlog** (DoR/DoD, WBS Phase 0, PRs, recette) ; exécute [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md). |
 
 Racine dépôt : [AGENTS.md](../AGENTS.md) (protocole PR / `pnpm verify`) ; [README.md](../README.md) racine si présent pour dev local — la **doc produit/architecture** canonique reste sous `Docs/`.
 
@@ -32,6 +34,8 @@ Flux principal (star vers README + plan opérationnel) :
 
 ```text
 README.md ──┬──► plan-mise-en-place-web-api-donnees.md
+            ├──► audit-integration-kit-ux-allaboard.md (kit UX / design system)
+            ├──► plan-integration-kit-ux-allaboard.md (plan intégration + backlog)
             ├──► To-do.md
             ├──► matrice ──► deploiement-instance
             ├──► moc-parcours-utilisateur.md
@@ -64,6 +68,8 @@ matrice ──► README, deploiement-instance
 | Actions prioritaires, promotion env | [To-do.md](To-do.md) | Ne pas dupliquer la timeline ; lien README. |
 | Bootstrap Turborepo historique | [archive/plan-initialisation-turborepo-mvp-2026-01.md](archive/plan-initialisation-turborepo-mvp-2026-01.md) | Stub [plan-initialisation-turborepo-mvp.md](plan-initialisation-turborepo-mvp.md). |
 | Protocole agent / CI locale | [AGENTS.md](../AGENTS.md) | Docs : mentionner `pnpm verify` seulement en renvoi. |
+| Kit UX / design system (tokens, primitives, phasage intégration) | [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | moc-parcours : parcours produit uniquement ; README : lien « design / kit » si besoin sans dupliquer l’audit. |
+| Plan d’intégration kit UX (backlog, PRs, recette) | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | Audit : inventaire et risques ; ce plan : **exécution** — ne pas dupliquer l’inventaire §8, renvoyer. |
 
 ---
 
