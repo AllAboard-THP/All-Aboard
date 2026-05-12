@@ -15,7 +15,7 @@ pnpm test
 pnpm verify       # lint + typecheck + test + build (avant commit / PR)
 ```
 
-- **web**: Next.js — `http://localhost:3000` (objectif **Phase 1** : feed SSR via `API_URL`, défaut `http://127.0.0.1:4000` — voir [Docs/README.md](Docs/README.md))
+- **web**: Next.js — `http://localhost:3000` (objectif **Phase 1** : feed SSR via `API_URL`, défaut `http://127.0.0.1:4000`, **+ socle TanStack Query** — voir [Docs/README.md](Docs/README.md))
 - **api**: Fastify — `http://localhost:4000/health`, `GET /feed`
 - **thp-final**: Rails 8 — application THP (`Hotwire`, esbuild/React). Dev/test en **SQLite** (`apps/thp-final/storage/`). Postgres en production uniquement (`config/database.yml`). Démarrage :
 
@@ -65,7 +65,7 @@ Comportement :
 Les workflows sous [.github/workflows/](.github/workflows/) s’exécutent sur les PR et les pushes : après `pnpm install`, Ruby/Bundler est configuré pour `apps/thp-final`, la base SQLite de test est préparée, puis `pnpm` exécute `lint`, `typecheck`, `test`, `build` sur tout le monorepo.
 ## Documentation
 
-Lire en premier la **[documentation canonique (timeline MVP)](Docs/README.md)** : ordre des phases, web/API/auth, TanStack Query, lien avec la vision long terme.
+Lire en premier la **[documentation canonique (timeline MVP)](Docs/README.md)**, puis le **[plan opérationnel Web/API/données](Docs/plan-mise-en-place-web-api-donnees.md)** (variables SSR vs client, contrat `/feed`, **Phase 1 = SSR + socle TanStack**, usage client Phase 3, Dokploy).
 
 Ensuite :
 

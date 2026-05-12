@@ -2,7 +2,7 @@
 
 Ce dépôt utilise des garde-fous **Git + CI** ; ce fichier définit le protocole commun pour tout agent (Cursor, Claude Code, Codex, etc.).
 
-**Chronologie des travaux et périmètre MVP** : consulter [Docs/README.md](Docs/README.md) (documentation canonique) avant une évolution transverse (auth, client data, couplage web–API, TanStack).
+**Chronologie des travaux, périmètre MVP et doc incrémentale** : consulter [Docs/README.md](Docs/README.md) (canonique), [Docs/plan-mise-en-place-web-api-donnees.md](Docs/plan-mise-en-place-web-api-donnees.md) (SSR, env, **Phase 1 = Option B** : socle TanStack dès le feed SSR, **documentation au fil de l’implémentation**) avant une évolution transverse.
 
 ## Avant de proposer un commit ou une PR
 

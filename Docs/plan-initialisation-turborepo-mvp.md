@@ -136,9 +136,9 @@ Note:
 Alignement avec la **timeline canonique** ([README.md](README.md)) :
 
 - **J1-J3** : **Phase 0** — bootstrap monorepo + tooling + CI (voir checklists ci-dessous).
-- **J4-J10** : **Phase 0–1** — base web + api + types ; couplage SSR/`API_URL` vers `/feed` (Phase 1).
+- **J4-J10** : **Phase 0–1** — base web + api + types ; couplage SSR/`API_URL` vers `/feed` **+ socle `@tanstack/react-query`** (Option B — [plan opérationnel](plan-mise-en-place-web-api-donnees.md)) (Phase 1).
 - **J11-J20** : **Phase 2** — auth + premier parcours « demande d’aide » (ADR auth ; variables matrice effectives).
-- **J21-J30** : **Phase 2–3** + durcissement — `@tanstack/react-query` si besoin client ; observabilite ; staging + matrice Dokploy/Coolify.
+- **J21-J30** : **Phase 2–3** + durcissement — usage client Query (`useQuery` / invalidation) selon besoin ; observabilite ; staging + matrice Dokploy/Coolify.
 
 La **vision** GraphQL/Prisma (`proposition-stack-technique-monorepo-2026.md`) reste hors calendrier strict tant que les phases 1–3 ne sont pas stabilisees.
 
@@ -237,6 +237,7 @@ Voir [README.md](README.md) pour le détail des phases.
 ## References
 
 - [README — documentation canonique (timeline)](README.md)
+- [Plan opérationnel Web / API / données (SSR, env, TanStack)](plan-mise-en-place-web-api-donnees.md)
 - [Matrice de deploiement Dokploy/Coolify](matrice-deploiement-dokploy-coolify.md)
 - [Turborepo Docs - Workspaces](https://turbo.build/docs/guides/workspaces)
 - [Turborepo Docs - Managing dependencies](https://turbo.build/docs/crafting-your-repository/managing-dependencies)

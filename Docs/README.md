@@ -1,6 +1,8 @@
 # Documentation All-Aboard — point d’entrée canonique
 
-Ce fichier est la **référence unique** pour l’ordre de lecture, la **timeline d’implémentation** et l’**écart assumé** entre le MVP dans le dépôt et la vision long terme. Les autres documents du dossier `Docs/` complètent ce cadre ; en cas de conflit apparent, **ce README l’emporte** pour « ce qu’on fait maintenant » et « quand ».
+Ce fichier est la **référence unique** pour l’ordre de lecture, la **timeline d’implémentation** et l’**écart assumé** entre le MVP dans le dépôt et la vision long terme. Les autres documents du dossier `Docs/` complètent ce cadre.
+
+**Priorité en cas de doute** : la **cohérence d’ingénierie** (contrat API stable, SSR interne vs client public, éviter le double travail) prime sur un découpage rigide des phases — voir [Principes pour limiter le rework](#principes-pour-limiter-le-rework) et le [plan opérationnel Web/API/données](plan-mise-en-place-web-api-donnees.md).
 
 ---
 
@@ -8,7 +10,8 @@ Ce fichier est la **référence unique** pour l’ordre de lecture, la **timelin
 
 | Document | Rôle |
 |----------|------|
-| **Ce README** | Timeline, état MVP, règles de priorité TanStack / auth / web–API. |
+| **Ce README** | Timeline, état MVP, règles web–API / auth / TanStack. |
+| [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | **Plan opérationnel détaillé** : env, contrat `/feed`, SSR vs Query, checklist Dokploy, ordre d’exécution. |
 | [To-do.md](To-do.md) | Priorités opérationnelles (env, promotion, checklist). |
 | [plan-initialisation-turborepo-mvp.md](plan-initialisation-turborepo-mvp.md) | Historique et checklists d’initialisation monorepo ; voir ici pour le **phasing** à jour. |
 | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | Parcours produit (MOC), sans stack imposée. |
@@ -19,9 +22,18 @@ Ce fichier est la **référence unique** pour l’ordre de lecture, la **timelin
 
 ---
 
+## Principes pour limiter le rework
+
+1. **Contrat partagé d’abord** : types et JSON de `/feed` dans `packages/types` + API ; une seule source de vérité pour éviter les allers-retours UI.
+2. **SSR avec `API_URL` interne** pour la donnée initiale du feed (Dokploy) ; ne pas basculer toute la home en client-only Query sans besoin (SEO, TTFB, complexité CORS).
+3. **TanStack Query** : couche **client** (refresh, mutations). Le **socle** (`@tanstack/react-query` + `QueryClientProvider`) est **obligatoire en Phase 1** dans la même livraison que le feed SSR (**Option B** tranchée) ; les `useQuery` / mutations étendues suivent en Phase 3 ([plan opérationnel](plan-mise-en-place-web-api-donnees.md)).
+4. **`NEXT_PUBLIC_*`** seulement pour ce que le navigateur doit appeler ; le serveur utilise `API_URL` sans préfixe public.
+
+---
+
 ## Timeline d’implémentation (ordre recommandé)
 
-Les phases sont **séquentielles** sauf mention ; une phase peut commencer avant la fin absolue de la précédente pour des spikes courts, mais la **doc canonique** fixe l’ordre de priorité.
+Les phases restent un **guide** ; le détail d’exécution (env, contrat `/feed`, Dokploy) est dans [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md). **Décision** : Phase 1 = SSR feed **+** socle TanStack (pas de variante A/B).
 
 ### Phase 0 — Socle monorepo et déploiement **Web + API** (référence : aujourd’hui)
 
@@ -34,11 +46,12 @@ Les phases sont **séquentielles** sauf mention ; une phase peut commencer avant
 
 ### Phase 1 — Couplage **Web ↔ API** et données serveur
 
-- Brancher le **feed** (SSR ou route serveur) sur l’API via **`API_URL`** (déjà décrit pour Dokploy dans la fiche instance).
+- Brancher le **feed** (SSR ou route serveur) sur l’API via **`API_URL`** (fiche instance Dokploy).
 - Côté API : évolution du mock vers contrat stable (types partagés, éventuellement validation **zod**).
-- **Pas d’obligation** TanStack à cette phase : `fetch` côté serveur Next suffit pour le SSR.
+- **`fetch` côté serveur** pour le rendu initial du feed (obligatoire pour ce flux).
+- **Socle `@tanstack/react-query` + provider** : **obligatoire** dans la même PR que le feed SSR (Option B) ; le feed **ne doit pas** être remplacé par du seul client Query sur les pages critiques sans décision explicite.
 
-**Livrable** : page(s) consommant `/feed` de manière alignée avec la prod (même contrat).
+**Livrable** : page(s) consommant `/feed` alignée prod **et** socle Query installé + provider actif (tests SSR inchangés).
 
 ### Phase 2 — **Auth** et premier parcours « demande d’aide »
 
@@ -48,13 +61,13 @@ Les phases sont **séquentielles** sauf mention ; une phase peut commencer avant
 
 **Livrable** : utilisateur peut s’authentifier et enclencher un parcours demande d’aide minimal bout-en-bout (même simplifié).
 
-### Phase 3 — **TanStack Query** (client)
+### Phase 3 — **TanStack Query** (usage client étendu)
 
-- Introduire **`@tanstack/react-query`** lorsque des **composants client** font des appels répétés à l’API (feed interactif, formulaires, invalidation après mutation).
-- **Ne pas** imposer **TanStack Router** tant que le routage reste porté par **Next.js App Router** (complexité inutile pour le MVP).
-- Documenter dans le code : `QueryClientProvider`, conventions de `queryKey`, gestion des cookies / credentials si auth cross-origin.
+- **`useQuery` / `useMutation` / invalidation** lorsque des composants client en ont besoin (déjà possible si le socle a été posé en Phase 1).
+- **Ne pas** imposer **TanStack Router** tant que le routage reste porté par **Next.js App Router**.
+- Documenter dans le code : conventions de `queryKey`, `NEXT_PUBLIC_API_URL` ou BFF, `credentials` si auth cross-origin.
 
-**Livrable** : couche client data homogène, tests de comportement sur au moins un flux critique.
+**Livrable** : flux client data homogènes sur au moins un parcours critique + tests.
 
 ### Phase 4 — Services **Agent**, **Indexer**, blockchain, files d’attente
 
@@ -71,17 +84,18 @@ Les phases sont **séquentielles** sauf mention ; une phase peut commencer avant
 | Zone | Aujourd’hui | Après Phase 1–3 (cible doc) |
 |------|-------------|-----------------------------|
 | `apps/api` | Fastify REST, mock | REST (+ auth), persistance |
-| `apps/web` | Next, pages vitrine / health | SSR + client, puis Query si besoin client |
+| `apps/web` | Next, pages vitrine / health | SSR feed + **socle** TanStack en Phase 1 ; usage client Query Phase 3 |
 | Auth | Absente dans web/api monorepo | Phase 2 |
-| TanStack | Non installé | Phase 3 (`react-query` si besoin) |
+| TanStack | Non installé | Socle en Phase 1 ; usage étendu Phase 3 |
 | `apps/thp-final` | Rails (Devise) — historique | Hors timeline du nouveau MVP JS sauf décision explicite de convergence |
 
 ---
 
 ## Règles pour les agents et contributeurs
 
-1. Lire **ce README** avant d’implémenter une grosse fonctionnalité pour respecter l’ordre des phases.
-2. Toute décision qui **contredit** la vision long terme ou **anticipe** une phase future : **ADR** dans le dépôt (dossier dédié ou `Docs/` selon convention d’équipe).
+1. Lire **ce README** et le [plan opérationnel Web/API/données](plan-mise-en-place-web-api-donnees.md) avant une évolution transverse.
+2. Toute décision qui **contredit** la vision long terme : **ADR** dans le dépôt.
 3. Mettre à jour **ce fichier** quand une phase est **terminée** ou quand la timeline change (date courte en tête de section concernée).
+4. **Implémentation** : après chaque bloc fonctionnel (SSR, socle TanStack, merge, client Query), exécuter les tâches **`doc-impl-*`** décrites dans [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) (section *Documentation au fil de l’implémentation*) — même PR ou commit immédiat sur la branche.
 
 **Mise à jour canonique** : 2026-05-12.
