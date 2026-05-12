@@ -19,12 +19,12 @@ Standardiser le deploiement par service de All-Aboard dans Dokploy ou Coolify, a
 
 ## Instance Dokploy de reference (All-Aboard)
 
-Le deploiement reel sur Dokploy (projet **AllAboard monorepo website**, repo `AllAboard-THP/All-Aboard`, trois environnements `production` / `staging` / `dev`) est decrit dans **[deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md)** : branches Git par service, **domaines publics Web et API** (`allaboard.fr`), usage de `API_URL` en **interne** pour le SSR, Postgres 18 par environnement, et etat des services **Agent** / **Indexer** (en erreur tant que les apps ne sont pas presentes dans le monorepo).
+Le deploiement reel sur Dokploy (projet **AllAboard monorepo website**, repo `AllAboard-THP/All-Aboard`, trois environnements `production` / `staging` / `dev`) est decrit dans **[deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md)** : branches Git par service, **domaines publics Web et API** (`allaboard.fr`), usage de `API_URL` en **interne** pour le SSR, Postgres 18 par environnement, et etat des services **Agent** / **Indexer** — **desactives** sur l’instance (pas d’`autoDeploy`, applications `enabled: false`, conteneurs arretes) tant que `apps/agent` et `apps/indexer` n’existent pas dans le monorepo.
 
 Points qui different encore de la cible « ideale » :
 
 - **Web** : le SSR utilise `API_URL` **interne** ; les clients externes utilisent les **URLs API publiques** documentees dans la fiche instance.
-- **Web + API** en prod suivent la branche `main`, en staging `staging`, en dev `Dev`. Les applications **Agent** et **Indexer** pointent encore sur `Dev` y compris en prod : a harmoniser lorsque le code sera pret.
+- **Web + API** en prod suivent la branche `main`, en staging `staging`, en dev `Dev`. Les applications **Agent** et **Indexer** ont encore la branche `Dev` configuree y compris en prod : a harmoniser **lors de la reactivation** du code.
 
 ## Matrice service -> deploiement
 

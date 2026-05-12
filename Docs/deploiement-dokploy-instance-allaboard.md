@@ -2,7 +2,7 @@
 
 Ce document decrit la configuration **effective** du projet All-Aboard sur Dokploy, telle qu’observable via l’API Dokploy (MCP `user-dokploy-allaboard-mcp`). Il complete la [matrice theorique](matrice-deploiement-dokploy-coolify.md).
 
-**Mise a jour** : 2026-05-11 (domaines `allaboard.fr` + API dediees ; releve MCP). Les noms d’hotes **internes** Docker peuvent changer lors d’un recreat de service ; verifier dans l’UI Dokploy en cas de doute.
+**Mise a jour** : 2026-05-12 (domaines `allaboard.fr` + API dediees ; Agent/Indexer **desactives** sur les trois environnements — releve MCP + changements operes via MCP). Les noms d’hotes **internes** Docker peuvent changer lors d’un recreat de service ; verifier dans l’UI Dokploy en cas de doute.
 
 **Secrets** : mots de passe base de donnees, cles API et tokens GitHub se configurent **uniquement** dans Dokploy. Ne jamais les commiter dans ce depot.
 
@@ -18,7 +18,7 @@ Ce document decrit la configuration **effective** du projet All-Aboard sur Dokpl
 
 Chaque environnement contient typiquement :
 
-- quatre **applications** : Web, API, Agent, Indexer ;
+- quatre **ressources application** : Web, API, Agent, Indexer (les deux derniers peuvent etre **desactives** tant que le code n’est pas pret — voir section Agent et Indexer) ;
 - une base **Postgres** managée par Dokploy.
 
 ---
@@ -31,7 +31,7 @@ Chaque environnement contient typiquement :
 | `buildPath` | `/` (racine du monorepo) |
 | `dockerContextPath` | `.` |
 | Sous-modules Git | desactives (`enableSubmodules: false`) |
-| Declenchement | `push` sur la branche configuree, `autoDeploy: true` |
+| Declenchement | **Web + API** : `push` sur la branche configuree, `autoDeploy: true`. **Agent + Indexer** (mai 2026) : `autoDeploy: false` — pas de deploiement sur push tant que les apps ne sont pas dans le repo. |
 
 Dockerfiles utilises (chemins relatifs a la racine du repo) :
 
@@ -123,9 +123,13 @@ Cles d’environnement typiques : `NODE_ENV`, `APP_ENV`, `LOG_LEVEL`, `PORT=4000
 
 Les applications Dokploy **Agent** et **Indexer** existent dans les trois environnements, avec les Dockerfiles prevus et des variables preparees (`PORT` 4100 / 4200, `DATABASE_URL`, placeholders `REDIS_URL`, Intuition, `INDEXER_*`, etc.).
 
-**Statut de deploiement** : en mai 2026, le statut Dokploy de ces applications est en **erreur** sur tous les environnements, car le depot ne contient pas encore les packages applicatifs correspondants (`apps/agent`, `apps/indexer`) exploitables par le build Docker (voir turbo prune / Dockerfile).
+**Statut operationnel (2026-05-12)** : tant que le depot ne contient pas `apps/agent` et `apps/indexer` exploitables par le build Docker, ces services sont **mis en pause** sur l’instance de reference :
 
-**Action** : soit implementer les apps et stabiliser les branches, soit desactiver / retirer les services Dokploy jusqu’a ce que les images buildent.
+- `enabled: false` (application desactivee dans Dokploy) ;
+- `autoDeploy: false` (aucun deploiement automatique sur push Git) ;
+- conteneurs **arretes** (`application-stop`), pour eviter builds en echec repetes et bruit dans le tableau de bord.
+
+**Pour reactiver** : implementer les apps dans le monorepo, verifier un build local / CI des images, puis dans Dokploy — pour chaque environnement — reactiver l’application (`enabled: true`), remettre `autoDeploy` si souhaite, aligner les **branches** avec Web/API (au lieu de `Dev` partout en prod), et lancer un deploiement manuel. Alternative : supprimer les ressources Agent/Indexer dans Dokploy si on prefere ne pas garder de placeholders.
 
 ---
 
@@ -140,9 +144,11 @@ Les applications Dokploy **Agent** et **Indexer** existent dans les trois enviro
 
 | Environnement | Web | API | Agent | Indexer |
 |----------------|-----|-----|-------|---------|
-| production | deploye OK | deploye OK | erreur build / runtime | erreur |
-| staging | deploye OK | deploye OK | erreur | erreur |
-| dev | deploye OK | deploye OK | erreur | erreur |
+| production | deploye OK | deploye OK | **desactive** (pas d’auto-deploy, conteneur arrete) | **desactive** |
+| staging | deploye OK | deploye OK | **desactive** | **desactive** |
+| dev | deploye OK | deploye OK | **desactive** | **desactive** |
+
+Dernier etat connu avant mise en pause : echec de build / runtime faute de packages `apps/agent` et `apps/indexer` dans le repo.
 
 ---
 
@@ -152,3 +158,5 @@ Pour realigner ce fichier avec la realite :
 
 1. Utiliser le MCP Dokploy All-Aboard (`project-all`, puis `application-one` / `postgres-one` par identifiant).
 2. Mettre a jour domaines, branches et statuts sans copier de secrets.
+
+**Attention** : certaines reponses API Dokploy (ex. apres `application-stop`) peuvent contenir des champs sensibles (`env` complet, metadonnees GitHub). Ne pas coller ces JSON dans le depot ni dans des tickets publics.
