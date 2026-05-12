@@ -2,6 +2,8 @@
 
 Ce dépôt utilise des garde-fous **Git + CI** ; ce fichier définit le protocole commun pour tout agent (Cursor, Claude Code, Codex, etc.).
 
+**Chronologie des travaux et périmètre MVP** : consulter [Docs/README.md](Docs/README.md) (documentation canonique) avant une évolution transverse (auth, client data, couplage web–API, TanStack).
+
 ## Avant de proposer un commit ou une PR
 
 1. Exécuter :

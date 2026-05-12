@@ -2,6 +2,8 @@
 
 Ce document decrit la configuration **effective** du projet All-Aboard sur Dokploy, telle qu’observable via l’API Dokploy (MCP `user-dokploy-allaboard-mcp`). Il complete la [matrice theorique](matrice-deploiement-dokploy-coolify.md).
 
+**Timeline produit / stack applicative** (ordre des phases, TanStack, auth) : [README documentation — canonique](README.md).
+
 **Mise a jour** : 2026-05-12 (domaines `allaboard.fr` + API dediees ; Agent/Indexer **desactives** sur les trois environnements — releve MCP + changements operes via MCP). Les noms d’hotes **internes** Docker peuvent changer lors d’un recreat de service ; verifier dans l’UI Dokploy en cas de doute.
 
 **Secrets** : mots de passe base de donnees, cles API et tokens GitHub se configurent **uniquement** dans Dokploy. Ne jamais les commiter dans ce depot.

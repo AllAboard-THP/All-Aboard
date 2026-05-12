@@ -1,5 +1,12 @@
 # Proposition stack technique - Monorepo Turborepo (2026)
 
+## Statut du document
+
+Ce fichier décrit une **vision cible** (v1 et au-delà) : GraphQL, Prisma, packages transverses (`auth`, `api-client`, etc.). Il **ne décrit pas** l’état actuel du dépôt (`apps/api` en **Fastify REST** sans Prisma ni GraphQL au MVP).
+
+- **Ordre d’implémentation et MVP réel** : [README documentation canonique](README.md) (Phases 0 à 4 + TanStack Query en Phase 3).
+- **Parcours produit** : [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md).
+
 ## Contexte
 
 A partir de la documentation existante (`parcours utilisateur` + `dataflow architecture`), All-Aboard cible:
@@ -47,6 +54,7 @@ Objectif: proposer une stack moderne, maintenable, scalable, avec un monorepo Tu
 ### Frontend
 
 - **Web**: Next.js (React) + App Router.
+- **Données côté client (MVP)** : introduire **`@tanstack/react-query`** lorsque les appels client à l’API se multiplient (invalidation, cache) — **Phase 3** dans [README.md](README.md) ; **pas** de TanStack Router obligatoire tant que Next gère le routage.
 - **Mobile**: Expo (React Native).
 - **UI partagee**:
   - `react-native` + `react-native-web` pour composants cross-platform,
@@ -307,6 +315,8 @@ Le choix Dokploy/Coolify + Dockerfile par service change legerement l'initialisa
 
 ## Plan de mise en place (ordre conseille)
 
+Ordre **long terme** (aligné sur cette proposition). Pour le **MVP dans le dépôt** (Fastify, phases 0–3, TanStack Query au bon moment), suivre [README.md](README.md).
+
 1. Initialiser monorepo (`pnpm`, `turbo`, `apps` + `packages` de base).
 2. Poser standards transverses (TypeScript refs, ESLint, test tooling).
 3. Monter `apps/api` + `packages/db` + migrations initiales.
@@ -315,6 +325,7 @@ Le choix Dokploy/Coolify + Dockerfile par service change legerement l'initialisa
 
 ## References utilisees (web)
 
+- [Documentation canonique All-Aboard — timeline MVP](README.md)
 - [Turborepo Workspaces Guide](https://turbo.build/docs/guides/workspaces)
 - [Turborepo - Managing Dependencies](https://turbo.build/docs/crafting-your-repository/managing-dependencies)
 - [TypeScript Project References](https://www.typescriptlang.org/docs/handbook/project-references.html)

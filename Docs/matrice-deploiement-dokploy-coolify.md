@@ -1,5 +1,7 @@
 # Matrice de deploiement - Dokploy / Coolify
 
+**Documentation canonique** (timeline MVP, TanStack, auth) : [README.md](README.md).
+
 ## Objectif
 
 Standardiser le deploiement par service de All-Aboard dans Dokploy ou Coolify, avec une convention unique pour:
@@ -59,6 +61,8 @@ Points qui different encore de la cible « ideale » :
 | `STORAGE_SECRET_KEY` |  | x | x |  | Oui si utilise |
 
 ### Variables auth/securite
+
+Ces variables concernent surtout **Phase 2** (auth réelle sur l’API) et au-delà ; l’API MVP peut ne pas encore les consommer — voir [README canonique](README.md).
 
 | Variable | Web | API | Agent | Indexer | Obligatoire |
 |---|:---:|:---:|:---:|:---:|:---:|

@@ -1,5 +1,7 @@
 # Plan d'initialisation Turborepo - MVP All-Aboard
 
+**Documentation canonique** (timeline à jour, phases 0–4, TanStack, auth) : [README.md](README.md). Ce plan conserve l’historique d’initialisation et les checklists ; l’**ordre de priorité** des travaux futurs est défini dans le README canonique.
+
 ## Objectif
 
 Mettre en place un monorepo Turborepo minimal, propre et evolutif pour livrer rapidement le premier MVP All-Aboard.
@@ -131,10 +133,14 @@ Note:
 
 ## Roadmap 30 jours (MVP -> v1)
 
-- **J1-J3**: bootstrap monorepo + tooling + CI.
-- **J4-J10**: base fonctionnelle web + api + types partages.
-- **J11-J20**: auth + premier parcours "demande d'aide".
-- **J21-J30**: observabilite, hardening, staging + parametrage Dokploy/Coolify selon la matrice de deploiement.
+Alignement avec la **timeline canonique** ([README.md](README.md)) :
+
+- **J1-J3** : **Phase 0** — bootstrap monorepo + tooling + CI (voir checklists ci-dessous).
+- **J4-J10** : **Phase 0–1** — base web + api + types ; couplage SSR/`API_URL` vers `/feed` (Phase 1).
+- **J11-J20** : **Phase 2** — auth + premier parcours « demande d’aide » (ADR auth ; variables matrice effectives).
+- **J21-J30** : **Phase 2–3** + durcissement — `@tanstack/react-query` si besoin client ; observabilite ; staging + matrice Dokploy/Coolify.
+
+La **vision** GraphQL/Prisma (`proposition-stack-technique-monorepo-2026.md`) reste hors calendrier strict tant que les phases 1–3 ne sont pas stabilisees.
 
 ## Checklist de suivi d'avancement
 
@@ -221,13 +227,16 @@ Note:
 
 ### Roadmap 30 jours (MVP -> v1)
 
-- [ ] **J1-J3**: bootstrap monorepo + tooling + CI.
-- [ ] **J4-J10**: base fonctionnelle web + api + types partages.
-- [ ] **J11-J20**: auth + premier parcours "demande d'aide".
-- [ ] **J21-J30**: observabilite, hardening, staging + parametrage Dokploy/Coolify selon la matrice de deploiement.
+- [ ] **J1-J3** (**Phase 0**) : bootstrap monorepo + tooling + CI.
+- [ ] **J4-J10** (**Phase 0–1**) : base fonctionnelle web + api + types ; couplage feed via `API_URL`.
+- [ ] **J11-J20** (**Phase 2**) : auth + premier parcours "demande d'aide".
+- [ ] **J21-J30** (**Phase 2–3**) : TanStack Query si besoin client ; observabilite, hardening, staging + matrice de deploiement.
+
+Voir [README.md](README.md) pour le détail des phases.
 
 ## References
 
+- [README — documentation canonique (timeline)](README.md)
 - [Matrice de deploiement Dokploy/Coolify](matrice-deploiement-dokploy-coolify.md)
 - [Turborepo Docs - Workspaces](https://turbo.build/docs/guides/workspaces)
 - [Turborepo Docs - Managing dependencies](https://turbo.build/docs/crafting-your-repository/managing-dependencies)

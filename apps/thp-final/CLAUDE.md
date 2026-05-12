@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **StudyLink** is a Rails 8.1 peer-tutoring platform where students can ask for help, mentors share resources, and users chat in real time. Key features: subject-based feed, real-time 1:1 messaging (Action Cable + Turbo Streams), mentor program, event aggregation (Ticketmaster API), admin moderation dashboard, and profanity filtering.
 
+For the parent **All-Aboard** monorepo (Next.js + Fastify MVP timeline, auth phases, TanStack Query), see [`Docs/README.md`](../../Docs/README.md) at the monorepo root.
+
 ## Commands
 
 ```bash

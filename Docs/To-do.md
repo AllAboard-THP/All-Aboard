@@ -1,5 +1,7 @@
 # To-do
 
+**Documentation canonique** : [README.md](README.md) (timeline MVP ; ce fichier reste la liste d’actions prioritaires et de promotion d’environnement).
+
 ## Priorite immediate
 
 - [ ] Garder la version actuelle en production tant que le MVP n'est pas
@@ -11,6 +13,12 @@
       domaines, healthchecks, ressources Dokploy/Coolify).
 - [ ] Formaliser la regle de release: aucun deploiement `prod` sans validation
       fonctionnelle complete en `staging`.
+
+## Alignement timeline (voir README canonique)
+
+- [ ] **Phase 1** : `apps/web` consomme l’API (`API_URL` / SSR ou route serveur) pour `/feed` (plus seulement mock isole).
+- [ ] **Phase 2** : ADR auth + routes + parcours « demande d’aide » minimal.
+- [ ] **Phase 3** : `@tanstack/react-query` si besoin client (feed interactif, mutations).
 
 ## Checklist promotion dev -> staging
 

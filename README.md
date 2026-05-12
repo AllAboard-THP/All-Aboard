@@ -15,7 +15,7 @@ pnpm test
 pnpm verify       # lint + typecheck + test + build (avant commit / PR)
 ```
 
-- **web**: Next.js — `http://localhost:3000` (feed SSR appelle l’API via `API_URL`, défaut `http://127.0.0.1:4000`)
+- **web**: Next.js — `http://localhost:3000` (objectif **Phase 1** : feed SSR via `API_URL`, défaut `http://127.0.0.1:4000` — voir [Docs/README.md](Docs/README.md))
 - **api**: Fastify — `http://localhost:4000/health`, `GET /feed`
 - **thp-final**: Rails 8 — application THP (`Hotwire`, esbuild/React). Dev/test en **SQLite** (`apps/thp-final/storage/`). Postgres en production uniquement (`config/database.yml`). Démarrage :
 
@@ -65,9 +65,14 @@ Comportement :
 Les workflows sous [.github/workflows/](.github/workflows/) s’exécutent sur les PR et les pushes : après `pnpm install`, Ruby/Bundler est configuré pour `apps/thp-final`, la base SQLite de test est préparée, puis `pnpm` exécute `lint`, `typecheck`, `test`, `build` sur tout le monorepo.
 ## Documentation
 
+Lire en premier la **[documentation canonique (timeline MVP)](Docs/README.md)** : ordre des phases, web/API/auth, TanStack Query, lien avec la vision long terme.
+
+Ensuite :
+
+- [To-do — priorités et promotion env](Docs/To-do.md)
 - [MOC - Parcours utilisateur](Docs/moc-parcours-utilisateur.md)
 - [MOC - Dataflow et architecture](Docs/dataflow-architecture.md)
-- [Proposition stack technique monorepo 2026](Docs/proposition-stack-technique-monorepo-2026.md)
 - [Plan d'initialisation Turborepo MVP](Docs/plan-initialisation-turborepo-mvp.md)
+- [Proposition stack technique monorepo 2026 (vision v1+)](Docs/proposition-stack-technique-monorepo-2026.md)
 - [Matrice de deploiement Dokploy/Coolify](Docs/matrice-deploiement-dokploy-coolify.md)
 - [Deploiement Dokploy — instance All-Aboard (domaines Web/API, `API_URL`, Postgres)](Docs/deploiement-dokploy-instance-allaboard.md)
