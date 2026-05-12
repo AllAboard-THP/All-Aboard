@@ -26,12 +26,13 @@ Checklist détaillée et todos d’exécution : plan Cursor `web-api-tanstack_ro
 
 - [x] **Après SSR feed** (`types`, `lib/api-server`, page async, tests) : chemins et cache documentés ci-dessous ; README racine inchangé (comportement `pnpm dev` identique).
 - [x] **Après socle TanStack** : `providers.tsx`, `layout`, dépendance ; pas de nouvelle variable d’env (client via BFF `/api/feed`).
-- [x] **Après merge / vérif Dokploy** : entrée *Journal* ci-dessous (smoke Dokploy à refaire post-merge sur l’instance).
+- [x] **Après merge / vérif Dokploy** : smoke dev exécuté (voir *Journal*) ; pas de changement de domaines ni de nom de service à reporter dans [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md).
 - [x] **Après Phase 3 client** (`useQuery`) : `queryKey` `['feed']`, fetch same-origin vers **BFF** `/api/feed` (pas de `NEXT_PUBLIC_API_URL` requis pour ce flux) ; matrice env inchangée.
 
-### Journal (smoke / déploiement)
-
-| 2026-05-12 | CI / local | `pnpm turbo run lint typecheck test build --filter=web --filter=api --filter=@allaboard/types` OK sur branche `feat/phase1-web-api-feed`. Smoke Dokploy dev (Web `API_URL`) à exécuter post-merge. |
+| Date | Environnement | Note |
+|------|----------------|------|
+| 2026-05-12 | CI / local | `pnpm turbo run lint typecheck test build --filter=web --filter=api --filter=@allaboard/types` OK sur branche `feat/phase1-web-api-feed`. |
+| 2026-05-12 | Dokploy **dev** (post-merge PR #9) | MCP `application-one` : Web + API `applicationStatus: done`, derniers déploiements **done** sans `errorMessage`. Vérif HTTP : `https://dev.allaboard.fr` (SSR feed + page), `https://api-dev.allaboard.fr/feed` (JSON), `https://dev.allaboard.fr/api/feed` (BFF). Monitoring time-series vide (pas de métriques remontées dans la réponse MCP). |
 
 ---
 
