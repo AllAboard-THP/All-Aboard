@@ -18,6 +18,8 @@ pnpm-debug.log*
 
 # Dependencies
 node_modules/
+# Local pnpm content-addressable store (if store-dir points into the repo)
+.pnpm-store/
 
 # Python (local virtualenvs — never commit)
 .venv/
