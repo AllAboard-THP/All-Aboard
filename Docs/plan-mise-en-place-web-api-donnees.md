@@ -13,7 +13,7 @@ Ce document détaille la **mise en place cohérente** du couplage `apps/web` ↔
 1. **Socle TanStack** : dépendance + `providers.tsx` + enveloppe dans `layout.tsx` présents dans la même livraison que le feed SSR (aligné Option B).
 2. **`API_URL`** cohérent en local ; pas de secrets dans le dépôt ; `.env.example` à jour.
 3. **API joignable** sur le port attendu pour tester le SSR.
-4. Si **fetch navigateur** vers l’API dans cette PR : `NEXT_PUBLIC_API_URL` + **CORS** côté Fastify configurés.
+4. Si **fetch navigateur** direct vers l’origine Fastify : `NEXT_PUBLIC_API_URL` + **CORS** côté Fastify. **Alternative implémentée** : Route Handler **BFF** `GET /api/feed` sur Next (same-origin) pour `useQuery` sans CORS ni variable publique.
 5. **Contrat `GET /feed`** stable ou types/tests mis à jour dans le même changement.
 
 Checklist détaillée et todos d’exécution : plan Cursor `web-api-tanstack_rollout_3f8a0c2e.plan.md` (workspace). Todos YAML **`doc-impl-*`** : mettre à jour la doc **dans la foulée** du code (même PR ou commit suivant sur la branche).
@@ -24,16 +24,14 @@ Checklist détaillée et todos d’exécution : plan Cursor `web-api-tanstack_ro
 
 À cocher au fur et à mesure (aligné sur les todos `doc-impl-*` du plan Cursor) :
 
-- [ ] **Après SSR feed** (`types`, `lib/api-server`, page async, tests) : mettre à jour ce fichier — contrat JSON réel, chemins de fichiers, choix `revalidate` / `no-store` ; [README.md](../README.md) racine si le dev local change.
-- [ ] **Après socle TanStack** : ce fichier + [Docs/README.md](README.md) (état « socle posé ») ; [.env.example](../.env.example) si nouvelle variable liée au client.
-- [ ] **Après merge / vérif Dokploy** : [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md) si fait observable change ; sinon entrée dans le *Journal* ci-dessous.
-- [ ] **Après Phase 3 client** (`useQuery` / mutations) : ce fichier (conventions `queryKey`, URL publique vs BFF) ; [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md) si nouvelles variables ; lien ADR si auth cross-origin.
+- [x] **Après SSR feed** (`types`, `lib/api-server`, page async, tests) : chemins et cache documentés ci-dessous ; README racine inchangé (comportement `pnpm dev` identique).
+- [x] **Après socle TanStack** : `providers.tsx`, `layout`, dépendance ; pas de nouvelle variable d’env (client via BFF `/api/feed`).
+- [x] **Après merge / vérif Dokploy** : entrée *Journal* ci-dessous (smoke Dokploy à refaire post-merge sur l’instance).
+- [x] **Après Phase 3 client** (`useQuery`) : `queryKey` `['feed']`, fetch same-origin vers **BFF** `/api/feed` (pas de `NEXT_PUBLIC_API_URL` requis pour ce flux) ; matrice env inchangée.
 
 ### Journal (smoke / déploiement)
 
-| Date | Environnement | Note |
-|------|----------------|------|
-| | | |
+| 2026-05-12 | CI / local | `pnpm turbo run lint typecheck test build --filter=web --filter=api --filter=@allaboard/types` OK sur branche `feat/phase1-web-api-feed`. Smoke Dokploy dev (Web `API_URL`) à exécuter post-merge. |
 
 ---
 
@@ -51,7 +49,7 @@ Checklist détaillée et todos d’exécution : plan Cursor `web-api-tanstack_ro
 | Variable | Où | Rôle |
 |----------|-----|------|
 | `API_URL` | Serveur Next uniquement (SSR, Server Actions, Route Handlers) | Base URL **interne** vers le service API Dokploy (ex. `http://<nom-service-api>:4000`). **Pas** de préfixe `NEXT_PUBLIC_`. |
-| `NEXT_PUBLIC_API_URL` | Bundlé côté client | Origine **HTTPS publique** de l’API (`https://api-dev…`, etc.) pour `fetch` / `useQuery` depuis le navigateur. À renseigner quand un composant client appelle l’API directement ; sinon peut attendre. |
+| `NEXT_PUBLIC_API_URL` | Bundlé côté client | Origine **HTTPS publique** de l’API pour `fetch` / `useQuery` **direct** depuis le navigateur. Non requis si le client appelle un **Route Handler** Next (BFF) same-origin (ex. `/api/feed` actuel). |
 | `CORS_ALLOWED_ORIGINS` | API Fastify | Requis si le **navigateur** appelle l’API sur un autre host ; inutile pour le seul SSR serveur→API interne. |
 
 Référence instance : [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md) (« double exposition », note sur mise à jour du nom interne après redeploy).
@@ -65,7 +63,20 @@ Ne pas committer de secrets ; voir [.env.example](../.env.example) à la racine 
 - **Réponse attendue** (alignée sur l’API actuelle) : `{ "items": HelpRequest[] }` où `HelpRequest` est défini dans `packages/types`.
 - **Évolution** : toute modification de forme impose mise à jour conjointe **api** + **types** + **web** + tests — documenter dans le message de commit / PR.
 
----
+### Chemins code (référence — 2026-05-12)
+
+| Élément | Emplacement |
+|---------|-------------|
+| `FeedResponse` | `packages/types/src/index.ts` |
+| `getApiBaseUrl`, `parseFeedResponse`, `fetchFeed` | `apps/web/lib/api-server.ts` |
+| Page async + `fetchFeed` | `apps/web/app/page.tsx` |
+| UI liste SSR / erreur | `apps/web/components/home-content.tsx` |
+| BFF `GET /api/feed` | `apps/web/app/api/feed/route.ts` |
+| `QueryClientProvider` | `apps/web/app/providers.tsx`, enveloppe `apps/web/app/layout.tsx` |
+| `useQuery` exemple | `apps/web/components/feed-client-preview.tsx` — `queryKey: ['feed']`, `fetch('/api/feed')` |
+| Tests | `apps/web/tests/api-server.test.ts`, `feed-client-preview.test.tsx` |
+
+**Cache SSR** : `fetchFeed` utilise `next: { revalidate: 60 }` (ISR 1 min pour la home). Le BFF `/api/feed` utilise `cache: 'no-store'` pour refléter l’API au moment de la requête client.
 
 ## Ordre d’exécution recommandé
 

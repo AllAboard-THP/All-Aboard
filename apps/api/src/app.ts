@@ -1,5 +1,5 @@
 import Fastify from "fastify";
-import type { HelpRequest } from "@allaboard/types";
+import type { FeedResponse, HelpRequest } from "@allaboard/types";
 
 const mockFeed: HelpRequest[] = [
   {
@@ -13,6 +13,6 @@ const mockFeed: HelpRequest[] = [
 export function buildApp() {
   const app = Fastify({ logger: false });
   app.get("/health", async () => ({ status: "ok" as const }));
-  app.get("/feed", async () => ({ items: mockFeed }));
+  app.get("/feed", async (): Promise<FeedResponse> => ({ items: mockFeed }));
   return app;
 }
