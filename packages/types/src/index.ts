@@ -10,6 +10,11 @@ export type HelpRequest = {
   createdAt: string;
 };
 
+/** JSON body of `GET /feed` from `apps/api`. */
+export type FeedResponse = {
+  items: HelpRequest[];
+};
+
 export type Response = {
   id: string;
   helpRequestId: string;

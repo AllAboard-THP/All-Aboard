@@ -4,6 +4,8 @@ Ce fichier est la **référence unique** pour l’ordre de lecture, la **timelin
 
 **Priorité en cas de doute** : la **cohérence d’ingénierie** (contrat API stable, SSR interne vs client public, éviter le double travail) prime sur un découpage rigide des phases — voir [Principes pour limiter le rework](#principes-pour-limiter-le-rework) et le [plan opérationnel Web/API/données](plan-mise-en-place-web-api-donnees.md).
 
+**Implémentation récente** (2026-05-12, branche `feat/phase1-web-api-feed`) : feed SSR via `API_URL`, socle `@tanstack/react-query`, BFF `GET /api/feed` pour `useQuery` same-origin, exemple `queryKey: ['feed']` — chemins dans le [plan opérationnel — section chemins code](plan-mise-en-place-web-api-donnees.md).
+
 ---
 
 ## Hiérarchie des documents
