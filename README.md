@@ -15,7 +15,7 @@ pnpm test
 pnpm verify       # lint + typecheck + test + build (avant commit / PR)
 ```
 
-- **web**: Next.js — `http://localhost:3000` (objectif **Phase 1** : feed SSR via `API_URL`, défaut `http://127.0.0.1:4000`, **+ socle TanStack Query** — voir [Docs/README.md](Docs/README.md))
+- **web**: Next.js — `http://localhost:3000` (Phase 1 : feed SSR via `API_URL` + socle TanStack ; client : `useQuery` + invalidation sur le **BFF** `http://localhost:3000/api/feed` — voir [Docs/README.md](Docs/README.md))
 - **api**: Fastify — `http://localhost:4000/health`, `GET /feed`
 - **thp-final**: Rails 8 — application THP (`Hotwire`, esbuild/React). Dev/test en **SQLite** (`apps/thp-final/storage/`). Postgres en production uniquement (`config/database.yml`). Démarrage :
 

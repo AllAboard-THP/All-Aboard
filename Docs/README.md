@@ -4,7 +4,7 @@ Ce fichier est la **référence unique** pour l’ordre de lecture, la **timelin
 
 **Priorité en cas de doute** : la **cohérence d’ingénierie** (contrat API stable, SSR interne vs client public, éviter le double travail) prime sur un découpage rigide des phases — voir [Principes pour limiter le rework](#principes-pour-limiter-le-rework) et le [plan opérationnel Web/API/données](plan-mise-en-place-web-api-donnees.md).
 
-**Implémentation récente** (2026-05-12, branche `feat/phase1-web-api-feed`) : feed SSR via `API_URL`, socle `@tanstack/react-query`, BFF `GET /api/feed` pour `useQuery` same-origin, exemple `queryKey: ['feed']` — chemins dans le [plan opérationnel — section chemins code](plan-mise-en-place-web-api-donnees.md).
+**Implémentation récente** (2026-05-12, merge sur `Dev`) : feed SSR via `API_URL`, socle `@tanstack/react-query`, BFF `GET /api/feed`, `useQuery` + **invalidation** (`invalidateQueries` sur `['feed']`) — détail dans le [plan opérationnel](plan-mise-en-place-web-api-donnees.md) (chemins code + section Phase 3 client).
 
 ---
 
@@ -66,6 +66,7 @@ Les phases restent un **guide** ; le détail d’exécution (env, contrat `/feed
 ### Phase 3 — **TanStack Query** (usage client étendu)
 
 - **`useQuery` / `useMutation` / invalidation** lorsque des composants client en ont besoin (déjà possible si le socle a été posé en Phase 1).
+- **Implémenté sur la home (dev / prod)** : `queryKey: ['feed']`, `fetch('/api/feed')` (BFF), bouton **Rafraîchir** → `invalidateQueries({ queryKey: ['feed'] })` — voir [plan opérationnel — Phase 3 client](plan-mise-en-place-web-api-donnees.md).
 - **Ne pas** imposer **TanStack Router** tant que le routage reste porté par **Next.js App Router**.
 - Documenter dans le code : conventions de `queryKey`, `NEXT_PUBLIC_API_URL` ou BFF, `credentials` si auth cross-origin.
 
