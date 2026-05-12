@@ -1,6 +1,6 @@
 # MOC - Dataflow et architecture All-Aboard
 
-**Documentation canonique** (timeline : MVP actuel vs phases, TanStack) : [README.md](README.md). Ce MOC décrit la **cible** multi-services ; le dépôt suit d’abord **Next + Fastify REST** (Phases 0–1), puis auth et client data selon la timeline.
+**Documentation canonique** (timeline : MVP actuel vs phases, TanStack) : [README.md](README.md). Index vision (stack cible, dataflow) : [vision/README.md](vision/README.md). Ce MOC décrit la **cible** multi-services ; le dépôt suit d’abord **Next + Fastify REST** (Phases 0–1), puis auth et client data selon la timeline.
 
 ## Objectif
 

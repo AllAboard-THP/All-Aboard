@@ -65,14 +65,15 @@ Comportement :
 Les workflows sous [.github/workflows/](.github/workflows/) s’exécutent sur les PR et les pushes : après `pnpm install`, Ruby/Bundler est configuré pour `apps/thp-final`, la base SQLite de test est préparée, puis `pnpm` exécute `lint`, `typecheck`, `test`, `build` sur tout le monorepo.
 ## Documentation
 
-Lire en premier la **[documentation canonique (timeline MVP)](Docs/README.md)**, puis le **[plan opérationnel Web/API/données](Docs/plan-mise-en-place-web-api-donnees.md)** (variables SSR vs client, contrat `/feed`, **Phase 1 = SSR + socle TanStack**, usage client Phase 3, Dokploy).
+Lire en premier la **[documentation canonique (timeline MVP)](Docs/README.md)** et la **[map of content](Docs/map-of-content.md)** (rôles et sources pour éviter les doublons), puis le **[plan opérationnel Web/API/données](Docs/plan-mise-en-place-web-api-donnees.md)** (variables, contrat `/feed`, chemins code, journal smoke).
 
 Ensuite :
 
 - [To-do — priorités et promotion env](Docs/To-do.md)
+- [Vision long terme — index](Docs/vision/README.md)
 - [MOC - Parcours utilisateur](Docs/moc-parcours-utilisateur.md)
 - [MOC - Dataflow et architecture](Docs/dataflow-architecture.md)
-- [Plan d'initialisation Turborepo MVP](Docs/plan-initialisation-turborepo-mvp.md)
+- [Plan d'initialisation Turborepo MVP (stub + archive)](Docs/plan-initialisation-turborepo-mvp.md)
 - [Proposition stack technique monorepo 2026 (vision v1+)](Docs/proposition-stack-technique-monorepo-2026.md)
 - [Matrice de deploiement Dokploy/Coolify](Docs/matrice-deploiement-dokploy-coolify.md)
 - [Deploiement Dokploy — instance All-Aboard (domaines Web/API, `API_URL`, Postgres)](Docs/deploiement-dokploy-instance-allaboard.md)

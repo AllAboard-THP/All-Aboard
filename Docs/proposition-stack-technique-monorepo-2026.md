@@ -4,7 +4,7 @@
 
 Ce fichier décrit une **vision cible** (v1 et au-delà) : GraphQL, Prisma, packages transverses (`auth`, `api-client`, etc.). Il **ne décrit pas** l’état actuel du dépôt (`apps/api` en **Fastify REST** sans Prisma ni GraphQL au MVP).
 
-- **Ordre d’implémentation et MVP réel** : [README documentation canonique](README.md) (Phases 0 à 4 + TanStack Query en Phase 3).
+- **Ordre d’implémentation et MVP réel** : [README documentation canonique](README.md) (Phases 0 à 4 + TanStack). **Index vision** : [vision/README.md](vision/README.md).
 - **Parcours produit** : [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md).
 
 ## Contexte
