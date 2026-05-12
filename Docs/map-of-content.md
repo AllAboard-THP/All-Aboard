@@ -22,7 +22,7 @@
 | [proposition-stack-technique-monorepo-2026.md](proposition-stack-technique-monorepo-2026.md) | Vision **stack v1+** (GraphQL, Prisma, etc.) — pas l’état du code MVP. |
 | [vision/README.md](vision/README.md) | Index court des docs vision (liens vers proposition + dataflow). |
 | [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | **Audit** intégration kit UX personnalisé : état des lieux, gaps, **inventaire canonique kit (§8)**, phasage, illustrations + planche complète ; complète [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) côté design system. |
-| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**complète**, v2) : conformité All-Aboard, WBS **T0–T3**, PRs, annexe build, pilotage §14–15 ; exécute [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md). |
+| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v3** simplifié) : règles, fin d’intégration, recette, phases, lots PR ; détail inventaire dans [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) §8. |
 
 Racine dépôt : [AGENTS.md](../AGENTS.md) (protocole PR / `pnpm verify`) ; [README.md](../README.md) racine si présent pour dev local — la **doc produit/architecture** canonique reste sous `Docs/`.
 
@@ -69,7 +69,7 @@ matrice ──► README, deploiement-instance
 | Bootstrap Turborepo historique | [archive/plan-initialisation-turborepo-mvp-2026-01.md](archive/plan-initialisation-turborepo-mvp-2026-01.md) | Stub [plan-initialisation-turborepo-mvp.md](plan-initialisation-turborepo-mvp.md). |
 | Protocole agent / CI locale | [AGENTS.md](../AGENTS.md) | Docs : mentionner `pnpm verify` seulement en renvoi. |
 | Kit UX / design system (tokens, primitives, phasage intégration) | [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | moc-parcours : parcours produit uniquement ; README : lien « design / kit » si besoin sans dupliquer l’audit. |
-| Plan d’intégration kit UX (WBS complet, PRs, conformité) | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | Audit : inventaire §8 ; ce plan : **exécution** — ne pas dupliquer l’inventaire, renvoyer. |
+| Plan d’intégration kit UX (phases, PRs, critères de fin) | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | Audit : inventaire §8 ; ce plan : **guide court** — détail des familles dans l’audit. |
 
 ---
 
