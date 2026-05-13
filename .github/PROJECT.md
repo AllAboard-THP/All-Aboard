@@ -203,13 +203,12 @@ Epic transverse Phase 2 : **#13** (parent du lot auth + parcours).
 
 ### Re-bootstrap (maintenance)
 
-Script idempotent partiel (ne recrée pas les epics existants) :
-
 ```bash
-.github/scripts/setup-project-items.sh
+.github/scripts/setup-project-items.sh          # créer issues + champs Project
+.github/scripts/configure-project-status.sh     # colonnes Status 6-way
+.github/scripts/configure-project-dependencies.sh  # deps + dates Roadmap
+.github/scripts/enrich-issue-bodies.sh          # descriptions + liens doc
 ```
-
-Nécessite `gh` avec scope `project` (`gh auth switch` compte ayant le scope).
 
 ---
 

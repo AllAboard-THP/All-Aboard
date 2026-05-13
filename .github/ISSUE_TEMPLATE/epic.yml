@@ -35,7 +35,15 @@ body:
   - type: textarea
     id: objectif
     attributes:
-      label: Objectif produit / technique
+      label: Objectif
+      description: Une phrase — résultat attendu
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: Détail succinct
+      description: Périmètre et contraintes pour l'équipe
     validations:
       required: true
   - type: textarea
@@ -48,7 +56,8 @@ body:
   - type: textarea
     id: doc
     attributes:
-      label: Références documentation
+      label: Documentation (liens)
       value: |
-        - Docs/README.md
-        - Docs/moc-parcours-utilisateur.md
+        - [README MVP](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/README.md)
+        - [Parcours MOC](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/moc-parcours-utilisateur.md)
+        - [PROJECT.md](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/.github/PROJECT.md)

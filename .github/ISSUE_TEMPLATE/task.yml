@@ -47,17 +47,26 @@ body:
     validations:
       required: true
   - type: textarea
-    id: objectif
+    id: detail
     attributes:
-      label: Objectif
-      description: Une phrase — critère de done
+      label: Détail succinct
+      description: 2–4 puces — périmètre, contraintes, chemins code si connus
+      placeholder: |
+        - ...
+        - Chemins : apps/web/...
     validations:
       required: true
   - type: textarea
     id: contexte
     attributes:
-      label: Contexte / liens doc
-      placeholder: "Docs/..., chemins code, issue parente #"
+      label: Documentation (liens)
+      description: URLs vers Docs/ sur branche Dev
+      value: |
+        - [README MVP](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/README.md)
+        - [Plan Web/API](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/plan-mise-en-place-web-api-donnees.md)
+      placeholder: |
+        - [Parcours MOC](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/moc-parcours-utilisateur.md)
+        - Issue parente #...
   - type: textarea
     id: acceptance
     attributes:
