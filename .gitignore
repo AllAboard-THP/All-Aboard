@@ -61,3 +61,6 @@ test-results/
 
 # Rails THP (apps/thp-final) — Bundler install path / local SQLite buckets
 apps/thp-final/vendor/bundle/
+
+*storybook.log
+apps/web/storybook-static/
