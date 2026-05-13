@@ -1,321 +1,388 @@
-# Audit — intégration d’un kit UX personnalisé (AllAboard)
+<!-- markdownlint-disable MD033 MD041 -->
+<div align="center">
 
-**Version** : 1.3 — 2026-05-12  
-**Périmètre** : monorepo All-Aboard (`apps/thp-final` produit principal, `apps/web`, `apps/api`).  
-**Décisions déjà posées** (contexte projet) : **Tailwind comme seule stack utilitaire** (pas de Bootstrap ni second framework) ; **cible technique** : faire converger `thp-final` vers un **build Tailwind npm** (PostCSS / pipeline d’assets) au lieu du **CDN** actuel — alignement avec `apps/web` et meilleure base pour tokens + plugins. Charte **AllAboard** (variables `--sl-*`, `application.css`, thème étendu) ; **pas de fidélité** à un kit tiers type « Grenoble Roller » — le kit cible est **interne** et aligné sur le CSS existant.
+# Audit — kit UX AllAboard
+
+**Inventaire §8 · ADN · risques · critères §11**
+
+[![Audit](https://img.shields.io/badge/audit-1.5-6366f1?style=flat-square)](./audit-integration-kit-ux-allaboard.md)
+[![Plan](https://img.shields.io/badge/plan-5.1-8b5cf6?style=flat-square)](./plan-integration-kit-ux-allaboard.md)
+[![CI](https://img.shields.io/badge/CI-pnpm%20verify-22c55e?style=flat-square)](../AGENTS.md)
+
+</div>
+
+> [!TIP]
+> **Audit** = *quoi* : **§8** inventaire, **§9** phasage stratégique, **§11** succès. **Plan v5.1** = *comment / quand* : phases **P0–P4**, **V/R/M/S/P**, **R1–R6**, [Décision build](plan-integration-kit-ux-allaboard.md#13-décision-build). Chaque PR kit cite **§8.x** et suit les gates du plan.
+
+**Version** : 1.5 · **Date** : 2026-05-13  
+**Périmètre** : monorepo All-Aboard (`apps/thp-final` principal, `apps/web`, `apps/api`)
+
+**Décisions déjà posées** : **Tailwind** seule stack utilitaire ; cible **build npm** sur `thp-final` (fin du **CDN**) ; charte **AllAboard** (`--sl-*`, `application.css`) — pas de kit tiers imposé ; pas de fidélité à un gabarit externe type « Grenoble Roller ».
+
+---
+
+## Sommaire
+
+1. [Résumé exécutif](#1-résumé-exécutif)  
+2. [Visualisations](#2-visualisations)  
+3. [Contexte technique](#3-contexte-technique)  
+4. [ADN visuel et tokens](#4-adn-visuel-et-tokens)  
+5. [Parcours et surfaces](#5-parcours-et-surfaces)  
+6. [Écarts (gaps)](#6-écarts-gaps)  
+7. [Définition du kit cible](#7-définition-du-kit-cible)  
+8. [Inventaire canonique](#8-inventaire-canonique)  
+9. [Phasage et plan](#9-phasage-et-plan)  
+10. [Risques](#10-risques)  
+11. [Critères de succès §11](#11-critères-de-succès)  
+12. [Liens](#12-liens)  
+13. [Annexes chemins](#13-annexes-chemins)  
 
 ---
 
 ## 1. Résumé exécutif
 
-AllAboard dispose déjà d’une **direction visuelle cohérente** (dark UI, Inter, indigo / violet / rose, surfaces glass, patterns feed / auth / chat). L’intégration d’un **kit UX personnalisé** ne consiste pas à importer un thème externe tel quel, mais à **formaliser une couche de design** : tokens sémantiques, primitives UI réutilisables, documentation et règles d’usage — tout en **restant compatible** avec Tailwind, Hotwire, et les îlots React (`ChatApp`).
+> [!NOTE]
+> AllAboard a déjà une **direction visuelle cohérente** (dark UI, Inter, indigo / violet / rose, glass, feed / auth / chat). Le kit ne remplace pas un thème externe : il **formalise** tokens, primitives, doc et règles — compatible **Tailwind**, **Hotwire**, îlots **React** (`ChatApp`).
 
-**Livrable de cet audit** : cadre pour un **kit de base** (fondations + inventaire de composants + phasage), **trois** illustrations (architecture, roadmap, **planche kit complet**), critères de succès et risques.
+**Livrables audit** : cadre **kit de base**, **trois** figures (§2), inventaire **§8**, phasage **§9**, risques **§10**, critères **§11**. L’**exécution** (cases `- [ ]`, `pnpm verify`, `bin/rails test`, **R1–R6**) : [plan d’intégration v5.1](plan-integration-kit-ux-allaboard.md).
 
 ---
 
 ## 2. Visualisations
 
-### 2.1 Couches cibles (apps → kit → fondations)
+<details open>
+<summary><strong>§2.1 Couches</strong> — apps → kit → fondations</summary>
 
-Illustration conceptuelle des **couches** : applications, socle « kit de base », dépendances transverses.
+Illustration des **couches** : applications, socle kit, dépendances transverses.
 
-![Couches architecture kit UX — apps, kit de base, fondations](audit-integration-kit-ux/assets/audit-kit-architecture-couches.png)
+![Couches architecture kit UX](audit-integration-kit-ux/assets/audit-kit-architecture-couches.png)
 
-### 2.2 Phasage recommandé
+</details>
 
-Vue synthétique des **phases** de mise en place du kit (détail textuel en section 9).
+<details open>
+<summary><strong>§2.2 Roadmap phases</strong> (détail textuel §9 + plan)</summary>
 
-![Phases roadmap kit UX AllAboard](audit-integration-kit-ux/assets/audit-kit-phases-roadmap.png)
+Vue synthétique des **phases** (alignée [§9](#9-phasage-et-plan)).
 
-### 2.3 Planche visuelle — kit complet (tous les blocs)
+![Phases roadmap kit UX](audit-integration-kit-ux/assets/audit-kit-phases-roadmap.png)
 
-Vue **synthétique unique** regroupant les familles **0 à 10** (fondations → légal) : utile en réunion, onboarding, ou couverture d’une page « kit ». La **liste canonique** détaillée (checklist implémentation) est en **section 8** ; l’image et le texte doivent rester **alignés** lors des évolutions du kit.
+</details>
 
-![Planche kit complet AllAboard — aperçu des familles 0–10](audit-integration-kit-ux/assets/audit-kit-complet-showcase.png)
+### §2.3 Planche kit complet (familles 0 → 10)
 
-> Les images §2 sont **indicatives** (schémas de documentation). Les décisions normatives restent les sections textuelles et les chemins de code cités en annexe.
+<p align="center">
+  <img src="audit-integration-kit-ux/assets/audit-kit-complet-showcase.png" alt="Planche kit AllAboard — familles 0 à 10" width="720">
+</p>
+
+> [!IMPORTANT]
+> La **liste canonique** détaillée est en [**§8**](#8-inventaire-canonique) ; l’image et le texte doivent rester **alignés** à chaque évolution. Les figures §2 sont **indicatives** ; les décisions normatives sont les sections textuelles et l’annexe **§13**.
 
 ---
 
-## 3. Contexte technique (état au moment de l’audit)
+## 3. Contexte technique
+
+> État **au moment de l’audit** (à réviser après migration CDN → build).
 
 | Surface | Rôle UX | Stack UI actuelle |
 |---------|---------|-------------------|
-| **`apps/thp-final`** | Produit complet (auth, feed, explore, ressources, messages, admin, mentor) | **Tailwind CDN** + config inline (`primary`, `darker`, animations) dans `application.html.erb` ; **`application.css`** (variables `:root`, utilitaires `.glass`, chat, flash, auth) ; vues **ERB** + **Stimulus** ; **React** monté pour le chat |
-| **`apps/web`** | Vitrine / home Next, BFF feed | **Tailwind** (dépendances npm) ; composants React ; styles locaux + React Query sur parties du feed |
+| **`apps/thp-final`** | Produit complet (auth, feed, explore, ressources, messages, admin, mentor) | **Tailwind CDN** + config inline dans `application.html.erb` ; **`application.css`** (`:root`, `.glass`, chat, flash, auth) ; **ERB** + **Stimulus** ; **React** (chat) |
+| **`apps/web`** | Vitrine Next, BFF feed | **Tailwind** npm ; React ; React Query sur parties du feed |
 | **`apps/api`** | Pas d’UI | N/A |
 
-**Constat** : la vérité visuelle **produit** vit surtout dans **Rails** ; le web Next doit **converger** via tokens partagés si la marque doit rester unifiée.
+**Constat** : la vérité visuelle **produit** vit surtout dans **Rails** ; Next doit **converger** (tokens partagés, **D3** dans le plan).
 
-**Fichiers de référence** (non exhaustif) :
+**Fichiers de référence** :
 
-- `apps/thp-final/app/views/layouts/application.html.erb` — Tailwind CDN, thème étendu, polices, FA, highlight.js  
-- `apps/thp-final/app/assets/stylesheets/application.css` — tokens `--sl-*`, patterns métier  
-- `apps/thp-final/config/routes.rb` — surface des parcours  
-- `apps/web/app/` — pages et composants Next  
+- `apps/thp-final/app/views/layouts/application.html.erb`  
+- `apps/thp-final/app/assets/stylesheets/application.css`  
+- `apps/thp-final/config/routes.rb`  
+- `apps/web/app/`  
 
 ---
 
-## 4. ADN visuel & tokens (à pérenniser dans le kit)
+## 4. ADN visuel et tokens
 
-### 4.1 Palette et surfaces (déjà en code)
+### 4.1 Palette et surfaces
 
-| Rôle | Valeur / pattern typique | Source |
-|------|--------------------------|--------|
+| Rôle | Valeur / pattern | Source |
+|------|------------------|--------|
 | Primary | `#6366f1` | `--sl-primary`, Tailwind `primary` |
 | Secondary | `#8b5cf6` | `--sl-secondary` |
 | Accent | `#ec4899` | `--sl-accent` |
 | Fonds | `#020617`, `#0f172a` | `--sl-darker`, `--sl-dark` |
 | Surface cartes | `#1e293b`, overlays | `--sl-surface`, `.glass` |
-| Texte | hiérarchie slate / blanc | utilitaires Tailwind + ERB |
+| Texte | hiérarchie slate / blanc | Tailwind + ERB |
 
-### 4.2 Typographie & icônes
+### 4.2 Typographie et icônes
 
-- **Inter** (Google Fonts), graisses 300–800.  
-- **Font Awesome 6** (nav, actions).  
-- **highlight.js** (atom-one-dark) pour blocs de code.
+- **Inter** (Google Fonts), 300–800.  
+- **Font Awesome 6**.  
+- **highlight.js** (atom-one-dark).
 
-### 4.3 Comportements & motion
+### 4.3 Motion
 
-- Animations Tailwind : `fade-in`, `slide-up`, `pulse-slow`.  
-- Transitions hover sur cartes (`.post-card`, `.glass-hover`).  
-- Toasts flash avec cycle d’animation dédié.
+- Animations : `fade-in`, `slide-up`, `pulse-slow`.  
+- Hover cartes : `.post-card`, `.glass-hover`.  
+- Toasts flash.
 
-### 4.4 Données dynamiques (contrainte kit)
+### 4.4 Contrainte dynamique
 
-- **Couleur par matière** : `subject.accent_color` injectée en inline sur badges / bordures — le kit doit exposer un **slot sémantique** (variable CSS ou utilitaire) sans figer une seule couleur de marque.
-
----
-
-## 5. Parcours utilisateur & surfaces à couvrir par le kit
-
-Aligné sur [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) et le routage réel :
-
-| Zone parcours | Besoins kit de base |
-|-----------------|---------------------|
-| **Pré-auth** (landing, connexion inline home) | Formulaires, alertes flash, liens, layout `auth-shell` / grille |
-| **Devise** (inscription, sessions, reset…) | Mêmes **primitives** que home pour cohérence |
-| **Gate CGU** | Modal plein écran, checkbox + CTA états disabled / actif |
-| **Shell connecté** | Nav fixe glass, menu compte, badges (messages, mentor), nav mobile, footer |
-| **Feed & contenu** | Cartes, listes, sidebars sticky, CTA, scroll |
-| **Messages** | Master-detail responsive + zone React ; styles bulles déjà en CSS |
-| **Rôles** | Variantes mentor (emerald), admin (jaune), actions destructives (rouge) |
-| **Mails** | Hors runtime app ; option : **tableau d’équivalence** tokens → HTML email (phase ultérieure) |
+- **Matière** : `subject.accent_color` en inline — le kit expose un **slot sémantique** (variable CSS ou utilitaire), pas une couleur figée.
 
 ---
 
-## 6. Écarts (gaps) entre l’existant et un « kit de base » mature
+## 5. Parcours et surfaces
+
+Aligné sur [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) et les routes.
+
+| Zone | Besoins kit |
+|------|-------------|
+| **Pré-auth** | Formulaires, flash, liens, layout auth / grille |
+| **Devise** | Mêmes **primitives** que home |
+| **Gate CGU** | Modal, checkbox + CTA disabled / actif |
+| **Shell connecté** | Nav glass, menu compte, badges, mobile, footer |
+| **Feed** | Cartes, listes, sidebars, CTA, scroll |
+| **Messages** | Master-detail + React ; bulles CSS |
+| **Rôles** | Mentor (emerald), admin (jaune), destructif (rouge) |
+| **Mails** | Hors runtime ; option tableau tokens → HTML email |
+
+---
+
+## 6. Écarts (gaps)
 
 | Gap | Description | Impact |
 |-----|-------------|--------|
-| **Dispersion des tokens** | Couleurs en `:root`, config Tailwind inline, classes utilitaires, parfois hex en inline ERB / Next | Maintenance et thème futur (clair) difficiles |
-| **Tailwind CDN** (état actuel `thp-final`) | Pas de purge au sens build, config surtout inline | **Décision** : migration vers **build npm** (voir en-tête §) ; jusqu’à migration, le gap reste opérationnel |
-| **Duplication de formulaires** | Home vs Devise : patterns proches, classes non strictement identiques | Dette UX et accessibilité |
-| **Absence d’inventaire canonique** | Pas de doc « composant X = partial Y + classes Z » | Onboarding et PR UI coûteux |
-| **Next vs Rails** | Deux pipelines possibles pour la même marque | Risque de dérive visuelle si pas de package tokens partagé |
-| **Tests visuels** | Pas mentionné dans le dépôt pour l’UI | Régressions détectées tardivement |
+| **Tokens dispersés** | `:root`, Tailwind inline, hex ERB / Next | Thème clair et maintenance difficiles |
+| **Tailwind CDN** | Pas de purge build | Gap jusqu’à **build npm** ([plan](plan-integration-kit-ux-allaboard.md)) |
+| **Formulaires dupliqués** | Home vs Devise | Dette UX / a11y |
+| **Pas d’inventaire doc** | Pas « composant → partial » | Onboarding coûteux |
+| **Next vs Rails** | Deux pipelines | Dérive marque sans tokens partagés |
+| **Tests UI** | Pas `test/system` / Playwright `thp-final` | [Plan](plan-integration-kit-ux-allaboard.md) : **V/R/M/S/P** + **R+** Rails par phase ; **D4** |
 
 ---
 
-## 7. Définition du « kit UX personnalisé » AllAboard (cible)
+## 7. Définition du kit cible
 
-Le kit n’est **pas** une librairie npm obligatoire au jour 1. C’est un **ensemble contractuel** :
+Ensemble **contractuel** (pas une lib npm obligatoire jour 1) :
 
-1. **Tokens** — noms sémantiques stables (`--color-bg`, `--color-primary`, rayons, ombres, espacements) mappés sur Tailwind `theme.extend` et/ou variables consommées par `application.css`.  
-2. **Primitives** — blocs récurrents documentés : `Button`, `Input`, `Card`, `Modal`, `Badge`, `NavLink`, `Toast`, `SubjectChip` (avec accent dynamique), etc. — implémentés en **partials ERB + classes Tailwind** et/ou **petits modules CSS** pour ce qui est intraduisible (bulles chat).  
-3. **Règles** — quand utiliser `glass` vs `bg-surface`, hiérarchie typo, contrastes (WCAG sur fonds glass).  
-4. **Storybook ou page showcase** (optionnel phase 2+) — vitrine des primitives dans `thp-final` ou statique.  
-5. **Package partagé** (optionnel) — `packages/ui-tokens` (JSON ou CSS) consommé par `web` et documenté pour Rails.
+1. **Tokens** — sémantique stable → `theme.extend` et/ou `application.css`.  
+2. **Primitives** — `Button`, `Input`, `Card`, `Modal`, `Badge`, `NavLink`, `Toast`, `SubjectChip`… en **ERB + Tailwind** (+ CSS ciblé bulles chat).  
+3. **Règles** — `glass` vs `bg-surface`, typo, **WCAG** sur glass.  
+4. **Vitrine** (optionnel) — Storybook ou page showcase (`thp-final`).  
+5. **Package** (optionnel) — `packages/ui-tokens` pour `web` + doc Rails.
 
 ---
 
-## 8. Inventaire canonique du kit de base (complet)
+## 8. Inventaire canonique
 
-Checklist **fonctionnelle** : chaque ligne devrait correspondre à une **primitive documentée** (partial, classe utilitaire + règle, ou îlot React) une fois le kit implémenté. La **planche visuelle** associée est la **§2.3**.
+Checklist **fonctionnelle** : une ligne **§8.x** ≈ une **primitive documentée** (partial, utilitaire, React). **Suivi PR** : [plan v5.1](plan-integration-kit-ux-allaboard.md).
 
-### 8.0 Fondations (sans composant « bloc » métier)
+### Alignement audit ↔ plan (référence)
+
+| Famille **§8** | Phase **plan** (principale) |
+|----------------|----------------------------|
+| **§8.0** | P0 Fondations |
+| **§8.1**, **§8.3–8.5**, **§8.7** (partie shell) | P1 Shell et auth |
+| **§8.2**, **§8.6**, **§8.7** (contenu) | P2 Contenu et messages |
+| **§8.8–8.10**, **§8.9** | P3 Dense et spécifique |
+| Couverture **§8.0–8.10** ou **WONTFIX** | P4 Clôture |
+
+<details>
+<summary><strong>Développer l’inventaire §8.0 à §8.11</strong> (tables complètes)</summary>
+
+### 8.0 Fondations
 
 | Élément | Contenu attendu |
-|---------|-------------------|
-| **Tokens** | Couleurs sémantiques, rayons, ombres, espacements, `z-index`, **focus ring** |
-| **Typographie** | Échelles display, h1–h3, body, small, overline ; graisses ; `line-height` |
-| **Grille & layout** | `max-w-7xl`, gutters, zones `main` / sidebar, **safe areas** mobile |
-| **Thème** | **Dark** (prioritaire) ; stratégie **light** (optionnel, même token set) |
-| **Motion** | Durées / easing communs (hover carte, modale, toast) |
+|---------|-----------------|
+| **Tokens** | Couleurs, rayons, ombres, espacements, `z-index`, **focus ring** |
+| **Typographie** | display, h1–h3, body, small, overline ; graisses ; `line-height` |
+| **Grille** | `max-w-7xl`, gutters, `main` / sidebar, **safe areas** |
+| **Thème** | **Dark** prioritaire ; **light** optionnel (même token set) |
+| **Motion** | Durées / easing (carte, modale, toast) |
 
-### 8.1 Mise en page & chrome global
+### 8.1 Chrome global
 
 | Élément | Rôle |
 |---------|------|
-| **App shell** | `nav` + `main` + `footer` + marges (`pt-20`, etc.) |
-| **Header / top bar** | Barre fixe type glass, logo, liens principaux |
-| **Footer** | Liens légaux, secondaires, version |
-| **Nav principale** | Liens avec **état actif** (feed, explore, ressources, événements, messages) |
-| **Nav mobile** | Barre ou drawer bas, icônes + labels |
-| **Menu utilisateur** | Avatar, dropdown : profil, mes posts, sauvegardes, mentor, admin, déconnexion |
-| **Badges compteurs** | Messages non lus, pending mentor, etc. |
-| **Bannière / bandeau** | CGU, alertes globales, maintenance |
-| **Scroll to top** | FAB (ex. feed) |
+| **App shell** | `nav` + `main` + `footer` + marges |
+| **Header** | Glass, logo, liens |
+| **Footer** | Légal, secondaires, version |
+| **Nav** | État actif feed / explore / ressources / événements / messages |
+| **Nav mobile** | Barre ou drawer, icônes + labels |
+| **Menu user** | Avatar, dropdown profil / posts / bookmarks / mentor / admin / déconnexion |
+| **Badges** | Messages non lus, pending mentor |
+| **Bandeau** | CGU, alertes, maintenance |
+| **Scroll to top** | FAB feed |
 
-### 8.2 Navigation & structure de page
+### 8.2 Navigation de page
 
 | Élément | Usage |
 |---------|--------|
 | **Breadcrumbs** | explore → matière → post, admin |
-| **Onglets** | Segmentation d’un même écran |
-| **Sous-nav / pills** | Filtres statut, matière |
-| **Page heading** | Titre + actions primaires (ex. « Créer ») |
-| **Split view** | Liste conversations + panneau détail messages |
+| **Onglets** | Segmentation écran |
+| **Pills** | Filtres statut, matière |
+| **Page heading** | Titre + actions |
+| **Split view** | Liste conversations + détail |
 
-### 8.3 Formulaires & champs
+### 8.3 Formulaires
 
-| Élément | Variantes / états |
-|---------|-------------------|
-| **Label** | Optionnel `required`, hint dessous |
-| **Input** text / email / password | default, focus, erreur, disabled, read-only |
-| **Textarea** | resize, compteur caractères (optionnel) |
-| **Select / listbox** | Style dark cohérent |
-| **Checkbox / radio** | Dont case **CGU** + groupes |
-| **Switch** | Notifications, options |
-| **File upload** | Avatar, pièces jointes |
-| **Champ code** | Conteneur + **highlight.js** |
-| **Autocomplete / search** | Messages, explore |
-| **Groupe de champs** | Grille 2 colonnes (inscription) |
-| **Actions formulaire** | Primaire + secondaire + lien annuler |
-| **Résumé d’erreurs** | Équivalent `devise/shared/_error_messages` |
+| Élément | Variantes |
+|---------|-----------|
+| **Label** | `required`, hint |
+| **Input** | default, focus, erreur, disabled, read-only |
+| **Textarea** | resize, compteur (optionnel) |
+| **Select** | Dark cohérent |
+| **Checkbox / radio** | CGU, groupes |
+| **Switch** | Notifications |
+| **File** | Avatar, PJ |
+| **Champ code** | + **highlight.js** |
+| **Search** | Messages, explore |
+| **Grille champs** | ex. inscription 2 col |
+| **Actions** | Primaire, secondaire, annuler |
+| **Erreurs** | Équivalent `devise/shared/_error_messages` |
 
-### 8.4 Auth & compte (écrans Devise + home)
+### 8.4 Auth et compte
 
-| Écran | Référence fichier |
-|-------|-------------------|
-| Connexion (page) | `devise/sessions/new.html.erb` |
+| Écran | Fichier |
+|-------|---------|
+| Connexion | `devise/sessions/new.html.erb` |
 | Inscription | `devise/registrations/new.html.erb` |
 | Édition compte | `devise/registrations/edit.html.erb` |
-| Mot de passe oublié | `devise/passwords/new.html.erb` |
-| Réinitialisation MDP | `devise/passwords/edit.html.erb` |
-| Confirmation (renvoi) | `devise/confirmations/new.html.erb` |
-| Déblocage compte | `devise/unlocks/new.html.erb` |
-| Liens transverses | `devise/shared/_links.html.erb` |
-| Landing + co inline | `home/index.html.erb` |
-| **Mails Devise** | `devise/mailer/*.html.erb` — variante **email** (tables + styles inline), hors runtime app mais dans le **périmètre charte** |
+| MDP oublié | `devise/passwords/new.html.erb` |
+| Reset MDP | `devise/passwords/edit.html.erb` |
+| Confirmation | `devise/confirmations/new.html.erb` |
+| Déblocage | `devise/unlocks/new.html.erb` |
+| Liens | `devise/shared/_links.html.erb` |
+| Landing | `home/index.html.erb` |
+| **Mails** | `devise/mailer/*.html.erb` |
 
-### 8.5 Actions & boutons
+### 8.5 Boutons
 
 | Élément | Détail |
 |---------|--------|
 | **Button** | primary, secondary, ghost, danger, link |
 | **Tailles** | sm, md, lg, icon-only |
-| **États** | default, hover, active, disabled, **loading** (spinner) |
+| **États** | default, hover, active, disabled, **loading** |
 | **Button group** | Annuler / Enregistrer |
-| **Icon button** | Fermer modale, menu, retour mobile |
+| **Icon button** | Fermer, menu, retour mobile |
 
-### 8.6 Contenu & listes
-
-| Élément | Usage AllAboard |
-|---------|-----------------|
-| **Card** | Post, ressource, événement, sidebar « sans réponse » |
-| **Card interactive** | Hover lift, lien cliquable |
-| **List row** | Conversation, modération |
-| **Media object** | Avatar + texte + meta |
-| **Badge** | Statut, urgence, compteur |
-| **Badge matière** | Couleur **`accent_color`** dynamique |
-| **Tag / chip** | Sujets, filtres |
-| **Empty state** | Liste vide + CTA |
-| **Skeleton** | Chargement feed (optionnel) |
-
-### 8.7 Retour utilisateur & overlays
-
-| Élément | Note |
-|---------|------|
-| **Alert inline** | Succès / erreur dans la page |
-| **Flash / toast** | Pile fixe, variants (CSS existant) |
-| **Modal** | CGU, création post, demande matière, confirmations destructives |
-| **Drawer** | Optionnel mobile (filtres) |
-| **Tooltip** | Optionnel — accessibilité à prévoir |
-| **Progress** | Upload, longue action |
-| **Spinner global** | Rare, Turbo |
-
-### 8.8 Données denses & admin
+### 8.6 Contenu et listes
 
 | Élément | Usage |
 |---------|--------|
-| **Table** | Modération, users admin, ressources |
-| **Table** | Tri, pagination, ligne actions |
-| **Stat pill / KPI** | Dashboard admin / mentor |
-| **Filtres bar** | Recherche + dropdowns |
+| **Card** | Post, ressource, événement, sidebar |
+| **Card interactive** | Hover, lien |
+| **List row** | Conversation, modération |
+| **Media object** | Avatar + meta |
+| **Badge** | Statut, urgence, compteur |
+| **Badge matière** | **`accent_color`** |
+| **Tag / chip** | Sujets, filtres |
+| **Empty** | Liste vide + CTA |
+| **Skeleton** | Feed (optionnel) |
+
+### 8.7 Overlays
+
+| Élément | Note |
+|---------|------|
+| **Alert inline** | Succès / erreur |
+| **Flash / toast** | Pile, variants |
+| **Modal** | CGU, post, matière, confirmations |
+| **Drawer** | Mobile (optionnel) |
+| **Tooltip** | Optionnel, a11y |
+| **Progress** | Upload |
+| **Spinner** | Rare, Turbo |
+
+### 8.8 Admin et données denses
+
+| Élément | Usage |
+|---------|--------|
+| **Table** | Modération, users, ressources |
+| **Table** | Tri, pagination, actions ligne |
+| **KPI** | Dashboard admin / mentor |
+| **Filtres** | Barre recherche + dropdowns |
 
 ### 8.9 Spécifique produit
 
 | Élément | Note |
 |---------|------|
-| **Bulles chat + ligne** | own / other — `application.css` |
-| **Bloc code** | Commentaires + highlight.js |
+| **Bulles chat** | own / other — `application.css` |
+| **Bloc code** | Commentaires + hljs |
 | **Carte post** | Likes, bookmarks, meta, urgence |
-| **Profil utilisateur** | Bannière, avatar, compétences mentor |
+| **Profil** | Bannière, avatar, mentor |
 
-### 8.10 Légal & texte long
+### 8.10 Légal
 
 | Élément | Usage |
 |---------|--------|
 | **Page texte** | CGU, confidentialité, mentions |
 | **Link** | Interne, externe, mailto |
 
-### 8.11 Priorité de livraison (MVP — sous-ensemble)
+### 8.11 Priorité MVP
 
-Pour ne pas bloquer les itérations, livrer d’abord : **table des tokens** + **grille** ; **boutons** + **champs** + **erreurs** ; **carte** + **badge matière** ; **shell** (header, nav, footer, menu user) ; **modal CGU** + **toast** ; **nav item actif**. Puis étendre section par section selon les **§8.0–8.10**.
+Livrer d’abord : **tokens** + **grille** ; **boutons** + **champs** + **erreurs** ; **carte** + **badge matière** ; **shell** ; **modal CGU** + **toast** ; **nav actif**. Puis **§8.0–8.10** par extensions.
 
-**Documentation** : ce fichier + **README kit** (futur) listant chaque primitive avec lien vers partial ou capture.
+**Documentation** : ce fichier + [plan](plan-integration-kit-ux-allaboard.md) + **README kit** (futur).
+
+</details>
 
 ---
 
-## 9. Phasage recommandé
+## 9. Phasage et plan
+
+> [!NOTE]
+> **§9** = vue **stratégique** (tableau ci‑dessous). **Plan v5.1** = livrables numérotés, **V/R/M/S/P**, **R1–R6**, **Mermaid**, **Décision build**, **P4** clôture.
 
 | Phase | Contenu | Critère de fin |
 |-------|---------|----------------|
-| **0 — Fondations** | Table tokens + **mise en place build Tailwind npm** sur `thp-final` (retrait CDN) + alignement `:root` / `tailwind.config` | Build reproductible en CI ; couleurs de marque depuis une seule source ; `pnpm verify` vert |
-| **1 — Shell** | Nav, footer, menu compte, CGU modal, formulaires auth unifiés | Parcours visiteur → connecté sans régression ; contrastes vérifiés sur modales |
-| **2 — Contenu** | Cartes feed, listes, explore, ressources, événements | Partials réutilisent les primitives ; moins de hex dupliqués dans ERB |
-| **3 — Spécifique** | Chat (ERB + React), admin/mentor, mail templates | Bulles et layouts alignés tokens ; mails au moins cartographiés |
+| **0** | Tokens + **build Tailwind npm** + retrait CDN + `:root` / `tailwind.config` | CI reproductible ; `pnpm verify` vert |
+| **1** | Nav, footer, menu, **CGU**, auth unifié | Visiteur → connecté ; contrastes modales |
+| **2** | Cartes, listes, explore, ressources, événements | Primitives ; moins de hex en ERB |
+| **3** | Chat ERB + React, admin/mentor, mails | Bulles + layouts ; mails cartographiés |
+| **4** *(plan)* | **D1**, **D3**, **WONTFIX §8**, **§11** | Merge `Dev` |
 
-Les illustrations §2 reprennent cette logique en schéma.
+Les figures **§2** couvrent surtout les phases **0–3** ; la **phase 4** est détaillée dans le [plan](plan-integration-kit-ux-allaboard.md) (schéma Mermaid inclus).
 
 ---
 
-## 10. Risques & mitigations
+## 10. Risques
 
 | Risque | Mitigation |
 |--------|------------|
-| Régression Turbo / Stimulus en refactorant les partials | PR petites ; tests système / manuel checklist par parcours |
-| Conflit Tailwind vs CSS custom | Règle : primitives = Tailwind ; **seulement** bulles / tricks CSS complexes restent en `application.css` avec commentaire « pourquoi » |
-| Poids bundle si double stack | Ne pas introduire Bootstrap ou second framework |
-| Dérive Next vs Rails | Package tokens ou fichier CSS partagé + 1 PR « alignement home Next » |
+| Turbo / Stimulus | PR petites ; plan : **R1–R6** + **R** ; `test/system` ou **P** (**D4**) |
+| Tailwind vs CSS custom | Primitives = Tailwind ; **exceptions** documentées dans `application.css` (« pourquoi ») |
+| Double stack | Pas Bootstrap / second framework |
+| Next vs Rails | Tokens partagés + PR alignement **D3** |
 
 ---
 
-## 11. Critères de succès (kit de base « acceptable »)
+## 11. Critères de succès
 
-- [ ] Document **tokens** validé par l’équipe et reflété dans le code.  
-- [ ] **Aucune** nouvelle dépendance UI majeure non validée (reste Tailwind + CSS actuel).  
-- [ ] **Trois** parcours sans régression visuelle majeure : landing + login, acceptation CGU, feed + ouverture d’un post.  
-- [ ] **Accessibilité** : focus visible, labels formulaires, état disabled CGU, contrastes sur `glass`.  
-- [ ] `pnpm verify` vert sur la branche de travail (ex. `feature/ui-tailwind-foundation`).
+> Le [plan](plan-integration-kit-ux-allaboard.md) opérationnalise ces points (tâches + **R1–R6**).
 
----
-
-## 12. Liens internes
-
-- **Plan d’intégration & backlog opérationnel** : [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md)  
-- Parcours produit : [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md)  
-- Protocole PR / vérifications : [AGENTS.md](../AGENTS.md)  
-- Cartographie doc : [map-of-content.md](map-of-content.md)  
+- [ ] Document **tokens** validé et reflété dans le code.  
+- [ ] **Aucune** dépendance UI majeure non validée (Tailwind + CSS actuel).  
+- [ ] **Trois** parcours sans régression majeure : landing + login, CGU, feed + post.  
+- [ ] **Accessibilité** : focus, labels, CGU disabled, contrastes `glass`.  
+- [ ] `pnpm verify` vert — [AGENTS.md](../AGENTS.md), [CI](../../.github/workflows/ci.yml).
 
 ---
 
-## 13. Annexes — extraits de référence (chemins)
+## 12. Liens
 
-Tokens `:root` — `apps/thp-final/app/assets/stylesheets/application.css` (lignes 1–7 du fichier : `--sl-primary`, etc.).  
+| Ressource | Lien |
+|-----------|------|
+| **Plan d’intégration v5.1** (P0–P4, tâches, tests, Mermaid) | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) |
+| Parcours produit | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) |
+| Protocole agent / PR | [AGENTS.md](../AGENTS.md) |
+| Carte de la doc | [map-of-content.md](map-of-content.md) |
+| Workflow CI | [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) |
+
+---
+
+## 13. Annexes chemins
+
+Tokens `:root` — `apps/thp-final/app/assets/stylesheets/application.css` (début de fichier : `--sl-primary`, …).  
 Thème Tailwind inline — `apps/thp-final/app/views/layouts/application.html.erb` (bloc `tailwind.config` ~l.38–69).  
-Layout connecté — même fichier, `body` et `main` (~l.89–96).  
+Layout connecté — même fichier, `body` et `main` (~l.89–96).
 
 *Fin du document d’audit.*

@@ -22,8 +22,8 @@ Ce fichier est la **référence unique** pour l’ordre de lecture, la **timelin
 | [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md) | Conventions déploiement + tables de variables **génériques**. |
 | [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md) | Faits observés sur l’instance Dokploy (domaines, branches, `API_URL`). |
 | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | Parcours produit (MOC), sans stack imposée. |
-| [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | Audit intégration **kit UX personnalisé** : état des lieux, **inventaire canonique §8**, phasage, risques ; illustrations + **planche kit complet** sous `audit-integration-kit-ux/assets/`. |
-| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v3** — version courte) : règles All-Aboard, critères de fin, recette R1–R6, phases, lots PR ; détail §8 dans l’audit. |
+| [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | Audit **kit UX** (**v1.5**) : inventaire **§8**, phasage, risques, **§11** ; mise en page GitHub. Exécution : [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md). |
+| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v5.1** — mise en page type README GitHub : badges, alertes, sommaire, tâches `- [ ]`) ; détail §8 dans l’audit. |
 | [vision/README.md](vision/README.md) | Index : dataflow cible + proposition stack v1+ (hors code MVP actuel). |
 
 ---
