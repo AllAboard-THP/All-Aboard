@@ -8,7 +8,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const eslintConfig = [
   ...createNextEslintConfig(__dirname),
   {
-    ignores: [".next/**", "node_modules/**", "next-env.d.ts"],
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "next-env.d.ts",
+      "e2e/**",
+      "playwright-report/**",
+      "test-results/**",
+    ],
   },
 ];
 

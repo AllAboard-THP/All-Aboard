@@ -10,7 +10,7 @@
   </defs>
   <rect width="1200" height="640" fill="url(#bg2)"/>
   <text x="600" y="52" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="28" font-weight="600">Kit UX phases P0 -&gt; P4</text>
-  <text x="600" y="86" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="14">Matches plan v6.1 - P4 closure: D1, D3, WONTFIX sec.8, sec.11, merge Dev - 2026-05-13</text>
+  <text x="600" y="86" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="14">Matches plan v1.1 - D4 Playwright, agent autonome, G0/G1, phases 0-4, closure: D1, D3, WONTFIX sec.8, sec.11, merge Dev - 2026-05-14</text>
 
   <g font-family="system-ui,sans-serif">
     <rect x="40" y="140" width="200" height="200" rx="14" fill="#1e293b" stroke="#6366f1" stroke-width="3"/>

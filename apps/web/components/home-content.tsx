@@ -9,6 +9,7 @@ type Props = {
 export function HomeContent({ feed, feedError }: Props) {
   return (
     <main
+      data-testid="r1-home-main"
       style={{
         minHeight: "100vh",
         display: "grid",

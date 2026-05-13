@@ -58,3 +58,11 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Install Playwright (Chromium + deps)
+        run: pnpm --filter web run test:e2e:install:ci
+
+      - name: E2E (web — Playwright)
+        run: pnpm --filter web run test:e2e
+        env:
+          CI: true

@@ -8,7 +8,10 @@
     "start": "next start -p 3000",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install chromium",
+    "test:e2e:install:ci": "playwright install --with-deps chromium"
   },
   "dependencies": {
     "@allaboard/types": "workspace:*",
@@ -20,6 +23,7 @@
   "devDependencies": {
     "@allaboard/config-eslint": "workspace:*",
     "@allaboard/config-typescript": "workspace:*",
+    "@playwright/test": "^1.49.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.10.2",
