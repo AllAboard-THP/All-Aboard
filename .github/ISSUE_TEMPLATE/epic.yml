@@ -1,0 +1,54 @@
+name: Epic
+description: Lot de travail regroupant plusieurs tâches
+title: "[Epic] "
+labels:
+  - type:epic
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Epic = regroupement de tâches liées. Créez des issues **Task** enfants et liez-les dans la description (liste `- [ ] #`).
+
+        Project : [All-Aboard MVP](https://github.com/orgs/AllAboard-THP/projects/3)
+  - type: dropdown
+    id: pilier
+    attributes:
+      label: Pilier principal
+      options:
+        - Frontend
+        - Backend
+        - Platform
+        - Transverse
+    validations:
+      required: true
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      options:
+        - "Phase 2 — Auth & parcours"
+        - "Phase 3 — TanStack résiduel"
+        - "Phase 4 — Agent/Indexer"
+        - "Ops — Staging/Release"
+    validations:
+      required: true
+  - type: textarea
+    id: objectif
+    attributes:
+      label: Objectif produit / technique
+    validations:
+      required: true
+  - type: textarea
+    id: taches
+    attributes:
+      label: Tâches liées
+      placeholder: |
+        - [ ] #...
+        - [ ] #...
+  - type: textarea
+    id: doc
+    attributes:
+      label: Références documentation
+      value: |
+        - Docs/README.md
+        - Docs/moc-parcours-utilisateur.md

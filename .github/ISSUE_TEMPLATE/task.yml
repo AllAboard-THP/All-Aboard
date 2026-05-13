@@ -1,0 +1,73 @@
+name: Tâche
+description: Tâche implémentable (feature, fix, ops)
+title: "[Task] "
+labels:
+  - type:task
+  - priority:p2
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ajoutez l'issue au [Project All-Aboard MVP](https://github.com/orgs/AllAboard-THP/projects/3) et renseignez **Pilier**, **Phase**, **Priorité**, **Taille**.
+
+        Doc : [Docs/README.md](../Docs/README.md) · [plan Web/API](../Docs/plan-mise-en-place-web-api-donnees.md)
+  - type: dropdown
+    id: pilier
+    attributes:
+      label: Pilier
+      options:
+        - Frontend
+        - Backend
+        - Platform
+        - Transverse
+    validations:
+      required: true
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      options:
+        - "Phase 2 — Auth & parcours"
+        - "Phase 3 — TanStack résiduel"
+        - "Phase 4 — Agent/Indexer"
+        - "Ops — Staging/Release"
+    validations:
+      required: true
+  - type: dropdown
+    id: priorite
+    attributes:
+      label: Priorité
+      options:
+        - "P0 — Bloquant"
+        - "P1 — Haute"
+        - "P2 — Normale"
+        - "P3 — Basse"
+    validations:
+      required: true
+  - type: textarea
+    id: objectif
+    attributes:
+      label: Objectif
+      description: Une phrase — critère de done
+    validations:
+      required: true
+  - type: textarea
+    id: contexte
+    attributes:
+      label: Contexte / liens doc
+      placeholder: "Docs/..., chemins code, issue parente #"
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critères d'acceptation
+      value: |
+        - [ ] `pnpm verify` OK
+        - [ ] Tests ajoutés ou mis à jour si pertinent
+        - [ ] Doc technique mise à jour si changement Web/API transverse
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Avant PR
+      options:
+        - label: Issue ajoutée au Project et champs custom remplis
+          required: true
