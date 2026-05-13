@@ -50,12 +50,15 @@ body:
     id: detail
     attributes:
       label: Détail succinct
-      description: 2–4 puces — périmètre, contraintes, chemins code si connus
-      placeholder: |
-        - ...
-        - Chemins : apps/web/...
+      description: 2–4 puces — périmètre, contraintes
     validations:
       required: true
+  - type: textarea
+    id: task_doc
+    attributes:
+      label: Dossier doc tâche (si notes)
+      description: Créer Docs/tasks/NN-slug/ — voir Docs/tasks/README.md
+      placeholder: "Docs/tasks/42-mon-slug/"
   - type: textarea
     id: contexte
     attributes:
