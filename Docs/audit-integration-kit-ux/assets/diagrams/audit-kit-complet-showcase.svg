@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <defs>
+    <linearGradient id="bgs" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#bgs)"/>
+  <text x="600" y="48" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="28" font-weight="600">Kit inventory sec.8.0 -&gt; 8.11 (overview)</text>
+  <text x="600" y="82" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="14">Schema - full tables: audit-integration-kit-ux-allaboard.md sec.8 - 2026-05-13</text>
+
+  <g font-family="system-ui,sans-serif" font-size="13">
+    <rect x="40" y="120" width="170" height="100" rx="10" fill="#1e293b" stroke="#6366f1" stroke-width="2"/><text x="125" y="165" text-anchor="middle" fill="#e2e8f0" font-weight="700">8.0</text><text x="125" y="190" text-anchor="middle" fill="#94a3b8">Foundations</text>
+    <rect x="230" y="120" width="170" height="100" rx="10" fill="#1e293b" stroke="#6366f1" stroke-width="2"/><text x="315" y="165" text-anchor="middle" fill="#e2e8f0" font-weight="700">8.1</text><text x="315" y="190" text-anchor="middle" fill="#94a3b8">Chrome</text>
+    <rect x="420" y="120" width="170" height="100" rx="10" fill="#1e293b" stroke="#8b5cf6" stroke-width="2"/><text x="505" y="165" text-anchor="middle" fill="#e2e8f0" font-weight="700">8.2</text><text x="505" y="190" text-anchor="middle" fill="#94a3b8">Page nav</text>
+    <rect x="610" y="120" width="170" height="100" rx="10" fill="#1e293b" stroke="#8b5cf6" stroke-width="2"/><text x="695" y="165" text-anchor="middle" fill="#e2e8f0" font-weight="700">8.3</text><text x="695" y="190" text-anchor="middle" fill="#94a3b8">Forms</text>
+    <rect x="800" y="120" width="170" height="100" rx="10" fill="#1e293b" stroke="#ec4899" stroke-width="2"/><text x="885" y="165" text-anchor="middle" fill="#e2e8f0" font-weight="700">8.4</text><text x="885" y="190" text-anchor="middle" fill="#94a3b8">Auth</text>
+    <rect x="990" y="120" width="170" height="100" rx="10" fill="#1e293b" stroke="#ec4899" stroke-width="2"/><text x="1075" y="165" text-anchor="middle" fill="#e2e8f0" font-weight="700">8.5</text><text x="1075" y="190" text-anchor="middle" fill="#94a3b8">Buttons</text>
+
+    <rect x="40" y="240" width="170" height="100" rx="10" fill="#1e293b" stroke="#22c55e" stroke-width="2"/><text x="125" y="285" text-anchor="middle" fill="#e2e8f0" font-weight="700">8.6</text><text x="125" y="310" text-anchor="middle" fill="#94a3b8">Lists</text>
+    <rect x="230" y="240" width="170" height="100" rx="10" fill="#1e293b" stroke="#22c55e" stroke-width="2"/><text x="315" y="285" text-anchor="middle" fill="#e2e8f0" font-weight="700">8.7</text><text x="315" y="310" text-anchor="middle" fill="#94a3b8">Overlays</text>
+    <rect x="420" y="240" width="170" height="100" rx="10" fill="#1e293b" stroke="#fbbf24" stroke-width="2"/><text x="505" y="285" text-anchor="middle" fill="#e2e8f0" font-weight="700">8.8</text><text x="505" y="310" text-anchor="middle" fill="#94a3b8">Admin dense</text>
+    <rect x="610" y="240" width="170" height="100" rx="10" fill="#1e293b" stroke="#fbbf24" stroke-width="2"/><text x="695" y="285" text-anchor="middle" fill="#e2e8f0" font-weight="700">8.9</text><text x="695" y="310" text-anchor="middle" fill="#94a3b8">Product</text>
+    <rect x="800" y="240" width="170" height="100" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/><text x="885" y="285" text-anchor="middle" fill="#e2e8f0" font-weight="700">8.10</text><text x="885" y="310" text-anchor="middle" fill="#94a3b8">Legal</text>
+    <rect x="990" y="240" width="170" height="100" rx="10" fill="#312e81" stroke="#f472b6" stroke-width="2"/><text x="1075" y="285" text-anchor="middle" fill="#fde68a" font-weight="700">8.11</text><text x="1075" y="310" text-anchor="middle" fill="#cbd5e1">MVP first</text>
+
+    <rect x="40" y="380" width="1120" height="88" rx="12" fill="#312e81" stroke="#fbbf24" stroke-width="2"/>
+    <text x="600" y="420" text-anchor="middle" fill="#fde68a" font-size="18" font-weight="700">P4 - Closure (plan)</text>
+    <text x="600" y="450" text-anchor="middle" fill="#e2e8f0" font-size="14">Coverage 8.0-8.10 or WONTFIX; D1; D3 web; sec.11; R1-R6; merge Dev</text>
+  </g>
+</svg>

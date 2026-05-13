@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <marker id="arr" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="640" fill="url(#bg2)"/>
+  <text x="600" y="52" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="28" font-weight="600">Kit UX phases P0 -&gt; P4</text>
+  <text x="600" y="86" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="14">Matches plan v5.1 - P4 closure: D1, D3, WONTFIX sec.8, sec.11, merge Dev - 2026-05-13</text>
+
+  <g font-family="system-ui,sans-serif">
+    <rect x="40" y="140" width="200" height="200" rx="14" fill="#1e293b" stroke="#6366f1" stroke-width="3"/>
+    <text x="140" y="200" text-anchor="middle" fill="#a5b4fc" font-size="20" font-weight="700">P0</text>
+    <text x="140" y="232" text-anchor="middle" fill="#e2e8f0" font-size="15" font-weight="600">Foundations</text>
+    <text x="140" y="260" text-anchor="middle" fill="#94a3b8" font-size="12">sec.8.0, Tailwind build</text>
+    <text x="140" y="282" text-anchor="middle" fill="#94a3b8" font-size="12">CDN to bundle, tokens</text>
+
+    <rect x="260" y="140" width="200" height="200" rx="14" fill="#1e293b" stroke="#8b5cf6" stroke-width="3"/>
+    <text x="360" y="200" text-anchor="middle" fill="#c4b5fd" font-size="20" font-weight="700">P1</text>
+    <text x="360" y="232" text-anchor="middle" fill="#e2e8f0" font-size="15" font-weight="600">Shell + auth</text>
+    <text x="360" y="260" text-anchor="middle" fill="#94a3b8" font-size="12">sec.8.1, 8.3-5, CGU</text>
+    <text x="360" y="282" text-anchor="middle" fill="#94a3b8" font-size="12">Devise, nav, flash</text>
+
+    <rect x="480" y="140" width="200" height="200" rx="14" fill="#1e293b" stroke="#ec4899" stroke-width="3"/>
+    <text x="580" y="200" text-anchor="middle" fill="#fbcfe8" font-size="20" font-weight="700">P2</text>
+    <text x="580" y="232" text-anchor="middle" fill="#e2e8f0" font-size="15" font-weight="600">Content</text>
+    <text x="580" y="260" text-anchor="middle" fill="#94a3b8" font-size="12">sec.8.2, 8.6-7</text>
+    <text x="580" y="282" text-anchor="middle" fill="#94a3b8" font-size="12">Feed, lists, messages</text>
+
+    <rect x="700" y="140" width="200" height="200" rx="14" fill="#1e293b" stroke="#22c55e" stroke-width="3"/>
+    <text x="800" y="200" text-anchor="middle" fill="#86efac" font-size="20" font-weight="700">P3</text>
+    <text x="800" y="232" text-anchor="middle" fill="#e2e8f0" font-size="15" font-weight="600">Dense</text>
+    <text x="800" y="260" text-anchor="middle" fill="#94a3b8" font-size="12">sec.8.8-10, chat, admin</text>
+    <text x="800" y="282" text-anchor="middle" fill="#94a3b8" font-size="12">Mail, legal</text>
+
+    <rect x="920" y="140" width="240" height="200" rx="14" fill="#312e81" stroke="#fbbf24" stroke-width="3"/>
+    <text x="1040" y="195" text-anchor="middle" fill="#fde68a" font-size="20" font-weight="700">P4</text>
+    <text x="1040" y="228" text-anchor="middle" fill="#e2e8f0" font-size="15" font-weight="600">Closure</text>
+    <text x="1040" y="255" text-anchor="middle" fill="#cbd5e1" font-size="12">D1 showcase, D3 Next</text>
+    <text x="1040" y="275" text-anchor="middle" fill="#cbd5e1" font-size="12">sec.8 coverage, sec.11</text>
+    <text x="1040" y="295" text-anchor="middle" fill="#cbd5e1" font-size="12">R1-R6, merge Dev</text>
+
+    <line x1="240" y1="240" x2="260" y2="240" stroke="#64748b" stroke-width="4" marker-end="url(#arr)"/>
+    <line x1="460" y1="240" x2="480" y2="240" stroke="#64748b" stroke-width="4" marker-end="url(#arr)"/>
+    <line x1="680" y1="240" x2="700" y2="240" stroke="#64748b" stroke-width="4" marker-end="url(#arr)"/>
+    <line x1="900" y1="240" x2="920" y2="240" stroke="#64748b" stroke-width="4" marker-end="url(#arr)"/>
+  </g>
+
+  <rect x="40" y="400" width="1120" height="120" rx="12" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="600" y="445" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="15">Mermaid + task lists: plan-integration-kit-ux-allaboard.md</text>
+  <text x="600" y="478" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="13">Gates V / R / M / S / P, build decision, spike before P0</text>
+</svg>
