@@ -5,19 +5,19 @@
 
 **Inventaire §8 · ADN · risques · critères §11**
 
-[![Audit](https://img.shields.io/badge/audit-1.5-6366f1?style=flat-square)](./audit-integration-kit-ux-allaboard.md)
-[![Plan](https://img.shields.io/badge/plan-5.1-8b5cf6?style=flat-square)](./plan-integration-kit-ux-allaboard.md)
+[![Audit](https://img.shields.io/badge/audit-1.7-6366f1?style=flat-square)](./audit-integration-kit-ux-allaboard.md)
+[![Plan](https://img.shields.io/badge/plan-6.1-8b5cf6?style=flat-square)](./plan-integration-kit-ux-allaboard.md)
 [![CI](https://img.shields.io/badge/CI-pnpm%20verify-22c55e?style=flat-square)](../AGENTS.md)
 
 </div>
 
 > [!TIP]
-> **Audit** = *quoi* : **§8** inventaire, **§9** phasage stratégique, **§11** succès. **Plan v5.1** = *comment / quand* : phases **P0–P4**, **V/R/M/S/P**, **R1–R6**, [Décision build](plan-integration-kit-ux-allaboard.md#13-décision-build). Chaque PR kit cite **§8.x** et suit les gates du plan.
+> **Audit** = *quoi* : **§8** inventaire, **§9** phasage stratégique, **§11** succès. **Plan v6.1** = *comment / quand* : phases **P0–P4**, **V/T/M/S/P**, **R1–R6**, [Décommission `thp-final`](plan-integration-kit-ux-allaboard.md#decom-thp-final), [procédure agent](plan-integration-kit-ux-allaboard.md#procédure-dexécution-agent), [Décision build](plan-integration-kit-ux-allaboard.md#13-décision-build). Chaque PR kit cite **§8.x** et suit les gates du plan.
 
-**Version** : 1.5 · **Date** : 2026-05-13  
-**Périmètre** : monorepo All-Aboard (`apps/thp-final` principal, `apps/web`, `apps/api`)
+**Version** : 1.7 · **Date** : 2026-05-13  
+**Périmètre** : monorepo All-Aboard — **kit UX cible `apps/web`** (Next 15) ; `apps/api` sans UI ; **`apps/thp-final` (Rails)** = **obsolète** — **abandon définitif** ; retirer du dépôt et de la CI selon le [plan — Décommission](plan-integration-kit-ux-allaboard.md#decom-thp-final) (plus d’option de travail sur Rails).
 
-**Décisions déjà posées** : **Tailwind** seule stack utilitaire ; cible **build npm** sur `thp-final` (fin du **CDN**) ; charte **AllAboard** (`--sl-*`, `application.css`) — pas de kit tiers imposé ; pas de fidélité à un gabarit externe type « Grenoble Roller ».
+**Décisions déjà posées** : **Tailwind** seule stack utilitaire côté web ; **shadcn/ui** + **`cn`** ; **Storybook** dans `apps/web` ; charte **AllAboard** (tokens `--sl-*` / équivalent CSS) — pas de kit tiers imposé hors cette stack ; pas de fidélité à un gabarit externe type « Grenoble Roller ».
 
 ---
 
@@ -42,9 +42,9 @@
 ## 1. Résumé exécutif
 
 > [!NOTE]
-> AllAboard a déjà une **direction visuelle cohérente** (dark UI, Inter, indigo / violet / rose, glass, feed / auth / chat). Le kit ne remplace pas un thème externe : il **formalise** tokens, primitives, doc et règles — compatible **Tailwind**, **Hotwire**, îlots **React** (`ChatApp`).
+> AllAboard a déjà une **direction visuelle cohérente** (dark UI, Inter, indigo / violet / rose, glass, feed / auth / chat). Le kit **formalise** tokens, primitives, doc et règles sur **`apps/web`** — **Tailwind**, **shadcn/ui**, **Storybook**. Toute capture du rendu legacy (screenshots, dernier commit) doit être faite **avant** suppression de `apps/thp-final` ; ensuite la seule vérité UI est **`apps/web`**.
 
-**Livrables audit** : cadre **kit de base**, **trois** figures (§2), inventaire **§8**, phasage **§9**, risques **§10**, critères **§11**. L’**exécution** (cases `- [ ]`, `pnpm verify`, `bin/rails test`, **R1–R6**) : [plan d’intégration v5.1](plan-integration-kit-ux-allaboard.md).
+**Livrables audit** : cadre **kit de base**, **trois** figures (§2), inventaire **§8**, phasage **§9**, risques **§10**, critères **§11**. L’**exécution** (cases `- [ ]`, `pnpm verify`, **T** Storybook, **R1–R6**) : [plan d’intégration v6.1](plan-integration-kit-ux-allaboard.md).
 
 ---
 
@@ -81,22 +81,22 @@ Vue synthétique des **phases** (alignée [§9](#9-phasage-et-plan)).
 
 ## 3. Contexte technique
 
-> État **au moment de l’audit** (à réviser après migration CDN → build).
+> **v1.7** : la cible d’implémentation du kit est **`apps/web`** uniquement. Tant que `apps/thp-final/` existe encore dans le dépôt, il s’agit de **legacy à retirer** ([Décommission](plan-integration-kit-ux-allaboard.md#decom-thp-final)) — pas d’option de maintenance parallèle.
 
-| Surface | Rôle UX | Stack UI actuelle |
-|---------|---------|-------------------|
-| **`apps/thp-final`** | Produit complet (auth, feed, explore, ressources, messages, admin, mentor) | **Tailwind CDN** + config inline dans `application.html.erb` ; **`application.css`** (`:root`, `.glass`, chat, flash, auth) ; **ERB** + **Stimulus** ; **React** (chat) |
-| **`apps/web`** | Vitrine Next, BFF feed | **Tailwind** npm ; React ; React Query sur parties du feed |
+| Surface | Rôle UX | Stack UI |
+|---------|---------|-----------|
+| **`apps/web`** | **Cible kit** : pages Next, BFF feed, futur shell produit | **Tailwind** (à finaliser selon [plan v6.1](plan-integration-kit-ux-allaboard.md)), React 19, React Query ; **shadcn/ui** + **Storybook** (plan) |
+| **`apps/thp-final`** | **Obsolète** (Rails) — à supprimer du monorepo | N/A après [Décommission](plan-integration-kit-ux-allaboard.md#decom-thp-final) |
 | **`apps/api`** | Pas d’UI | N/A |
 
-**Constat** : la vérité visuelle **produit** vit surtout dans **Rails** ; Next doit **converger** (tokens partagés, **D3** dans le plan).
+**Constat** : après décommission, la vérité visuelle et les parcours vivent **uniquement** sur **`apps/web`**, avec tokens partagés (**D2**, **D3**) et le [plan Web/API](plan-mise-en-place-web-api-donnees.md).
 
-**Fichiers de référence** :
+**Fichiers de référence (implémentation)** :
 
-- `apps/thp-final/app/views/layouts/application.html.erb`  
-- `apps/thp-final/app/assets/stylesheets/application.css`  
-- `apps/thp-final/config/routes.rb`  
-- `apps/web/app/`  
+- `apps/web/app/` — routes et layouts App Router  
+- `apps/web/package.json` — scripts et dépendances UI  
+
+**Référence historique (avant suppression du dossier)** — utile pour copier couleurs / espacements une dernière fois : chemins sous `apps/thp-final/` listés en **§8.4** (colonnes « référence historique »). Après décommission, retirer ces chemins de l’annexe **§13**.
 
 ---
 
@@ -111,7 +111,7 @@ Vue synthétique des **phases** (alignée [§9](#9-phasage-et-plan)).
 | Accent | `#ec4899` | `--sl-accent` |
 | Fonds | `#020617`, `#0f172a` | `--sl-darker`, `--sl-dark` |
 | Surface cartes | `#1e293b`, overlays | `--sl-surface`, `.glass` |
-| Texte | hiérarchie slate / blanc | Tailwind + ERB |
+| Texte | hiérarchie slate / blanc | Tailwind + composants |
 
 ### 4.2 Typographie et icônes
 
@@ -138,7 +138,7 @@ Aligné sur [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) et les ro
 | Zone | Besoins kit |
 |------|-------------|
 | **Pré-auth** | Formulaires, flash, liens, layout auth / grille |
-| **Devise** | Mêmes **primitives** que home |
+| **Auth (compte)** | Mêmes **primitives** que landing (pages Next ; plus « Devise » comme stack cible) |
 | **Gate CGU** | Modal, checkbox + CTA disabled / actif |
 | **Shell connecté** | Nav glass, menu compte, badges, mobile, footer |
 | **Feed** | Cartes, listes, sidebars, CTA, scroll |
@@ -153,29 +153,29 @@ Aligné sur [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) et les ro
 | Gap | Description | Impact |
 |-----|-------------|--------|
 | **Tokens dispersés** | `:root`, Tailwind inline, hex ERB / Next | Thème clair et maintenance difficiles |
-| **Tailwind CDN** | Pas de purge build | Gap jusqu’à **build npm** ([plan](plan-integration-kit-ux-allaboard.md)) |
-| **Formulaires dupliqués** | Home vs Devise | Dette UX / a11y |
-| **Pas d’inventaire doc** | Pas « composant → partial » | Onboarding coûteux |
-| **Next vs Rails** | Deux pipelines | Dérive marque sans tokens partagés |
-| **Tests UI** | Pas `test/system` / Playwright `thp-final` | [Plan](plan-integration-kit-ux-allaboard.md) : **V/R/M/S/P** + **R+** Rails par phase ; **D4** |
+| **Tailwind CDN (Rails)** | Pas de purge build côté historique | Hors périmètre kit v6 ; **interdit** sur `apps/web` (plan [phase 0 — 0.6](plan-integration-kit-ux-allaboard.md#phase-0-fondations)) |
+| **Formulaires dupliqués** | Anciennement home vs Devise Rails | À unifier en **composants** `apps/web` |
+| **Pas d’inventaire doc** | Pas « composant → story » | Onboarding coûteux — **D1** Storybook |
+| **Legacy Rails** | Tant que `apps/thp-final` existe | [Décommission](plan-integration-kit-ux-allaboard.md#decom-thp-final) — **D2** / **D3** pour éviter toute dépendance au legacy |
+| **Tests UI** | Pas Playwright systématique | [Plan v6.1](plan-integration-kit-ux-allaboard.md) : **V**, **T** (Storybook), **M/S**, **P** si **D4** |
 
 ---
 
 ## 7. Définition du kit cible
 
-Ensemble **contractuel** (pas une lib npm obligatoire jour 1) :
+Ensemble **contractuel** sur **`apps/web`** :
 
-1. **Tokens** — sémantique stable → `theme.extend` et/ou `application.css`.  
-2. **Primitives** — `Button`, `Input`, `Card`, `Modal`, `Badge`, `NavLink`, `Toast`, `SubjectChip`… en **ERB + Tailwind** (+ CSS ciblé bulles chat).  
+1. **Tokens** — sémantique stable → variables CSS + `tailwind.config` / `@theme` (selon [Décision build](plan-integration-kit-ux-allaboard.md#13-décision-build)).  
+2. **Primitives** — `Button`, `Input`, `Card`, `Dialog`, `Badge`, navigation, toasts… via **shadcn/ui** (Radix) + Tailwind + **`cn`**.  
 3. **Règles** — `glass` vs `bg-surface`, typo, **WCAG** sur glass.  
-4. **Vitrine** (optionnel) — Storybook ou page showcase (`thp-final`).  
-5. **Package** (optionnel) — `packages/ui-tokens` pour `web` + doc Rails.
+4. **Vitrine** — **Storybook** dans `apps/web` (**D1**), stories alignées **§8**.  
+5. **Package** (optionnel) — `packages/ui-tokens` consommé par **`apps/web`**.
 
 ---
 
 ## 8. Inventaire canonique
 
-Checklist **fonctionnelle** : une ligne **§8.x** ≈ une **primitive documentée** (partial, utilitaire, React). **Suivi PR** : [plan v5.1](plan-integration-kit-ux-allaboard.md).
+Checklist **fonctionnelle** : une ligne **§8.x** ≈ une **primitive documentée** (composant React + story Storybook, ou page App Router). **Suivi PR** : [plan v6.1](plan-integration-kit-ux-allaboard.md).
 
 ### Alignement audit ↔ plan (référence)
 
@@ -239,22 +239,24 @@ Checklist **fonctionnelle** : une ligne **§8.x** ≈ une **primitive documenté
 | **Search** | Messages, explore |
 | **Grille champs** | ex. inscription 2 col |
 | **Actions** | Primaire, secondaire, annuler |
-| **Erreurs** | Équivalent `devise/shared/_error_messages` |
+| **Erreurs** | Équivalent messages d’erreur auth (composant partagé, cf. `_error_messages` Rails) |
 
 ### 8.4 Auth et compte
 
-| Écran | Fichier |
-|-------|---------|
-| Connexion | `devise/sessions/new.html.erb` |
-| Inscription | `devise/registrations/new.html.erb` |
-| Édition compte | `devise/registrations/edit.html.erb` |
-| MDP oublié | `devise/passwords/new.html.erb` |
-| Reset MDP | `devise/passwords/edit.html.erb` |
-| Confirmation | `devise/confirmations/new.html.erb` |
-| Déblocage | `devise/unlocks/new.html.erb` |
-| Liens | `devise/shared/_links.html.erb` |
-| Landing | `home/index.html.erb` |
-| **Mails** | `devise/mailer/*.html.erb` |
+**Cible implémentation** : routes et composants sous **`apps/web/app/`** (convention App Router à figer dans le README `web`). Colonnes « référence historique » = anciennes vues Rails — **obsolètes** après [Décommission](plan-integration-kit-ux-allaboard.md#decom-thp-final) ; conserver captures ou lien commit si besoin avant suppression.
+
+| Écran | Cible `apps/web` (à créer) | Référence historique Rails |
+|-------|---------------------------|---------------------------|
+| Connexion | ex. `app/(auth)/login/page.tsx` *(nom à normaliser)* | `devise/sessions/new.html.erb` |
+| Inscription | ex. `app/(auth)/register/page.tsx` | `devise/registrations/new.html.erb` |
+| Édition compte | ex. `app/(app)/account/page.tsx` | `devise/registrations/edit.html.erb` |
+| MDP oublié | ex. route auth dédiée | `devise/passwords/new.html.erb` |
+| Reset MDP | ex. route auth dédiée | `devise/passwords/edit.html.erb` |
+| Confirmation | ex. route auth dédiée | `devise/confirmations/new.html.erb` |
+| Déblocage | ex. route auth dédiée | `devise/unlocks/new.html.erb` |
+| Liens | composant partagé auth | `devise/shared/_links.html.erb` |
+| Landing | `app/page.tsx` ou segment marketing | `home/index.html.erb` |
+| **Mails** | preview Storybook / react-email / templates Next | `devise/mailer/*.html.erb` |
 
 ### 8.5 Boutons
 
@@ -290,7 +292,7 @@ Checklist **fonctionnelle** : une ligne **§8.x** ≈ une **primitive documenté
 | **Drawer** | Mobile (optionnel) |
 | **Tooltip** | Optionnel, a11y |
 | **Progress** | Upload |
-| **Spinner** | Rare, Turbo |
+| **Spinner** | Rare ; pas de dépendance Turbo côté Next |
 
 ### 8.8 Admin et données denses
 
@@ -305,7 +307,7 @@ Checklist **fonctionnelle** : une ligne **§8.x** ≈ une **primitive documenté
 
 | Élément | Note |
 |---------|------|
-| **Bulles chat** | own / other — `application.css` |
+| **Bulles chat** | own / other — tokens + CSS module ou fichier dédié `apps/web` |
 | **Bloc code** | Commentaires + hljs |
 | **Carte post** | Likes, bookmarks, meta, urgence |
 | **Profil** | Bannière, avatar, mentor |
@@ -330,15 +332,16 @@ Livrer d’abord : **tokens** + **grille** ; **boutons** + **champs** + **erreur
 ## 9. Phasage et plan
 
 > [!NOTE]
-> **§9** = vue **stratégique** (tableau ci‑dessous). **Plan v5.1** = livrables numérotés, **V/R/M/S/P**, **R1–R6**, **Mermaid**, **Décision build**, **P4** clôture.
+> **§9** = vue **stratégique** (tableau ci‑dessous). **Plan v6.1** = livrables numérotés, **V/T/M/S/P**, **R1–R6**, [Décommission `thp-final`](plan-integration-kit-ux-allaboard.md#decom-thp-final), procédure **agent**, **Mermaid**, **Décision build**, **P4** clôture.
 
 | Phase | Contenu | Critère de fin |
 |-------|---------|----------------|
-| **0** | Tokens + **build Tailwind npm** + retrait CDN + `:root` / `tailwind.config` | CI reproductible ; `pnpm verify` vert |
-| **1** | Nav, footer, menu, **CGU**, auth unifié | Visiteur → connecté ; contrastes modales |
-| **2** | Cartes, listes, explore, ressources, événements | Primitives ; moins de hex en ERB |
-| **3** | Chat ERB + React, admin/mentor, mails | Bulles + layouts ; mails cartographiés |
-| **4** *(plan)* | **D1**, **D3**, **WONTFIX §8**, **§11** | Merge `Dev` |
+| **−1** *(plan)* | **Décommission** `apps/thp-final` : CI, Turbo, Docker, doc | Checklist plan cochée ; `pnpm verify` sans Rails |
+| **0** | Tokens + Tailwind build + **shadcn** + **Storybook** + pas de CDN sur Next | `pnpm verify` + **T** + **M** R1 |
+| **1** | Nav, footer, menu, **CGU**, auth (App Router), primitives shadcn | **R1–R3** ; stories §8.1 / §8.3–8.5 |
+| **2** | Cartes, listes, feed, messages, navigation de page | **R4** / **R5** ; données via plan Web/API |
+| **3** | Chat React, admin/mentor, mails, légal | **R5** / **R6** ; pas de stack temps réel legacy |
+| **4** *(plan)* | **D1** tableau stories, **D3**, **WONTFIX §8**, **§11** | Merge `Dev` |
 
 Les figures **§2** couvrent surtout les phases **0–3** ; la **phase 4** est détaillée dans le [plan](plan-integration-kit-ux-allaboard.md) (schéma Mermaid inclus).
 
@@ -348,10 +351,11 @@ Les figures **§2** couvrent surtout les phases **0–3** ; la **phase 4** est d
 
 | Risque | Mitigation |
 |--------|------------|
-| Turbo / Stimulus | PR petites ; plan : **R1–R6** + **R** ; `test/system` ou **P** (**D4**) |
-| Tailwind vs CSS custom | Primitives = Tailwind ; **exceptions** documentées dans `application.css` (« pourquoi ») |
-| Double stack | Pas Bootstrap / second framework |
-| Next vs Rails | Tokens partagés + PR alignement **D3** |
+| SSR / client « use client » | PR petites ; stories Storybook pour états ; plan : **V**, **T**, **M** |
+| Tailwind vs CSS custom | Primitives = Tailwind ; exceptions documentées dans le README kit |
+| Double stack | Pas Bootstrap / second framework parallèle sur `web` |
+| Legacy `thp-final` encore présent | Exécuter [Décommission](plan-integration-kit-ux-allaboard.md#decom-thp-final) avant d’étendre le kit en prod |
+| Auth non finalisée | Placeholders + lien [plan Web/API](plan-mise-en-place-web-api-donnees.md) ; **WONTFIX** daté si blocage |
 
 ---
 
@@ -360,7 +364,7 @@ Les figures **§2** couvrent surtout les phases **0–3** ; la **phase 4** est d
 > Le [plan](plan-integration-kit-ux-allaboard.md) opérationnalise ces points (tâches + **R1–R6**).
 
 - [ ] Document **tokens** validé et reflété dans le code.  
-- [ ] **Aucune** dépendance UI majeure non validée (Tailwind + CSS actuel).  
+- [ ] **Aucune** dépendance UI majeure non validée (Tailwind + shadcn + Storybook selon plan).  
 - [ ] **Trois** parcours sans régression majeure : landing + login, CGU, feed + post.  
 - [ ] **Accessibilité** : focus, labels, CGU disabled, contrastes `glass`.  
 - [ ] `pnpm verify` vert — [AGENTS.md](../AGENTS.md), [CI](../../.github/workflows/ci.yml).
@@ -371,7 +375,7 @@ Les figures **§2** couvrent surtout les phases **0–3** ; la **phase 4** est d
 
 | Ressource | Lien |
 |-----------|------|
-| **Plan d’intégration v5.1** (P0–P4, tâches, tests, Mermaid) | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) |
+| **Plan d’intégration v6.1** (agent, Décommission, P0–P4, V/T/M/S/P, Mermaid) | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) |
 | Parcours produit | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) |
 | Protocole agent / PR | [AGENTS.md](../AGENTS.md) |
 | Carte de la doc | [map-of-content.md](map-of-content.md) |
@@ -381,8 +385,8 @@ Les figures **§2** couvrent surtout les phases **0–3** ; la **phase 4** est d
 
 ## 13. Annexes chemins
 
-Tokens `:root` — `apps/thp-final/app/assets/stylesheets/application.css` (début de fichier : `--sl-primary`, …).  
-Thème Tailwind inline — `apps/thp-final/app/views/layouts/application.html.erb` (bloc `tailwind.config` ~l.38–69).  
-Layout connecté — même fichier, `body` et `main` (~l.89–96).
+**Cible `apps/web`** : `apps/web/app/` (App Router), futurs `apps/web/components/ui` (shadcn), `apps/web/.storybook/`, `*.stories.tsx`.
+
+**Après [Décommission `thp-final`](plan-integration-kit-ux-allaboard.md#decom-thp-final)** : ne plus lister de chemins sous `apps/thp-final/` ici. Avant suppression du dossier, les chemins utiles étaient notamment `app/assets/stylesheets/application.css` et `app/views/layouts/application.html.erb` (voir §8.4 pour la correspondance écrans).
 
 *Fin du document d’audit.*

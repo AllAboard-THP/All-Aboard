@@ -2,7 +2,7 @@
 
 **Objectif** : une **source canonique** par sujet ; les autres fichiers **renvoient** ou complètent sans dupliquer la vérité opérationnelle.
 
-**Mise à jour** : 2026-05-13 (audit kit UX **v1.5** ; plan intégration kit UX **v5.1**).
+**Mise à jour** : 2026-05-13 (audit kit UX **v1.7** ; plan intégration kit UX **v6.1**).
 
 ---
 
@@ -21,8 +21,8 @@
 | [dataflow-architecture.md](dataflow-architecture.md) | Dataflow **cible** multi-services (vision). |
 | [proposition-stack-technique-monorepo-2026.md](proposition-stack-technique-monorepo-2026.md) | Vision **stack v1+** (GraphQL, Prisma, etc.) — pas l’état du code MVP. |
 | [vision/README.md](vision/README.md) | Index court des docs vision (liens vers proposition + dataflow). |
-| [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | **Audit** kit UX (**v1.5**) : inventaire **§8**, phasage, risques, **§11** ; mise en page GitHub. Exécution : [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md). Complète [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md). |
-| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v5.1** — README GitHub : badges, alertes, sommaire, listes de tâches) ; inventaire dans [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) §8. |
+| [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | **Audit** kit UX (**v1.7**) : inventaire **§8**, phasage, risques, **§11** ; mise en page GitHub. Exécution : [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md). Complète [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md). |
+| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v6.1** — Décommission **`thp-final`**, procédure **agent**, **V/T/M/S/P**, Storybook, shadcn) ; inventaire dans [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) §8. |
 
 Racine dépôt : [AGENTS.md](../AGENTS.md) (protocole PR / `pnpm verify`) ; [README.md](../README.md) racine si présent pour dev local — la **doc produit/architecture** canonique reste sous `Docs/`.
 
@@ -69,7 +69,7 @@ matrice ──► README, deploiement-instance
 | Bootstrap Turborepo historique | [archive/plan-initialisation-turborepo-mvp-2026-01.md](archive/plan-initialisation-turborepo-mvp-2026-01.md) | Stub [plan-initialisation-turborepo-mvp.md](plan-initialisation-turborepo-mvp.md). |
 | Protocole agent / CI locale | [AGENTS.md](../AGENTS.md) | Docs : mentionner `pnpm verify` seulement en renvoi. |
 | Kit UX / design system (tokens, primitives, phasage) | [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | **Audit §8** = inventaire ; [plan](plan-integration-kit-ux-allaboard.md) = tâches & tests. moc-parcours : parcours produit uniquement. |
-| Plan d’intégration kit UX (phases, tests, merge) | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | Audit **v1.5** §8 ; plan **v5.1** (README GitHub : alertes, sommaire, `- [ ]`). |
+| Plan d’intégration kit UX (phases, tests, merge) | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | Audit **v1.7** §8 ; plan **v6.1** (Décommission Rails, procédure agent, Storybook, shadcn, `apps/web`). |
 
 ---
 

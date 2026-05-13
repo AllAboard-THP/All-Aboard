@@ -22,8 +22,8 @@ Ce fichier est la **référence unique** pour l’ordre de lecture, la **timelin
 | [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md) | Conventions déploiement + tables de variables **génériques**. |
 | [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md) | Faits observés sur l’instance Dokploy (domaines, branches, `API_URL`). |
 | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | Parcours produit (MOC), sans stack imposée. |
-| [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | Audit **kit UX** (**v1.5**) : inventaire **§8**, phasage, risques, **§11** ; mise en page GitHub. Exécution : [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md). |
-| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v5.1** — mise en page type README GitHub : badges, alertes, sommaire, tâches `- [ ]`) ; détail §8 dans l’audit. |
+| [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | Audit **kit UX** (**v1.7**) : inventaire **§8**, phasage, risques, **§11** ; mise en page GitHub. Exécution : [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md). |
+| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v6.1** — Décommission **`thp-final`**, procédure **agent**, `apps/web`, **V/T/M/S/P**, Storybook, shadcn) ; détail §8 dans l’audit. |
 | [vision/README.md](vision/README.md) | Index : dataflow cible + proposition stack v1+ (hors code MVP actuel). |
 
 ---
@@ -81,7 +81,7 @@ Les phases restent un **guide** ; le détail technique (env, contrat `/feed`, sm
 | `apps/web` | Next App Router ; SSR feed ; BFF `GET /api/feed` ; TanStack installé + **invalidation** sur la home. |
 | Auth | Absente dans web/api monorepo — **Phase 2**. |
 | TanStack | Socle + usage home sur le feed — extension **Phase 3 résiduelle**. |
-| `apps/thp-final` | Rails (historique) — hors timeline du MVP JS sauf décision explicite. |
+| `apps/thp-final` | Rails **obsolète** — **abandon définitif** ; retirer du dépôt et de la CI ([plan kit — Décommission](plan-integration-kit-ux-allaboard.md#decom-thp-final)). |
 
 ---
 
