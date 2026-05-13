@@ -5,13 +5,14 @@
 
 **Exécution · gates · phases · merge `Dev`**
 
-[![Version](https://img.shields.io/badge/version-2.0-6366f1?style=flat-square)](./plan-integration-kit-ux-allaboard.md)
+[![Version](https://img.shields.io/badge/version-2.1-6366f1?style=flat-square)](./plan-integration-kit-ux-allaboard.md)
 [![Scope](https://img.shields.io/badge/scope-apps--web-0f172a?style=flat-square)](../../apps/web)
 [![Vérif](https://img.shields.io/badge/CI-pnpm%20verify-22c55e?style=flat-square)](../AGENTS.md)
 
 </div>
 
-**Version** : **2.0** · **Date** : 2026-05-14  
+**Version** : **2.1** · **Date** : 2026-05-14  
+**v2.1** : **Motion in-app** — [§2.7](#motion-in-app), décision **D7**, livrable phase **0.9** ; stack reco (`motion` / `framer-motion` exclusif, `tailwindcss-animate` complément, exclusions GSAP / Lenis / Lottie pour le socle, tokens + `prefers-reduced-motion`).  
 **v2.0** : restructuration **agent-first** — [§0](#0-chemin-dexécution-autonome-ordre-strict) (ordre strict + arbre de décision), blocs **Prérequis / Sortie** sur chaque gate et phase, règles d’exécution regroupées en [§2](#procédure-dexécution-agent) ; **ancres existantes conservées** pour les liens depuis l’audit et `apps/web`.  
 **v1.3** : Node / Storybook (D1, §14) ; **v1.2** : Storybook avant Tailwind/shadcn + réalignement.
 
@@ -23,10 +24,10 @@
 
 0. [Chemin d’exécution autonome (ordre strict)](#0-chemin-dexécution-autonome-ordre-strict)  
 1. [Rôle et périmètre](#1-rôle-et-périmètre)  
-2. [Règles d’exécution (agent)](#procédure-dexécution-agent)  
+2. [Règles d’exécution (agent)](#procédure-dexécution-agent) · [Motion in-app](#motion-in-app)  
 3. [Jalons V / T / M / S / P](#jalons-de-test-v--t--m--s--p)  
 4. [G0 — Décommission `thp-final`](#decom-thp-final)  
-5. [Décisions MVP (D1–D6)](#décisions-mvp-d1d6)  
+5. [Décisions MVP (D1–D7)](#décisions-mvp-d1d6)  
 6. [G1 — Spike technique](#gate-g1--spike-technique)  
 7. [Phase 0 — Fondations](#phase-0--fondations)  
 8. [Phase 1 — Shell et auth](#phase-1--shell-et-auth)  
@@ -162,6 +163,33 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 [ ] Décommission G0 : terminée ou N/A (dossier absent + CI sans Ruby/Rails)
 ```
 
+<a id="motion-in-app"></a>
+
+### 2.7 Motion in-app (reco stack)
+
+**Cible** : motion **in-app** (feed, shell, messages, modales, listes, états chargement) — pas une stratégie scroll storytelling landing. Aligné audit **§4.3** / **§8.0** (durées, easing). Croiser [D7](#décisions-mvp-d1d6) et **D6** (`prefers-reduced-motion`).
+
+#### À installer (reco réaliste)
+
+| Élément | Détail |
+|--------|--------|
+| **`motion`** *ou* **`framer-motion`** | **Une seule** des deux (pas les deux). Sert pour : listes (**stagger**, reorder léger), **master–detail** (panneaux, `layout`), **modales / drawers** (`AnimatePresence`), **états** (loading → contenu), **micro-transitions** sur cartes. |
+| **Rien d’autre d’obligatoire** | Pour un in-app **sérieux**, ce socle React + CSS / Tailwind suffit comme **défaut** du kit. |
+| **`tailwindcss-animate`** | **Complément** utile si stack **shadcn** classique (petites entrées / sorties) ; **ne porte pas** seul un motion-first sur **layouts** complexes. |
+
+#### À ne pas prioriser pour l’in-app
+
+| Outil | Raison |
+|--------|--------|
+| **GSAP + ScrollTrigger** | Surtout **scroll storytelling** (landing) ; peu rentable sur feed / messages sans gros récit au scroll. |
+| **Lenis** (smooth scroll global) | Souvent **contre-productif** in-app (accessibilité, sensation « lourd »). |
+| **Lottie / Rive** | Uniquement si **illustrations animées** produit ; pas pour le **squelette** motion de l’app. |
+
+#### Hors paquets (indispensable)
+
+- **Tokens CSS** (durées, easing) + classes Tailwind pour le défaut (**opacity** / **transform**) — lien [D2](#décisions-mvp-d1d6), livrables phase 0.  
+- **`prefers-reduced-motion`** : parcours in-app **sans** motion décorative ; conserver des transitions **courtes** pour **focus** / ouverture **modale** si besoin — cohérent [D6](#décisions-mvp-d1d6).
+
 ---
 
 <a id="jalons-de-test-v--t--m--s--p"></a>
@@ -217,18 +245,19 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 <a id="décisions-mvp-d1d6"></a>
 
-## 5. Décisions MVP (D1–D6)
+## 5. Décisions MVP (D1–D7)
 
 > Valeurs **de démarrage**. Les modifier = **issue** + mise à jour de ce tableau + date.
 
-| ID | Sujet | Décision MVP (plan v2.0) |
+| ID | Sujet | Décision MVP (plan v2.1) |
 |:---:|--------|--------------------------|
 | **D1** | Storybook dans `apps/web` + couverture ↔ §8 (phase 4) | Storybook **obligatoire** ; tableau primitif → story en phase 4. **`build-storybook` en CI** dès G1 vert (étape workflow). Si CI Storybook **avant** [décision Tailwind §14](#13-décision-build) finale, **revoir** l’étape après choix A/B. **Node** : CLI **Storybook 10+** → Node **20.19+** ; en **20.18.x** → pin **8.4.x** + `pnpm dlx storybook@8.4.x init` — [`apps/web/README.md`](../../apps/web/README.md). |
-| **D2** | Tokens | **Phase 0** : variables CSS + table token → classe dans `apps/web` (ou doc). `packages/ui-tokens` = **option post-MVP** (issue). |
+| **D2** | Tokens | **Phase 0** : variables CSS + table token → classe dans `apps/web` (ou doc) ; y inclure **durées / easing** motion ([§2.7](#motion-in-app), audit §8.0). `packages/ui-tokens` = **option post-MVP** (issue). |
 | **D3** | Types / BFF / SSR | Toute page feed : **`packages/types`** + BFF/SSR selon [plan Web/API](plan-mise-en-place-web-api-donnees.md) — pas de contrat parallèle. |
 | **D4** | E2E Playwright | **Actif** ; merge `Dev` exige **P** sur **R1–R6** applicables. **M/S** = optionnel. |
 | **D5** | Thème light | **MVP dark uniquement** ; light = issue datée post-merge si besoin. |
-| **D6** | Accessibilité MVP | **Focus visible**, **tabulation** shell + auth, **labels** + CGU non contournable ; **P** couvre au minimum **navigation clavier** sur les parcours testés. |
+| **D6** | Accessibilité MVP | **Focus visible**, **tabulation** shell + auth, **labels** + CGU non contournable ; **P** couvre au minimum **navigation clavier** sur les parcours testés. **`prefers-reduced-motion`** : voir [§2.7](#motion-in-app). |
+| **D7** | Motion in-app (libs) | **`motion`** *ou* **`framer-motion`** exclusif (pas les deux). **`tailwindcss-animate`** = complément shadcn si besoin. **Pas** par défaut sur le socle : GSAP + ScrollTrigger, Lenis, Lottie / Rive — détail [§2.7](#motion-in-app). |
 
 ---
 
@@ -292,7 +321,8 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 - [ ] **0.5** — Focus ring + **z-index** (modales, nav, toasts).  
 - [ ] **0.6** — Aucune URL **`cdn.tailwindcss.com`** sur les routes Next livrées (grep ou test).  
 - [ ] **0.7** — Pas de second framework utilitaire (Bootstrap, MUI parallèle, etc.).  
-- [ ] **0.8** — Preview Storybook : globals / thème ; ≥ 1 story par famille **amorcée** pour phase 1. Si Storybook était **avant** G1‑a/b : valider ici que preview = chaîne Tailwind/tokens **réelle**.
+- [ ] **0.8** — Preview Storybook : globals / thème ; ≥ 1 story par famille **amorcée** pour phase 1. Si Storybook était **avant** G1‑a/b : valider ici que preview = chaîne Tailwind/tokens **réelle**.  
+- [ ] **0.9** — Motion in-app : paquet unique **`motion`** *ou* **`framer-motion`** installé et documenté dans [`apps/web/README.md`](../../apps/web/README.md) ; **`tailwindcss-animate`** si la stack shadcn le prévoit ; tokens durée / easing ([D2](#décisions-mvp-d1d6)) ; comportement **`prefers-reduced-motion`** ([§2.7](#motion-in-app), **D6** / **D7**).
 
 ### Jalons fin phase 0
 
@@ -327,7 +357,7 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 - [ ] **1.2** — Layout shell + pages auth (§8.4) — pas de stack auth hors plan Web/API / ADR.  
 - [ ] **1.3** — Nav desktop & mobile, footer, menu utilisateur, badges.  
 - [ ] **1.4** — Modale CGU, toasts / bannières.  
-- [ ] **1.5** — Écarts **D4 / D5 / D6** : uniquement via **issue** + [§5](#décisions-mvp-d1d6).
+- [ ] **1.5** — Écarts **D4 / D5 / D6 / D7** : uniquement via **issue** + [§5](#décisions-mvp-d1d6).
 
 ### Jalons
 
@@ -420,7 +450,7 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 ### Livrables
 
-- [ ] **4.1** — Tableau **D1** : primitive / §8 → story → statut (fait / WONTFIX + issue).  
+- [ ] **4.1** — Tableau **D1** (+ **D7** / motion documenté) : primitive / §8 → story → statut (fait / WONTFIX + issue).  
 - [ ] **4.2** — **D3** : revue imports `packages/types` et appels BFF/API des pages livrées.  
 - [ ] **4.3** — §8.0–8.10 : couverture ou **WONTFIX** (audit ou issue par famille).  
 - [ ] **4.4** — README kit ou index primitives (`Docs/` ou `apps/web`).  
@@ -463,7 +493,7 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 - [ ] Gates des phases touchées : cochées ou **WONTFIX** + issue.  
 - [ ] §8.0–8.10 : couverture ou **WONTFIX**.  
-- [ ] **D1–D6** : alignés [§5](#décisions-mvp-d1d6) ou décision documentée (issue + date).  
+- [ ] **D1–D7** : alignés [§5](#décisions-mvp-d1d6) ou décision documentée (issue + date).  
 - [ ] [Décision build](#13-décision-build) à jour.  
 - [ ] **G0** : terminée ou **N/A** (pas de dossier `apps/thp-final` + CI sans Ruby/Rails).  
 - [ ] Audit **§11** relu.  
@@ -496,7 +526,9 @@ Si l’étape CI a été ajoutée **avant** options **A/B** et **Décision** fig
 
 **Playwright en CI** : cocher quand `playwright test` est dans [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) — **Date** : …
 
-**D2 (rappel)** : chemins fichiers des tokens consommés par `apps/web`.
+**D2 (rappel)** : chemins fichiers des tokens consommés par `apps/web` (y compris **motion** : durées / easing).
+
+**Motion (rappel)** : choix libs et exclusions — [§2.7](#motion-in-app), **D7**.
 
 ---
 
