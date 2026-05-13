@@ -71,7 +71,7 @@ Vue synthétique des **phases** (alignée [§9](#9-phasage-et-plan)).
 ### §2.3 Planche kit complet (familles 0 → 10)
 
 <p align="center">
-  <img src="audit-integration-kit-ux/assets/audit-kit-complet-showcase.png" alt="Planche kit AllAboard — familles 0 à 10" width="720">
+  <img src="audit-integration-kit-ux/assets/audit-kit-complet-showcase.png" alt="AllAboard — kit de base, aperçu complet (familles 0 à 10 : fondations, chrome, navigation, formulaires, auth, boutons, contenu, overlays, admin, produit, légal)" width="720">
 </p>
 
 > [!IMPORTANT]
