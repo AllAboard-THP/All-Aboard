@@ -24,6 +24,88 @@ Ce document décrit l’organisation du projet GitHub pour l’équipe All-Aboar
 | **Phase** | Aligné sur la doc MVP (Phase 0–4 + Ops) |
 | **Priorité** | P0 (bloquant) → P3 (basse) |
 | **Taille** | XS → XL (estimation relative) |
+| **Vague** | Lot de livraison (`V1` fondations parallèles → `V5` backlog) — **grouper la Roadmap par ce champ** |
+| **Date début** / **Date cible** | Fenêtres sur la Roadmap ; **même date début = travail en parallèle** |
+
+### Roadmap — ne pas lire comme une liste séquentielle
+
+La vue **Roadmap** GitHub affiche des barres sur une timeline. Sans configuration, tout semble l'un derrière l'autre. Pour refléter la réalité :
+
+1. **Grouper par `Vague`** (ou par `Pilier`) dans les paramètres de la vue Roadmap.
+2. **Aligner les dates** : les tâches indépendantes partagent la **même Date début** → barres côte à côte.
+3. **Dépendances GitHub** (`blocked by`) : affichées sur l'issue ; empêchent de passer en Ready trop tôt.
+4. Le **Board Status** reste la vue d'exécution ; la **Roadmap** est la vue de planification.
+
+#### Vagues (lots parallèles)
+
+| Vague | Période indicative | Piste | Issues | Parallèle avec |
+|-------|-------------------|-------|--------|----------------|
+| **V1 Fondations** | S1 | 4 pistes en même temps | #18, #24, #33, #31, #32, #30 | tout V1 |
+| **V2 Auth & API** | S2–S3 | Backend métier | #21→#19→#20→#22 | #25 shell UI dès fin #24 |
+| **V3 Parcours UI** | S3–S5 | Frontend produit | #25–#29, #26 | #29 mentor dès auth OK |
+| **V4 Finition & ops** | S4+ | Qualité / staging | #34, #35 | après parcours minimal |
+| **V5 Phase 3+** | S6+ | CORS, TanStack étendu | #23, #36 | backlog |
+
+#### Graphe de dépendances (Phase 2)
+
+```mermaid
+flowchart LR
+  subgraph V1["V1 — parallèle"]
+    I18["#18 ADR auth"]
+    I33["#33 Postgres dev"]
+    I24["#24 Design system"]
+    I31["#31 Checklist staging"]
+    I32["#32 Env staging"]
+    I30["#30 États UX"]
+  end
+
+  subgraph V2["V2 — API"]
+    I21["#21 Auth middleware"]
+    I19["#19 Feed DB"]
+    I20["#20 POST help-requests"]
+    I22["#22 Doublon / IA stub"]
+  end
+
+  subgraph V3["V3 — UI"]
+    I25["#25 Shell"]
+    I26["#26 Feed page"]
+    I27["#27 Formulaire création"]
+    I28["#28 Détail + réponses"]
+    I29["#29 Dashboard mentor"]
+  end
+
+  I18 --> I21
+  I33 --> I19
+  I21 --> I20
+  I19 --> I20
+  I20 --> I22
+  I19 --> I26
+  I24 --> I25
+  I20 --> I27
+  I21 --> I27
+  I27 --> I28
+  I21 --> I29
+  I27 --> I35
+```
+
+#### Pistes parallèles par développeur (dès maintenant)
+
+| Dev | Ready immédiat | Ensuite (quand deps OK) |
+|-----|----------------|-------------------------|
+| **Backend** | #18 ADR | #21 → #19 → #20 → #22 |
+| **Platform** | #33 Postgres | #31, #32, #34 en parallèle |
+| **Frontend** | #24 design system, #30 états UX | #25 → #26 ; puis #27+ après API |
+
+**Script de maintenance** (deps + dates) : `.github/scripts/configure-project-dependencies.sh`
+
+#### Configurer la vue Roadmap (UI)
+
+1. Project → **+ New view** → **Roadmap**
+2. **Group by** : `Vague` (prioritaire) ou `Pilier`
+3. **Date fields** : `Date début` → `Date cible`
+4. Zoom **Week** pour voir les chevauchements V1
+5. Optionnel : sous-vue filtrée `Phase = Phase 2`
+
 
 ### Board — colonnes Status (validé)
 
@@ -76,21 +158,23 @@ Epic transverse Phase 2 : **#13** (parent du lot auth + parcours).
 
 ### Ordre de démarrage recommandé
 
-1. **#18** ADR auth (bloquant)
-2. **#33** Postgres dev + **#19** feed réel (backend)
-3. **#24** design system + **#25** shell (frontend, en parallèle)
-4. **#31–32** checklist staging (platform, en parallèle)
+**En parallèle (V1 — même semaine)** :
+
+- **#18** ADR auth · **#33** Postgres · **#24** design system · **#31–32** staging prep
+
+**Puis selon deps** (voir graphe ci-dessus) — pas une file unique.
 
 ---
 
 ## Vues recommandées (Project UI)
 
-1. **Board — Status** (vue principale) : 6 colonnes Triage → Done
-2. **Board — Pilier** : sous-groupes Frontend / Backend / Platform dans **In Progress**
-3. **Table — Ready** : filtre `Status = Ready`, tri **Priorité** (file d'attente par dev)
-4. **Table — Blocked** : filtre `Status = Blocked` (stand-up / déblocage)
-5. **Table — Phase 2** : filtre `Phase = Phase 2 — Auth & parcours`
-6. **Table — Ops** : filtre `Phase = Ops — Staging/Release`
+1. **Board — Status** (exécution) : 6 colonnes Triage → Done
+2. **Roadmap — par Vague** (planification) : `Date début` / `Date cible`, group by **Vague**
+3. **Roadmap — par Pilier** : voir les 3 pistes dev en parallèle
+4. **Board — Pilier** : WIP par équipe dans **In Progress**
+5. **Table — Ready** : filtre `Status = Ready`, tri **Priorité**
+6. **Table — Blocked** : dépendances humaines + issues `blocked by`
+7. **Table — Phase 2** : filtre phase MVP courante
 
 ---
 
