@@ -84,6 +84,7 @@
 0.5 [Décommission `thp-final`](#decom-thp-final)  
 1. [Planche visuelle](#1-planche-visuelle--référence-design)  
 2. [Schéma Mermaid](#2-schéma-dintégration-mermaid)  
+2.5 [Dataflow Web + API](#dataflow-web-api)  
 3. [Légende tests V / T / M / S / P](#3-légende-des-tests-v--t--m--s--p)  
 4. [Décisions D1–D6](#4-décisions-atelier-d1d6)  
 5. [Préalables (spike)](#5-préalables--spike--décision-build)  
@@ -173,6 +174,42 @@ flowchart TB
 
 > [!IMPORTANT]
 > **`apps/api`**, **`API_URL`**, **`/feed`**, BFF : [plan Web/API](plan-mise-en-place-web-api-donnees.md). **`apps/thp-final`** : **obsolète** — retirer du dépôt et de la CI via [Décommission](#decom-thp-final). Aucune marque de test **Rails** dans les jalons kit (**§3** = **V / T / M / S / P** uniquement).
+
+<a id="dataflow-web-api"></a>
+
+## 2.5 Dataflow Web + API (types)
+
+> [!NOTE]
+> Même schéma que la section **« Schéma MVP actuel »** dans [dataflow-architecture.md](dataflow-architecture.md). Détail des variables, chemins code et journal : [plan Web/API](plan-mise-en-place-web-api-donnees.md).
+
+```mermaid
+flowchart TB
+  subgraph Client["Navigateur"]
+    U["UI React<br>home + TanStack Query"]
+  end
+
+  subgraph Web["apps/web - Next.js App Router"]
+    Q["Client : useQuery<br>fetch /api/feed"]
+    BFF["BFF : GET /api/feed<br>cache no-store"]
+    SSR["SSR : page + fetchFeed<br>serveur -> API_URL"]
+  end
+
+  subgraph Api["apps/api - Fastify"]
+    F["GET /feed<br>JSON contrat stable"]
+  end
+
+  T["packages/types<br>FeedResponse / HelpRequest"]
+
+  U --> SSR
+  U --> Q
+  Q -->|"same-origin"| BFF
+  BFF --> F
+  SSR -->|"interne Dokploy / local"| F
+  F -.->|"contrat partagé"| T
+  SSR -.-> T
+```
+
+**Lecture** : (1) premier rendu feed = **SSR** via **`API_URL`** (pas d’appel navigateur direct vers l’API pour ce flux) ; (2) rafraîchissement = **BFF** `/api/feed` → **`GET /feed`** ; (3) contrat partagé = **`packages/types`**.
 
 ---
 
@@ -450,6 +487,7 @@ Jalons : V = pnpm verify | T = build-storybook si .storybook/ ou *.stories.*
 | README racine dépôt | [README.md](../README.md) |
 | README doc (`Docs/`) | [README.md](README.md) |
 | Plan Web/API/données | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) |
+| Dataflow (MVP + cible) | [dataflow-architecture.md](dataflow-architecture.md) |
 | CI | [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) |
 | shadcn/ui | [https://ui.shadcn.com](https://ui.shadcn.com) |
 | Storybook + Next | [https://storybook.js.org/docs/get-started/frameworks/nextjs](https://storybook.js.org/docs/get-started/frameworks/nextjs) |

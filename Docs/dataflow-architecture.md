@@ -13,7 +13,40 @@ Documenter la vue d'architecture technique de All-Aboard (monorepo Truborepo), l
 - Stockage: base Postgres (Supabase), stockage media (audio/image), cache.
 - Infra data: indexeur et couche blockchain.
 
-## Diagramme Mermaid (dataflow)
+## Schéma MVP actuel (Web + API — dépôt)
+
+Flux alignés sur [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) : **SSR** avec `API_URL` vers l’API ; **client** via BFF same-origin `GET /api/feed` et TanStack Query (`invalidateQueries`).
+
+```mermaid
+flowchart TB
+  subgraph Client["Navigateur"]
+    U["UI React<br>home + TanStack Query"]
+  end
+
+  subgraph Web["apps/web - Next.js App Router"]
+    Q["Client : useQuery<br>fetch /api/feed"]
+    BFF["BFF : GET /api/feed<br>cache no-store"]
+    SSR["SSR : page + fetchFeed<br>serveur -> API_URL"]
+  end
+
+  subgraph Api["apps/api - Fastify"]
+    F["GET /feed<br>JSON contrat stable"]
+  end
+
+  T["packages/types<br>FeedResponse / HelpRequest"]
+
+  U --> SSR
+  U --> Q
+  Q -->|"same-origin"| BFF
+  BFF --> F
+  SSR -->|"interne Dokploy / local"| F
+  F -.->|"contrat partagé"| T
+  SSR -.-> T
+```
+
+**Lecture** : (1) le **premier rendu** du feed vient du **SSR** (`API_URL`, pas d’appel cross-origin navigateur vers l’API). (2) le **rafraîchissement** navigateur passe par le **BFF** `/api/feed` puis l’API. (3) les types vivent dans **`packages/types`** — une seule source pour web + api.
+
+## Diagramme cible (dataflow long terme)
 
 ```mermaid
 flowchart TB
@@ -62,6 +95,14 @@ flowchart TB
 ```
 
 ## Lecture rapide des flux
+
+### MVP Web + API (ci-dessus)
+
+1. Donnée initiale feed : **serveur Next** → **Fastify** (`API_URL`).
+2. Donnée client / invalidation : **navigateur** → **BFF Next** → **Fastify** (évite CORS pour ce flux).
+3. Contrat et types : **`packages/types`** — garder api + web alignés à chaque changement.
+
+### Vision multi-services (diagramme suivant)
 
 1. Les apps mobile et web consomment les services backend via GraphQL/API.
 2. Le backend s'appuie sur un cache, une base Postgres (Supabase) et un stockage media.
