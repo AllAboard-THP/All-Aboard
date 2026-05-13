@@ -8,9 +8,11 @@ body:
   - type: markdown
     attributes:
       value: |
-        Ajoutez l'issue au [Project All-Aboard MVP](https://github.com/orgs/AllAboard-THP/projects/3) et renseignez **Pilier**, **Phase**, **Priorité**, **Taille**.
+        Ajoutez l'issue au [Project All-Aboard MVP](https://github.com/orgs/AllAboard-THP/projects/3).
 
-        Doc : [Docs/README.md](../Docs/README.md) · [plan Web/API](../Docs/plan-mise-en-place-web-api-donnees.md)
+        **Status initial** : `Triage` si l'idée n'est pas spécifiée ; `Todo` si le template est complet ; `Ready` si assignée et prête.
+
+        Board 6 colonnes (aligné Hermes Kanban) : Triage → Todo → Ready → In Progress → Blocked → Done — voir [.github/PROJECT.md](../.github/PROJECT.md).
   - type: dropdown
     id: pilier
     attributes:

@@ -19,11 +19,41 @@ Ce document décrit l’organisation du projet GitHub pour l’équipe All-Aboar
 
 | Champ | Usage |
 |-------|--------|
-| **Status** | Natif GitHub (Todo / In Progress / Done) — workflow kanban |
+| **Status** | Workflow kanban **6 colonnes** (aligné Hermes Kanban — voir ci-dessous) |
 | **Pilier** | `Frontend` · `Backend` · `Platform` · `Transverse` |
 | **Phase** | Aligné sur la doc MVP (Phase 0–4 + Ops) |
 | **Priorité** | P0 (bloquant) → P3 (basse) |
 | **Taille** | XS → XL (estimation relative) |
+
+### Board — colonnes Status (validé)
+
+Inspiré du [Kanban Hermes](https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/features/kanban-tutorial.md) (6 colonnes). Adapté à une équipe humaine + agents sur GitHub Issues.
+
+| Colonne | Rôle | Quand l'utiliser |
+|---------|------|------------------|
+| **Triage** | Idées brutes, à spécifier | Nouvelle idée sans critères d'acceptation ; besoin d'un epic ou d'une spec |
+| **Todo** | Backlog spécifié | Issue template rempli, dépendances non levées, ou pas encore assignée |
+| **Ready** | Prêt à démarrer | Assignée + dépendances OK + critères clairs — peut être prise immédiatement |
+| **In Progress** | En cours | Branche ouverte, dev actif |
+| **Blocked** | Bloqué | Attente humaine : ADR, accès Dokploy, review, clarification produit |
+| **Done** | Terminé | PR mergée sur `Dev` (ou livré si ops sans PR) |
+
+**Différences vs Hermes** : pas de dispatcher automatique ni bouton « Specify » intégré — la promotion Triage → Todo est manuelle (ou via agent + template issue). Le reste du flux est volontairement identique pour faciliter le travail mixte humain / agent.
+
+**Transitions typiques**
+
+```text
+Triage → Todo → Ready → In Progress → Done
+                              ↓
+                          Blocked → (débloqué) → In Progress
+```
+
+**Règles équipe**
+
+1. Ne pas mettre en **Ready** sans assignee (ou pilier clair).
+2. **In Progress** = une personne, une issue (WIP limit implicite 1–2 par dev).
+3. **Blocked** : commenter l'issue avec la question / le bloqueur.
+4. Epics restent en **Todo** tant que des enfants sont ouverts.
 
 ### Labels dépôt (miroir)
 
@@ -53,25 +83,25 @@ Epic transverse Phase 2 : **#13** (parent du lot auth + parcours).
 
 ---
 
-## Vues recommandées (à configurer dans l’UI Project)
+## Vues recommandées (Project UI)
 
-GitHub Projects permet plusieurs vues ; créer manuellement si besoin :
-
-1. **Board — Status** (défaut) : colonnes Todo / In Progress / Done
-2. **Board — Pilier** : grouper par champ **Pilier** (répartition visuelle des 3 dev)
-3. **Table — Phase 2** : filtre `Phase = Phase 2 — Auth & parcours`, tri **Priorité**
-4. **Table — Ops** : filtre `Phase = Ops — Staging/Release`
-5. **Roadmap** (optionnel) : champ **Phase** en timeline
+1. **Board — Status** (vue principale) : 6 colonnes Triage → Done
+2. **Board — Pilier** : sous-groupes Frontend / Backend / Platform dans **In Progress**
+3. **Table — Ready** : filtre `Status = Ready`, tri **Priorité** (file d'attente par dev)
+4. **Table — Blocked** : filtre `Status = Blocked` (stand-up / déblocage)
+5. **Table — Phase 2** : filtre `Phase = Phase 2 — Auth & parcours`
+6. **Table — Ops** : filtre `Phase = Ops — Staging/Release`
 
 ---
 
 ## Workflow issue → PR
 
-1. Prendre une issue du Project ; passer **Status** → *In Progress*
-2. Branche : `feat/<num>-court-sujet` ou `fix/...` depuis `Dev`
-3. PR vers `Dev` ; lier `Closes #NN` ou `Refs #NN`
-4. `pnpm verify` avant push (voir [AGENTS.md](../AGENTS.md))
-5. Review ; merge ; **Status** → *Done*
+1. **Triage** : idée → compléter le template → passer en **Todo**
+2. Assigner + lever dépendances → **Ready**
+3. Prendre l'issue → **In Progress** ; branche `feat/<num>-court-sujet` depuis `Dev`
+4. PR vers `Dev` ; `Closes #NN` ou `Refs #NN` ; `pnpm verify` (voir [AGENTS.md](../AGENTS.md))
+5. Bloqué ? → **Blocked** + commentaire explicite
+6. Merge → **Done**
 
 ### Definition of Done (tâche)
 
