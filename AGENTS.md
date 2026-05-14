@@ -28,3 +28,17 @@ Ce dépôt utilise des garde-fous **Git + CI** ; ce fichier définit le protocol
 ## CI
 
 Les PR et pushes sur la branche principale déclenchent le workflow GitHub Actions qui rejoue les vérifications dans un environnement propre.
+
+## Graphify (carte codebase MVP)
+
+Graphe de connaissance à la racine : `graphify-out/` (`GRAPH_REPORT.md`, `graph.json`, `graph.html`).
+
+- **Corpus** : `apps/web`, `apps/api`, `packages`, `Docs` — **pas** `apps/thp-final` (Rails historique, hors MVP).
+- **Avant** une question d’architecture : lire `graphify-out/GRAPH_REPORT.md`.
+- **Après** des changements code/doc dans le corpus MVP :
+
+  ```bash
+  ./scripts/graphify-update.sh
+  ```
+
+  AST uniquement (0 token LLM). Extraction sémantique des docs : `/graphify` avec une clé API (`graphify extract …`).
