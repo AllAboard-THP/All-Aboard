@@ -2,6 +2,14 @@
 
 Ce dépôt utilise des garde-fous **Git + CI** ; ce fichier définit le protocole commun pour tout agent (Cursor, Claude Code, Codex, etc.).
 
+## Hindsight (mémoire agent)
+
+Banque partagée **`hermes`** — tag obligatoire **`project:all-aboard`**.
+
+1. **Nouvelle session** (non trivial) : MCP `recall` avec `tags: ["project:all-aboard"]`, `tags_match: any_strict`, `budget: mid` (prefetch IDE via `.cursor/hooks/`).
+2. **`retain`** au fil de la discussion pour décisions/préférences stables : `project:all-aboard` + `area:<domain>` + `source:cursor-session`.
+3. Détail : `.cursor/rules/hindsight.mdc`, `.cursor/references/hindsight-tagging.md`.
+
 **Chronologie, MVP et doc** : [Docs/README.md](Docs/README.md), [Docs/map-of-content.md](Docs/map-of-content.md), [Docs/plan-mise-en-place-web-api-donnees.md](Docs/plan-mise-en-place-web-api-donnees.md). **Tâches** : [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3). **Doc par issue** : `Docs/tasks/<NN>-slug/` ([convention](Docs/tasks/README.md)).
 
 ## Avant de proposer un commit ou une PR
