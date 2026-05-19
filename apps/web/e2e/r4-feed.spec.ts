@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+import { acceptCguInStorage } from "./helpers";
+
 test.describe("R4 — Feed", () => {
+  test.beforeEach(async ({ page }) => {
+    await acceptCguInStorage(page);
+  });
+
   test("bloc feed SSR visible (données ou erreur réseau / HTTP)", async ({
     page,
   }) => {

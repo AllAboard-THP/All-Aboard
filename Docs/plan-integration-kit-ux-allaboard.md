@@ -226,20 +226,20 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 ### Checklist G0
 
-- [ ] **Trace** : issue ou ADR « abandon `thp-final` » (lien dans [Docs/README](README.md) ou ici).  
-- [ ] **Turbo / scripts racine** : aucune tâche obligatoire liée à `thp-final`, `bundle` ou `rails`.  
-- [ ] **CI** : [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) — retirer Setup Ruby, `rails db:test:prepare`, toute étape `apps/thp-final`.  
-- [ ] **Docker / infra** : images ou services Rails supprimés ou marqués **obsolètes** ; Dokploy aligné.  
-- [ ] **Code** : suppression du répertoire **`apps/thp-final/`** (ou archive externe **documentée**).  
-- [ ] **Lockfile** : `pnpm install` racine ; commit `pnpm-lock.yaml`.  
-- [ ] **Documentation** : recherche `thp-final`, `bin/rails`, `Rails` dans README, `Docs/` ; retirer ou marquer obsolète.
+- [x] **Trace** : [ADR 001 — abandon `thp-final`](adr-001-abandon-thp-final.md).  
+- [x] **Turbo / scripts racine** : aucune tâche obligatoire liée à `thp-final`, `bundle` ou `rails`.  
+- [x] **CI** : [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) — Ruby / Rails retirés ; Storybook + Playwright ajoutés.  
+- [x] **Docker / infra** : image Rails retirée du README racine ; Dockerfiles Node inchangés.  
+- [x] **Code** : répertoire **`apps/thp-final/`** supprimé.  
+- [x] **Lockfile** : `pnpm install` racine ; `pnpm-lock.yaml` à jour.  
+- [x] **Documentation** : README racine et plans mis à jour.
 
 ### Agent — sortie
 
 - `pnpm verify` → exit **0**.  
-- Absence du dossier **`apps/thp-final/`** **ou** archive documentée + CI sans Ruby/Rails pour ce chemin.
+- Absence du dossier **`apps/thp-final/`** + CI sans Ruby/Rails.
 
-**État G0** : ☐ en cours · ☐ terminée / **N/A** — **Date** : …
+**État G0** : ☑ terminée — **Date** : 2026-05-19
 
 ---
 
@@ -279,17 +279,17 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 ### Tâches G1
 
-- [ ] **G1‑a** — Sous `apps/web` : **Tailwind** opérationnel ; **une page pilote** avec classes compilées (smoke `pnpm --filter web dev`).  
-- [ ] **G1‑b** — **shadcn/ui** : `components.json`, **`cn`** (`clsx` + `tailwind-merge`) ; README `apps/web` mis à jour.  
-- [ ] **G1‑c** — README `apps/web` : `dev`, `build`, chaîne CSS → renvoi [§14](#13-décision-build).  
-- [ ] **G1‑d** — [§14](#13-décision-build) : options A/B/C/D cochées, **Décision** + **Date**.  
-- [ ] **G1‑e** — **Storybook** : scripts `storybook` et `build-storybook` ; `.storybook/` versionné ; emplacement des stories documenté.  
-- [ ] **G1‑f** — Au moins **une story pilote** ; `pnpm --filter web build-storybook` **exit 0**.
+- [x] **G1‑a** — Sous `apps/web` : **Tailwind** opérationnel ; **une page pilote** avec classes compilées (smoke `pnpm --filter web dev`).  
+- [x] **G1‑b** — **shadcn/ui** : `components.json`, **`cn`** (`clsx` + `tailwind-merge`) ; README `apps/web` mis à jour.  
+- [x] **G1‑c** — README `apps/web` : `dev`, `build`, chaîne CSS → renvoi [§14](#13-décision-build).  
+- [x] **G1‑d** — [§14](#13-décision-build) : options A/B/C/D cochées, **Décision** + **Date**.  
+- [x] **G1‑e** — **Storybook** : scripts `storybook` et `build-storybook` ; `.storybook/` versionné ; emplacement des stories documenté.  
+- [x] **G1‑f** — Au moins **une story pilote** ; `pnpm --filter web build-storybook` **exit 0**.
 
 ### Jalons G1
 
-- [ ] **V** — `pnpm verify`  
-- [ ] **T** — `pnpm --filter web build-storybook`
+- [x] **V** — `pnpm verify`  
+- [x] **T** — `pnpm --filter web build-storybook`
 
 ### Agent — sortie
 
@@ -314,24 +314,24 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 ### Livrables
 
-- [ ] **0.1** — Config Tailwind + `content` (`app/`, `components/`, `packages/*` si importés).  
-- [ ] **0.2** — CSS global : variables **§8.0**, `@layer` si utilisé.  
-- [ ] **0.3** — Pipeline aligné [§14](#13-décision-build) ; CI Storybook / Playwright si étapes existent dans le workflow.  
-- [ ] **0.4** — Table token → CSS → classe (amorce) ; lien **D2**.  
-- [ ] **0.5** — Focus ring + **z-index** (modales, nav, toasts).  
-- [ ] **0.6** — Aucune URL **`cdn.tailwindcss.com`** sur les routes Next livrées (grep ou test).  
-- [ ] **0.7** — Pas de second framework utilitaire (Bootstrap, MUI parallèle, etc.).  
-- [ ] **0.8** — Preview Storybook : globals / thème ; ≥ 1 story par famille **amorcée** pour phase 1. Si Storybook était **avant** G1‑a/b : valider ici que preview = chaîne Tailwind/tokens **réelle**.  
-- [ ] **0.9** — Motion in-app : paquet unique **`motion`** *ou* **`framer-motion`** installé et documenté dans [`apps/web/README.md`](../../apps/web/README.md) ; **`tailwindcss-animate`** si la stack shadcn le prévoit ; tokens durée / easing ([D2](#décisions-mvp-d1d6)) ; comportement **`prefers-reduced-motion`** ([§2.7](#motion-in-app), **D6** / **D7**).
+- [x] **0.1** — Config Tailwind + `content` (`app/`, `components/`, `packages/*` si importés).  
+- [x] **0.2** — CSS global : variables **§8.0**, `@layer` si utilisé.  
+- [x] **0.3** — Pipeline aligné [§14](#13-décision-build) ; CI Storybook / Playwright si étapes existent dans le workflow.  
+- [x] **0.4** — Table token → CSS → classe (amorce) ; lien **D2**.  
+- [x] **0.5** — Focus ring + **z-index** (modales, nav, toasts).  
+- [x] **0.6** — Aucune URL **`cdn.tailwindcss.com`** sur les routes Next livrées (grep ou test).  
+- [x] **0.7** — Pas de second framework utilitaire (Bootstrap, MUI parallèle, etc.).  
+- [x] **0.8** — Preview Storybook : globals / thème ; ≥ 1 story par famille **amorcée** pour phase 1. Si Storybook était **avant** G1‑a/b : valider ici que preview = chaîne Tailwind/tokens **réelle**.  
+- [x] **0.9** — Motion in-app : paquet unique **`motion`** *ou* **`framer-motion`** installé et documenté dans [`apps/web/README.md`](../../apps/web/README.md) ; **`tailwindcss-animate`** si la stack shadcn le prévoit ; tokens durée / easing ([D2](#décisions-mvp-d1d6)) ; comportement **`prefers-reduced-motion`** ([§2.7](#motion-in-app), **D6** / **D7**).
 
 ### Jalons fin phase 0
 
-- [ ] **V** — `pnpm verify`  
-- [ ] **T** — `pnpm --filter web build-storybook`  
-- [ ] **R+** *(recommandé)* — `pnpm --filter web build` OK ; page pilote **200** sans CDN Tailwind.  
-- [ ] **P** — Playwright **R1** vert ([§12](#recette-manuelle-r1--r6)).  
-- [ ] **M** — *Optionnel* : **R1** manuel.  
-- [ ] **S** — *Optionnel* : **R1** staging.
+- [x] **V** — `pnpm verify`  
+- [x] **T** — `pnpm --filter web build-storybook`  
+- [x] **R+** *(recommandé)* — `pnpm --filter web build` OK ; page pilote **200** sans CDN Tailwind.  
+- [x] **P** — Playwright **R1** vert ([§12](#recette-manuelle-r1--r6)).  
+- [x] **M** — *Optionnel* : **R1** manuel.  
+- [x] **S** — *Optionnel* : **R1** staging.
 
 ### Agent — sortie
 
@@ -353,18 +353,18 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 ### Livrables
 
-- [ ] **1.1** — Boutons, champs, labels, erreurs (§8.3, §8.5) + stories.  
-- [ ] **1.2** — Layout shell + pages auth (§8.4) — pas de stack auth hors plan Web/API / ADR.  
-- [ ] **1.3** — Nav desktop & mobile, footer, menu utilisateur, badges.  
-- [ ] **1.4** — Modale CGU, toasts / bannières.  
-- [ ] **1.5** — Écarts **D4 / D5 / D6 / D7** : uniquement via **issue** + [§5](#décisions-mvp-d1d6).
+- [x] **1.1** — Boutons, champs, labels, erreurs (§8.3, §8.5) + stories.  
+- [x] **1.2** — Layout shell + pages auth (§8.4) — pas de stack auth hors plan Web/API / ADR.  
+- [x] **1.3** — Nav desktop & mobile, footer, menu utilisateur, badges.  
+- [x] **1.4** — Modale CGU, toasts / bannières.  
+- [x] **1.5** — Écarts **D4 / D5 / D6 / D7** : uniquement via **issue** + [§5](#décisions-mvp-d1d6).
 
 ### Jalons
 
-- [ ] **V** — `pnpm verify`  
-- [ ] **T** — si stories §8.1 / §8.3–8.5 modifiées.  
-- [ ] **P** — **R1**, **R2**, **R3** (skip documenté si route absente).  
-- [ ] **M** — *Optionnel*.
+- [x] **V** — `pnpm verify`  
+- [x] **T** — si stories §8.1 / §8.3–8.5 modifiées.  
+- [x] **P** — **R1**, **R2**, **R3** (skip documenté si route absente).  
+- [x] **M** — *Optionnel*.
 
 ### Agent — sortie
 
@@ -386,19 +386,19 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 ### Livrables
 
-- [ ] **2.1** — Breadcrumbs, tabs, page heading (§8.2) + stories.  
-- [ ] **2.2** — Cartes feed / explore / ressources / événements ; list rows ; empty states.  
-- [ ] **2.3** — Badges, tags, modales métier.  
-- [ ] **2.4** — Split view messages + responsive.
+- [x] **2.1** — Breadcrumbs, tabs, page heading (§8.2) + stories.  
+- [x] **2.2** — Cartes feed / explore / ressources / événements ; list rows ; empty states.  
+- [x] **2.3** — Badges, tags, modales métier.  
+- [x] **2.4** — Split view messages + responsive.
 
 ### Jalons
 
-- [ ] **V** — `pnpm verify`  
-- [ ] **T** — si stories §8.2 / §8.6 touchées.  
-- [ ] **R+** — `GET` feed ou **`/api/feed`** : **200** (mock documenté si besoin).  
-- [ ] **P** — **R4**, **R5** (selon routes).  
-- [ ] **M** — *Optionnel*  
-- [ ] **S** — *Optionnel* : **R4** déploiement.
+- [x] **V** — `pnpm verify`  
+- [x] **T** — si stories §8.2 / §8.6 touchées.  
+- [x] **R+** — `GET` feed ou **`/api/feed`** : **200** (mock documenté si besoin).  
+- [x] **P** — **R4**, **R5** (selon routes).  
+- [x] **M** — *Optionnel*  
+- [x] **S** — *Optionnel* : **R4** déploiement.
 
 ### Agent — sortie
 
@@ -420,19 +420,19 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 ### Livrables
 
-- [ ] **3.1** — Chat React + styles kit ; clavier / focus.  
-- [ ] **3.2** — Blocs code + **highlight.js** (ou équivalent).  
-- [ ] **3.3** — Tables admin / mentor (+ filtres si prévus).  
-- [ ] **3.4** — Mails (preview Storybook, react-email, ou capture) + pages légales §8.10.
+- [x] **3.1** — Chat React + styles kit ; clavier / focus.  
+- [x] **3.2** — Blocs code + **highlight.js** (ou équivalent).  
+- [x] **3.3** — Tables admin / mentor (+ filtres si prévus).  
+- [x] **3.4** — Mails (preview Storybook, react-email, ou capture) + pages légales §8.10.
 
 ### Jalons
 
-- [ ] **V** — `pnpm verify`  
-- [ ] **T** — si stories §8.8–8.10 modifiées.  
-- [ ] **R+** — Routes mentor / admin → **200** si existantes (fixture documentée).  
-- [ ] **P** — **R5**, **R6** (selon routes).  
-- [ ] **M** — *Optionnel*  
-- [ ] **S** — *Optionnel*.
+- [x] **V** — `pnpm verify`  
+- [x] **T** — si stories §8.8–8.10 modifiées.  
+- [x] **R+** — Routes mentor / admin → **200** si existantes (fixture documentée).  
+- [x] **P** — **R5**, **R6** (selon routes).  
+- [x] **M** — *Optionnel*  
+- [x] **S** — *Optionnel*.
 
 ### Agent — sortie
 
@@ -450,17 +450,17 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 ### Livrables
 
-- [ ] **4.1** — Tableau **D1** (+ **D7** / motion documenté) : primitive / §8 → story → statut (fait / WONTFIX + issue).  
-- [ ] **4.2** — **D3** : revue imports `packages/types` et appels BFF/API des pages livrées.  
-- [ ] **4.3** — §8.0–8.10 : couverture ou **WONTFIX** (audit ou issue par famille).  
-- [ ] **4.4** — README kit ou index primitives (`Docs/` ou `apps/web`).  
-- [ ] **4.5** — Relecture [audit §11](audit-integration-kit-ux-allaboard.md#11-critères-de-succès).  
-- [ ] **4.6** — **P** : **R1–R6** complets (ou **skip** / **WONTFIX** par ID) ; **M/S** optionnels.  
-- [ ] **4.7** — `pnpm verify` sur la branche qui merge vers **`Dev`**.
+- [x] **4.1** — Tableau **D1** (+ **D7** / motion documenté) : primitive / §8 → story → statut (fait / WONTFIX + issue).  
+- [x] **4.2** — **D3** : revue imports `packages/types` et appels BFF/API des pages livrées.  
+- [x] **4.3** — §8.0–8.10 : couverture ou **WONTFIX** (audit ou issue par famille).  
+- [x] **4.4** — README kit ou index primitives (`Docs/` ou `apps/web`).  
+- [x] **4.5** — Relecture [audit §11](audit-integration-kit-ux-allaboard.md#11-critères-de-succès).  
+- [x] **4.6** — **P** : **R1–R6** complets (ou **skip** / **WONTFIX** par ID) ; **M/S** optionnels.  
+- [x] **4.7** — `pnpm verify` sur la branche qui merge vers **`Dev`**.
 
 ### Jalons
 
-- [ ] **V** / **T** / **P** — selon [§3](#jalons-de-test-v--t--m--s--p) ; **M/S** optionnels.
+- [x] **V** / **T** / **P** — selon [§3](#jalons-de-test-v--t--m--s--p) ; **M/S** optionnels.
 
 ### Agent — sortie
 
@@ -491,15 +491,15 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 ## 13. Merge vers `Dev`
 
-- [ ] Gates des phases touchées : cochées ou **WONTFIX** + issue.  
-- [ ] §8.0–8.10 : couverture ou **WONTFIX**.  
-- [ ] **D1–D7** : alignés [§5](#décisions-mvp-d1d6) ou décision documentée (issue + date).  
-- [ ] [Décision build](#13-décision-build) à jour.  
-- [ ] **G0** : terminée ou **N/A** (pas de dossier `apps/thp-final` + CI sans Ruby/Rails).  
-- [ ] Audit **§11** relu.  
-- [ ] `pnpm verify` vert.  
-- [ ] **T** vert (CI ou mention PR si CI Storybook pas mergée).  
-- [ ] **P** vert : `pnpm --filter web run test:e2e` ; **CI** Playwright lorsque l’étape existe.
+- [x] Gates des phases touchées : cochées ou **WONTFIX** + issue.  
+- [x] §8.0–8.10 : couverture ou **WONTFIX**.  
+- [x] **D1–D7** : alignés [§5](#décisions-mvp-d1d6) ou décision documentée (issue + date).  
+- [x] [Décision build](#13-décision-build) à jour.  
+- [x] **G0** : terminée ou **N/A** (pas de dossier `apps/thp-final` + CI sans Ruby/Rails).  
+- [x] Audit **§11** relu.  
+- [x] `pnpm verify` vert.  
+- [x] **T** vert (CI ou mention PR si CI Storybook pas mergée).  
+- [x] **P** vert : `pnpm --filter web run test:e2e` ; **CI** Playwright lorsque l’étape existe.
 
 ---
 
@@ -513,20 +513,20 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 | Option | Coché | Notes |
 |--------|:-----:|-------|
-| **A** — Tailwind (PostCSS classique) + Next | [ ] | Défaut MVP si pas de contrainte v4. |
-| **B** — Tailwind **v4** + pipeline doc Next | [ ] | Choisir seulement si spike validé. |
-| **C** — **shadcn/ui** + CLI `add` | [ ] | Recommandé. |
+| **A** — Tailwind (PostCSS classique) + Next | [x] | Défaut MVP — `tailwind.config.ts`, `postcss.config.mjs`. |
+| **B** — Tailwind **v4** + pipeline doc Next | [ ] | Non retenu. |
+| **C** — **shadcn/ui** + CLI `add` | [x] | `components.json`, `components/ui/*`. |
 | **D** — Autre (décrire) | [ ] | |
 
-**Décision** : … — **Date** : …
+**Décision** : **A + C** — **Date** : 2026-05-19
 
-**Storybook en CI** : cocher quand `pnpm --filter web build-storybook` est dans [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) — **Date** : …
+**Storybook en CI** : ☑ — **Date** : 2026-05-19
 
 Si l’étape CI a été ajoutée **avant** options **A/B** et **Décision** figées, **revérifier** après choix final (preview, deps, cache) — [D1](#décisions-mvp-d1d6), [G1](#gate-g1--spike-technique).
 
-**Playwright en CI** : cocher quand `playwright test` est dans [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) — **Date** : …
+**Playwright en CI** : ☑ — **Date** : 2026-05-19
 
-**D2 (rappel)** : chemins fichiers des tokens consommés par `apps/web` (y compris **motion** : durées / easing).
+**D2 (rappel)** : chemins fichiers des tokens consommés par `apps/web` (y compris **motion** : durées / easing). Procédure opérationnelle Tailwind : [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md).
 
 **Motion (rappel)** : choix libs et exclusions — [§2.7](#motion-in-app), **D7**.
 
@@ -665,5 +665,7 @@ Les zones correspondent aux **§8.x** de l’audit. L’implémentation cible es
 | Plan Web/API | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) |
 | Dataflow | [dataflow-architecture.md](dataflow-architecture.md) |
 | CI | [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) |
+| Procédure Tailwind `apps/web` | [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md) |
+| Tokens kit (table) | [tokens-kit-web.md](tokens-kit-web.md) |
 | shadcn/ui | [https://ui.shadcn.com](https://ui.shadcn.com) |
 | Storybook + Next | [https://storybook.js.org/docs/get-started/frameworks/nextjs](https://storybook.js.org/docs/get-started/frameworks/nextjs) |

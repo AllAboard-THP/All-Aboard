@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+import { acceptCguInStorage } from "./helpers";
+
 test.describe("R1 — Visiteur", () => {
+  test.beforeEach(async ({ page }) => {
+    await acceptCguInStorage(page);
+  });
+
   test("landing : contenu principal visible", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByTestId("r1-home-main")).toBeVisible();

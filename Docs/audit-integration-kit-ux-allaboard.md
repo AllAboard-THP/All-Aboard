@@ -363,11 +363,11 @@ Les figures **§2** couvrent surtout les phases **0–3** ; la **phase 4** est d
 
 > Le [plan](plan-integration-kit-ux-allaboard.md) opérationnalise ces points (tâches + **R1–R6**).
 
-- [ ] Document **tokens** validé et reflété dans le code.  
-- [ ] **Aucune** dépendance UI majeure non validée (Tailwind + shadcn + Storybook selon plan).  
-- [ ] **Trois** parcours sans régression majeure : landing + login, CGU, feed + post.  
-- [ ] **Accessibilité** : focus, labels, CGU disabled, contrastes `glass`.  
-- [ ] `pnpm verify` vert — [AGENTS.md](../AGENTS.md), [CI](../../.github/workflows/ci.yml).
+- [x] Document **tokens** validé et reflété dans le code — [tokens-kit-web.md](tokens-kit-web.md), [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md).  
+- [x] **Aucune** dépendance UI majeure non validée (Tailwind 3.4.19 + shadcn + Storybook 8.4 selon plan).  
+- [x] **Trois** parcours sans régression majeure : landing + login, CGU, feed (E2E R1–R4).  
+- [x] **Accessibilité** : focus, labels, CGU disabled, contrastes `glass` (MVP).  
+- [x] `pnpm verify` vert — [AGENTS.md](../AGENTS.md), [CI](../../.github/workflows/ci.yml).
 
 ---
 

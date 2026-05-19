@@ -36,17 +36,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Setup Ruby (apps/thp-final)
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version-file: apps/thp-final/.ruby-version
-          bundler-cache: true
-          working-directory: apps/thp-final
-
-      - name: Prepare Rails test database (SQLite)
-        working-directory: apps/thp-final
-        run: bundle exec rails db:test:prepare
-
       - name: Lint
         run: pnpm lint
 
@@ -58,6 +47,9 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Build Storybook (web)
+        run: pnpm --filter web build-storybook
 
       - name: Install Playwright (Chromium + deps)
         run: pnpm --filter web run test:e2e:install:ci

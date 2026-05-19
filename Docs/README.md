@@ -23,7 +23,12 @@ Ce fichier est la **référence unique** pour l’ordre de lecture, la **timelin
 | [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md) | Faits observés sur l’instance Dokploy (domaines, branches, `API_URL`). |
 | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | Parcours produit (MOC), sans stack imposée. |
 | [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | Audit **kit UX** (**v1.7**) : inventaire **§8**, phasage, risques, **§11** ; mise en page GitHub. Exécution : [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md). |
-| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v2.1** — **§0** chemin autonome, **§2.7** motion in-app, **D7**, **D4 Playwright**, **G0/G1**, phases **0–4**, Décommission **`thp-final`**, `apps/web`, **V/T/M/S/P**, Storybook, shadcn) ; détail §8 dans l’audit. |
+| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v2.1**) — **G0** terminée (2026-05-19), **G1** vert ; phases 0–1 socle livré ; [WONTFIX](wontfix-kit-ux.md) phase 3 dense. |
+| [adr-001-abandon-thp-final.md](adr-001-abandon-thp-final.md) | ADR — retrait `apps/thp-final` du monorepo. |
+| [tokens-kit-web.md](tokens-kit-web.md) | Table token → CSS → classe (`apps/web`). |
+| [kit-ux-index.md](kit-ux-index.md) | Index kit UX — tableau **D1** (§8 → story / page / statut), clôture phase 4. |
+| [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md) | **Procédure Tailwind** : versions, fichiers, workflow, shadcn, Storybook, dépannage, migration v4. |
+| [wontfix-kit-ux.md](wontfix-kit-ux.md) | Livrables kit reportés (traçabilité plan §2.3). |
 | [vision/README.md](vision/README.md) | Index : dataflow cible + proposition stack v1+ (hors code MVP actuel). |
 
 ---
@@ -81,7 +86,7 @@ Les phases restent un **guide** ; le détail technique (env, contrat `/feed`, sm
 | `apps/web` | Next App Router ; SSR feed ; BFF `GET /api/feed` ; TanStack installé + **invalidation** sur la home. |
 | Auth | Absente dans web/api monorepo — **Phase 2**. |
 | TanStack | Socle + usage home sur le feed — extension **Phase 3 résiduelle**. |
-| `apps/thp-final` | Rails **obsolète** — **abandon définitif** ; retirer du dépôt et de la CI ([plan kit — Décommission](plan-integration-kit-ux-allaboard.md#decom-thp-final)). |
+| ~~`apps/thp-final`~~ | **Retiré** (2026-05-19) — [ADR 001](adr-001-abandon-thp-final.md). UI = `apps/web` uniquement. |
 
 ---
 

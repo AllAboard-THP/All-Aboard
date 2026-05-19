@@ -23,6 +23,8 @@
 | [vision/README.md](vision/README.md) | Index court des docs vision (liens vers proposition + dataflow). |
 | [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | **Audit** kit UX (**v1.7**) : inventaire **§8**, phasage, risques, **§11** ; mise en page GitHub. Exécution : [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md). Complète [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md). |
 | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v2.1** — **§0** chemin autonome, **§2.7** motion in-app, **D7**, **D4**, **G0/G1**, phases **0–4**, Décommission **`thp-final`**, **V/T/M/S/P**, Storybook, shadcn) ; inventaire dans [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) §8. |
+| [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md) | **Procédure Tailwind** `apps/web` : chaîne CSS, workflow, shadcn, Storybook, règles, migration v4. |
+| [tokens-kit-web.md](tokens-kit-web.md) | Table token → CSS → classe (complète la procédure). |
 
 Racine dépôt : [AGENTS.md](../AGENTS.md) (protocole PR / `pnpm verify`) ; [README.md](../README.md) racine si présent pour dev local — la **doc produit/architecture** canonique reste sous `Docs/`.
 
@@ -70,6 +72,7 @@ matrice ──► README, deploiement-instance
 | Protocole agent / CI locale | [AGENTS.md](../AGENTS.md) | Docs : mentionner `pnpm verify` seulement en renvoi. |
 | Kit UX / design system (tokens, primitives, phasage) | [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | **Audit §8** = inventaire ; [plan](plan-integration-kit-ux-allaboard.md) = tâches & tests. moc-parcours : parcours produit uniquement. |
 | Plan d’intégration kit UX (phases, tests, merge) | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | Audit **v1.7** §8 ; plan **v2.1** (§0 autonome, §2.7 motion, D7, D4 Playwright, G0/G1, phases 0–4, Décommission Rails, Storybook, shadcn, `apps/web`). |
+| Procédure Tailwind (`apps/web`) | [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md) | Plan §14 + [tokens-kit-web.md](tokens-kit-web.md) ; README `apps/web` : renvoi court. |
 
 ---
 

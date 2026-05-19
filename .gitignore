@@ -54,13 +54,10 @@ ios/
 playwright-report/
 test-results/
 
-# Temporary files (root only — apps/thp-final/tmp is tracked via .keep)
+# Temporary files (root only)
 /tmp/
 /temp/
 *.tmp
-
-# Rails THP (apps/thp-final) — Bundler install path / local SQLite buckets
-apps/thp-final/vendor/bundle/
 
 *storybook.log
 apps/web/storybook-static/
