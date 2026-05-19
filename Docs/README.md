@@ -6,7 +6,7 @@ Ce fichier est la **référence unique** pour l’ordre de lecture, la **timelin
 
 **Priorité en cas de doute** : la **cohérence d’ingénierie** (contrat API stable, SSR interne vs client public, éviter le double travail) prime sur un découpage rigide des phases — voir [Principes pour limiter le rework](#principes-pour-limiter-le-rework) et le [plan opérationnel Web/API/données](plan-mise-en-place-web-api-donnees.md).
 
-**Implémentation livrée** (merge sur `Dev`, 2026-05-12) : feed SSR via `API_URL`, socle `@tanstack/react-query`, BFF `GET /api/feed`, `useQuery` + **invalidation** sur la home (`invalidateQueries` / `['feed']`) — chemins code et journal dans le [plan opérationnel](plan-mise-en-place-web-api-donnees.md).
+**Implémentation livrée** (merge sur `Dev`, 2026-05-12) : feed SSR via `API_URL`, socle `@tanstack/react-query`, BFF `GET /api/feed`, `useQuery` + **invalidation** sur la home (`invalidateQueries` / `['feed']`) — chemins code et journal dans le [plan opérationnel](plan-mise-en-place-web-api-donnees.md). **Extension 2026-05-14** : Phase 2 MVP (Postgres, auth JWT, création demande, BFF, ADR 0001) — même plan et [ADR](adr/0001-authentication-strategy.md).
 
 ---
 
@@ -17,6 +17,7 @@ Ce fichier est la **référence unique** pour l’ordre de lecture, la **timelin
 | **Ce README** | Timeline, état du dépôt, principes web–API / auth / TanStack. |
 | [map-of-content.md](map-of-content.md) | MoC : sujet → source canonique, graphe des liens, règles de maintenance. |
 | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Web ↔ API : env, contrat `/feed`, chemins code, journal smoke, checklist Dokploy (feed). |
+| [adr/](adr/) | Décisions d’architecture ; ex. [0001-authentication-strategy.md](adr/0001-authentication-strategy.md). |
 | [To-do.md](To-do.md) | Actions prioritaires et promotion d’environnement (pas la timeline détaillée). |
 | [plan-initialisation-turborepo-mvp.md](plan-initialisation-turborepo-mvp.md) | Stub post-bootstrap ; détail historique : [archive/plan-initialisation-turborepo-mvp-2026-01.md](archive/plan-initialisation-turborepo-mvp-2026-01.md). |
 | [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md) | Conventions déploiement + tables de variables **génériques**. |
@@ -51,9 +52,12 @@ Les phases restent un **guide** ; le détail technique (env, contrat `/feed`, sm
 - Feed branché sur l’API via **`API_URL`** (SSR) ; types partagés ; `fetch` serveur pour le rendu initial.
 - Socle **`@tanstack/react-query` + `QueryClientProvider`** dans la même livraison que le feed (Option B).
 
-### Phase 2 — **Auth** et premier parcours « demande d’aide » (à faire)
+### Phase 2 — **Auth** et premier parcours « demande d’aide » (MVP dépôt livré ; durcissement / staging à suivre)
 
-- ADR auth ; routes + persistance ; web aligné [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md).
+- **ADR** : [adr/0001-authentication-strategy.md](adr/0001-authentication-strategy.md) (JWT httpOnly + relais BFF `Authorization`).
+- **Données** : Postgres via `DATABASE_URL`, Drizzle, `GET /feed` depuis la table `help_requests` ; `docker-compose.yml` pour le local.
+- **API** : `POST /auth/login`, `POST /help-requests` (JWT), détection **doublon** de titre (normalisation espaces / casse), stub **Rubberduck** (`hints.rubberduckEligible` si titre court).
+- **Web** : BFF `POST /api/auth/login`, `POST /api/help-requests` ; page `/help/new` (`apps/web/app/help/new/page.tsx`) ; lien depuis la home.
 
 ### Phase 3 — TanStack Query **hors home / mutations** (résiduel)
 
@@ -75,9 +79,9 @@ Les phases restent un **guide** ; le détail technique (env, contrat `/feed`, sm
 
 | Zone | État actuel (code) |
 |------|-------------------|
-| `apps/api` | Fastify REST, `/health`, `/feed` mock ; pas d’auth métier encore. |
-| `apps/web` | Next App Router ; SSR feed ; BFF `GET /api/feed` ; TanStack installé + **invalidation** sur la home. |
-| Auth | Absente dans web/api monorepo — **Phase 2**. |
+| `apps/api` | Fastify : `/health`, Postgres + Drizzle, `GET /feed`, `POST /auth/login`, `POST /help-requests` (JWT), stubs doublon / Rubberduck ; migrations au démarrage. |
+| `apps/web` | Next App Router ; SSR feed (`export const dynamic = "force-dynamic"` sur la home) ; BFF `GET /api/feed`, `POST /api/auth/login`, `POST /api/help-requests` ; page `/help/new` ; TanStack + invalidation sur la home. |
+| Auth | JWT (cookie `access_token` + relais BFF Bearer) — [ADR 0001](adr/0001-authentication-strategy.md). Login MVP par `MVP_LOGIN_PASSWORD`. |
 | TanStack | Socle + usage home sur le feed — extension **Phase 3 résiduelle**. |
 | `apps/thp-final` | Rails (historique) — hors timeline du MVP JS sauf décision explicite. |
 
@@ -90,4 +94,4 @@ Les phases restent un **guide** ; le détail technique (env, contrat `/feed`, sm
 3. Mettre à jour **ce fichier** quand une phase est **terminée** ou quand la timeline change (date courte en tête de section concernée).
 4. Après un changement fonctionnel Web/API : mettre à jour le *Journal* (et si besoin les chemins code) dans [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) — même PR ou commit suivant sur la branche.
 
-**Mise à jour canonique** : 2026-05-12.
+**Mise à jour canonique** : 2026-05-14.

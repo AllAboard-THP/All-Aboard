@@ -15,8 +15,8 @@ pnpm test
 pnpm verify       # lint + typecheck + test + build (avant commit / PR)
 ```
 
-- **web**: Next.js — `http://localhost:3000` (Phase 1 : feed SSR via `API_URL` + socle TanStack ; client : `useQuery` + invalidation sur le **BFF** `http://localhost:3000/api/feed` — voir [Docs/README.md](Docs/README.md))
-- **api**: Fastify — `http://localhost:4000/health`, `GET /feed`
+- **web**: Next.js — `http://localhost:3000` (feed SSR via `API_URL` + TanStack ; BFF `/api/feed`, `/api/auth/login`, `/api/help-requests` ; formulaire `/help/new` — voir [Docs/README.md](Docs/README.md))
+- **api**: Fastify — `http://localhost:4000/health`, `GET /feed` (Postgres si `DATABASE_URL`), `POST /auth/login`, `POST /help-requests` (JWT). Migrations au démarrage. Postgres local : `docker compose up -d` puis définir `DATABASE_URL` (voir [.env.example](.env.example)).
 - **thp-final**: Rails 8 — application THP (`Hotwire`, esbuild/React). Dev/test en **SQLite** (`apps/thp-final/storage/`). Postgres en production uniquement (`config/database.yml`). Démarrage :
 
   ```bash
@@ -39,6 +39,8 @@ pnpm verify       # lint + typecheck + test + build (avant commit / PR)
 ```bash
 docker build -f infra/docker/Dockerfile.web -t allaboard-web:local .
 docker build -f infra/docker/Dockerfile.api -t allaboard-api:local .
+# Postgres local pour l’API (Phase 2) :
+docker compose up -d
 # Rails THP (contexte = arborescence Rails, pas la racine monorepo) :
 docker build -f apps/thp-final/Dockerfile -t allaboard-thp-final:local apps/thp-final
 ```

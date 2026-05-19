@@ -16,6 +16,21 @@ describe("parseFeedResponse", () => {
     expect(parseFeedResponse(data)).toEqual(data);
   });
 
+  it("accepts optional tags on items", () => {
+    const data = {
+      items: [
+        {
+          id: "1",
+          title: "Hello",
+          authorId: "u",
+          createdAt: "2020-01-01T00:00:00.000Z",
+          tags: ["rails"],
+        },
+      ],
+    };
+    expect(parseFeedResponse(data)).toEqual(data);
+  });
+
   it("rejects non-object", () => {
     expect(() => parseFeedResponse(null)).toThrow("expected object");
   });

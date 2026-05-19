@@ -14,7 +14,7 @@
 
 - [x] **Phase 0–1** : monorepo, Web/API, feed SSR + `API_URL`, socle TanStack — voir [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md).
 - [x] **Phase 3 (home feed)** : `useQuery` + BFF `/api/feed` + **Rafraîchir** / `invalidateQueries` sur `['feed']` — même plan (journal + chemins code).
-- [ ] **Phase 2** : ADR auth + routes + parcours « demande d'aide » minimal.
+- [x] **Phase 2** : ADR auth + Postgres + routes + parcours « demande d'aide » MVP (`/help/new`, BFF) — voir [ADR 0001](adr/0001-authentication-strategy.md) et [plan opérationnel](plan-mise-en-place-web-api-donnees.md).
 - [ ] **Phase 3 (résiduel)** : étendre TanStack (autres `queryKey`, mutations) hors home ; `credentials` si fetch client cross-origin vers l'API.
 
 ## Checklist promotion dev -> staging

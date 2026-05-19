@@ -2,7 +2,7 @@
 
 **Objectif** : une **source canonique** par sujet ; les autres fichiers **renvoient** ou complètent sans dupliquer la vérité opérationnelle.
 
-**Mise à jour** : 2026-05-12 (consolidation doc).
+**Mise à jour** : 2026-05-14 (Phase 2 MVP dépôt + ADR auth).
 
 ---
 
@@ -13,6 +13,7 @@
 | [README.md](README.md) | Point d’entrée : timeline MVP, état du dépôt, principes web/API/TanStack, hiérarchie des liens. |
 | [map-of-content.md](map-of-content.md) | **Ce fichier** : MoC, graphe des liens, règles de maintenance. |
 | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Référence **Web ↔ API** : variables d’env, contrat `GET /feed`, chemins code, journal smoke, checklist Dokploy ciblée feed. |
+| [adr/](adr/) | **ADR** d’architecture (ex. auth [0001-authentication-strategy.md](adr/0001-authentication-strategy.md)). |
 | [To-do.md](To-do.md) | Actions **prioritaires** et promotion dev → staging (pas la timeline détaillée). |
 | [plan-initialisation-turborepo-mvp.md](plan-initialisation-turborepo-mvp.md) | **Stub** post-bootstrap ; détail historique dans [archive/](archive/). |
 | [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md) | **Conventions** déploiement (services, ports, tables de variables par type). |
@@ -59,6 +60,7 @@ matrice ──► README, deploiement-instance
 | Variables `API_URL`, BFF `/api/feed`, contrat `/feed`, chemins code, journal smoke | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Renvoyer ; pas de redefinition longue des conventions TanStack. |
 | Tables variables par service (JWT, CORS, etc.) | [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md) | Instance : ne pas recopier les grilles ; décrire faits + exceptions (ex. BFF). |
 | Domaines, branches Git services, statut Dokploy, `API_URL` interne observé | [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md) | Matrice : renvoi « détail instance » ; pas de liste de domaines dans la matrice. |
+| Auth JWT / BFF / login MVP | [adr/0001-authentication-strategy.md](adr/0001-authentication-strategy.md) | README Phase 2, matrice `JWT_SECRET` / `MVP_LOGIN_PASSWORD`, plan opérationnel (variables). |
 | Parcours utilisateur produit | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | README Phase 2 : lien uniquement. |
 | Architecture / stack long terme | [vision/README.md](vision/README.md) → proposition + dataflow | README « Vision long terme » : liens courts. |
 | Actions prioritaires, promotion env | [To-do.md](To-do.md) | Ne pas dupliquer la timeline ; lien README. |
