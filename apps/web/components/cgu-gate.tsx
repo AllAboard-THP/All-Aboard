@@ -33,14 +33,13 @@ export function CguGate({ children }: { children: React.ReactNode }) {
     setOpen(false);
   };
 
-  if (!hydrated) {
-    return <>{children}</>;
-  }
-
   return (
     <>
+      {hydrated ? (
+        <span data-testid="cgu-hydrated" className="sr-only" aria-hidden />
+      ) : null}
       {children}
-      <Dialog open={open} onOpenChange={() => {}}>
+      <Dialog open={hydrated && open} onOpenChange={() => {}}>
         <DialogContent
           data-testid="cgu-dialog"
           className="sm:max-w-md"

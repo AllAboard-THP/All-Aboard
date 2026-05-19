@@ -6,13 +6,13 @@
 **Inventaire §8 · ADN · risques · critères §11**
 
 [![Audit](https://img.shields.io/badge/audit-1.7-6366f1?style=flat-square)](./audit-integration-kit-ux-allaboard.md)
-[![Plan](https://img.shields.io/badge/plan-1.1-8b5cf6?style=flat-square)](./plan-integration-kit-ux-allaboard.md)
+[![Plan](https://img.shields.io/badge/plan-2.3-8b5cf6?style=flat-square)](./plan-integration-kit-ux-allaboard.md)
 [![CI](https://img.shields.io/badge/CI-pnpm%20verify-22c55e?style=flat-square)](../AGENTS.md)
 
 </div>
 
 > [!TIP]
-> **Audit** = *quoi* : **§8** inventaire, **§9** phasage stratégique, **§11** succès. **Plan v2.1** = *comment / quand* : [§0 chemin autonome](plan-integration-kit-ux-allaboard.md#0-chemin-dexécution-autonome-ordre-strict), [motion in-app §2.7](plan-integration-kit-ux-allaboard.md#motion-in-app), **G0/G1**, phases **0–4**, **V/T/M/S/P**, **R1–R6** + **Playwright (D4 actif)**, [exécution agent autonome](plan-integration-kit-ux-allaboard.md#execution-agent-autonome), [Décommission `thp-final`](plan-integration-kit-ux-allaboard.md#decom-thp-final), [procédure agent](plan-integration-kit-ux-allaboard.md#procédure-dexécution-agent), [Décision build](plan-integration-kit-ux-allaboard.md#13-décision-build). Chaque PR kit cite **§8.x** et suit les gates du plan.
+> **Audit** = *quoi* (§8, figures, risques). **Plan v2.3** = *comment / quand* (phases, gate **L**, jalons). **Hub** : [kit-ux-index.md](kit-ux-index.md).
 
 **Version** : 1.7 · **Date** : 2026-05-13  
 **Périmètre** : monorepo All-Aboard — **kit UX cible `apps/web`** (Next 15) ; `apps/api` sans UI ; **`apps/thp-final` (Rails)** = **obsolète** — **abandon définitif** ; retirer du dépôt et de la CI selon le [plan — Décommission](plan-integration-kit-ux-allaboard.md#decom-thp-final) (plus d’option de travail sur Rails).
@@ -44,7 +44,7 @@
 > [!NOTE]
 > AllAboard a déjà une **direction visuelle cohérente** (dark UI, Inter, indigo / violet / rose, glass, feed / auth / chat). Le kit **formalise** tokens, primitives, doc et règles sur **`apps/web`** — **Tailwind**, **shadcn/ui**, **Storybook**. Toute capture du rendu legacy (screenshots, dernier commit) doit être faite **avant** suppression de `apps/thp-final` ; ensuite la seule vérité UI est **`apps/web`**.
 
-**Livrables audit** : cadre **kit de base**, **trois** figures (§2), inventaire **§8**, phasage **§9**, risques **§10**, critères **§11**. L’**exécution** (cases `- [ ]`, `pnpm verify`, **T** Storybook, **P** Playwright, **R1–R6**) : [plan d’intégration v2.1](plan-integration-kit-ux-allaboard.md).
+**Livrables audit** : figures (§2), inventaire **§8**, phasage **§9**, risques **§10**, critères **§11**. Exécution et preuves : [plan d’intégration](plan-integration-kit-ux-allaboard.md).
 
 ---
 
@@ -85,7 +85,7 @@ Vue synthétique des **phases** (alignée [§9](#9-phasage-et-plan)).
 
 | Surface | Rôle UX | Stack UI |
 |---------|---------|-----------|
-| **`apps/web`** | **Cible kit** : pages Next, BFF feed, futur shell produit | **Tailwind** (à finaliser selon [plan v2.1](plan-integration-kit-ux-allaboard.md)), React 19, React Query ; **shadcn/ui** + **Storybook** + **Playwright** (plan) |
+| **`apps/web`** | **Cible kit** : pages Next, BFF feed, shell produit | **Tailwind** 3.4, React 19, React Query ; **shadcn/ui** + **Storybook** 8.4 + **Playwright** — [plan](plan-integration-kit-ux-allaboard.md) |
 | **`apps/thp-final`** | **Obsolète** (Rails) — à supprimer du monorepo | N/A après [Décommission](plan-integration-kit-ux-allaboard.md#decom-thp-final) |
 | **`apps/api`** | Pas d’UI | N/A |
 
@@ -157,7 +157,7 @@ Aligné sur [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) et les ro
 | **Formulaires dupliqués** | Anciennement home vs Devise Rails | À unifier en **composants** `apps/web` |
 | **Pas d’inventaire doc** | Pas « composant → story » | Onboarding coûteux — **D1** Storybook |
 | **Legacy Rails** | Tant que `apps/thp-final` existe | [Décommission](plan-integration-kit-ux-allaboard.md#decom-thp-final) — **D2** / **D3** pour éviter toute dépendance au legacy |
-| **Tests UI** | Playwright = preuve merge sous **D4** | [Plan v2.1](plan-integration-kit-ux-allaboard.md) : **V**, **T** (Storybook), **P** (E2E), **M/S** optionnels |
+| **Tests UI** | Playwright = preuve merge sous **D4** | [Plan d’intégration](plan-integration-kit-ux-allaboard.md) : **V**, **T** (Storybook), **P** (E2E), **M/S** optionnels |
 
 ---
 
@@ -175,7 +175,7 @@ Ensemble **contractuel** sur **`apps/web`** :
 
 ## 8. Inventaire canonique
 
-Checklist **fonctionnelle** : une ligne **§8.x** ≈ une **primitive documentée** (composant React + story Storybook, ou page App Router). **Suivi PR** : [plan v2.1](plan-integration-kit-ux-allaboard.md).
+Checklist **fonctionnelle** : une ligne **§8.x** ≈ une **primitive documentée** (composant React + story Storybook, ou page App Router). **Suivi PR** : [plan d’intégration](plan-integration-kit-ux-allaboard.md).
 
 ### Alignement audit ↔ plan (référence)
 
@@ -331,19 +331,7 @@ Livrer d’abord : **tokens** + **grille** ; **boutons** + **champs** + **erreur
 
 ## 9. Phasage et plan
 
-> [!NOTE]
-> **§9** = vue **stratégique** (tableau ci‑dessous). **Plan v2.1** = livrables numérotés, [§0 autonome](plan-integration-kit-ux-allaboard.md#0-chemin-dexécution-autonome-ordre-strict), [§2.7 motion](plan-integration-kit-ux-allaboard.md#motion-in-app), **G0/G1**, **V/T/M/S/P**, **R1–R6** + **P** Playwright, [exécution agent autonome](plan-integration-kit-ux-allaboard.md#execution-agent-autonome), [Décommission `thp-final`](plan-integration-kit-ux-allaboard.md#decom-thp-final), procédure **agent**, **Mermaid**, **Décision build**, **phase 4** clôture.
-
-| Phase | Contenu | Critère de fin |
-|-------|---------|----------------|
-| **G0** *(plan)* | **Décommission** `apps/thp-final` : CI, Turbo, Docker, doc | Checklist plan cochée ; `pnpm verify` sans Rails |
-| **0** | Tokens + Tailwind build + **shadcn** + **Storybook** + pas de CDN sur Next | `pnpm verify` + **T** + **M** R1 |
-| **1** | Nav, footer, menu, **CGU**, auth (App Router), primitives shadcn | **R1–R3** ; stories §8.1 / §8.3–8.5 |
-| **2** | Cartes, listes, feed, messages, navigation de page | **R4** / **R5** ; données via plan Web/API |
-| **3** | Chat React, admin/mentor, mails, légal | **R5** / **R6** ; pas de stack temps réel legacy |
-| **4** *(plan)* | **D1** tableau stories, **D3**, **WONTFIX §8**, **§11** | Merge `Dev` |
-
-Les figures **§2** couvrent surtout les phases **0–3** ; la **phase 4** est détaillée dans le [plan](plan-integration-kit-ux-allaboard.md) (schéma Mermaid inclus).
+Vue **stratégique** : **G0** (décommission Rails) → **G1** (spike) → phases **0–4** (fondations → clôture) → gate **L** → PR `Dev`. Détail des livrables, cases et jalons **V/T/P** : [plan d’intégration §0–§13](plan-integration-kit-ux-allaboard.md). Roadmap visuelle : figure §2.2.
 
 ---
 
@@ -361,31 +349,25 @@ Les figures **§2** couvrent surtout les phases **0–3** ; la **phase 4** est d
 
 ## 11. Critères de succès
 
-> Le [plan](plan-integration-kit-ux-allaboard.md) opérationnalise ces points (tâches + **R1–R6**).
-
-- [x] Document **tokens** validé et reflété dans le code — [tokens-kit-web.md](tokens-kit-web.md), [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md).  
-- [x] **Aucune** dépendance UI majeure non validée (Tailwind 3.4.19 + shadcn + Storybook 8.4 selon plan).  
-- [x] **Trois** parcours sans régression majeure : landing + login, CGU, feed (E2E R1–R4).  
-- [x] **Accessibilité** : focus, labels, CGU disabled, contrastes `glass` (MVP).  
-- [x] `pnpm verify` vert — [AGENTS.md](../AGENTS.md), [CI](../../.github/workflows/ci.yml).
+| Critère | Preuve / renvoi |
+|---------|-----------------|
+| Tokens documentés → code | [tokens-kit-web.md](tokens-kit-web.md), `apps/web/app/globals.css` |
+| Stack validée (Tailwind 3.4 + shadcn + Storybook 8.4) | [plan §14](plan-integration-kit-ux-allaboard.md#13-décision-build), `apps/web/package.json` |
+| Parcours clés sans régression majeure | E2E **R1–R6** — gate **L** ([plan §2.8](plan-integration-kit-ux-allaboard.md#validation-locale-avant-pr)) |
+| Accessibilité MVP | focus-ring, labels, CGU ; détail [plan D6](plan-integration-kit-ux-allaboard.md#décisions-mvp-d1d6) |
+| Qualité monorepo | `pnpm verify` — [AGENTS.md](../AGENTS.md), [CI](../../.github/workflows/ci.yml) |
 
 ---
 
 ## 12. Liens
 
-| Ressource | Lien |
-|-----------|------|
-| **Plan d’intégration v2.1** (agent, autonome **D4**, motion **§2.7**, G0/G1, phases 0–4, V/T/M/S/P, Mermaid) | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) |
-| Parcours produit | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) |
-| Protocole agent / PR | [AGENTS.md](../AGENTS.md) |
-| Carte de la doc | [map-of-content.md](map-of-content.md) |
-| Workflow CI | [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) |
+Hub : [kit-ux-index.md](kit-ux-index.md) · Plan : [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) · MoC : [map-of-content.md](map-of-content.md)
 
 ---
 
 ## 13. Annexes chemins
 
-**Cible `apps/web`** : `apps/web/app/` (App Router), futurs `apps/web/components/ui` (shadcn), `apps/web/.storybook/`, `*.stories.tsx`.
+**Cible `apps/web`** : `app/`, `components/ui/`, `components/`, `.storybook/`, `*.stories.tsx`, `e2e/`.
 
 **Après [Décommission `thp-final`](plan-integration-kit-ux-allaboard.md#decom-thp-final)** : ne plus lister de chemins sous `apps/thp-final/` ici. Avant suppression du dossier, les chemins utiles étaient notamment `app/assets/stylesheets/application.css` et `app/views/layouts/application.html.erb` (voir §8.4 pour la correspondance écrans).
 

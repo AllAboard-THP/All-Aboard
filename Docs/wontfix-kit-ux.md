@@ -1,6 +1,6 @@
-# WONTFIX — kit UX (traçabilité plan §2.3)
+# WONTFIX — kit UX
 
-Éléments **hors périmètre MVP** documentés pour clôture phase 4 (§4.3). Le reste du kit §8.0–8.10 est couvert — voir [kit-ux-index.md](kit-ux-index.md).
+Hors périmètre MVP (plan §2.3, clôture §4.3). Couverture du reste : [kit-ux-index.md](kit-ux-index.md).
 
 | ID | Phase | Sujet | Raison | Date |
 |----|-------|--------|--------|------|

@@ -19,6 +19,7 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   // `output: "standalone"` : `next start` n'est pas supporté — serveur Node officiel.
+  // `pnpm run build` exécute prepare-standalone (static + public) — requis pour l'hydratation client.
   webServer: {
     command: process.env.CI
       ? `cd .next/standalone && PORT=${e2ePort} node apps/web/server.js`

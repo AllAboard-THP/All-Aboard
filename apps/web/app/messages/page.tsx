@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { CodeBlock } from "@/components/code-block";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,13 +13,21 @@ const threads = [
 
 export default function MessagesPage() {
   const [active, setActive] = useState<string>("1");
+  const [hydrated, setHydrated] = useState(false);
   const thread = threads.find((t) => t.id === active) ?? threads[0];
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   return (
     <div
       data-testid="messages-page"
       className="mx-auto grid max-w-7xl gap-4 p-4 md:grid-cols-[280px_1fr] md:p-6"
     >
+      {hydrated ? (
+        <span data-testid="messages-hydrated" className="sr-only" aria-hidden />
+      ) : null}
       <Card className="h-fit">
         <CardHeader>
           <CardTitle className="text-lg">Conversations</CardTitle>
@@ -30,6 +38,7 @@ export default function MessagesPage() {
               <li key={t.id}>
                 <button
                   type="button"
+                  data-testid={`thread-${t.id}`}
                   className={cn(
                     "w-full px-4 py-3 text-left text-sm transition-colors hover:bg-secondary focus-ring",
                     active === t.id && "bg-secondary font-semibold",

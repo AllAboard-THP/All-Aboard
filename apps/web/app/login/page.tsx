@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -17,11 +16,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [session, setSession] = useState<string | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,11 +36,13 @@ export default function LoginPage() {
     setSession(`demo:${email.trim()}`);
     document.cookie = `allaboard-session=demo; path=/; SameSite=Lax`;
     toast.success("Connexion réussie (démo)");
-    router.push("/");
   };
 
   return (
     <div className="mx-auto flex max-w-md flex-col gap-6 p-6">
+      {hydrated ? (
+        <span data-testid="auth-hydrated" className="sr-only" aria-hidden />
+      ) : null}
       <Card data-testid="auth-login-card">
         <CardHeader>
           <CardTitle>Connexion</CardTitle>

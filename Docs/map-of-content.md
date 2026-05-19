@@ -2,7 +2,7 @@
 
 **Objectif** : une **source canonique** par sujet ; les autres fichiers **renvoient** ou complètent sans dupliquer la vérité opérationnelle.
 
-**Mise à jour** : 2026-05-19 (audit kit UX **v1.7** ; plan intégration kit UX **v2.2**).
+**Mise à jour** : 2026-05-19 (audit kit UX **v1.7** ; plan kit UX **v2.3** ; hub [kit-ux-index](kit-ux-index.md)).
 
 ---
 
@@ -22,9 +22,11 @@
 | [proposition-stack-technique-monorepo-2026.md](proposition-stack-technique-monorepo-2026.md) | Vision **stack v1+** (GraphQL, Prisma, etc.) — pas l’état du code MVP. |
 | [vision/README.md](vision/README.md) | Index court des docs vision (liens vers proposition + dataflow). |
 | [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | **Audit** kit UX (**v1.7**) : inventaire **§8**, phasage, risques, **§11** ; mise en page GitHub. Exécution : [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md). Complète [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md). |
-| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v2.2** — gate **L** validation locale pré-PR [§2.8](plan-integration-kit-ux-allaboard.md#validation-locale-avant-pr), **§0** chemin autonome, **§2.7** motion, **D7**, **D4**, **G0/G1**, phases **0–4**, **V/T/M/S/P**, Storybook, shadcn) ; inventaire [audit](audit-integration-kit-ux-allaboard.md) §8. |
-| [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md) | **Procédure Tailwind** `apps/web` : chaîne CSS, workflow, shadcn, Storybook, règles, migration v4. |
-| [tokens-kit-web.md](tokens-kit-web.md) | Table token → CSS → classe (complète la procédure). |
+| [kit-ux-index.md](kit-ux-index.md) | **Hub kit UX** : où est le code (`apps/web`), commandes, tableau **D1**, liens vers plan / audit / procédure. |
+| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v2.3**) : exécution, gate **L** [§2.8](plan-integration-kit-ux-allaboard.md#validation-locale-avant-pr), phases **0–4**, merge §13. |
+| [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md) | **Procédure Tailwind** `apps/web` : chaîne CSS, workflow, shadcn, Storybook, migration v4. |
+| [tokens-kit-web.md](tokens-kit-web.md) | Table token → CSS → classe. |
+| [wontfix-kit-ux.md](wontfix-kit-ux.md) | Écarts MVP kit (traçabilité). |
 
 Racine dépôt : [AGENTS.md](../AGENTS.md) (protocole PR / `pnpm verify`) ; [README.md](../README.md) racine si présent pour dev local — la **doc produit/architecture** canonique reste sous `Docs/`.
 
@@ -70,9 +72,9 @@ matrice ──► README, deploiement-instance
 | Actions prioritaires, promotion env | [To-do.md](To-do.md) | Ne pas dupliquer la timeline ; lien README. |
 | Bootstrap Turborepo historique | [archive/plan-initialisation-turborepo-mvp-2026-01.md](archive/plan-initialisation-turborepo-mvp-2026-01.md) | Stub [plan-initialisation-turborepo-mvp.md](plan-initialisation-turborepo-mvp.md). |
 | Protocole agent / CI locale | [AGENTS.md](../AGENTS.md) | Docs : mentionner `pnpm verify` seulement en renvoi. |
-| Kit UX / design system (tokens, primitives, phasage) | [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | **Audit §8** = inventaire ; [plan](plan-integration-kit-ux-allaboard.md) = tâches & tests. moc-parcours : parcours produit uniquement. |
-| Plan d’intégration kit UX (phases, tests, merge) | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | Audit **v1.7** §8 ; plan **v2.2** (gate **L** §2.8 pré-PR, §0 autonome, §2.7 motion, D7, D4 Playwright, G0/G1, phases 0–4, Storybook, shadcn, `apps/web`). |
-| Validation locale pré-PR (kit UX) | [plan-integration-kit-ux-allaboard.md §2.8](plan-integration-kit-ux-allaboard.md#validation-locale-avant-pr) | **V** + **T** + **P** en local avant PR ; `push` sur `feature/*` ne déclenche pas la CI — renvoi plan, pas de troisième copie des commandes. |
+| Kit UX (point d’entrée) | [kit-ux-index.md](kit-ux-index.md) | Renvoie vers plan, audit, procédure, `apps/web` — pas de second hub. |
+| Inventaire kit §8, figures, risques | [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | Pas de recopier l’inventaire dans le plan. |
+| Plan d’intégration kit (phases, gate **L**, merge) | [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) — [§2.8](plan-integration-kit-ux-allaboard.md#validation-locale-avant-pr) ou `pnpm gate:l:kit` | Pas de recopier les commandes ailleurs. |
 | Procédure Tailwind (`apps/web`) | [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md) | Plan §14 + [tokens-kit-web.md](tokens-kit-web.md) ; README `apps/web` : renvoi court. |
 
 ---

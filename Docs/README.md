@@ -22,13 +22,12 @@ Ce fichier est la **référence unique** pour l’ordre de lecture, la **timelin
 | [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md) | Conventions déploiement + tables de variables **génériques**. |
 | [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md) | Faits observés sur l’instance Dokploy (domaines, branches, `API_URL`). |
 | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | Parcours produit (MOC), sans stack imposée. |
-| [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | Audit **kit UX** (**v1.7**) : inventaire **§8**, phasage, risques, **§11** ; mise en page GitHub. Exécution : [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md). |
-| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | **Plan d’intégration** kit UX (**v2.2**) — gate **L** ([§2.8](plan-integration-kit-ux-allaboard.md#validation-locale-avant-pr) : **V**+**T**+**P** locaux avant PR) ; livrables code vs jalons à preuve terminal ; **G0** terminée (2026-05-19). |
-| [adr-001-abandon-thp-final.md](adr-001-abandon-thp-final.md) | ADR — retrait `apps/thp-final` du monorepo. |
-| [tokens-kit-web.md](tokens-kit-web.md) | Table token → CSS → classe (`apps/web`). |
-| [kit-ux-index.md](kit-ux-index.md) | Index kit UX — tableau **D1** (§8 → story / page / statut), clôture phase 4. |
-| [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md) | **Procédure Tailwind** : versions, fichiers, workflow, shadcn, Storybook, dépannage, migration v4. |
-| [wontfix-kit-ux.md](wontfix-kit-ux.md) | Livrables kit reportés (traçabilité plan §2.3). |
+| [kit-ux-index.md](kit-ux-index.md) | **Hub kit UX** — code dans `apps/web`, commandes, tableau **D1**, liens plan / audit / procédure. |
+| [plan-integration-kit-ux-allaboard.md](plan-integration-kit-ux-allaboard.md) | Plan d’intégration kit (**v2.3**) : phases, gate **L**, merge `Dev`. |
+| [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) | Audit kit : inventaire **§8**, figures, **§11**. |
+| [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md) | Procédure Tailwind / shadcn / Storybook (`apps/web`). |
+| [tokens-kit-web.md](tokens-kit-web.md) · [wontfix-kit-ux.md](wontfix-kit-ux.md) | Tokens · hors périmètre MVP. |
+| [adr-001-abandon-thp-final.md](adr-001-abandon-thp-final.md) | ADR — retrait `apps/thp-final`. |
 | [vision/README.md](vision/README.md) | Index : dataflow cible + proposition stack v1+ (hors code MVP actuel). |
 
 ---

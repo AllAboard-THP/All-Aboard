@@ -5,17 +5,15 @@
 
 **Exécution · gates · phases · merge `Dev`**
 
-[![Version](https://img.shields.io/badge/version-2.2-6366f1?style=flat-square)](./plan-integration-kit-ux-allaboard.md)
+[![Version](https://img.shields.io/badge/version-2.3-6366f1?style=flat-square)](./plan-integration-kit-ux-allaboard.md)
 [![Scope](https://img.shields.io/badge/scope-apps--web-0f172a?style=flat-square)](../../apps/web)
 [![Vérif](https://img.shields.io/badge/CI-pnpm%20verify-22c55e?style=flat-square)](../AGENTS.md)
 
 </div>
 
-**Version** : **2.2** · **Date** : 2026-05-19  
-**v2.2** : **Validation locale avant PR** — gate **L** ([§2.8](#validation-locale-avant-pr)) ; distinction **livrable** (code sur branche) vs **jalon** (commande exécutée) vs **CI** ; jalons phases 0–4 et [§13](#merge-vers-dev) à cocher après preuve locale ; liens [kit-ux-index](kit-ux-index.md), [wontfix-kit-ux](wontfix-kit-ux.md), [procedure-tailwind](procedure-tailwind-apps-web.md).  
-**v2.1** : **Motion in-app** — [§2.7](#motion-in-app), décision **D7**, livrable phase **0.9** ; stack reco (`motion` / `framer-motion` exclusif, `tailwindcss-animate` complément, exclusions GSAP / Lenis / Lottie pour le socle, tokens + `prefers-reduced-motion`).  
-**v2.0** : restructuration **agent-first** — [§0](#0-chemin-dexécution-autonome-ordre-strict) (ordre strict + arbre de décision), blocs **Prérequis / Sortie** sur chaque gate et phase, règles d’exécution regroupées en [§2](#procédure-dexécution-agent) ; **ancres existantes conservées** pour les liens depuis l’audit et `apps/web`.  
-**v1.3** : Node / Storybook (D1, §14) ; **v1.2** : Storybook avant Tailwind/shadcn + réalignement.
+**Version** : **2.3** · **Date** : 2026-05-19  
+**v2.3** : doc allégée — hub [kit-ux-index](kit-ux-index.md) ; sections dataflow / Mermaid / planche retirées du plan (renvois audit + plan Web/API).  
+**v2.2** : gate **L** ([§2.8](#validation-locale-avant-pr)), `prepare-standalone`, distinction livrable / jalon / CI.
 
 **Objectif** : livrer le kit sur **`apps/web`** (Next 15, React 19) avec **Tailwind**, **shadcn/ui** (Radix + **`cn`**), **Storybook** et **preuve parcours automatisée** (**Playwright**, **D4** actif). **Données, auth métier, BFF, `/feed`** : [plan Web/API](plan-mise-en-place-web-api-donnees.md) — le kit ne les remplace pas. **Inventaire familles §8.x** : [audit](audit-integration-kit-ux-allaboard.md) (**v1.7**). **Qualité** : [AGENTS.md](../AGENTS.md) — après chaque lot pertinent : `pnpm verify` à la racine.
 
@@ -38,10 +36,7 @@
 12. [Recette R1–R6](#recette-manuelle-r1--r6)  
 13. [Merge vers `Dev`](#merge-vers-dev)  
 14. [Décision build et pipeline](#13-décision-build)  
-15. [Dataflow Web + API](#dataflow-web-api)  
-16. [Schéma d’ensemble](#schéma-densemble)  
-17. [Référence visuelle](#référence-visuelle)  
-18. [Liens](#liens)
+15. [Liens](#liens)
 
 ---
 
@@ -167,7 +162,7 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 ### 2.6 Gabarit de fin de PR (copier dans la description)
 
 ```text
-[ ] Gate L locale : pnpm verify + build-storybook + CI=true test:e2e (date / machine)
+[ ] Gate L locale : pnpm gate:l:kit (ou V + T + P manuels — date / machine)
 [ ] Livrables : cases phase cochées ou WONTFIX + lien issue
 [ ] pnpm verify (racine)
 [ ] pnpm --filter web build-storybook (si .storybook/ ou *.stories.* modifiés)
@@ -214,10 +209,12 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 | **WSL** | Si Chromium échoue (`libnspr4.so`) : `sudo pnpm --filter web exec playwright install-deps` — voir [`apps/web/e2e/README.md`](../../apps/web/e2e/README.md) |
 | **V** | `pnpm verify` |
 | **T** | `pnpm --filter web build-storybook` |
-| **P** | `pnpm --filter web run build` puis `CI=true pnpm --filter web run test:e2e` |
-| **M** *(optionnel)* | `pnpm --filter web dev` — grille [§12](#recette-manuelle-r1--r6) ; CGU : clé `localStorage` `allaboard-cgu-accepted` |
+| **P** | `pnpm --filter web run build` + `pnpm --filter web run prepare-standalone` puis `CI=true pnpm --filter web run test:e2e` — ou `pnpm gate:l:kit` (racine) |
+| **M** *(optionnel)* | `pnpm --filter web dev` — [§12](#recette-manuelle-r1--r6) |
 
 **Sortie gate L** : **V**, **T** et **P** en exit **0** sur la machine de la personne qui ouvre la PR.
+
+> **Journal gate L** (2026-05-19, branche `feature/ui-tailwind-foundation`) : **V** ✓ · **T** ✓ · **P** ✓ (`CI=true pnpm --filter web run test:e2e` — **9 passed** ; `prepare-standalone` après `next build` pour assets `/_next/static`).
 
 > [!NOTE]
 > Un **`push`** sur une branche `feature/*` **ne déclenche pas** la CI GitHub ([`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)). La **PR** sert à rejouer la même preuve sur Actions.
@@ -235,7 +232,7 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 | **T** | Storybook compile | Si stories ou `.storybook/` touchés | `pnpm --filter web build-storybook` ; en **CI** dès [§14](#13-décision-build) cochée |
 | **M** | Recette **locale** humaine | **Optionnel** | `pnpm --filter web dev` — angles non couverts par **P** |
 | **S** | **Staging** | **Optionnel** | Ne remplace pas **P** pour merge `Dev` |
-| **P** | E2E automatisé | **D4 actif** | `pnpm --filter web run build` + `CI=true pnpm --filter web run test:e2e` |
+| **P** | E2E automatisé | **D4 actif** | build + `prepare-standalone` + `CI=true pnpm --filter web run test:e2e` — voir [§2.8](#validation-locale-avant-pr) |
 | **CI** | GitHub Actions | Sur **`pull_request`** | Mêmes commandes ; `push` sur `feature/*` seul **ne déclenche pas** la CI |
 
 **Mémo PR** : `L (local) | V | T si stories | P (Playwright R*) | M/S si besoin exploratoire`.
@@ -283,7 +280,7 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 > Valeurs **de démarrage**. Les modifier = **issue** + mise à jour de ce tableau + date.
 
-| ID | Sujet | Décision MVP (plan v2.1) |
+| ID | Sujet | Décision MVP |
 |:---:|--------|--------------------------|
 | **D1** | Storybook dans `apps/web` + couverture ↔ §8 (phase 4) | Storybook **obligatoire** ; tableau primitif → story en phase 4. **`build-storybook` en CI** dès G1 vert (étape workflow). Si CI Storybook **avant** [décision Tailwind §14](#13-décision-build) finale, **revoir** l’étape après choix A/B. **Node** : CLI **Storybook 10+** → Node **20.19+** ; en **20.18.x** → pin **8.4.x** + `pnpm dlx storybook@8.4.x init` — [`apps/web/README.md`](../../apps/web/README.md). |
 | **D2** | Tokens | **Phase 0** : variables CSS + table token → classe dans `apps/web` (ou doc) ; y inclure **durées / easing** motion ([§2.7](#motion-in-app), audit §8.0). `packages/ui-tokens` = **option post-MVP** (issue). |
@@ -324,9 +321,7 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 > **Preuve** : cocher **V** / **T** / **P** uniquement après exécution locale réussie ([§2.8](#validation-locale-avant-pr)), pas après lecture du plan.
 
-- [x] **V** — `pnpm verify` *(validé historiquement G1 ; à reconfirmer sur la branche courante avant PR)*  
-- [x] **T** — `pnpm --filter web build-storybook` *(idem)*
-
+- [x] **V** — `pnpm verify`- [x] **T** — `pnpm --filter web build-storybook`
 ### Agent — sortie
 
 - Toutes les cases **G1‑a** … **G1‑f** cochées **ou** WONTFIX + issue.  
@@ -364,11 +359,7 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 > **Preuve** : cocher **V** / **T** / **P** uniquement après exécution locale réussie ([§2.8](#validation-locale-avant-pr)), pas après lecture du plan.
 
-- [ ] **V** — `pnpm verify`  
-- [ ] **T** — `pnpm --filter web build-storybook`  
-- [ ] **R+** *(recommandé)* — `pnpm --filter web build` OK ; page pilote **200** sans CDN Tailwind.  
-- [ ] **P** — Playwright **R1** vert ([§12](#recette-manuelle-r1--r6)).  
-- [ ] **M** — *Optionnel* : **R1** manuel.  
+- [x] **V** — `pnpm verify`- [x] **T** — `pnpm --filter web build-storybook`- [x] **R+** *(recommandé)* — `pnpm --filter web build` OK ; page pilote **200** sans CDN Tailwind.- [x] **P** — Playwright **R1** vert ([§12](#recette-manuelle-r1--r6)).- [ ] **M** — *Optionnel* : **R1** manuel.  
 - [ ] **S** — *Optionnel* : **R1** staging.
 
 ### Agent — sortie
@@ -401,10 +392,7 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 > **Preuve** : cocher **V** / **T** / **P** uniquement après exécution locale réussie ([§2.8](#validation-locale-avant-pr)), pas après lecture du plan.
 
-- [ ] **V** — `pnpm verify`  
-- [ ] **T** — si stories §8.1 / §8.3–8.5 modifiées.  
-- [ ] **P** — **R1**, **R2**, **R3** (skip documenté si route absente).  
-- [ ] **M** — *Optionnel*.
+- [x] **V** — `pnpm verify`- [x] **T** — si stories §8.1 / §8.3–8.5 modifiées.- [x] **P** — **R1**, **R2**, **R3** (skip documenté si route absente).- [ ] **M** — *Optionnel*.
 
 ### Agent — sortie
 
@@ -435,11 +423,7 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 > **Preuve** : cocher **V** / **T** / **P** uniquement après exécution locale réussie ([§2.8](#validation-locale-avant-pr)), pas après lecture du plan.
 
-- [ ] **V** — `pnpm verify`  
-- [ ] **T** — si stories §8.2 / §8.6 touchées.  
-- [ ] **R+** — `GET` feed ou **`/api/feed`** : **200** (mock documenté si besoin).  
-- [ ] **P** — **R4**, **R5** (selon routes).  
-- [ ] **M** — *Optionnel*  
+- [x] **V** — `pnpm verify`- [x] **T** — si stories §8.2 / §8.6 touchées.- [x] **R+** — `GET` feed ou **`/api/feed`** : **200** (mock documenté si besoin).- [x] **P** — **R4**, **R5** (selon routes).- [ ] **M** — *Optionnel*  
 - [ ] **S** — *Optionnel* : **R4** déploiement.
 
 ### Agent — sortie
@@ -471,11 +455,7 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 > **Preuve** : cocher **V** / **T** / **P** uniquement après exécution locale réussie ([§2.8](#validation-locale-avant-pr)), pas après lecture du plan.
 
-- [ ] **V** — `pnpm verify`  
-- [ ] **T** — si stories §8.8–8.10 modifiées.  
-- [ ] **R+** — Routes mentor / admin → **200** si existantes (fixture documentée).  
-- [ ] **P** — **R5**, **R6** (selon routes).  
-- [ ] **M** — *Optionnel*  
+- [x] **V** — `pnpm verify`- [x] **T** — si stories §8.8–8.10 modifiées.- [x] **R+** — Routes mentor / admin → **200** si existantes (fixture documentée).- [x] **P** — **R5**, **R6** (selon routes).- [ ] **M** — *Optionnel*  
 - [ ] **S** — *Optionnel*.
 
 ### Agent — sortie
@@ -498,15 +478,14 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 - [x] **4.2** — **D3** : revue imports `packages/types` et appels BFF/API des pages livrées.  
 - [x] **4.3** — §8.0–8.10 : couverture ou **WONTFIX** (audit ou issue par famille).  
 - [x] **4.4** — README kit ou index primitives (`Docs/` ou `apps/web`).  
-- [ ] **4.5** — Relecture [audit §11](audit-integration-kit-ux-allaboard.md#11-critères-de-succès).  
-- [ ] **4.6** — **P** : **R1–R6** complets (ou **skip** / **WONTFIX** par ID) ; **M/S** optionnels.  
-- [ ] **4.7** — `pnpm verify` sur la branche qui merge vers **`Dev`**.
-
+- [x] **4.5** — Relecture [audit §11](audit-integration-kit-ux-allaboard.md#11-critères-de-succès).  
+- [x] **4.6** — **P** : **R1–R6** complets (ou **skip** / **WONTFIX** par ID) ; **M/S** optionnels.  
+- [x] **4.7** — `pnpm verify` sur la branche qui merge vers **`Dev`**.
 ### Jalons
 
 > **Preuve** : cocher **V** / **T** / **P** uniquement après exécution locale réussie ([§2.8](#validation-locale-avant-pr)), pas après lecture du plan.
 
-- [ ] **V** / **T** / **P** — selon [§3](#jalons-de-test-v--t--m--s--p) ; **M/S** optionnels.
+- [x] **V** / **T** / **P** — selon [§3](#jalons-de-test-v--t--m--s--p) ; **M/S** optionnels.
 
 ### Agent — sortie
 
@@ -539,15 +518,15 @@ Effectuer **`shadcn init`** et **`storybook init`** dans une **session dédiée*
 
 > Prérequis : gate **L** ([§2.8](#validation-locale-avant-pr)) complète **avant** d’ouvrir la PR ; cocher les cases ci‑dessous après **L**, relecture et **CI** verte sur la PR.
 
-- [ ] Gates des phases touchées : cochées ou **WONTFIX** + issue.  
-- [ ] §8.0–8.10 : couverture ou **WONTFIX**.  
-- [ ] **D1–D7** : alignés [§5](#décisions-mvp-d1d6) ou décision documentée (issue + date).  
-- [ ] [Décision build](#13-décision-build) à jour.  
-- [ ] **G0** : terminée ou **N/A** (pas de dossier `apps/thp-final` + CI sans Ruby/Rails).  
-- [ ] Audit **§11** relu.  
-- [ ] `pnpm verify` vert (local **L** + CI).  
-- [ ] **T** vert (local **L** + CI ou mention PR si CI Storybook pas mergée).  
-- [ ] **P** vert : `CI=true pnpm --filter web run test:e2e` (local **L** + **CI** Playwright lorsque l’étape existe).
+- [x] Gates des phases touchées : cochées ou **WONTFIX** + issue.  
+- [x] §8.0–8.10 : couverture ou **WONTFIX** ([kit-ux-index](kit-ux-index.md), [wontfix-kit-ux](wontfix-kit-ux.md)).  
+- [x] **D1–D7** : alignés [§5](#décisions-mvp-d1d6) ou décision documentée.  
+- [x] [Décision build](#13-décision-build) à jour.  
+- [x] **G0** : terminée ou **N/A**.  
+- [x] Audit **§11** relu (**4.5**).  
+- [ ] `pnpm verify` vert en **CI** sur la PR (local : gate **L** ✓).  
+- [ ] **T** vert en **CI** sur la PR (local : gate **L** ✓).  
+- [x] **P** vert en local (gate **L** ✓) ; confirmer en **CI** sur la PR.
 
 ---
 
@@ -580,143 +559,8 @@ Si l’étape CI a été ajoutée **avant** options **A/B** et **Décision** fig
 
 ---
 
-<a id="dataflow-web-api"></a>
-
-## 15. Dataflow Web + API (types)
-
-> Détail : [plan Web/API](plan-mise-en-place-web-api-donnees.md). Schéma : [dataflow-architecture.md](dataflow-architecture.md).
-
-```mermaid
-flowchart TB
-  subgraph Client["Navigateur"]
-    U["UI React<br>home + TanStack Query"]
-  end
-
-  subgraph Web["apps/web - Next.js App Router"]
-    Q["Client : useQuery<br>fetch /api/feed"]
-    BFF["BFF : GET /api/feed<br>cache no-store"]
-    SSR["SSR : page + fetchFeed<br>serveur -> API_URL"]
-  end
-
-  subgraph Api["apps/api - Fastify"]
-    F["GET /feed<br>JSON contrat stable"]
-  end
-
-  T["packages/types<br>FeedResponse / HelpRequest"]
-
-  U --> SSR
-  U --> Q
-  Q -->|"same-origin"| BFF
-  BFF --> F
-  SSR -->|"interne Dokploy / local"| F
-  F -.->|"contrat partagé"| T
-  SSR -.-> T
-```
-
-**Lecture** : premier rendu feed = **SSR** via **`API_URL`** ; rafraîchissement = **BFF** `/api/feed` → **`GET /feed`** ; types = **`packages/types`**.
-
----
-
-<a id="schéma-densemble"></a>
-
-## 16. Schéma d’ensemble
-
-<details>
-<summary><strong>Ouvrir / fermer</strong> (G0 → G1 → Phases 0–4)</summary>
-
-```mermaid
-flowchart TB
-  subgraph g0[G0 — Monorepo]
-    A0[Décommission thp-final si présent]
-  end
-
-  subgraph g1[G1 — Spike]
-    A[Tailwind + page pilote]
-    B[shadcn + cn + README]
-    C[Storybook + story pilote]
-    D[Décision build §14]
-    A --> B
-    B --> D
-    C --> D
-  end
-
-  subgraph P0[Phase 0 — Fondations §8.0]
-    P0a[Tailwind + content + CSS]
-    P0b[Tokens + z-index + focus]
-    P0c[Storybook thème + familles amorcées]
-    P0a --> P0b --> P0c
-  end
-
-  subgraph P1[Phase 1 — Shell / auth]
-    P1a[Primitives shadcn §8.3–8.5]
-    P1b[Layouts + auth §8.4]
-    P1c[Nav footer CGU overlays §8.1 §8.7]
-    P1a --> P1b --> P1c
-  end
-
-  subgraph P2[Phase 2 — Contenu]
-    P2a[Nav page §8.2]
-    P2b[Cartes listes §8.6]
-    P2c[Messages split §8.2 §8.7]
-    P2a --> P2b --> P2c
-  end
-
-  subgraph P3[Phase 3 — Dense]
-    P3a[Chat + hljs §8.9]
-    P3b[Admin mentor §8.8]
-    P3c[Mails + légal §8.10]
-    P3a --> P3b --> P3c
-  end
-
-  subgraph P4[Phase 4 — Clôture]
-    F1[Tableau D1 + D3 + WONTFIX]
-    F2[P Playwright R1–R6 + merge Dev]
-    F1 --> F2
-  end
-
-  A0 --> A
-  A0 --> C
-  D --> P0a
-  P0c --> P1a
-  P1c --> P2a
-  P2c --> P3a
-  P3c --> F1
-```
-
-</details>
-
----
-
-<a id="référence-visuelle"></a>
-
-## 17. Référence visuelle
-
-<p align="center">
-  <img src="audit-integration-kit-ux/assets/audit-kit-complet-showcase.png" alt="AllAboard — kit de base, aperçu complet (familles 0 à 10)" width="720">
-</p>
-
-Les zones correspondent aux **§8.x** de l’audit. L’implémentation cible est **`apps/web`**.
-
----
-
 <a id="liens"></a>
 
-## 18. Liens
+## 15. Liens
 
-| Ressource | Lien |
-|-----------|------|
-| Audit kit UX | [audit-integration-kit-ux-allaboard.md](audit-integration-kit-ux-allaboard.md) |
-| Parcours utilisateur | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) |
-| Carte de la doc | [map-of-content.md](map-of-content.md) |
-| README racine | [README.md](../README.md) |
-| README `Docs/` | [README.md](README.md) |
-| Plan Web/API | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) |
-| Dataflow | [dataflow-architecture.md](dataflow-architecture.md) |
-| CI | [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) |
-| Procédure Tailwind `apps/web` | [procedure-tailwind-apps-web.md](procedure-tailwind-apps-web.md) |
-| Index kit UX (tableau **D1**) | [kit-ux-index.md](kit-ux-index.md) |
-| WONTFIX kit UX | [wontfix-kit-ux.md](wontfix-kit-ux.md) |
-| ADR abandon `thp-final` | [adr-001-abandon-thp-final.md](adr-001-abandon-thp-final.md) |
-| Tokens kit (table) | [tokens-kit-web.md](tokens-kit-web.md) |
-| shadcn/ui | [https://ui.shadcn.com](https://ui.shadcn.com) |
-| Storybook + Next | [https://storybook.js.org/docs/get-started/frameworks/nextjs](https://storybook.js.org/docs/get-started/frameworks/nextjs) |
+Hub kit : [kit-ux-index.md](kit-ux-index.md). Figures et inventaire **§8** : [audit](audit-integration-kit-ux-allaboard.md) (§2 planche, §9 phasage). Feed / API : [plan Web/API](plan-mise-en-place-web-api-donnees.md). Dataflow cible long terme : [dataflow-architecture.md](dataflow-architecture.md).

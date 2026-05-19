@@ -94,11 +94,7 @@ Si **stories** ou **`.storybook/`** touchés :
 pnpm --filter web build-storybook  # jalon T du plan
 ```
 
-Checklist rapide avant PR (extrait plan — gabarit PR) :
-
-- [ ] `pnpm verify` vert  
-- [ ] `pnpm --filter web build-storybook` si stories / preview modifiés  
-- [ ] Pas de CDN Tailwind ; pas de second framework CSS (Bootstrap, MUI parallèle, etc.)
+Avant PR kit : gate **L** — [plan §2.8](plan-integration-kit-ux-allaboard.md#validation-locale-avant-pr) ou `pnpm gate:l:kit` (racine).
 
 ---
 

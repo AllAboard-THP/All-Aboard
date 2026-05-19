@@ -17,9 +17,39 @@ Helpers : `helpers.ts` (`acceptCguInStorage`, `resetCguInStorage`).
 
 ```bash
 pnpm --filter web run test:e2e:install
-pnpm --filter web run build
+pnpm --filter web run build   # inclut prepare-standalone (.next/static + public → bundle standalone)
 CI=true pnpm --filter web run test:e2e
 ```
+
+Le serveur E2E (`playwright.config.ts`) utilise le bundle **standalone** : sans copie des assets statiques, l’hydratation React échoue (chunks `/_next/static` en **404**). Voir `scripts/prepare-standalone.mjs` (aligné `infra/docker/Dockerfile.web`).
+
+Séquence complète **gate L** (V + T + P) depuis la racine :
+
+```bash
+# Une fois sur WSL si Chromium échoue (libnspr4.so) :
+sudo pnpm --filter web exec playwright install-deps chromium
+
+./scripts/gate-l-kit-ux.sh
+```
+
+## WSL / Linux (dépendances système)
+
+Si les tests échouent au lancement de Chromium avec `libnspr4.so: cannot open shared object file` :
+
+```bash
+sudo pnpm --filter web exec playwright install-deps chromium
+```
+
+Alternative équivalente (Debian/Ubuntu/WSL) :
+
+```bash
+sudo apt-get update
+sudo apt-get install -y \
+  libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 \
+  libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+```
+
+Puis rejouer `CI=true pnpm --filter web run test:e2e` (attendu : **9 passed**).
 
 ## CGU
 
