@@ -10,11 +10,16 @@ export function getApiBaseUrl(): string {
 function isHelpRequest(value: unknown): value is HelpRequest {
   if (typeof value !== "object" || value === null) return false;
   const o = value as Record<string, unknown>;
+  const tagsOk =
+    o.tags === undefined ||
+    o.tags === null ||
+    (Array.isArray(o.tags) && o.tags.every((x) => typeof x === "string"));
   return (
     typeof o.id === "string" &&
     typeof o.title === "string" &&
     typeof o.authorId === "string" &&
-    typeof o.createdAt === "string"
+    typeof o.createdAt === "string" &&
+    tagsOk
   );
 }
 

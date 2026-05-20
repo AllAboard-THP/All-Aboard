@@ -230,6 +230,19 @@ export function HomeContent({ feed, feedError }: Props) {
           }}
         >
           <a
+            href="/help/new"
+            style={{
+              textDecoration: "none",
+              borderRadius: "10px",
+              padding: "10px 16px",
+              border: "1px solid rgba(129, 140, 248, 0.45)",
+              color: "#c7d2fe",
+              fontWeight: 600,
+            }}
+          >
+            Nouvelle demande
+          </a>
+          <a
             href="mailto:contact@allaboard.app"
             style={{
               textDecoration: "none",

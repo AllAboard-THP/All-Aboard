@@ -8,6 +8,8 @@ export type HelpRequest = {
   title: string;
   authorId: string;
   createdAt: string;
+  /** Tags mentor / domaine (MOC). Absent ou vide si non utilisé. */
+  tags?: string[];
 };
 
 /** JSON body of `GET /feed` from `apps/api`. */
@@ -20,4 +22,18 @@ export type Response = {
   helpRequestId: string;
   body: string;
   authorId: string;
+};
+
+/** Corps JSON pour `POST /help-requests` (auteur = sujet JWT, voir ADR 0001). */
+export type CreateHelpRequestBody = {
+  title: string;
+  tags?: string[];
+};
+
+/** Réponse `201` création demande (+ indices stub MOC). */
+export type CreateHelpRequestResponse = {
+  item: HelpRequest;
+  hints?: {
+    rubberduckEligible?: boolean;
+  };
 };

@@ -7,16 +7,18 @@ Prerequisites: **Node.js 22+**, **pnpm 9** (`corepack enable` or `npm i -g pnpm@
 ```bash
 pnpm install
 cd apps/thp-final && bundle install && cd ../..
-pnpm dev          # web (3000) + api (4000) — voir aussi thp-final ci-dessous
+pnpm dev          # tous les packages (inclut thp-final) — préférer dev:local pour le MVP
+pnpm dev:local    # Postgres + web (3000) + api (4000) — voir .env.example et .env.local.dev
 pnpm build
 pnpm lint
 pnpm typecheck
 pnpm test
 pnpm verify       # lint + typecheck + test + build (avant commit / PR)
+pnpm smoke:dev    # smoke HTTP(S) web + api (voir Docs/plan-mise-en-place-web-api-donnees.md)
 ```
 
-- **web**: Next.js — `http://localhost:3000` (Phase 1 : feed SSR via `API_URL` + socle TanStack ; client : `useQuery` + invalidation sur le **BFF** `http://localhost:3000/api/feed` — voir [Docs/README.md](Docs/README.md))
-- **api**: Fastify — `http://localhost:4000/health`, `GET /feed`
+- **web**: Next.js — `http://localhost:3000` (feed SSR via `API_URL` + TanStack ; BFF `/api/feed`, `/api/auth/login`, `/api/help-requests` ; formulaire `/help/new` — voir [Docs/README.md](Docs/README.md))
+- **api**: Fastify — `http://localhost:4000/health`, `GET /feed` (Postgres si `DATABASE_URL`), `POST /auth/login`, `POST /help-requests` (JWT). Migrations au démarrage. Postgres local : `pnpm dev:local` (ou `docker compose up -d` + variables dans [.env.example](.env.example), fichier `.env.local.dev` gitignored à la racine).
 - **thp-final**: Rails 8 — application THP (`Hotwire`, esbuild/React). Dev/test en **SQLite** (`apps/thp-final/storage/`). Postgres en production uniquement (`config/database.yml`). Démarrage :
 
   ```bash
@@ -39,6 +41,8 @@ pnpm verify       # lint + typecheck + test + build (avant commit / PR)
 ```bash
 docker build -f infra/docker/Dockerfile.web -t allaboard-web:local .
 docker build -f infra/docker/Dockerfile.api -t allaboard-api:local .
+# Postgres local pour l’API (Phase 2) :
+docker compose up -d
 # Rails THP (contexte = arborescence Rails, pas la racine monorepo) :
 docker build -f apps/thp-final/Dockerfile -t allaboard-thp-final:local apps/thp-final
 ```

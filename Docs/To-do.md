@@ -4,7 +4,7 @@
 
 **Règles release** (inchangées) :
 
-- Rester sur l’environnement **dev** jusqu’au MVP bout-en-bout validé.
+- Rester sur l'environnement **dev** jusqu'au MVP bout-en-bout validé.
 - Aucun déploiement **prod** sans validation complète en **staging**.
 - Checklist promotion dev → staging : issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31).
 

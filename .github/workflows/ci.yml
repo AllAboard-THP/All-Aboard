@@ -20,6 +20,24 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: allaboard
+          POSTGRES_PASSWORD: allaboard
+          POSTGRES_DB: allaboard_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U allaboard -d allaboard_test"
+          --health-interval 4s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://allaboard:allaboard@127.0.0.1:5432/allaboard_test
+      JWT_SECRET: ci-test-jwt-secret-min-32-chars-long!!
+      MVP_LOGIN_PASSWORD: ci-test-login-password
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,6 +70,9 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      - name: API database migrations
+        run: pnpm --filter api run db:migrate
 
       - name: Test
         run: pnpm test

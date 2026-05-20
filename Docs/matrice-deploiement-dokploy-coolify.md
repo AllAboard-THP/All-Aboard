@@ -61,13 +61,14 @@ Points encore à harmoniser **côté instance** (pas dans cette matrice) : branc
 
 ### Variables auth/securite
 
-Ces variables concernent surtout **Phase 2** (auth réelle sur l’API) et au-delà ; l’API MVP peut ne pas encore les consommer — voir [README canonique](README.md).
+Ces variables concernent **Phase 2** (auth sur l’API) ; voir [ADR 0001](adr/0001-authentication-strategy.md) et [README canonique](README.md).
 
 | Variable | Web | API | Agent | Indexer | Obligatoire |
 |---|:---:|:---:|:---:|:---:|:---:|
-| `JWT_SECRET` |  | x | x |  | Oui |
+| `JWT_SECRET` |  | x | x |  | Oui (API avec auth JWT — min. 32 caractères) |
+| `MVP_LOGIN_PASSWORD` |  | x |  |  | Oui en dev/MVP (login `POST /auth/login` ; à remplacer avant prod large) |
 | `SESSION_SECRET` | x | x |  |  | Oui si session |
-| `CORS_ALLOWED_ORIGINS` |  | x |  |  | Oui (API publique) |
+| `CORS_ALLOWED_ORIGINS` |  | x |  |  | Oui si le **navigateur** appelle l’API en direct ; **N/A** tant que le flux passe par le BFF Next (voir plan opérationnel) |
 | `RATE_LIMIT_ENABLED` |  | x |  |  | Recommande |
 
 ### Variables blockchain/indexation

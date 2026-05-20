@@ -4,6 +4,7 @@
   "packageManager": "pnpm@9.15.4",
   "scripts": {
     "dev": "turbo run dev",
+    "dev:local": "bash scripts/dev-local.sh",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
@@ -11,6 +12,7 @@
     "verify:commit": "pnpm lint && pnpm typecheck",
     "verify:push": "pnpm test && pnpm build",
     "verify": "pnpm verify:commit && pnpm verify:push",
+    "smoke:dev": "bash scripts/smoke-dev.sh",
     "setup:hooks": "git config core.hooksPath githooks && chmod +x githooks/pre-commit githooks/pre-push"
   },
   "devDependencies": {
