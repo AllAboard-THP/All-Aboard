@@ -5,6 +5,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+# packages/ includes @allaboard/ui (primitives, stories) and @allaboard/types
 PATHS=(apps/web apps/api packages Docs)
 
 for p in "${PATHS[@]}"; do

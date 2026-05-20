@@ -51,6 +51,34 @@ Présence dans le monorepo : **subtree Git** conservé à titre d’archive. **H
 
 Les PR et pushes sur la branche principale déclenchent le workflow GitHub Actions qui rejoue les vérifications dans un environnement propre.
 
+## Design system (Epic #24)
+
+Séparation **totale** : primitives et tokens dans le package UI, documentation dans Storybook, métier dans `apps/web`.
+
+| Package / app | Rôle | Interdit |
+|---------------|------|----------|
+| `packages/ui` (`@allaboard/ui`) | Tokens TW v4, primitives shadcn, stories, tests `cn` / `Button` | Importer `apps/*` ou `@allaboard/types` |
+| `apps/storybook` | Storybook 10 — scan `packages/ui/**/*.stories` | Importer `apps/web` ou `apps/api` ; pas dans Docker `web` |
+| `apps/web` | Pages, BFF, `components/features/`, `components/blocks/` | `components/ui/` ; importer `apps/storybook` |
+
+**Ajouter un composant shadcn** (depuis la racine ou `apps/web`) :
+
+```bash
+cd apps/web
+pnpm dlx shadcn@latest add <component>
+```
+
+La CLI écrit dans `packages/ui/src/components/` (voir `apps/web/components.json` et `packages/ui/components.json`).
+
+**Consommer dans web** :
+
+```tsx
+import { Button } from "@allaboard/ui/components/button";
+import "@allaboard/ui/globals.css"; // via app/globals.css + @source (voir layout)
+```
+
+**Vérifications utiles** : `pnpm storybook` · `pnpm build:storybook` · `pnpm --filter @allaboard/ui test` · ADR [Docs/adr/0002-design-system-monorepo.md](Docs/adr/0002-design-system-monorepo.md).
+
 ## Graphify (carte codebase MVP)
 
 Graphe de connaissance à la racine : `graphify-out/` (`GRAPH_REPORT.md`, `graph.json`, `graph.html`).

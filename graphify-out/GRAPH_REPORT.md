@@ -9,9 +9,33 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `7d691e68`
+- Built from commit: `7d691e68` (stale — design system PRs 24a–24e landed on `5aa4914+`)
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
-- Run `graphify update .` after code changes (no API cost).
+- Regenerate MVP graph (includes `packages/ui` via `packages/` path):
+
+  ```bash
+  ./scripts/graphify-update.sh
+  ```
+
+  Requires the `graphify` CLI on `PATH`.
+
+## Design system (`packages/ui`) — corpus index
+
+Epic #24 — `@allaboard/ui` is part of the Graphify corpus (`packages/` in `scripts/graphify-update.sh`). Until the next `graphify update`, use this index for navigation:
+
+| Chemin | Rôle |
+|--------|------|
+| `packages/ui/src/styles/globals.css` | Tokens Tailwind v4, `@theme inline` |
+| `packages/ui/src/lib/utils.ts` | `cn()` |
+| `packages/ui/src/components/button.tsx` | Primitive Button |
+| `packages/ui/src/components/card.tsx` | Primitive Card |
+| `packages/ui/src/components/input.tsx` | Primitive Input |
+| `packages/ui/src/components/label.tsx` | Primitive Label |
+| `packages/ui/src/**/*.stories.tsx` | Stories Storybook (scannées par `apps/storybook`) |
+| `apps/web/components/features/` | Métier consommateur (import `@allaboard/ui/components/*`) |
+| `apps/storybook/` | Doc Storybook uniquement (pas importé par `web`) |
+
+ADR : [Docs/adr/0002-design-system-monorepo.md](../Docs/adr/0002-design-system-monorepo.md)
 
 ## Community Hubs (Navigation)
 - [[_COMMUNITY_Community 0|Community 0]]

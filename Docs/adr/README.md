@@ -4,4 +4,9 @@ Décisions **validées** et mergées sur `Dev`. Les brouillons restent dans `Doc
 
 Format : `NNNN-titre-court.md` (numérotation croissante).
 
-Index : *(vide — premier ADR attendu via #18)*
+Index :
+
+| ADR | Sujet |
+|-----|--------|
+| [0001-authentication-strategy.md](0001-authentication-strategy.md) | Auth JWT / BFF MVP |
+| [0002-design-system-monorepo.md](0002-design-system-monorepo.md) | `packages/ui` + `apps/storybook` + frontières web |

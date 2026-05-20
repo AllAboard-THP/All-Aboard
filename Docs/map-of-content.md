@@ -13,7 +13,7 @@
 | [README.md](README.md) | Phases MVP, état code, principes transverses. |
 | [map-of-content.md](map-of-content.md) | **Ce fichier**. |
 | [tasks/](tasks/README.md) | Doc **par issue** — `Docs/tasks/<NN>-slug/`. |
-| [adr/](adr/) | ADR validés ; ex. [0001-authentication-strategy.md](adr/0001-authentication-strategy.md). |
+| [adr/](adr/) | ADR validés ; ex. [0001](adr/0001-authentication-strategy.md), [0002 design system](adr/0002-design-system-monorepo.md). |
 | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Web ↔ API transverse : env, `/feed`, journal, smoke `pnpm smoke:dev`. |
 | [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md) | Checklist manuelle Dokploy **dev** (Postgres, secrets API/Web, smoke). |
 | [To-do.md](To-do.md) | **Stub** → Project GitHub (plus de checklist locale). |
@@ -39,6 +39,7 @@ Hors `Docs/` : [AGENTS.md](../AGENTS.md), [.github/PROJECT.md](../.github/PROJEC
 | Contrat `/feed`, env, journal smoke | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | — |
 | Runbook Dokploy dev Phase 2 (vars, smoke HTTPS) | [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md) | Plan opérationnel (section Smoke) ; fiche instance |
 | Auth JWT / BFF / login MVP | [adr/0001-authentication-strategy.md](adr/0001-authentication-strategy.md) | README Phase 2, matrice `JWT_SECRET` / `MVP_LOGIN_PASSWORD`, plan opérationnel |
+| Design system (`@allaboard/ui`, Storybook, frontières web) | [adr/0002-design-system-monorepo.md](adr/0002-design-system-monorepo.md) | [AGENTS.md](../AGENTS.md) § Design system ; `packages/ui`, `apps/storybook` |
 | Variables déploiement | [matrice](matrice-deploiement-dokploy-coolify.md) | [instance](deploiement-dokploy-instance-allaboard.md) |
 | Parcours produit | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | — |
 | Vision long terme | [vision/README.md](vision/README.md) | — |
@@ -59,4 +60,4 @@ Hors `Docs/` : [AGENTS.md](../AGENTS.md), [.github/PROJECT.md](../.github/PROJEC
 ## Liens rapides
 
 - [README](README.md) · [tasks/](tasks/README.md) · [Project #3](https://github.com/orgs/AllAboard-THP/projects/3) · [Plan Web/API](plan-mise-en-place-web-api-donnees.md)
-- [Runbook Dokploy dev Phase 2](runbook-dokploy-dev-phase2.md) · [ADR auth 0001](adr/0001-authentication-strategy.md)
+- [Runbook Dokploy dev Phase 2](runbook-dokploy-dev-phase2.md) · [ADR auth 0001](adr/0001-authentication-strategy.md) · [ADR DS 0002](adr/0002-design-system-monorepo.md)
