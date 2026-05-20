@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ReactElement } from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { FeedClientPreview } from "../components/feed-client-preview";
+import { FeedClientPreview } from "../components/features/feed-client-preview";
 
 function renderWithClient(ui: ReactElement) {
   const client = new QueryClient({

@@ -44,20 +44,16 @@ Tout le **visible** dans \`apps/web\` : design system, navigation, pages produit
 
 ## Détail succinct
 - SSR via \`API_URL\` pour données initiales ; client via BFF \`/api/*\` (same-origin).
-- Réutiliser les patterns livrés Phase 1 (\`fetchFeed\`, \`feed-client-preview\`).
+- Design system monorepo : [#24](https://github.com/${REPO}/issues/24) (\`packages/ui\` + \`apps/storybook\`).
 - S'inspirer de \`apps/thp-final\` pour l'UX, sans porter le code Rails.
 
 ## Documentation
-- [Plan opérationnel Web/API](${BASE}/Docs/plan-mise-en-place-web-api-donnees.md) — contrat \`/feed\`, chemins code
-- [Parcours utilisateur](${BASE}/Docs/moc-parcours-utilisateur.md) — Bob, Alice, feed, réponses
-- [README MVP](${BASE}/Docs/README.md) — principes TanStack / SSR
-
-## Chemins code existants
-- \`apps/web/app/page.tsx\`, \`apps/web/lib/api-server.ts\`
-- \`apps/web/app/api/feed/route.ts\`, \`apps/web/components/feed-client-preview.tsx\`
+- [Doc #24 design system](${BASE}/Docs/tasks/24-design-system-monorepo/README.md)
+- [Plan opérationnel Web/API](${BASE}/Docs/plan-mise-en-place-web-api-donnees.md)
+- [Parcours utilisateur](${BASE}/Docs/moc-parcours-utilisateur.md)
 
 ## Tâches
-- [ ] #24 Design system Tailwind
+- [ ] #24 DS monorepo + Storybook (bases)
 - [ ] #25 Shell navigation & layout
 - [ ] #26 Page feed réelle
 - [ ] #27 Formulaire création demande
@@ -262,22 +258,25 @@ update 23 "$TMP/23.md"
 
 cat > "$TMP/24.md" <<EOF
 ## Objectif
-**Fondation UI** Tailwind : tokens, composants de base, layout réutilisable.
 
-## Détail succinct
-- Poser le design system avant les pages produit (#25–#29).
-- Cohérence avec App Router Next 15.
-- Peut démarrer **en parallèle** de #18 / #33 (V1).
+**Fondation design system monorepo** : \`packages/ui\` + \`apps/storybook\` + branchement minimal \`apps/web\`.
+
+## Checklist
+
+- [ ] \`packages/ui\` (tokens, tailwind, \`components.json\`)
+- [ ] \`apps/storybook\` (SB 8.4 Vite, stories colocalisées dans ui)
+- [ ] \`turbo.json\` : exclusion stories + \`build:storybook\`
+- [ ] \`apps/web\` : workspace dep, transpile, tailwind content ui
+- [ ] Button shadcn + story tokens · \`pnpm verify\` vert
 
 ## Documentation
-- [Plan Web/API — UI home actuelle](${BASE}/Docs/plan-mise-en-place-web-api-donnees.md)
-- [Inspiration UX Rails](${BASE}/apps/thp-final/) (lecture seule)
-- [Pilotage Project — piste Frontend](${BASE}/.github/PROJECT.md)
 
-## Critères d'acceptation
-- [ ] Tokens / composants exportables
-- [ ] Au moins layout + boutons + cartes
-- [ ] \`pnpm verify\` web OK
+- [Doc #24](${BASE}/Docs/tasks/24-design-system-monorepo/README.md)
+- [Plan Web/API](${BASE}/Docs/plan-mise-en-place-web-api-donnees.md)
+
+## Hors scope
+
+Shell → #25 · migration features complète · ESLint/CI SB → PRs suivantes
 EOF
 update 24 "$TMP/24.md"
 
@@ -286,18 +285,16 @@ cat > "$TMP/25.md" <<EOF
 **Shell** App Router : navigation, header, zones public / authentifié.
 
 ## Détail succinct
-- Structure de routes pour feed, création, détail, mentor.
-- Préparer les emplacements auth (post-ADR #18).
-- S'appuie sur le design system #24.
+- S'appuie sur #24 (\`@allaboard/ui\`).
+- Structure routes feed, création, détail, mentor.
 
 ## Documentation
 - [Parcours MOC](${BASE}/Docs/moc-parcours-utilisateur.md)
 - [\`apps/web/app/layout.tsx\`](${BASE}/apps/web/app/layout.tsx)
 
 ## Critères d'acceptation
-- [ ] Nav fonctionnelle entre pages stub ou réelles
-- [ ] Layout responsive minimal
-- [ ] Accessible (landmarks, focus)
+- [ ] Nav entre pages stub ou réelles
+- [ ] Layout responsive minimal · landmarks / focus
 EOF
 update 25 "$TMP/25.md"
 
@@ -397,20 +394,17 @@ update 29 "$TMP/29.md"
 
 cat > "$TMP/30.md" <<EOF
 ## Objectif
-Composants **transverses** : loading, erreur, liste vide — réutilisables sur feed, formulaires, détail.
+Composants **transverses** : loading, erreur, liste vide.
 
 ## Détail succinct
-- Extraire des patterns déjà présents sur la home feed.
-- Peut avancer **en parallèle** dès V1 (sans bloquer les pages).
+- Primitives (Alert, Skeleton) → \`packages/ui\` si besoin (#24).
+- Compositions métier → \`apps/web/components/features/\`.
 
 ## Documentation
 - [\`feed-client-preview.tsx\`](${BASE}/apps/web/components/feed-client-preview.tsx)
-- [\`home-content.tsx\`](${BASE}/apps/web/components/home-content.tsx)
 
 ## Critères d'acceptation
-- [ ] 3 composants (ou variantes) documentés par props
-- [ ] Utilisés sur au moins 2 pages
-- [ ] Stories ou tests légers optionnels
+- [ ] 3 variantes documentées · utilisées sur 2+ pages
 EOF
 update 30 "$TMP/30.md"
 

@@ -1,5 +1,5 @@
 import { fetchFeed } from "@/lib/api-server";
-import { HomeContent } from "@/components/home-content";
+import { HomeContent } from "@/components/features/home-content";
 
 export const dynamic = "force-dynamic";
 

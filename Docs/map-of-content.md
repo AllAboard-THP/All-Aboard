@@ -2,7 +2,7 @@
 
 **Objectif** : une **source canonique** par sujet ; pas de doublon avec le [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3).
 
-**Mise à jour** : 2026-05-20 (Phase 2 MVP dépôt + ADR auth).
+**Mise à jour** : 2026-05-20 (Phase 2 MVP + design system livré + AppShell #25).
 
 ---
 
@@ -13,7 +13,8 @@
 | [README.md](README.md) | Phases MVP, état code, principes transverses. |
 | [map-of-content.md](map-of-content.md) | **Ce fichier**. |
 | [tasks/](tasks/README.md) | Doc **par issue** — `Docs/tasks/<NN>-slug/`. |
-| [adr/](adr/) | ADR validés ; ex. [0001-authentication-strategy.md](adr/0001-authentication-strategy.md). |
+| [adr/](adr/) | ADR validés ; ex. [0001](adr/0001-authentication-strategy.md), [0002 design system](adr/0002-design-system-monorepo.md). |
+| [design-system/](design-system/README.md) | **Hub DS** : architecture, guide contributeur, CI, AppShell, journal livraisons. |
 | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Web ↔ API transverse : env, `/feed`, journal, smoke `pnpm smoke:dev`. |
 | [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md) | Checklist manuelle Dokploy **dev** (Postgres, secrets API/Web, smoke). |
 | [To-do.md](To-do.md) | **Stub** → Project GitHub (plus de checklist locale). |
@@ -39,6 +40,8 @@ Hors `Docs/` : [AGENTS.md](../AGENTS.md), [.github/PROJECT.md](../.github/PROJEC
 | Contrat `/feed`, env, journal smoke | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | — |
 | Runbook Dokploy dev Phase 2 (vars, smoke HTTPS) | [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md) | Plan opérationnel (section Smoke) ; fiche instance |
 | Auth JWT / BFF / login MVP | [adr/0001-authentication-strategy.md](adr/0001-authentication-strategy.md) | README Phase 2, matrice `JWT_SECRET` / `MVP_LOGIN_PASSWORD`, plan opérationnel |
+| Design system (`@allaboard/ui`, Storybook, frontières web) | [design-system/README.md](design-system/README.md) | [ADR 0002](adr/0002-design-system-monorepo.md), [AGENTS.md](../AGENTS.md), [tasks/24](tasks/24-design-system-monorepo/), [tasks/25](tasks/25-app-shell-navigation/) |
+| AppShell / navigation web | [design-system/app-shell.md](design-system/app-shell.md) | [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25), [moc-parcours](moc-parcours-utilisateur.md) |
 | Variables déploiement | [matrice](matrice-deploiement-dokploy-coolify.md) | [instance](deploiement-dokploy-instance-allaboard.md) |
 | Parcours produit | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | — |
 | Vision long terme | [vision/README.md](vision/README.md) | — |
@@ -59,4 +62,4 @@ Hors `Docs/` : [AGENTS.md](../AGENTS.md), [.github/PROJECT.md](../.github/PROJEC
 ## Liens rapides
 
 - [README](README.md) · [tasks/](tasks/README.md) · [Project #3](https://github.com/orgs/AllAboard-THP/projects/3) · [Plan Web/API](plan-mise-en-place-web-api-donnees.md)
-- [Runbook Dokploy dev Phase 2](runbook-dokploy-dev-phase2.md) · [ADR auth 0001](adr/0001-authentication-strategy.md)
+- [Runbook Dokploy dev Phase 2](runbook-dokploy-dev-phase2.md) · [ADR auth 0001](adr/0001-authentication-strategy.md) · [Design system hub](design-system/README.md)

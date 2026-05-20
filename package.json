@@ -3,20 +3,23 @@
   "private": true,
   "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --filter=!thp-final",
     "dev:local": "bash scripts/dev-local.sh",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
+    "build": "turbo run build --filter=!thp-final",
+    "lint": "turbo run lint --filter=!thp-final",
+    "typecheck": "turbo run typecheck --filter=!thp-final",
+    "test": "turbo run test --filter=!thp-final",
     "verify:commit": "pnpm lint && pnpm typecheck",
-    "verify:push": "pnpm test && pnpm build",
+    "verify:push": "pnpm test && pnpm build && pnpm build:storybook",
     "verify": "pnpm verify:commit && pnpm verify:push",
+    "storybook": "pnpm --filter @allaboard/storybook dev",
+    "build:storybook": "pnpm --filter @allaboard/storybook build:storybook",
+    "dev:ui": "turbo run dev --filter=@allaboard/storybook",
     "smoke:dev": "bash scripts/smoke-dev.sh",
     "setup:hooks": "git config core.hooksPath githooks && chmod +x githooks/pre-commit githooks/pre-push"
   },
   "devDependencies": {
-    "turbo": "^2.9.9",
+    "turbo": "^2.9.14",
     "typescript": "^5.7.2"
   }
 }
