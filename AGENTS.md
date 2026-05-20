@@ -24,7 +24,7 @@ Banque partagée **`hermes`** — tag obligatoire **`project:all-aboard`**.
 | S’appuyer sur `Docs/` et le contrat API pour les décisions | Proposer des changements dans `apps/thp-final` sans décision humaine explicite |
 | Traiter le dossier comme **support de référence** | L’inclure dans l’analyse architecture MVP (Graphify, ADR, refactors) |
 
-Présence dans le monorepo : **subtree Git** conservé à titre d’archive ; la CI peut encore l’exercer, sans en faire le périmètre produit.
+Présence dans le monorepo : **subtree Git** conservé à titre d’archive. **Hors** `pnpm verify` / CI MVP (`lint`, `typecheck`, `test`, `build` via `--filter=!thp-final`) — lancer manuellement depuis `apps/thp-final` si besoin (Ruby/Bundler).
 
 ## Avant de proposer un commit ou une PR
 
