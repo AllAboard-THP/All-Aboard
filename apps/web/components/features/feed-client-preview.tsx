@@ -3,6 +3,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { FeedResponse } from "@allaboard/types";
 
+import { Button } from "@allaboard/ui/components/button";
+
 async function fetchFeedJson(): Promise<FeedResponse> {
   const res = await fetch("/api/feed");
   if (!res.ok) {
@@ -20,54 +22,41 @@ export function FeedClientPreview() {
 
   if (q.isPending) {
     return (
-      <p style={{ margin: "8px 0 0", color: "#94a3b8", fontSize: "14px" }}>
+      <p className="mt-2 text-sm text-muted-foreground">
         Chargement du feed (client)…
       </p>
     );
   }
   if (q.isError) {
     return (
-      <p style={{ margin: "8px 0 0", color: "#fca5a5", fontSize: "14px" }}>
+      <p className="mt-2 text-sm text-destructive">
         Erreur client : {q.error.message}
       </p>
     );
   }
   return (
-    <div style={{ marginTop: "8px" }}>
-      <p style={{ margin: 0, color: "#86efac", fontSize: "14px" }}>
+    <div className="mt-2">
+      <p className="m-0 text-sm text-primary">
         useQuery : {q.data.items.length} entrée(s) — même source que le SSR (BFF{" "}
-        <code style={{ color: "#cbd5e1" }}>/api/feed</code>).
+        <code className="text-foreground">/api/feed</code>).
       </p>
-      <div
-        style={{
-          marginTop: "10px",
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          flexWrap: "wrap",
-        }}
-      >
-        <button
+      <div className="mt-2.5 flex flex-wrap items-center gap-2.5">
+        <Button
           type="button"
+          variant="outline"
+          size="sm"
           onClick={() => {
             void queryClient.invalidateQueries({ queryKey: ["feed"] });
-          }}
-          style={{
-            cursor: "pointer",
-            borderRadius: "8px",
-            border: "1px solid rgba(148, 163, 184, 0.45)",
-            background: "rgba(30, 41, 59, 0.6)",
-            color: "#e2e8f0",
-            padding: "6px 12px",
-            fontSize: "13px",
-            fontWeight: 600,
           }}
           aria-label="Rafraîchir le feed"
         >
           Rafraîchir
-        </button>
+        </Button>
         {q.isFetching && !q.isPending ? (
-          <span style={{ color: "#94a3b8", fontSize: "13px" }} data-testid="feed-refetching">
+          <span
+            className="text-sm text-muted-foreground"
+            data-testid="feed-refetching"
+          >
             Mise à jour…
           </span>
         ) : null}
