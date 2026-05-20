@@ -70,6 +70,7 @@ flowchart TD
 - Stories : glob `packages/ui/src/**/*.stories.@(ts|tsx)`.
 - Addons installés : `docs`, `a11y`, `themes` (pas de paquets `addon-essentials` / `addon-interactions` séparés en 10.4 — inclus dans le core).
 - Build : `pnpm build:storybook` → `apps/storybook/storybook-static/`.
+- **Déploiement** : image nginx statique — `infra/docker/Dockerfile.storybook` (port **8080**), hors image `web`.
 
 ---
 

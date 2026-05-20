@@ -88,7 +88,7 @@ git remote set-url origin git@github.com:AllAboard-THP/All-Aboard.git
 |-------|----------------|
 | Feed réelle SSR | [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) — réutilise AppShell |
 | Alert / Skeleton dans UI | reporté post-#25 |
-| Déploiement catalogue SB (Chromatic / static) | post-MVP |
+| Déploiement catalogue SB | `infra/docker/Dockerfile.storybook` (nginx, port 8080) — matrice Dokploy |
 
 ---
 

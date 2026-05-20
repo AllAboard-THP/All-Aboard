@@ -42,6 +42,7 @@ pnpm smoke:dev    # smoke HTTP(S) web + api (voir Docs/plan-mise-en-place-web-ap
 ```bash
 docker build -f infra/docker/Dockerfile.web -t allaboard-web:local .
 docker build -f infra/docker/Dockerfile.api -t allaboard-api:local .
+docker build -f infra/docker/Dockerfile.storybook -t allaboard-storybook:local .
 # Postgres local pour l’API (Phase 2) :
 docker compose up -d
 # Rails THP (contexte = arborescence Rails, pas la racine monorepo) :

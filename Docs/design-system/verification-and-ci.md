@@ -100,4 +100,9 @@ Sortie : `graphify-out/GRAPH_REPORT.md`.
 | Push rejeté sur `ci.yml` (OAuth scope `workflow`) | `git remote set-url origin git@github.com:AllAboard-THP/All-Aboard.git` |
 | Classes Tailwind absentes en prod | vérifier `@source` dans `apps/web/app/globals.css` |
 | Storybook : alias `@allaboard/ui` | `apps/storybook/.storybook/main.ts` → `viteFinal` |
+| Image Docker déploiement | `infra/docker/Dockerfile.storybook` + `nginx-storybook.conf` (port **8080**) |
+
+```bash
+docker build -f infra/docker/Dockerfile.storybook -t allaboard-storybook:local .
+```
 | Vitest web / Vite conflit | `apps/web/tsconfig.json` exclut `vitest.config.ts` ; Vitest UI isolé dans `packages/ui` |

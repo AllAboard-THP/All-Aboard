@@ -35,6 +35,7 @@ Points encore à harmoniser **côté instance** (pas dans cette matrice) : branc
 | API | `apps/api` | `infra/docker/Dockerfile.api` | 4000 | `/` | repo racine | HTTP public dedie (`api*.allaboard.fr`) + appels internes SSR (`API_URL`) |
 | Agent | `apps/agent` | `infra/docker/Dockerfile.agent` | 4100 | `/` | repo racine | Worker/API interne |
 | Indexer | `apps/indexer` | `infra/docker/Dockerfile.indexer` | 4200 (optionnel) | `/` | repo racine | Worker (souvent non expose) |
+| Storybook (catalogue UI) | `apps/storybook` | `infra/docker/Dockerfile.storybook` | 8080 | `/` | repo racine | HTTP interne ou public (doc DS, hors prod web) |
 
 ## Variables d'environnement par service
 
