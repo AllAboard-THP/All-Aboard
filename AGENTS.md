@@ -2,7 +2,15 @@
 
 Ce dépôt utilise des garde-fous **Git + CI** ; ce fichier définit le protocole commun pour tout agent (Cursor, Claude Code, Codex, etc.).
 
-**Chronologie des travaux, périmètre MVP et doc incrémentale** : consulter [Docs/README.md](Docs/README.md) (canonique), [Docs/map-of-content.md](Docs/map-of-content.md) (rôles et sources pour éviter les doublons), [Docs/plan-mise-en-place-web-api-donnees.md](Docs/plan-mise-en-place-web-api-donnees.md) (SSR, env, contrat `/feed`, **journal** et chemins code) avant une évolution transverse.
+## Hindsight (mémoire agent)
+
+Banque partagée **`hermes`** — tag obligatoire **`project:all-aboard`**.
+
+1. **Nouvelle session** (non trivial) : MCP `recall` avec `tags: ["project:all-aboard"]`, `tags_match: any_strict`, `budget: mid` (prefetch IDE via `.cursor/hooks/`).
+2. **`retain`** au fil de la discussion pour décisions/préférences stables : `project:all-aboard` + `area:<domain>` + `source:cursor-session`.
+3. Détail : `.cursor/rules/hindsight.mdc`, `.cursor/references/hindsight-tagging.md`.
+
+**Chronologie, MVP et doc** : [Docs/README.md](Docs/README.md), [Docs/map-of-content.md](Docs/map-of-content.md), [Docs/plan-mise-en-place-web-api-donnees.md](Docs/plan-mise-en-place-web-api-donnees.md). **Tâches** : [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3). **Doc par issue** : `Docs/tasks/<NN>-slug/` ([convention](Docs/tasks/README.md)).
 
 ## Avant de proposer un commit ou une PR
 
@@ -28,3 +36,17 @@ Ce dépôt utilise des garde-fous **Git + CI** ; ce fichier définit le protocol
 ## CI
 
 Les PR et pushes sur la branche principale déclenchent le workflow GitHub Actions qui rejoue les vérifications dans un environnement propre.
+
+## Graphify (carte codebase MVP)
+
+Graphe de connaissance à la racine : `graphify-out/` (`GRAPH_REPORT.md`, `graph.json`, `graph.html`).
+
+- **Corpus** : `apps/web`, `apps/api`, `packages`, `Docs` — **pas** `apps/thp-final` (Rails historique, hors MVP).
+- **Avant** une question d’architecture : lire `graphify-out/GRAPH_REPORT.md`.
+- **Après** des changements code/doc dans le corpus MVP :
+
+  ```bash
+  ./scripts/graphify-update.sh
+  ```
+
+  AST uniquement (0 token LLM). Extraction sémantique des docs : `/graphify` avec une clé API (`graphify extract …`).

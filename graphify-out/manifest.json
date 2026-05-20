@@ -1,0 +1,66 @@
+{
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/moc-parcours-utilisateur.md": {
+    "mtime": 1778591010.4601693,
+    "hash": "beae739ca58428bb0ee73e666dc4d006"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/README.md": {
+    "mtime": 1778680182.37834,
+    "hash": "6cd8405ee31c1c409fcadf3f6d571df2"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/To-do.md": {
+    "mtime": 1778680169.4441757,
+    "hash": "c556759f301f89592a4ab14a97743fae"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/dataflow-architecture.md": {
+    "mtime": 1778677884.645871,
+    "hash": "c534eb5170d23b01d43195b85becc34a"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/deploiement-dokploy-instance-allaboard.md": {
+    "mtime": 1778677884.645871,
+    "hash": "f4cf759f3ae0f6602a78515a39a926fc"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/map-of-content.md": {
+    "mtime": 1778680193.561347,
+    "hash": "ba4c97192f12f2fc93030498423135d8"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/matrice-deploiement-dokploy-coolify.md": {
+    "mtime": 1778677884.646871,
+    "hash": "92d7aaca199eb02ccdd12c9e69271c41"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/plan-initialisation-turborepo-mvp.md": {
+    "mtime": 1778677884.646871,
+    "hash": "005265f10daa61adbf345d185f518dab"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/plan-mise-en-place-web-api-donnees.md": {
+    "mtime": 1778677884.646871,
+    "hash": "e532d5176a0f339df07fd754fd8049da"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/proposition-stack-technique-monorepo-2026.md": {
+    "mtime": 1778677884.646871,
+    "hash": "95b67d3ccb64bc167fe6691793e4a80c"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/tasks/README.md": {
+    "mtime": 1778680157.358076,
+    "hash": "386062fc17e3a85e14f0ca7bc8e66d42"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/tasks/_template/README.md": {
+    "mtime": 1778680158.6241922,
+    "hash": "7c55eaeb391125b5216a21a1f75bb04f"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/tasks/18-adr-auth/README.md": {
+    "mtime": 1778680163.6536539,
+    "hash": "358a9fae5e59dbd7ad992d7bce79bf4a"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/archive/plan-initialisation-turborepo-mvp-2026-01.md": {
+    "mtime": 1778677884.645871,
+    "hash": "b723620b46fce63a5d05976848bd8072"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/vision/README.md": {
+    "mtime": 1778677884.646871,
+    "hash": "36633af3e0fe0a9d65ec8c73dde97f7a"
+  },
+  "/home/mestryx/Workspace-OpenClaw/repositories/All-Aboard/Docs/adr/README.md": {
+    "mtime": 1778680166.9439507,
+    "hash": "aeba0d4311a6aae241334b639ce57f95"
+  }
+}

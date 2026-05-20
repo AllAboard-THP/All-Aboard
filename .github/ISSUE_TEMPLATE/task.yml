@@ -1,0 +1,87 @@
+name: Tâche
+description: Tâche implémentable (feature, fix, ops)
+title: "[Task] "
+labels:
+  - type:task
+  - priority:p2
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ajoutez l'issue au [Project All-Aboard MVP](https://github.com/orgs/AllAboard-THP/projects/3).
+
+        **Status initial** : `Triage` si l'idée n'est pas spécifiée ; `Todo` si le template est complet ; `Ready` si assignée et prête.
+
+        Board 6 colonnes (aligné Hermes Kanban) : Triage → Todo → Ready → In Progress → Blocked → Done — voir [.github/PROJECT.md](../.github/PROJECT.md).
+  - type: dropdown
+    id: pilier
+    attributes:
+      label: Pilier
+      options:
+        - Frontend
+        - Backend
+        - Platform
+        - Transverse
+    validations:
+      required: true
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      options:
+        - "Phase 2 — Auth & parcours"
+        - "Phase 3 — TanStack résiduel"
+        - "Phase 4 — Agent/Indexer"
+        - "Ops — Staging/Release"
+    validations:
+      required: true
+  - type: dropdown
+    id: priorite
+    attributes:
+      label: Priorité
+      options:
+        - "P0 — Bloquant"
+        - "P1 — Haute"
+        - "P2 — Normale"
+        - "P3 — Basse"
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: Détail succinct
+      description: 2–4 puces — périmètre, contraintes
+    validations:
+      required: true
+  - type: textarea
+    id: task_doc
+    attributes:
+      label: Dossier doc tâche (si notes)
+      description: Créer Docs/tasks/NN-slug/ — voir Docs/tasks/README.md
+      placeholder: "Docs/tasks/42-mon-slug/"
+  - type: textarea
+    id: contexte
+    attributes:
+      label: Documentation (liens)
+      description: URLs vers Docs/ sur branche Dev
+      value: |
+        - [README MVP](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/README.md)
+        - [Plan Web/API](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/plan-mise-en-place-web-api-donnees.md)
+      placeholder: |
+        - [Parcours MOC](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/moc-parcours-utilisateur.md)
+        - Issue parente #...
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critères d'acceptation
+      value: |
+        - [ ] `pnpm verify` OK
+        - [ ] Tests ajoutés ou mis à jour si pertinent
+        - [ ] Doc technique mise à jour si changement Web/API transverse
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Avant PR
+      options:
+        - label: Issue ajoutée au Project et champs custom remplis
+          required: true
