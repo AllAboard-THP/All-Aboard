@@ -40,6 +40,10 @@ coverage/
 .next/
 out/
 
+# Storybook static build
+storybook-static/
+apps/storybook/storybook-static/
+
 # Expo / React Native
 .expo/
 .expo-shared/

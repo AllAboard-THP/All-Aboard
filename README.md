@@ -7,8 +7,9 @@ Prerequisites: **Node.js 22+**, **pnpm 9** (`corepack enable` or `npm i -g pnpm@
 ```bash
 pnpm install
 cd apps/thp-final && bundle install && cd ../..
-pnpm dev          # tous les packages (inclut thp-final) — préférer dev:local pour le MVP
-pnpm dev:local    # Postgres + web (3000) + api (4000) — voir .env.example et .env.local.dev
+pnpm dev          # turbo dev MVP (web, api, storybook si lancé) — sans thp-final
+pnpm dev:local    # Postgres + web (3000) + api (4000) — recommandé pour le MVP
+pnpm storybook    # catalogue UI seul (port 6006)
 pnpm build
 pnpm lint
 pnpm typecheck
