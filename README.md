@@ -61,7 +61,7 @@ pnpm setup:hooks
 Comportement :
 
 - **pre-commit** : `pnpm verify:commit` → `lint` puis `typecheck`
-- **pre-push** : `pnpm verify:push` → `test` puis `build`
+- **pre-push** : `pnpm verify:push` → `test`, `build`, puis `build:storybook`
 
 Éviter `--no-verify` sauf accord explicite. Protocole commun pour les agents IA : [AGENTS.md](AGENTS.md).
 

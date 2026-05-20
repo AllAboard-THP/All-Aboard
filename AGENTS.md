@@ -34,7 +34,7 @@ Présence dans le monorepo : **subtree Git** conservé à titre d’archive. **H
    pnpm verify
    ```
 
-   Équivalent à `pnpm verify:commit` puis `pnpm verify:push` (lint, typecheck, tests, build via Turbo).
+   Équivalent à `pnpm verify:commit` puis `pnpm verify:push` (lint, typecheck, tests, build via Turbo, build Storybook).
 
 2. Si une étape échoue : corriger, relancer `pnpm verify`, puis seulement proposer le commit.
 
@@ -50,6 +50,9 @@ Présence dans le monorepo : **subtree Git** conservé à titre d’archive. **H
 ## CI
 
 Les PR et pushes sur la branche principale déclenchent le workflow GitHub Actions qui rejoue les vérifications dans un environnement propre.
+
+- Job **`verify`** : lint, typecheck, migrations API, tests, build (hors `apps/thp-final`).
+- Job **`storybook`** (conditionnel) : `pnpm build:storybook` uniquement si le diff touche `packages/ui/**`, `apps/storybook/**`, lockfile, `turbo.json`, `package.json` ou `.github/workflows/ci.yml` (`dorny/paths-filter`).
 
 ## Design system (Epic #24)
 

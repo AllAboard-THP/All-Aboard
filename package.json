@@ -10,7 +10,7 @@
     "typecheck": "turbo run typecheck --filter=!thp-final",
     "test": "turbo run test --filter=!thp-final",
     "verify:commit": "pnpm lint && pnpm typecheck",
-    "verify:push": "pnpm test && pnpm build",
+    "verify:push": "pnpm test && pnpm build && pnpm build:storybook",
     "verify": "pnpm verify:commit && pnpm verify:push",
     "storybook": "pnpm --filter @allaboard/storybook dev",
     "build:storybook": "pnpm --filter @allaboard/storybook build:storybook",
