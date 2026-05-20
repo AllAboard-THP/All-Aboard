@@ -16,7 +16,7 @@
     "setup:hooks": "git config core.hooksPath githooks && chmod +x githooks/pre-commit githooks/pre-push"
   },
   "devDependencies": {
-    "turbo": "^2.9.9",
+    "turbo": "^2.9.14",
     "typescript": "^5.7.2"
   }
 }
