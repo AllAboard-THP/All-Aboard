@@ -12,6 +12,20 @@ Banque partagée **`hermes`** — tag obligatoire **`project:all-aboard`**.
 
 **Chronologie, MVP et doc** : [Docs/README.md](Docs/README.md), [Docs/map-of-content.md](Docs/map-of-content.md), [Docs/plan-mise-en-place-web-api-donnees.md](Docs/plan-mise-en-place-web-api-donnees.md). **Tâches** : [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3). **Doc par issue** : `Docs/tasks/<NN>-slug/` ([convention](Docs/tasks/README.md)).
 
+## `apps/thp-final` — artéfact THP (référence uniquement)
+
+`apps/thp-final` est une **version historique** du projet All-Aboard (Rails 8, projet THP). Elle a servi de **maquette fonctionnelle** : parcours utilisateur, écrans, idées produit.
+
+**Ne pas l’utiliser comme base de développement.** Le MVP actif vit dans `apps/web`, `apps/api` et `packages/`.
+
+| À faire | À ne pas faire |
+|--------|----------------|
+| Consulter pour **inspiration** (UX, parcours, vocabulaire métier) | Copier ou porter du code Rails/React depuis `thp-final` |
+| S’appuyer sur `Docs/` et le contrat API pour les décisions | Proposer des changements dans `apps/thp-final` sans décision humaine explicite |
+| Traiter le dossier comme **support de référence** | L’inclure dans l’analyse architecture MVP (Graphify, ADR, refactors) |
+
+Présence dans le monorepo : **subtree Git** conservé à titre d’archive ; la CI peut encore l’exercer, sans en faire le périmètre produit.
+
 ## Avant de proposer un commit ou une PR
 
 1. Exécuter :
