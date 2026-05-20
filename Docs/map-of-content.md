@@ -12,7 +12,8 @@
 |---------|-------------------|
 | [README.md](README.md) | Point d’entrée : timeline MVP, état du dépôt, principes web/API/TanStack, hiérarchie des liens. |
 | [map-of-content.md](map-of-content.md) | **Ce fichier** : MoC, graphe des liens, règles de maintenance. |
-| [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Référence **Web ↔ API** : variables d’env, contrat `GET /feed`, chemins code, journal smoke, checklist Dokploy ciblée feed. |
+| [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Référence **Web ↔ API** : variables, contrats API, BFF, smoke `pnpm smoke:dev`, journal, checklist Dokploy. |
+| [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md) | Checklist manuelle Dokploy **dev** (Postgres, secrets API/Web, smoke). |
 | [adr/](adr/) | **ADR** d’architecture (ex. auth [0001-authentication-strategy.md](adr/0001-authentication-strategy.md)). |
 | [To-do.md](To-do.md) | Actions **prioritaires** et promotion dev → staging (pas la timeline détaillée). |
 | [plan-initialisation-turborepo-mvp.md](plan-initialisation-turborepo-mvp.md) | **Stub** post-bootstrap ; détail historique dans [archive/](archive/). |
@@ -57,7 +58,8 @@ matrice ──► README, deploiement-instance
 | Sujet | Canonique | Les autres fichiers doivent… |
 |-------|-----------|------------------------------|
 | Timeline MVP, phases 0–4, « où en est le projet » | [README.md](README.md) | Renvoyer par lien ; pas de second tableau « aujourd’hui » contradictoire. |
-| Variables `API_URL`, BFF `/api/feed`, contrat `/feed`, chemins code, journal smoke | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Renvoyer ; pas de redefinition longue des conventions TanStack. |
+| Variables `API_URL`, BFF `/api/feed`, contrats API REST, chemins code, journal smoke | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Renvoyer ; pas de redefinition longue des conventions TanStack. |
+| Runbook Dokploy dev Phase 2 (vars, smoke HTTPS) | [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md) | Plan opérationnel (section Smoke) ; fiche instance (chemins API). |
 | Tables variables par service (JWT, CORS, etc.) | [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md) | Instance : ne pas recopier les grilles ; décrire faits + exceptions (ex. BFF). |
 | Domaines, branches Git services, statut Dokploy, `API_URL` interne observé | [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md) | Matrice : renvoi « détail instance » ; pas de liste de domaines dans la matrice. |
 | Auth JWT / BFF / login MVP | [adr/0001-authentication-strategy.md](adr/0001-authentication-strategy.md) | README Phase 2, matrice `JWT_SECRET` / `MVP_LOGIN_PASSWORD`, plan opérationnel (variables). |

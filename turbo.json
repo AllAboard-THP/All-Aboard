@@ -1,5 +1,11 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalPassThroughEnv": [
+    "DATABASE_URL",
+    "JWT_SECRET",
+    "MVP_LOGIN_PASSWORD",
+    "CORS_ALLOWED_ORIGINS"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

@@ -78,7 +78,13 @@ Chaque environnement a un **hote Web** et un **hote API** distincts sous `allabo
 | staging | `https://staging.allaboard.fr` | `https://api-staging.allaboard.fr` |
 | dev | `https://dev.allaboard.fr` | `https://api-dev.allaboard.fr` |
 
-Exemples de chemins API (meme contrat qu’en local) : `GET /health`, `GET /feed` — donc `https://api.allaboard.fr/health`, etc.
+Exemples de chemins API (meme contrat qu’en local, detail dans [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md)) :
+
+- `GET /health`, `GET /feed` (public)
+- `POST /auth/login`, `POST /help-requests` (JWT sur creation ; login MVP)
+- Smoke : `pnpm smoke:dev` — [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md)
+
+URLs dev : `https://api-dev.allaboard.fr/health`, `https://dev.allaboard.fr/api/feed`, `https://dev.allaboard.fr/help/new`.
 
 **Note TLS** : les objets domaine Dokploy peuvent encore indiquer `https: false` selon l’etat de la terminaison ; l’objectif operationnel reste le **HTTPS** partout (Let’s Encrypt ou certificat manage dans l’UI domaine).
 
