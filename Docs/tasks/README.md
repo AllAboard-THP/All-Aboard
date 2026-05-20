@@ -59,6 +59,7 @@ Modèle vierge : [_template/README.md](_template/README.md).
 | Dossier | Issue |
 |---------|-------|
 | [18-adr-auth/](18-adr-auth/) | [#18 ADR auth](https://github.com/AllAboard-THP/All-Aboard/issues/18) |
+| [24-design-system-monorepo/](24-design-system-monorepo/) | [#24 Design system monorepo](https://github.com/AllAboard-THP/All-Aboard/issues/24) |
 
 *(Ajouter une ligne ici à la création d’un nouveau dossier — une ligne par PR, conflits rares.)*
 
