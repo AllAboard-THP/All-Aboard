@@ -6,6 +6,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const monorepoRoot = path.join(__dirname, "../..");
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["@allaboard/ui"],
   output: "standalone",
   outputFileTracingRoot: monorepoRoot,
 };
