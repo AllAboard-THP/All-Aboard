@@ -19,7 +19,8 @@ Référence **architecture et produit** du dépôt. Le **pilotage des tâches** 
 | [tasks/README.md](tasks/README.md) | Doc **par issue** (`Docs/tasks/<NN>-slug/`). |
 | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Web ↔ API : env, `/feed`, chemins code, journal smoke. |
 | [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md) | Checklist manuelle Dokploy **dev** (Postgres, secrets, smoke). |
-| [adr/](adr/) | Décisions d'architecture ; ex. [0001-authentication-strategy.md](adr/0001-authentication-strategy.md). |
+| [adr/](adr/) | Décisions d'architecture ; ex. [0001-authentication-strategy.md](adr/0001-authentication-strategy.md), [0002 design system](adr/0002-design-system-monorepo.md). |
+| [design-system/](design-system/README.md) | **Hub DS** (Diátaxis) : architecture, guide contributeur, CI, AppShell, journal. |
 | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | Parcours produit (MOC). |
 | [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md) | Variables déploiement (générique). |
 | [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md) | Faits instance Dokploy. |
@@ -47,7 +48,8 @@ Référence **architecture et produit** du dépôt. Le **pilotage des tâches** 
 | 1 — Feed SSR + types | Livré | idem |
 | 2 — Auth + parcours demande d'aide | **Livré** (MVP dépôt ; durcissement / staging à suivre) | [ADR 0001](adr/0001-authentication-strategy.md), [MOC](moc-parcours-utilisateur.md), epic [#13](https://github.com/AllAboard-THP/All-Aboard/issues/13) |
 | 3 — TanStack hors home | Partiel (home OK) | [#36](https://github.com/AllAboard-THP/All-Aboard/issues/36) |
-| 4 — Agent / Indexer | Backlog | [#37](https://github.com/AllAboard-THP/All-Aboard/issues/37), [vision](vision/README.md) |
+| 4 — Design system + shell navigation | **Livré** (dépôt) | [design-system/](design-system/README.md), [#24](https://github.com/AllAboard-THP/All-Aboard/issues/24), [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25) |
+| 5 — Agent / Indexer | Backlog | [#37](https://github.com/AllAboard-THP/All-Aboard/issues/37), [vision](vision/README.md) |
 
 ---
 
@@ -56,7 +58,8 @@ Référence **architecture et produit** du dépôt. Le **pilotage des tâches** 
 | Zone | État |
 |------|------|
 | `apps/api` | Fastify : `/health`, Postgres + Drizzle, `GET /feed`, `POST /auth/login`, `POST /help-requests` (JWT), stubs doublon / Rubberduck ; migrations au démarrage. |
-| `apps/web` | SSR feed ; BFF `GET /api/feed`, `POST /api/auth/login`, `POST /api/help-requests` ; page `/help/new` ; TanStack + invalidation sur la home. |
+| `apps/web` | SSR feed ; BFF ; `/help/new` ; **AppShell** (`app/(app)/`, nav MOC) — [app-shell.md](design-system/app-shell.md) ; `@allaboard/ui` + features/blocks. |
+| `packages/ui` + `apps/storybook` | Design system + catalogue SB — [design-system/README.md](design-system/README.md). |
 | Auth | JWT (cookie `access_token` + relais BFF Bearer) — [ADR 0001](adr/0001-authentication-strategy.md). Login MVP par `MVP_LOGIN_PASSWORD`. |
 | TanStack | Socle + usage home sur le feed — extension **Phase 3 résiduelle**. |
 | `apps/thp-final` | Rails historique — hors MVP JS sauf décision explicite. |

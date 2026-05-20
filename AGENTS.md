@@ -10,7 +10,7 @@ Banque partagée **`hermes`** — tag obligatoire **`project:all-aboard`**.
 2. **`retain`** au fil de la discussion pour décisions/préférences stables : `project:all-aboard` + `area:<domain>` + `source:cursor-session`.
 3. Détail : `.cursor/rules/hindsight.mdc`, `.cursor/references/hindsight-tagging.md`.
 
-**Chronologie, MVP et doc** : [Docs/README.md](Docs/README.md), [Docs/map-of-content.md](Docs/map-of-content.md), [Docs/plan-mise-en-place-web-api-donnees.md](Docs/plan-mise-en-place-web-api-donnees.md). **Tâches** : [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3). **Doc par issue** : `Docs/tasks/<NN>-slug/` ([convention](Docs/tasks/README.md)).
+**Chronologie, MVP et doc** : [Docs/README.md](Docs/README.md), [Docs/map-of-content.md](Docs/map-of-content.md), [Docs/plan-mise-en-place-web-api-donnees.md](Docs/plan-mise-en-place-web-api-donnees.md). **Design system / UI** : [Docs/design-system/README.md](Docs/design-system/README.md) (hub canonique). **Tâches** : [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3). **Doc par issue** : `Docs/tasks/<NN>-slug/` ([convention](Docs/tasks/README.md)).
 
 ## `apps/thp-final` — artéfact THP (référence uniquement)
 
@@ -54,7 +54,9 @@ Les PR et pushes sur la branche principale déclenchent le workflow GitHub Actio
 - Job **`verify`** : lint, typecheck, migrations API, tests, build (hors `apps/thp-final`).
 - Job **`storybook`** (conditionnel) : `pnpm build:storybook` uniquement si le diff touche `packages/ui/**`, `apps/storybook/**`, lockfile, `turbo.json`, `package.json` ou `.github/workflows/ci.yml` (`dorny/paths-filter`).
 
-## Design system (Epic #24)
+## Design system (Epic #24, #25)
+
+**Doc complète** : [Docs/design-system/README.md](Docs/design-system/README.md) (architecture, guide contributeur, CI, AppShell, journal).
 
 Séparation **totale** : primitives et tokens dans le package UI, documentation dans Storybook, métier dans `apps/web`.
 
@@ -80,7 +82,7 @@ import { Button } from "@allaboard/ui/components/button";
 import "@allaboard/ui/globals.css"; // via app/globals.css + @source (voir layout)
 ```
 
-**Vérifications utiles** : `pnpm storybook` · `pnpm build:storybook` · `pnpm --filter @allaboard/ui test` · ADR [Docs/adr/0002-design-system-monorepo.md](Docs/adr/0002-design-system-monorepo.md).
+**Vérifications utiles** : `pnpm storybook` · `pnpm build:storybook` · `pnpm --filter @allaboard/ui test` · [verification-and-ci.md](Docs/design-system/verification-and-ci.md) · ADR [0002](Docs/adr/0002-design-system-monorepo.md).
 
 ## Graphify (carte codebase MVP)
 

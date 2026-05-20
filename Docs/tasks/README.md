@@ -38,6 +38,7 @@ Modèle vierge : [_template/README.md](_template/README.md).
 | Contrat API, env, journal smoke **transverse** | [plan-mise-en-place-web-api-donnees.md](../plan-mise-en-place-web-api-donnees.md) |
 | Timeline phases, principes MVP | [README.md](../README.md) |
 | Parcours produit (MOC) | [moc-parcours-utilisateur.md](../moc-parcours-utilisateur.md) |
+| Design system (hub contributeur) | [design-system/README.md](../design-system/README.md) |
 | Infra Dokploy (faits instance) | [deploiement-dokploy-instance-allaboard.md](../deploiement-dokploy-instance-allaboard.md) |
 
 ---
@@ -59,7 +60,8 @@ Modèle vierge : [_template/README.md](_template/README.md).
 | Dossier | Issue |
 |---------|-------|
 | [18-adr-auth/](18-adr-auth/) | [#18 ADR auth](https://github.com/AllAboard-THP/All-Aboard/issues/18) |
-| [24-design-system-monorepo/](24-design-system-monorepo/) | [#24 Design system monorepo](https://github.com/AllAboard-THP/All-Aboard/issues/24) |
+| [24-design-system-monorepo/](24-design-system-monorepo/) | [#24 Design system](https://github.com/AllAboard-THP/All-Aboard/issues/24) — ✅ livré |
+| [25-app-shell-navigation/](25-app-shell-navigation/) | [#25 AppShell](https://github.com/AllAboard-THP/All-Aboard/issues/25) — ✅ livré |
 
 *(Ajouter une ligne ici à la création d’un nouveau dossier — une ligne par PR, conflits rares.)*
 

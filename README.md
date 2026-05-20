@@ -67,7 +67,14 @@ Comportement :
 
 ### CI (GitHub Actions)
 
-Les workflows sous [.github/workflows/](.github/workflows/) s’exécutent sur les PR et les pushes : après `pnpm install`, Ruby/Bundler est configuré pour `apps/thp-final`, la base SQLite de test est préparée, puis `pnpm` exécute `lint`, `typecheck`, `test`, `build` sur tout le monorepo.
+Workflow [.github/workflows/ci.yml](.github/workflows/ci.yml) sur PR et pushes (`main`, `staging`, `Dev`, `init/**`) :
+
+| Job | Rôle |
+|-----|------|
+| **`verify`** | `lint`, `typecheck`, migrations API (Postgres service), `test`, `build` — **hors** `apps/thp-final` |
+| **`changes`** + **`storybook`** | `build:storybook` **uniquement** si le diff touche le design system (`packages/ui`, `apps/storybook`, lockfile, turbo, `ci.yml`) |
+
+Détail hooks, gates et chemins : [Docs/design-system/verification-and-ci.md](Docs/design-system/verification-and-ci.md).
 ## Documentation
 
 1. [Docs/README.md](Docs/README.md) — phases MVP, principes, état code  
@@ -76,4 +83,4 @@ Les workflows sous [.github/workflows/](.github/workflows/) s’exécutent sur l
 4. [plan opérationnel Web/API](Docs/plan-mise-en-place-web-api-donnees.md) — contrat `/feed`, journal smoke  
 5. [map of content](Docs/map-of-content.md) — sources canoniques  
 
-Références : [parcours MOC](Docs/moc-parcours-utilisateur.md) · [Dokploy instance](Docs/deploiement-dokploy-instance-allaboard.md) · [vision](Docs/vision/README.md) · [.github/PROJECT.md](.github/PROJECT.md)
+Références : [Design system (hub)](Docs/design-system/README.md) · [parcours MOC](Docs/moc-parcours-utilisateur.md) · [Dokploy instance](Docs/deploiement-dokploy-instance-allaboard.md) · [vision](Docs/vision/README.md) · [.github/PROJECT.md](.github/PROJECT.md)
