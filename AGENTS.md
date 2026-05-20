@@ -91,4 +91,6 @@ Graphe de connaissance à la racine : `graphify-out/` (`GRAPH_REPORT.md`, `graph
   ./scripts/graphify-update.sh
   ```
 
+  Prérequis CLI : `uv tool install graphifyy` (PyPI `graphifyy`, binaire `graphify` sur `PATH`, typ. `~/.local/bin`).
+
   AST uniquement (0 token LLM). Extraction sémantique des docs : `/graphify` avec une clé API (`graphify extract …`).
