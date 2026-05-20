@@ -4,7 +4,7 @@ Ce document decrit la configuration **effective** du projet All-Aboard sur Dokpl
 
 **Timeline produit / stack applicative** (ordre des phases, TanStack, auth) : [README documentation — canonique](README.md).
 
-**Mise a jour** : 2026-05-12 (domaines `allaboard.fr` + API dediees ; Agent/Indexer **desactives** sur les trois environnements — releve MCP + changements operes via MCP). **Post-merge PR #9 (Phase 1 Web/API)** : deploiements dev Web + API en **done** (Dokploy MCP) ; smoke HTTPS `https://dev.allaboard.fr`, `https://api-dev.allaboard.fr/feed`, `https://dev.allaboard.fr/api/feed` OK — detail dans [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) (journal).
+**Mise a jour** : 2026-05-20 (Phase 2 dev : vars API Postgres + auth ; smoke HTTPS complet — journal ci-dessous). **2026-05-12** : domaines `allaboard.fr` + API dediees ; Agent/Indexer **desactives** ; post-merge PR #9 Phase 1 — smoke feed OK. Detail smoke : [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) (journal) ; procedure manuelle : [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md).
 
 **Secrets** : mots de passe base de donnees, cles API et tokens GitHub se configurent **uniquement** dans Dokploy. Ne jamais les commiter dans ce depot.
 
@@ -112,6 +112,16 @@ Pour du **fetch navigateur** same-origin, on peut alternativement exposer des re
 
 Cles d’environnement typiques : `NODE_ENV`, `APP_ENV`, `LOG_LEVEL`, `PORT=4000`. Grille `CORS_*` et secrets : [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md).
 
+**Phase 2 (obligatoire sur l’API dev)** — sans ces variables le conteneur peut crasher au demarrage (`502` derriere Cloudflare) :
+
+| Variable | Role |
+|----------|------|
+| `DATABASE_URL` | Postgres interne (hote service Postgres dev, port 5432) |
+| `JWT_SECRET` | Min. 32 caracteres (`NODE_ENV=production` dans l’image Docker) |
+| `MVP_LOGIN_PASSWORD` | Login MVP `POST /auth/login` |
+
+Procedure : [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md). Auth : [ADR 0001](adr/0001-authentication-strategy.md).
+
 **Exposition** : domaine Traefik dedie par environnement (tableau *Domaines publics* ci-dessus). Pour le **SSR Web → API interne**, pas besoin de CORS. Pour un **fetch navigateur** vers `https://api-*.allaboard.fr`, configurer `CORS_ALLOWED_ORIGINS` (voir matrice). Le flux feed **home** actuel passe par le BFF Next — voir [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md).
 
 ---
@@ -154,9 +164,11 @@ Les applications Dokploy **Agent** et **Indexer** existent dans les trois enviro
 |----------------|-----|-----|-------|---------|
 | production | deploye OK | deploye OK | **desactive** (pas d’auto-deploy, conteneur arrete) | **desactive** |
 | staging | deploye OK | deploye OK | **desactive** | **desactive** |
-| dev | deploye OK | deploye OK | **desactive** | **desactive** |
+| dev | deploye OK | deploye OK (Phase 2 : vars Postgres + JWT) | **desactive** | **desactive** |
 
-Dernier etat connu avant mise en pause : echec de build / runtime faute de packages `apps/agent` et `apps/indexer` dans le repo.
+**Dev (2026-05-20)** : smoke `pnpm smoke:dev` OK ; `/help/new` + feed SSR — journal [plan opérationnel](plan-mise-en-place-web-api-donnees.md).
+
+Dernier etat connu Agent/Indexer : echec de build / runtime faute de packages `apps/agent` et `apps/indexer` dans le repo (services en pause).
 
 ---
 
