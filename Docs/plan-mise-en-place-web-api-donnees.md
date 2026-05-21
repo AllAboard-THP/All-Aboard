@@ -2,7 +2,7 @@
 
 Référence **canonique** pour le couplage `apps/web` ↔ `apps/api` : variables, contrat `GET /feed`, chemins code, journal de smoke, checklist Dokploy ciblée feed. La **timeline** des phases est dans [README.md](README.md) ; la **cartographie** des docs dans [map-of-content.md](map-of-content.md). Les **faits instance** (domaines, `API_URL` interne) : [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md).
 
-**Mise à jour** : 2026-05-20. **Décision** : **Option B** — socle TanStack dans la même livraison que le feed SSR ; home feed client + invalidation livrés (voir *Journal*). **Phase 2 (MVP dépôt)** : Postgres + `GET /feed` réel, `POST /help-requests`, JWT + BFF auth, stubs MOC (doublon, Rubberduck) — ADR [0001](adr/0001-authentication-strategy.md).
+**Mise à jour** : 2026-05-21. **Décision** : **Option B** — socle TanStack dans la même livraison que le feed SSR ; home feed client + invalidation livrés (voir *Journal*). **Phase 2 (MVP dépôt)** : Postgres + `GET /feed` réel, `POST /help-requests`, JWT + BFF auth, stubs MOC (doublon, Rubberduck) — ADR [0001](adr/0001-authentication-strategy.md).
 
 ---
 
@@ -30,7 +30,8 @@ SSR feed, socle Query, merge Dokploy dev, `useQuery` + `invalidateQueries` sur `
 | 2026-05-12 | Dokploy **dev** (post-merge PR #10) | Smoke navigateur : SSR + client `useQuery` + **Rafraîchir** OK. Log LocatorJS = extension navigateur, hors app. |
 | 2026-05-14 | CI / local | Phase 2 MVP : Drizzle + Postgres (`DATABASE_URL`), migrations au démarrage API, JWT (`JWT_SECRET`, `MVP_LOGIN_PASSWORD`), BFF `/api/auth/login` + `/api/help-requests`, page `/help/new` ; CI : service Postgres + `pnpm --filter api run db:migrate` avant les tests ; `docker-compose.yml` pour Postgres local. |
 | 2026-05-19 | CI / local | Compléments Phase 2 : tests API/BFF étendus, contrats HTTP documentés ci-dessous, `pnpm smoke:dev` ([scripts/smoke-dev.sh](../scripts/smoke-dev.sh)). Smoke Dokploy dev HTTPS : voir [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md). |
-| 2026-05-20 | Dokploy **dev** (Phase 2) | Vars API (`DATABASE_URL`, `JWT_SECRET`, `MVP_LOGIN_PASSWORD`, `PORT`, `NODE_ENV`) ; redeploy API ; `pnpm smoke:dev` OK ; `/help/new` + feed SSR (`https://dev.allaboard.fr`) OK. ADR [0001](adr/0001-authentication-strategy.md) — revue équipe [#18](https://github.com/AllAboard-THP/All-Aboard/issues/18) en attente. |
+| 2026-05-20 | Dokploy **dev** (Phase 2) | Vars API (`DATABASE_URL`, `JWT_SECRET`, `MVP_LOGIN_PASSWORD`, `PORT`, `NODE_ENV`) ; redeploy API ; `pnpm smoke:dev` OK ; `/help/new` + feed SSR (`https://dev.allaboard.fr`) OK. ADR [0001](adr/0001-authentication-strategy.md) accepté ([#18](https://github.com/AllAboard-THP/All-Aboard/issues/18)). |
+| 2026-05-21 | Dokploy **dev** (Sprint 0) | Rebase local sur `origin/Dev` ; `pnpm smoke:dev` rejoué OK (`/health`, `/feed`, BFF `/api/feed`) ; clôture ops [#33](https://github.com/AllAboard-THP/All-Aboard/issues/33), [#34](https://github.com/AllAboard-THP/All-Aboard/issues/34), epic backend [#16](https://github.com/AllAboard-THP/All-Aboard/issues/16). |
 
 ---
 
