@@ -37,3 +37,23 @@ export type CreateHelpRequestResponse = {
     rubberduckEligible?: boolean;
   };
 };
+
+/** JSON body of `GET /help-requests/:id` from `apps/api`. */
+export type HelpRequestDetailResponse = {
+  item: HelpRequest;
+  responses?: Response[];
+};
+
+/** Rôles MVP (claim JWT — ADR 0001 extension). */
+export type UserRole = "student" | "mentor";
+
+/** Réponse `GET /auth/me`. */
+export type AuthMeResponse = {
+  userId: string;
+  role: UserRole;
+};
+
+/** JSON body of `GET /mentor/feed` — demandes avec tags mentor/domaine. */
+export type MentorFeedResponse = {
+  items: HelpRequest[];
+};

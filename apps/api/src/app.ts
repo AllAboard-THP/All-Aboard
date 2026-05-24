@@ -3,10 +3,13 @@ import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
-import { desc, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import type {
+  AuthMeResponse,
   CreateHelpRequestResponse,
   HelpRequest,
+  HelpRequestDetailResponse,
+  UserRole,
 } from "@allaboard/types";
 import type { AppDatabase } from "./db/client.js";
 import { createDb, createPool } from "./db/client.js";
@@ -43,6 +46,16 @@ function normalizeTitle(title: string): string {
 
 function wordCount(title: string): number {
   return title.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function mentorUserIds(): Set<string> {
+  const raw = process.env.MVP_MENTOR_USER_IDS?.trim();
+  const ids = raw && raw.length > 0 ? raw.split(",") : ["alice"];
+  return new Set(ids.map((id) => id.trim()).filter(Boolean));
+}
+
+function roleForUserId(userId: string): UserRole {
+  return mentorUserIds().has(userId) ? "mentor" : "student";
 }
 
 function rowToHelpRequest(row: typeof helpRequests.$inferSelect): HelpRequest {
@@ -117,14 +130,65 @@ export function buildApp(options?: BuildAppOptions) {
     if (parsed.data.password !== expected) {
       return reply.code(401).send({ error: "invalid_credentials" });
     }
-    const token = await reply.jwtSign({ sub: parsed.data.userId });
+    const role = roleForUserId(parsed.data.userId);
+    const token = await reply.jwtSign({
+      sub: parsed.data.userId,
+      role,
+    });
     void reply.setCookie("access_token", token, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
       maxAge: 60 * 60 * 24,
     });
-    return { ok: true as const, userId: parsed.data.userId };
+    return { ok: true as const, userId: parsed.data.userId, role };
+  });
+
+  app.get(
+    "/auth/me",
+    { preHandler: [app.authenticate] },
+    async (request): Promise<AuthMeResponse> => {
+      const user = request.user as { sub: string; role?: UserRole };
+      const role =
+        user.role === "mentor" || user.role === "student"
+          ? user.role
+          : roleForUserId(user.sub);
+      return { userId: user.sub, role };
+    },
+  );
+
+  app.get("/help-requests/:id", async (request, reply) => {
+    if (!db) {
+      return reply.code(503).send({ error: "database_unavailable" });
+    }
+    const { id } = request.params as { id: string };
+    const rows = await db
+      .select()
+      .from(helpRequests)
+      .where(eq(helpRequests.id, id))
+      .limit(1);
+    const row = rows[0];
+    if (!row) {
+      return reply.code(404).send({ error: "not_found" });
+    }
+    const body: HelpRequestDetailResponse = {
+      item: rowToHelpRequest(row),
+      responses: [],
+    };
+    return body;
+  });
+
+  app.get("/mentor/feed", async (_request, reply) => {
+    if (!db) {
+      return reply.code(503).send({ error: "database_unavailable" });
+    }
+    const rows = await db
+      .select()
+      .from(helpRequests)
+      .where(sql`cardinality(${helpRequests.tags}) > 0`)
+      .orderBy(desc(helpRequests.createdAt))
+      .limit(100);
+    return { items: rows.map(rowToHelpRequest) };
   });
 
   app.post(

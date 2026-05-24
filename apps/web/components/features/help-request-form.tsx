@@ -1,78 +1,109 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@allaboard/ui/components/button";
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
 
+type CreateResult = {
+  item: { id: string };
+  hints?: { rubberduckEligible?: boolean };
+};
+
+type DuplicateError = {
+  existingId?: string;
+};
+
+async function loginAndCreate(input: {
+  userId: string;
+  password: string;
+  title: string;
+  tags: string[];
+}): Promise<CreateResult> {
+  const loginRes = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ userId: input.userId, password: input.password }),
+  });
+  if (!loginRes.ok) {
+    const t = await loginRes.text();
+    throw new Error(loginRes.status === 401 ? "Identifiants invalides." : t);
+  }
+
+  const createRes = await fetch("/api/help-requests", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+      title: input.title,
+      ...(input.tags.length ? { tags: input.tags } : {}),
+    }),
+  });
+  const createText = await createRes.text();
+
+  if (createRes.status === 409) {
+    const dup = JSON.parse(createText) as DuplicateError;
+    const err = new Error("duplicate") as Error & { existingId?: string };
+    err.existingId = dup.existingId;
+    throw err;
+  }
+  if (!createRes.ok) {
+    throw new Error(createText || `Erreur ${createRes.status}`);
+  }
+  return JSON.parse(createText) as CreateResult;
+}
+
 export function HelpRequestForm() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [userId, setUserId] = useState("bob");
   const [password, setPassword] = useState("");
   const [title, setTitle] = useState("");
   const [tagsRaw, setTagsRaw] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [duplicateId, setDuplicateId] = useState<string | null>(null);
+  const [rubberduckHint, setRubberduckHint] = useState(false);
 
-  async function submit() {
-    setBusy(true);
-    setError(null);
-    setMessage(null);
-    try {
-      const loginRes = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ userId, password }),
-      });
-      if (!loginRes.ok) {
-        const t = await loginRes.text();
-        setError(loginRes.status === 401 ? "Identifiants invalides." : t);
+  const mutation = useMutation({
+    mutationFn: loginAndCreate,
+    onSuccess: async (data) => {
+      setDuplicateId(null);
+      setRubberduckHint(Boolean(data.hints?.rubberduckEligible));
+      await queryClient.invalidateQueries({ queryKey: ["feed"] });
+      if (data.hints?.rubberduckEligible) {
+        setTitle("");
         return;
       }
-      const tags = tagsRaw
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-      const createRes = await fetch("/api/help-requests", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          title,
-          ...(tags.length ? { tags } : {}),
-        }),
-      });
-      const createText = await createRes.text();
-      if (createRes.status === 409) {
-        const j = JSON.parse(createText) as { existingId?: string };
-        setError(
-          `Doublon détecté (MOC). Demande existante : ${j.existingId ?? "?"}.`,
-        );
-        return;
+      router.push(`/requests/${data.item.id}`);
+    },
+    onError: (err: Error & { existingId?: string }) => {
+      setRubberduckHint(false);
+      if (err.message === "duplicate" && err.existingId) {
+        setDuplicateId(err.existingId);
+      } else {
+        setDuplicateId(null);
       }
-      if (!createRes.ok) {
-        setError(createText || `Erreur ${createRes.status}`);
-        return;
-      }
-      const j = JSON.parse(createText) as {
-        item: { id: string };
-        hints?: { rubberduckEligible?: boolean };
-      };
-      setMessage(
-        `Demande créée (${j.item.id})` +
-          (j.hints?.rubberduckEligible
-            ? " — Rubberduck (stub) : titre court, piste IA possible."
-            : ""),
-      );
-      setTitle("");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur réseau");
-    } finally {
-      setBusy(false);
-    }
+    },
+  });
+
+  function submit() {
+    setDuplicateId(null);
+    setRubberduckHint(false);
+    const tags = tagsRaw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    mutation.mutate({ userId, password, title, tags });
   }
+
+  const errorMessage =
+    mutation.error && mutation.error.message !== "duplicate"
+      ? mutation.error.message
+      : null;
 
   return (
     <div className="mt-5 grid gap-4">
@@ -112,19 +143,33 @@ export function HelpRequestForm() {
           placeholder="mentor, rails"
         />
       </div>
-      {error ? (
-        <p className="m-0 text-sm text-destructive">{error}</p>
+      {errorMessage ? (
+        <p className="m-0 text-sm text-destructive">{errorMessage}</p>
       ) : null}
-      {message ? (
-        <p className="m-0 text-sm text-primary">{message}</p>
+      {duplicateId ? (
+        <p className="m-0 text-sm text-destructive">
+          Doublon détecté (MOC).{" "}
+          <Link
+            href={`/requests/${duplicateId}`}
+            className="font-medium text-primary underline"
+          >
+            Voir la demande existante
+          </Link>
+        </p>
+      ) : null}
+      {rubberduckHint ? (
+        <p className="m-0 text-sm text-primary">
+          Rubberduck (stub) : titre court — piste IA possible (Phase 4). Publiez
+          une nouvelle demande ou consultez le feed.
+        </p>
       ) : null}
       <Button
         type="button"
-        disabled={busy || !title.trim() || !password}
-        onClick={() => void submit()}
+        disabled={mutation.isPending || !title.trim() || !password}
+        onClick={() => submit()}
         className="mt-1 w-full"
       >
-        {busy ? "Envoi…" : "Connexion et publier"}
+        {mutation.isPending ? "Envoi…" : "Connexion et publier"}
       </Button>
     </div>
   );

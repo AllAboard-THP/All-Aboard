@@ -1,11 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cookies } from "next/headers";
 import { POST as loginPost } from "@/app/api/auth/login/route";
+import { GET as authMeGet } from "@/app/api/auth/me/route";
 import { POST as helpRequestsPost } from "@/app/api/help-requests/route";
+import { GET as helpRequestByIdGet } from "@/app/api/help-requests/[id]/route";
 
-vi.mock("@/lib/api-server", () => ({
-  getApiBaseUrl: () => "http://api.test:4000",
-}));
+vi.mock("@/lib/api-server", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/api-server")>();
+  return {
+    ...actual,
+    getApiBaseUrl: () => "http://api.test:4000",
+  };
+});
 
 vi.mock("next/headers", () => ({
   cookies: vi.fn(),
@@ -132,6 +138,90 @@ describe("BFF Phase 2", () => {
       );
       const body = (await res.json()) as typeof created;
       expect(body.item.id).toBe("id-1");
+    });
+  });
+
+  describe("GET /api/help-requests/[id]", () => {
+    it("relays upstream 200", async () => {
+      const detail = {
+        item: {
+          id: "id-1",
+          title: "Help",
+          authorId: "bob",
+          createdAt: "2026-01-01T00:00:00.000Z",
+        },
+        responses: [],
+      };
+      fetchMock.mockResolvedValueOnce(
+        new Response(JSON.stringify(detail), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+
+      const res = await helpRequestByIdGet(
+        new Request("http://localhost/api/help-requests/id-1"),
+        { params: Promise.resolve({ id: "id-1" }) },
+      );
+
+      expect(res.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://api.test:4000/help-requests/id-1",
+        expect.objectContaining({ cache: "no-store" }),
+      );
+      const body = (await res.json()) as typeof detail;
+      expect(body.item.id).toBe("id-1");
+    });
+
+    it("relays upstream 404", async () => {
+      fetchMock.mockResolvedValueOnce(
+        new Response(JSON.stringify({ error: "not_found" }), {
+          status: 404,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+
+      const res = await helpRequestByIdGet(
+        new Request("http://localhost/api/help-requests/missing"),
+        { params: Promise.resolve({ id: "missing" }) },
+      );
+
+      expect(res.status).toBe(404);
+    });
+  });
+
+  describe("GET /api/auth/me", () => {
+    it("returns 401 missing_token when no cookie", async () => {
+      vi.mocked(cookies).mockResolvedValue({
+        get: () => undefined,
+      } as Awaited<ReturnType<typeof cookies>>);
+
+      const res = await authMeGet();
+      expect(res.status).toBe(401);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("forwards Bearer and relays 200", async () => {
+      vi.mocked(cookies).mockResolvedValue({
+        get: (name: string) =>
+          name === "access_token" ? { value: "jwt-mentor" } : undefined,
+      } as Awaited<ReturnType<typeof cookies>>);
+
+      fetchMock.mockResolvedValueOnce(
+        new Response(JSON.stringify({ userId: "alice", role: "mentor" }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+
+      const res = await authMeGet();
+      expect(res.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://api.test:4000/auth/me",
+        expect.objectContaining({
+          headers: { authorization: "Bearer jwt-mentor" },
+        }),
+      );
     });
   });
 });

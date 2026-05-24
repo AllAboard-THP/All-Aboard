@@ -32,6 +32,7 @@ SSR feed, socle Query, merge Dokploy dev, `useQuery` + `invalidateQueries` sur `
 | 2026-05-19 | CI / local | Compléments Phase 2 : tests API/BFF étendus, contrats HTTP documentés ci-dessous, `pnpm smoke:dev` ([scripts/smoke-dev.sh](../scripts/smoke-dev.sh)). Smoke Dokploy dev HTTPS : voir [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md). |
 | 2026-05-20 | Dokploy **dev** (Phase 2) | Vars API (`DATABASE_URL`, `JWT_SECRET`, `MVP_LOGIN_PASSWORD`, `PORT`, `NODE_ENV`) ; redeploy API ; `pnpm smoke:dev` OK ; `/help/new` + feed SSR (`https://dev.allaboard.fr`) OK. ADR [0001](adr/0001-authentication-strategy.md) accepté ([#18](https://github.com/AllAboard-THP/All-Aboard/issues/18)). |
 | 2026-05-21 | Dokploy **dev** (Sprint 0) | Rebase local sur `origin/Dev` ; `pnpm smoke:dev` rejoué OK (`/health`, `/feed`, BFF `/api/feed`) ; clôture ops [#33](https://github.com/AllAboard-THP/All-Aboard/issues/33), [#34](https://github.com/AllAboard-THP/All-Aboard/issues/34), epic backend [#16](https://github.com/AllAboard-THP/All-Aboard/issues/16). |
+| 2026-05-21 | CI / local | Parcours MOC : `GET /help-requests/:id`, `GET /mentor/feed`, `GET /auth/me` ; pages `/requests/[id]`, `/mentor` ; TanStack mutation création + query détail ; smoke `GET /help-requests/:id` ; Playwright e2e socle ; [ADR 0003](adr/0003-authentication-users-production.md) proposé ; [staging-checklist](staging-checklist.md). |
 
 ---
 
@@ -53,6 +54,7 @@ SSR feed, socle Query, merge Dokploy dev, `useQuery` + `invalidateQueries` sur `
 | `DATABASE_URL` | API | Connexion Postgres (Drizzle). Sans elle : `GET /feed` → 503, pas de persistance. |
 | `JWT_SECRET` | API | Signature JWT (min. 32 caractères en prod). Voir [ADR 0001](adr/0001-authentication-strategy.md). |
 | `MVP_LOGIN_PASSWORD` | API | Mot de passe attendu pour `POST /auth/login` (MVP). |
+| `MVP_MENTOR_USER_IDS` | API | Liste CSV d'`userId` recevant `role: mentor` au login (défaut : `alice`). |
 | `CORS_ALLOWED_ORIGINS` | API Fastify | Liste d’origines séparées par des virgules : si définie, `@fastify/cors` est enregistré (`credentials: true`). **N/A** tant que le navigateur n’appelle pas l’API en direct (BFF). |
 
 Référence instance : [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md). Tables détaillées par service : [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md).
@@ -71,6 +73,7 @@ Source de vérité types : [packages/types/src/index.ts](../packages/types/src/i
 | `unauthorized` | 401 | JWT absent ou invalide (`POST /help-requests`) |
 | `invalid_credentials` | 401 | Mot de passe login incorrect |
 | `duplicate` | 409 | Titre déjà existant (`existingId` présent) |
+| `not_found` | 404 | Demande absente (`GET /help-requests/:id`) |
 | `database_unavailable` | 503 | `DATABASE_URL` absent ou DB injoignable |
 | `login_not_configured` | 503 | `MVP_LOGIN_PASSWORD` absent sur l’API |
 | `insert_failed` | 500 | Échec insertion (rare) |
@@ -94,10 +97,29 @@ Exemple :
 ### `POST /auth/login`
 
 - **Corps** : `{ "userId": string, "password": string }` (min. 1 caractère chacun).
-- **200** : `{ "ok": true, "userId": string }` + cookie httpOnly `access_token` (JWT).
+- **200** : `{ "ok": true, "userId": string, "role": "student" | "mentor" }` + cookie httpOnly `access_token` (JWT avec claims `sub`, `role`).
 - **400** : `{ "error": "invalid_body" }`
 - **401** : `{ "error": "invalid_credentials" }`
 - **503** : `{ "error": "login_not_configured" }`
+
+### `GET /auth/me`
+
+- **Auth** : `Authorization: Bearer <jwt>`.
+- **200** : `{ "userId": string, "role": "student" | "mentor" }`.
+- **401** : `{ "error": "unauthorized" }`.
+
+### `GET /help-requests/:id`
+
+- **200** : `HelpRequestDetailResponse` — `{ "item": HelpRequest, "responses": Response[] }` (MVP : `responses` toujours `[]`).
+- **404** : `{ "error": "not_found" }`
+- **503** : `{ "error": "database_unavailable" }`
+- Public (pas de JWT).
+
+### `GET /mentor/feed`
+
+- **200** : `{ "items": HelpRequest[] }` — demandes avec au moins un tag (filtrage mentor/domaine MVP).
+- **503** : `{ "error": "database_unavailable" }`
+- Public (garde UI mentor côté Web via `/api/auth/me`).
 
 ### `POST /help-requests`
 
@@ -117,6 +139,9 @@ Le navigateur appelle le **Web** ; les Route Handlers relaient vers `API_URL` (s
 | Route BFF | Upstream API | Notes |
 |-----------|--------------|--------|
 | `GET /api/feed` | `GET /feed` | **502** si upstream ou JSON invalide |
+| `GET /api/help-requests/:id` | `GET /help-requests/:id` | **404** propage ; **502** si upstream invalide |
+| `GET /api/mentor/feed` | `GET /mentor/feed` | **502** si upstream ou JSON invalide |
+| `GET /api/auth/me` | `GET /auth/me` | **401** `{ "error": "missing_token" }` si cookie absent |
 | `POST /api/auth/login` | `POST /auth/login` | Propage `Set-Cookie` upstream |
 | `POST /api/help-requests` | `POST /help-requests` | **401** `{ "error": "missing_token" }` si cookie absent ; forward Bearer |
 
@@ -153,18 +178,23 @@ Runbook manuel Dokploy : [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-pha
 | Élément | Emplacement |
 |---------|-------------|
 | `FeedResponse` | `packages/types/src/index.ts` |
-| `getApiBaseUrl`, `parseFeedResponse`, `fetchFeed` | `apps/web/lib/api-server.ts` |
-| Page async + `fetchFeed` | `apps/web/app/page.tsx` |
-| UI liste SSR / erreur | `apps/web/components/home-content.tsx` |
+| `HelpRequestDetailResponse`, `AuthMeResponse`, `MentorFeedResponse` | `packages/types/src/index.ts` |
+| `getApiBaseUrl`, `parseFeedResponse`, `fetchFeed`, `fetchHelpRequest`, `fetchMentorFeed`, `fetchAuthMe` | `apps/web/lib/api-server.ts` |
+| Page feed async + `fetchFeed` | `apps/web/app/(app)/page.tsx` |
+| UI feed SSR / erreur / vide | `apps/web/components/features/home-content.tsx` |
+| Page détail demande | `apps/web/app/(app)/requests/[id]/page.tsx`, `help-request-detail-content.tsx` |
+| Dashboard mentor | `apps/web/app/(app)/mentor/page.tsx` |
 | BFF `GET /api/feed` | `apps/web/app/api/feed/route.ts` |
+| BFF `GET /api/help-requests/[id]`, `GET /api/mentor/feed`, `GET /api/auth/me` | `apps/web/app/api/help-requests/[id]/route.ts`, `mentor/feed/route.ts`, `auth/me/route.ts` |
 | BFF `POST /api/auth/login`, `POST /api/help-requests` | `apps/web/app/api/auth/login/route.ts`, `apps/web/app/api/help-requests/route.ts` |
 | Schéma SQL + migrations Drizzle | `apps/api/src/db/schema.ts`, `apps/api/drizzle/` |
 | Démarrage API (migrations) | `apps/api/src/index.ts`, `apps/api/src/migrate.ts` |
-| Formulaire création demande | `apps/web/app/help/new/page.tsx`, `apps/web/components/help-request-form.tsx` |
+| Formulaire création demande | `apps/web/app/(app)/help/new/page.tsx`, `help-request-form.tsx` |
 | `QueryClientProvider` | `apps/web/app/providers.tsx`, `apps/web/app/layout.tsx` |
-| `useQuery` + invalidation | `apps/web/components/feed-client-preview.tsx` — `queryKey: ['feed']`, `fetch('/api/feed')`, **Rafraîchir** → `invalidateQueries({ queryKey: ['feed'] })` |
-| Tests | `apps/web/tests/api-server.test.ts`, `feed-client-preview.test.tsx`, `bff-phase2.test.ts` ; `apps/api/src/app.test.ts` |
-| Smoke | `scripts/smoke-dev.sh` (`pnpm smoke:dev`) |
+| `useQuery` feed + détail | `feed-client-preview.tsx` (`['feed']`), `help-request-detail-client.tsx` (`['help-request', id]`) |
+| `useMutation` création | `help-request-form.tsx` — invalidation `['feed']`, redirect `/requests/[id]` |
+| Tests | `apps/web/tests/api-server.test.ts`, `bff-phase2.test.ts`, `home-content.test.tsx` ; `apps/api/src/app.test.ts` |
+| Smoke | `scripts/smoke-dev.sh` (`pnpm smoke:dev`) — inclut `GET /help-requests/:id` si auth smoke |
 
 **Cache** : `fetchFeed` — `next: { revalidate: 60 }` ; BFF `/api/feed` — `cache: 'no-store'`.
 
@@ -175,8 +205,11 @@ Runbook manuel Dokploy : [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-pha
 | Convention | Choix actuel |
 |--------------|--------------|
 | `queryKey` feed | `['feed']` |
+| `queryKey` détail demande | `['help-request', id]` |
 | Fetch client (home) | **BFF** `GET /api/feed` |
-| Invalidation | `invalidateQueries({ queryKey: ['feed'] })` |
+| Fetch client (détail) | **BFF** `GET /api/help-requests/:id` |
+| Création demande | `useMutation` + `invalidateQueries({ queryKey: ['feed'] })` |
+| Invalidation feed | `invalidateQueries({ queryKey: ['feed'] })` |
 | Auth cross-origin | ADR requise si `credentials: 'include'` vers une autre origine |
 
 ---

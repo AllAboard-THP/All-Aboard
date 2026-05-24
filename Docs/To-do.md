@@ -2,6 +2,8 @@
 
 **Backlog, priorités, checklist staging, dépendances et roadmap** : [GitHub Project — All-Aboard MVP](https://github.com/orgs/AllAboard-THP/projects/3) (issues #13–#37+).
 
+**Checklist promotion dev → staging** : [staging-checklist.md](staging-checklist.md) (issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31)).
+
 **Règles release** (inchangées) :
 
 - Rester sur l'environnement **dev** jusqu'au MVP bout-en-bout validé.

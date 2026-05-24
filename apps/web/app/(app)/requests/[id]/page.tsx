@@ -1,13 +1,7 @@
-import Link from "next/link";
+import { fetchHelpRequest } from "@/lib/api-server";
+import { HelpRequestDetailContent } from "@/components/features/help-request-detail-content";
 
-import { Button } from "@allaboard/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@allaboard/ui/components/card";
+export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -15,26 +9,36 @@ type PageProps = {
 
 export default async function HelpRequestDetailPage({ params }: PageProps) {
   const { id } = await params;
+  const result = await fetchHelpRequest(id);
+
+  if (result.ok) {
+    return (
+      <HelpRequestDetailContent
+        id={id}
+        detail={result.data}
+        detailError={null}
+        notFound={false}
+      />
+    );
+  }
+
+  if (result.status === 404 || result.error === "not_found") {
+    return (
+      <HelpRequestDetailContent
+        id={id}
+        detail={null}
+        detailError={null}
+        notFound={true}
+      />
+    );
+  }
 
   return (
-    <div className="mx-auto w-full max-w-3xl p-6">
-      <Card>
-        <CardHeader>
-          <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
-            Détail demande (stub)
-          </p>
-          <CardTitle className="text-2xl">Demande {id}</CardTitle>
-          <CardDescription>
-            Page MOC pour le parcours feed → détail. Données API dans l&apos;issue
-            #26.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button variant="outline" asChild>
-            <Link href="/">Retour au feed</Link>
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+    <HelpRequestDetailContent
+      id={id}
+      detail={null}
+      detailError={result.error}
+      notFound={false}
+    />
   );
 }
