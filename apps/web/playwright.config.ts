@@ -1,23 +1,29 @@
 import { defineConfig, devices } from "@playwright/test";
+import path from "node:path";
+
+const webUrl = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000";
+const repoRoot = path.resolve(__dirname, "../..");
 
 export default defineConfig({
   testDir: "./e2e",
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
+  timeout: 60_000,
   reporter: "list",
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000",
+    baseURL: webUrl,
     trace: "on-first-retry",
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: process.env.PLAYWRIGHT_SKIP_WEBSERVER
     ? undefined
     : {
-        command: "pnpm --filter web run dev",
-        url: "http://127.0.0.1:3000",
+        command: "bash scripts/e2e-serve.sh",
+        cwd: repoRoot,
+        url: webUrl,
         reuseExistingServer: !process.env.CI,
-        timeout: 120_000,
+        timeout: 180_000,
       },
 });

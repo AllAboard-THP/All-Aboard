@@ -33,6 +33,7 @@ SSR feed, socle Query, merge Dokploy dev, `useQuery` + `invalidateQueries` sur `
 | 2026-05-20 | Dokploy **dev** (Phase 2) | Vars API (`DATABASE_URL`, `JWT_SECRET`, `MVP_LOGIN_PASSWORD`, `PORT`, `NODE_ENV`) ; redeploy API ; `pnpm smoke:dev` OK ; `/help/new` + feed SSR (`https://dev.allaboard.fr`) OK. ADR [0001](adr/0001-authentication-strategy.md) accepté ([#18](https://github.com/AllAboard-THP/All-Aboard/issues/18)). |
 | 2026-05-21 | Dokploy **dev** (Sprint 0) | Rebase local sur `origin/Dev` ; `pnpm smoke:dev` rejoué OK (`/health`, `/feed`, BFF `/api/feed`) ; clôture ops [#33](https://github.com/AllAboard-THP/All-Aboard/issues/33), [#34](https://github.com/AllAboard-THP/All-Aboard/issues/34), epic backend [#16](https://github.com/AllAboard-THP/All-Aboard/issues/16). |
 | 2026-05-21 | CI / local | Parcours MOC : `GET /help-requests/:id`, `GET /mentor/feed`, `GET /auth/me` ; pages `/requests/[id]`, `/mentor` ; TanStack mutation création + query détail ; smoke `GET /help-requests/:id` ; Playwright e2e socle ; [ADR 0003](adr/0003-authentication-users-production.md) proposé ; [staging-checklist](staging-checklist.md). |
+| 2026-05-24 | CI / local | Playwright e2e complet (#35) : scénarios feed + création → détail ; job CI `e2e` (paths-filter `apps/web`) ; script `pnpm test:e2e`. Clôture epic frontend [#15](https://github.com/AllAboard-THP/All-Aboard/issues/15). |
 
 ---
 
@@ -173,6 +174,22 @@ Runbook manuel Dokploy : [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-pha
 
 ---
 
+## E2E Playwright (#35)
+
+Config : [apps/web/playwright.config.ts](../apps/web/playwright.config.ts) — démarre **API** (port 4000) puis **Web** (port 3000) si `PLAYWRIGHT_SKIP_WEBSERVER` absent.
+
+Scénarios : [apps/web/e2e/](../apps/web/e2e/) — feed (navigation shell) + création demande (login MVP → détail → retour feed).
+
+| Commande | Contexte |
+|----------|----------|
+| `pnpm test:e2e` | Local : Postgres requis (`DATABASE_URL`, voir [scripts/e2e-playwright.sh](../scripts/e2e-playwright.sh)) |
+| `pnpm --filter web run test:e2e` | Idem, sans wrapper migrations |
+| `PLAYWRIGHT_SKIP_WEBSERVER=1 pnpm --filter web run test:e2e` | Stack déjà lancée (`pnpm dev:local`) |
+
+**CI** : job `e2e` dans [.github/workflows/ci.yml](../.github/workflows/ci.yml) (paths-filter `apps/web`, Postgres service, `MVP_LOGIN_PASSWORD=ci-test-login-password`).
+
+---
+
 ### Chemins code
 
 | Élément | Emplacement |
@@ -195,6 +212,7 @@ Runbook manuel Dokploy : [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-pha
 | `useMutation` création | `help-request-form.tsx` — invalidation `['feed']`, redirect `/requests/[id]` |
 | Tests | `apps/web/tests/api-server.test.ts`, `bff-phase2.test.ts`, `home-content.test.tsx` ; `apps/api/src/app.test.ts` |
 | Smoke | `scripts/smoke-dev.sh` (`pnpm smoke:dev`) — inclut `GET /help-requests/:id` si auth smoke |
+| E2E Playwright | `apps/web/e2e/`, `playwright.config.ts`, `scripts/e2e-playwright.sh` (`pnpm test:e2e`) |
 
 **Cache** : `fetchFeed` — `next: { revalidate: 60 }` ; BFF `/api/feed` — `cache: 'no-store'`.
 
