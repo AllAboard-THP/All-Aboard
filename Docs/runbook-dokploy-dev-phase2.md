@@ -9,8 +9,8 @@ Références : [plan opérationnel Web/API](plan-mise-en-place-web-api-donnees.m
 ## 1. Postgres (env dev)
 
 - [ ] Service Postgres **running** dans le projet Dokploy dev
-- [ ] Noter hôte interne, port `5432`, utilisateur, mot de passe, base (UI uniquement)
-- [ ] Construire `DATABASE_URL` pour l’**API** :
+- [ ] Noter hôte interne, port `5432`, utilisateur, mot de passe, base (UI uniquement — fiche **Postgres**, onglet **General**)
+- [ ] Construire `DATABASE_URL` **hors Dokploy** (bloc-notes, gestionnaire MDP) — **pas de champ `DATABASE_URL` sur la fiche Postgres** ; la chaîne se **colle à l’étape 2** sur le service **API** → **Environment**
 
 ```text
 postgresql://<USER>:<PASSWORD>@<HOST_INTERNE>:5432/<DATABASE>
@@ -90,7 +90,9 @@ Template journal :
 
 | Symptôme | Action |
 |----------|--------|
+| **`502` / `error code: 502`** sur `https://api-dev.allaboard.fr/*` (Cloudflare) | Conteneur API **down** ou crash au boot — logs **runtime** API (pas build). Cause fréquente post-Phase 2 : **`JWT_SECRET` absent** (`NODE_ENV=production` dans l’image) → poser toutes les vars §2 → **Save** → **Redeploy** |
 | `database_unavailable` sur `/feed` | Vérifier `DATABASE_URL` + Postgres + redéploy API |
-| Feed site en erreur, API publique OK | Corriger `API_URL` Web (nom interne) + redéploy Web |
+| Feed site `fetch failed`, API publique OK | Corriger `API_URL` Web (nom interne) + redéploy Web |
 | Login échoue | `MVP_LOGIN_PASSWORD` sur **API** uniquement |
+| Vars modifiées mais comportement inchangé | **Redeploy** obligatoire après Save Environment |
 | Code ancien (pas d’auth) | Vérifier branche `Dev` + dernier deploy |
