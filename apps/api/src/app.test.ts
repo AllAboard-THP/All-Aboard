@@ -134,8 +134,12 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
         payload: { userId: "bob", password: mvpPassword },
       });
       expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload) as { ok: boolean; userId: string };
-      expect(body).toEqual({ ok: true, userId: "bob" });
+      const body = JSON.parse(res.payload) as {
+        ok: boolean;
+        userId: string;
+        role: string;
+      };
+      expect(body).toEqual({ ok: true, userId: "bob", role: "student" });
       const setCookie = res.headers["set-cookie"];
       const cookieStr = Array.isArray(setCookie)
         ? setCookie.join("; ")
@@ -245,6 +249,101 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
         hints?: { rubberduckEligible?: boolean };
       };
       expect(body.hints).toBeUndefined();
+    });
+
+    it("GET /help-requests/:id returns 404 for unknown id", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/help-requests/00000000-0000-0000-0000-000000000099",
+      });
+      expect(res.statusCode).toBe(404);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("not_found");
+    });
+
+    it("GET /help-requests/:id returns created item", async () => {
+      const title = `Detail GET ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title, tags: ["rails"] },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: { id: string; title: string };
+      };
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as {
+        item: { id: string; title: string; tags?: string[] };
+        responses: unknown[];
+      };
+      expect(body.item.id).toBe(created.item.id);
+      expect(body.item.title).toBe(title);
+      expect(body.item.tags).toEqual(["rails"]);
+      expect(body.responses).toEqual([]);
+    });
+
+    it("GET /auth/me returns role for mentor userId alice on login", async () => {
+      const loginRes = await app.inject({
+        method: "POST",
+        url: "/auth/login",
+        payload: { userId: "alice", password: mvpPassword },
+      });
+      expect(loginRes.statusCode).toBe(200);
+      const loginBody = JSON.parse(loginRes.payload) as { role: string };
+      expect(loginBody.role).toBe("mentor");
+
+      const setCookie = loginRes.headers["set-cookie"];
+      const cookieStr = Array.isArray(setCookie)
+        ? setCookie.join("; ")
+        : String(setCookie ?? "");
+      const match = cookieStr.match(/access_token=([^;]+)/);
+      expect(match).toBeTruthy();
+      const token = match![1];
+
+      const meRes = await app.inject({
+        method: "GET",
+        url: "/auth/me",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(meRes.statusCode).toBe(200);
+      const me = JSON.parse(meRes.payload) as { userId: string; role: string };
+      expect(me).toEqual({ userId: "alice", role: "mentor" });
+    });
+
+    it("GET /mentor/feed returns only tagged requests", async () => {
+      const taggedTitle = `Mentor tagged ${Date.now()}`;
+      const plainTitle = `Mentor plain ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob", role: "student" });
+      const headers = { authorization: `Bearer ${token}` };
+
+      await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers,
+        payload: { title: taggedTitle, tags: ["mentor"] },
+      });
+      await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers,
+        payload: { title: plainTitle },
+      });
+
+      const res = await app.inject({ method: "GET", url: "/mentor/feed" });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as {
+        items: Array<{ title: string }>;
+      };
+      expect(body.items.some((i) => i.title === taggedTitle)).toBe(true);
+      expect(body.items.some((i) => i.title === plainTitle)).toBe(false);
     });
   },
 );

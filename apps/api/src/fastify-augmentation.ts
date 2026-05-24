@@ -1,4 +1,5 @@
 import "@fastify/jwt";
+import type { UserRole } from "@allaboard/types";
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 export {};
@@ -11,7 +12,7 @@ declare module "fastify" {
 
 declare module "@fastify/jwt" {
   interface FastifyJWT {
-    payload: { sub: string };
-    user: { sub: string };
+    payload: { sub: string; role?: UserRole };
+    user: { sub: string; role?: UserRole };
   }
 }

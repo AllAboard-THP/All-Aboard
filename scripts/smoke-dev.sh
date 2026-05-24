@@ -59,6 +59,13 @@ if [[ -n "$MVP_LOGIN_PASSWORD" ]]; then
     -d "{\"title\":\"$title\",\"tags\":[\"smoke\"]}")" \
     || fail "POST /help-requests"
   echo "$create" | grep -q '"item"' || fail "create body: $create"
+  item_id="$(echo "$create" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)"
+  [[ -n "$item_id" ]] || fail "could not parse item id from create response"
+
+  detail="$(curl -sf "$BASE_API/help-requests/$item_id")" || fail "GET $BASE_API/help-requests/$item_id"
+  echo "$detail" | grep -q '"item"' || fail "unexpected detail body: $detail"
+  ok "GET /help-requests/:id"
+
   ok "POST /auth/login + POST /help-requests"
 else
   echo "smoke-dev: skip auth/create (set MVP_LOGIN_PASSWORD to test login + help-requests)"

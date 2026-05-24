@@ -39,7 +39,7 @@ describe("AppShellNav", () => {
     usePathname.mockReturnValue("/");
   });
 
-  it("renders four navigation links", () => {
+  it("renders three navigation links", () => {
     render(<AppShellNav />);
     const nav = getPrimaryNav();
     for (const { label } of APP_SHELL_NAV) {
@@ -47,10 +47,10 @@ describe("AppShellNav", () => {
     }
   });
 
-  it("marks Accueil as current page on /", () => {
+  it("marks Feed as current page on /", () => {
     render(<AppShellNav />);
     const nav = getPrimaryNav();
-    const home = nav.getByRole("link", { name: "Accueil" });
+    const home = nav.getByRole("link", { name: "Feed" });
     expect(home.getAttribute("aria-current")).toBe("page");
     expect(nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute("aria-current")).toBeNull();
   });
@@ -60,6 +60,6 @@ describe("AppShellNav", () => {
     render(<AppShellNav />);
     const nav = getPrimaryNav();
     expect(nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute("aria-current")).toBe("page");
-    expect(nav.getByRole("link", { name: "Accueil" }).getAttribute("aria-current")).toBeNull();
+    expect(nav.getByRole("link", { name: "Feed" }).getAttribute("aria-current")).toBeNull();
   });
 });
