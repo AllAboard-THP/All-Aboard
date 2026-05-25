@@ -2,7 +2,7 @@
 
 Référence **canonique** pour le couplage `apps/web` ↔ `apps/api` : variables, contrat `GET /feed`, chemins code, journal de smoke, checklist Dokploy ciblée feed. La **timeline** des phases est dans [README.md](README.md) ; la **cartographie** des docs dans [map-of-content.md](map-of-content.md). Les **faits instance** (domaines, `API_URL` interne) : [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md).
 
-**Mise à jour** : 2026-05-21. **Décision** : **Option B** — socle TanStack dans la même livraison que le feed SSR ; home feed client + invalidation livrés (voir *Journal*). **Phase 2 (MVP dépôt)** : Postgres + `GET /feed` réel, `POST /help-requests`, JWT + BFF auth, stubs MOC (doublon, Rubberduck) — ADR [0001](adr/0001-authentication-strategy.md).
+**Mise à jour** : 2026-05-25. **Décision** : **Option B** — socle TanStack dans la même livraison que le feed SSR ; home feed client + invalidation livrés (voir *Journal*). **Phase 2 (MVP dépôt)** : Postgres + `GET /feed` réel, `POST /help-requests`, JWT + BFF auth, stubs MOC (doublon, Rubberduck) — ADR [0001](adr/0001-authentication-strategy.md). **MVP parcours Bob (dev)** : livré sur `Dev` + Dokploy dev (PR #50–#52) ; validation housekeeping 2026-05-25 — voir [staging-checklist.md](staging-checklist.md).
 
 ---
 
@@ -34,6 +34,7 @@ SSR feed, socle Query, merge Dokploy dev, `useQuery` + `invalidateQueries` sur `
 | 2026-05-21 | Dokploy **dev** (Sprint 0) | Rebase local sur `origin/Dev` ; `pnpm smoke:dev` rejoué OK (`/health`, `/feed`, BFF `/api/feed`) ; clôture ops [#33](https://github.com/AllAboard-THP/All-Aboard/issues/33), [#34](https://github.com/AllAboard-THP/All-Aboard/issues/34), epic backend [#16](https://github.com/AllAboard-THP/All-Aboard/issues/16). |
 | 2026-05-21 | CI / local | Parcours MOC : `GET /help-requests/:id`, `GET /mentor/feed`, `GET /auth/me` ; pages `/requests/[id]`, `/mentor` ; TanStack mutation création + query détail ; smoke `GET /help-requests/:id` ; Playwright e2e socle ; [ADR 0003](adr/0003-authentication-users-production.md) proposé ; [staging-checklist](staging-checklist.md). |
 | 2026-05-24 | CI / local | Playwright e2e complet (#35) : scénarios feed + création → détail ; job CI `e2e` (paths-filter `apps/web`) ; script `pnpm test:e2e`. Clôture epic frontend [#15](https://github.com/AllAboard-THP/All-Aboard/issues/15). |
+| 2026-05-25 | Dokploy **dev** + CI | Housekeeping MVP dev : `pnpm smoke:dev` OK (health, feed, BFF `/api/feed`) ; smoke auth + `GET /help-requests/:id` si `MVP_LOGIN_PASSWORD` aligné Dokploy ([runbook](runbook-dokploy-dev-phase2.md)) ; `pnpm verify:commit` OK local ; parcours Bob validé (code PR #51, e2e CI PR #52) ; [staging-checklist](staging-checklist.md) section dev cochée. |
 
 ---
 
