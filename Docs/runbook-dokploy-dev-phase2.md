@@ -47,13 +47,21 @@ postgresql://<USER>:<PASSWORD>@<HOST_INTERNE>:5432/<DATABASE>
 
 ## 4. Smoke automatisé
 
+**Base** (sans secret local) :
+
+```bash
+pnpm smoke:dev
+```
+
+Attendu : exit code `0` — `GET /health`, `GET /feed` (API), `GET /api/feed` (BFF).
+
+**Complet** (auth + création + détail) — mot de passe **identique** à la variable `MVP_LOGIN_PASSWORD` du service API Dokploy dev :
+
 ```bash
 MVP_LOGIN_PASSWORD='<secret-dokploy>' pnpm smoke:dev
 ```
 
-Attendu : exit code `0`.
-
-Checks : `GET /health`, `GET /feed` (API), `GET /api/feed` (Web) ; si mot de passe fourni : login + création help-request sur l’API.
+Attendu : en plus login, `POST /help-requests`, `GET /help-requests/:id`.
 
 Local :
 
@@ -63,12 +71,13 @@ BASE_WEB=http://127.0.0.1:3000 BASE_API=http://127.0.0.1:4000 MVP_LOGIN_PASSWORD
 
 ---
 
-## 5. Smoke navigateur
+## 5. Smoke navigateur (parcours Bob)
 
-- [ ] `https://dev.allaboard.fr` — feed SSR
-- [ ] `https://dev.allaboard.fr/help/new` — login + création demande
-- [ ] Retour accueil — nouvelle ligne visible
-- [ ] (Optionnel) même titre deux fois → message doublon
+- [ ] `https://dev.allaboard.fr` — feed produit (« Feed communautaire »), liens `/requests/[id]`
+- [ ] `https://dev.allaboard.fr/help/new` — login + création → redirect détail
+- [ ] Même titre deux fois → message doublon + lien demande existante
+- [ ] `https://dev.allaboard.fr/mentor` — login `alice` → liste tags ; `bob` → refus non-mentor
+- [ ] Rafraîchir feed (TanStack) après création
 
 ---
 
