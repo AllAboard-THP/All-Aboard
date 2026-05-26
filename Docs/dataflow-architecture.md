@@ -1,5 +1,7 @@
 # MOC - Dataflow et architecture All-Aboard
 
+**Documentation canonique** (timeline : MVP actuel vs phases, TanStack) : [README.md](README.md). Index vision (stack cible, dataflow) : [vision/README.md](vision/README.md). Ce MOC décrit la **cible** multi-services ; le dépôt suit d’abord **Next + Fastify REST** (Phases 0–1), puis auth et client data selon la timeline.
+
 ## Objectif
 
 Documenter la vue d'architecture technique de All-Aboard (monorepo Truborepo), les composants principaux, et les flux de donnees entre applications, backend, indexeur et blockchain.
@@ -69,6 +71,7 @@ flowchart TB
 
 ## Hypotheses MOC
 
-- Le diagramme se concentre sur la circulation de la donnee, pas sur la securite/auth.
+- Le diagramme se concentre sur la circulation de la donnee, pas sur la securite/auth (implémentée en **Phase 2** — [README.md](README.md)).
 - Les directions de fleches sont simplifiees pour une lecture produit/technique mixte.
 - Les details protocolaires (events, jobs, batch) seront precises dans une version technique detaillee.
+- **MVP court terme** : la brique « API : Node » peut être **REST Fastify** ; l’illustration GraphQL reste valable pour la **cible** documentée dans [proposition-stack-technique-monorepo-2026.md](proposition-stack-technique-monorepo-2026.md).

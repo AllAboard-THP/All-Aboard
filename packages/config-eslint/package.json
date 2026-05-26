@@ -6,7 +6,8 @@
   "exports": {
     "./base": "./base.mjs",
     "./node": "./node.mjs",
-    "./next": "./next.mjs"
+    "./next": "./next.mjs",
+    "./design-system-boundaries": "./design-system-boundaries.mjs"
   },
   "dependencies": {
     "@eslint/eslintrc": "^3.2.0",

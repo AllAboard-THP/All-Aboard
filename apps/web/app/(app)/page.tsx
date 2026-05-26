@@ -1,0 +1,14 @@
+import { fetchFeed } from "@/lib/api-server";
+import { HomeContent } from "@/components/features/home-content";
+
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const result = await fetchFeed();
+  return (
+    <HomeContent
+      feed={result.ok ? result.data : null}
+      feedError={result.ok ? null : result.error}
+    />
+  );
+}
