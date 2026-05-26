@@ -4,7 +4,7 @@ Ce document decrit la configuration **effective** du projet All-Aboard sur Dokpl
 
 **Timeline produit / stack applicative** (ordre des phases, TanStack, auth) : [README documentation — canonique](README.md).
 
-**Mise a jour** : 2026-05-25 (housekeeping : statut staging corrigé via MCP Dokploy ; dev post PR #52). **2026-05-20** : domaines `allaboard.fr` + API dediees ; Agent/Indexer **desactives** ; post-merge PR #9 Phase 1 — smoke feed OK. Detail smoke : [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) (journal) ; procedure manuelle : [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md).
+**Mise a jour** : 2026-05-25 (staging : env provisionne, vars API Phase 2 posees ; promotion code Dev→staging PR #54 en cours — [#32](https://github.com/AllAboard-THP/All-Aboard/issues/32)). **2026-05-20** : domaines `allaboard.fr` + API dediees ; Agent/Indexer **desactives** ; post-merge PR #9 Phase 1 — smoke feed OK. Detail smoke : [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) (journal) ; runbooks : [dev Phase 2](runbook-dokploy-dev-phase2.md), [staging Phase 2](runbook-dokploy-staging-phase2.md).
 
 **Secrets** : mots de passe base de donnees, cles API et tokens GitHub se configurent **uniquement** dans Dokploy. Ne jamais les commiter dans ce depot.
 
@@ -163,10 +163,12 @@ Les applications Dokploy **Agent** et **Indexer** existent dans les trois enviro
 | Environnement | Web | API | Agent | Indexer |
 |----------------|-----|-----|-------|---------|
 | production | deploye OK | deploye OK | **desactive** (pas d’auto-deploy, conteneur arrete) | **desactive** |
-| staging | **non provisionné** (domaines réservés — issue [#32](https://github.com/AllAboard-THP/All-Aboard/issues/32)) | — | — | — |
+| staging | deploye OK (branche `staging` ; code MVP en promotion PR #54) | deploye OK (vars Phase 2 : `DATABASE_URL`, `JWT_SECRET`, `MVP_LOGIN_PASSWORD` — 2026-05-25) | **desactive** | **desactive** |
 | dev | deploye OK | deploye OK (Phase 2 : vars Postgres + JWT) | **desactive** | **desactive** |
 
-**Dev (2026-05-20)** : smoke `pnpm smoke:dev` OK ; `/help/new` + feed SSR — journal [plan opérationnel](plan-mise-en-place-web-api-donnees.md).
+**Dev (2026-05-25)** : MVP parcours Bob validé — journal [plan opérationnel](plan-mise-en-place-web-api-donnees.md), [runbook dev](runbook-dokploy-dev-phase2.md).
+
+**Staging (2026-05-25)** : infra Dokploy + domaines OK ; vars API Phase 2 posees ; merge `Dev`→`staging` + smoke HTTPS — [runbook staging](runbook-dokploy-staging-phase2.md), issue [#32](https://github.com/AllAboard-THP/All-Aboard/issues/32).
 
 Dernier etat connu Agent/Indexer : echec de build / runtime faute de packages `apps/agent` et `apps/indexer` dans le repo (services en pause).
 

@@ -4,6 +4,8 @@ Référence issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31) /
 
 **Dernière validation dev** : 2026-05-25 (housekeeping post PR #50–#52).
 
+**Promotion staging** : 2026-05-25 — vars API Phase 2 Dokploy ; PR [#54](https://github.com/AllAboard-THP/All-Aboard/pull/54) (`Dev`→`staging`) ; smoke HTTPS à rejouer post-merge — [runbook staging](runbook-dokploy-staging-phase2.md).
+
 ## Parcours produit (dev)
 
 - [x] Feed SSR + liens `/requests/[id]` OK — `https://dev.allaboard.fr` + smoke `GET /feed` / BFF
@@ -21,8 +23,10 @@ Référence issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31) /
 
 ## Infra Dokploy staging
 
-- [ ] Vars Web/API alignées [matrice](../matrice-deploiement-dokploy-coolify.md)
-- [ ] `DATABASE_URL`, `JWT_SECRET`, `API_URL` interne cohérents
+- [x] Env Dokploy `staging` provisionné (Web, API, Postgres) — domaines `staging.allaboard.fr` / `api-staging.allaboard.fr`
+- [x] Vars API Phase 2 (`DATABASE_URL`, `JWT_SECRET`, `MVP_LOGIN_PASSWORD`) — 2026-05-25
+- [x] `API_URL` interne Web → API staging cohérent
+- [ ] Code MVP déployé (merge PR #54 `Dev`→`staging` + redeploy Web/API)
 - [ ] Smoke HTTPS : `BASE_WEB=https://staging.allaboard.fr BASE_API=https://api-staging.allaboard.fr pnpm smoke:dev`
 - [x] Aucun secret committé dans le dépôt
 
