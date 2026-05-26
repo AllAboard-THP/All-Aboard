@@ -101,7 +101,7 @@ git remote set-url origin git@github.com:AllAboard-THP/All-Aboard.git
 
 | Sujet | Issue / note |
 |-------|----------------|
-| Merge polish → `Dev` + redeploy [storybook.allaboard.fr](https://storybook.allaboard.fr) | PR #… → ops Dokploy |
+| Merge polish → `Dev` + redeploy [storybook.allaboard.fr](https://storybook.allaboard.fr) | [PR #58](https://github.com/AllAboard-THP/All-Aboard/pull/58) → ops Dokploy |
 | Toast / Select | backlog shadcn — hors scope MVP actuel |
 | Déploiement catalogue SB | `infra/docker/Dockerfile.storybook` (nginx, port 8080) — matrice Dokploy |
 
