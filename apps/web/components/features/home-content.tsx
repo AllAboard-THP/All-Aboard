@@ -14,10 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@allaboard/ui/components/card";
-import { Separator } from "@allaboard/ui/components/separator";
 
 import { FeedClientPreview } from "@/components/features/feed-client-preview";
-import { FeedItemTags } from "@/components/features/feed-item-tags";
 
 type Props = {
   feed: FeedResponse | null;
@@ -51,7 +49,9 @@ function FeedItemCard({ item }: { item: HelpRequest }) {
         </CardHeader>
         {item.tags && item.tags.length > 0 ? (
           <CardContent className="pt-0">
-            <FeedItemTags tags={item.tags} />
+            <p className="m-0 text-xs text-muted-foreground">
+              Tags : {item.tags.join(", ")}
+            </p>
           </CardContent>
         ) : null}
       </Card>
@@ -81,8 +81,6 @@ export function HomeContent({ feed, feedError }: Props) {
           </Button>
         </div>
       </header>
-
-      <Separator className="mb-6" />
 
       <section aria-label="Feed des demandes d'aide">
         {feedError ? (

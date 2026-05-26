@@ -1,7 +1,6 @@
 # Design system — documentation canonique
 
-**Dernière mise à jour** : 2026-05-26  
-**Branche** : `feat/design-storybook-polish` — kit **produit local** (11 primitives, tests complets) — merge `Dev` + redeploy SB **reportés**  
+**Dernière mise à jour** : 2026-05-20  
 **Décision archi** : [ADR 0002](../adr/0002-design-system-monorepo.md)  
 **Agents** : [AGENTS.md](../../AGENTS.md) (section Design system + verify)
 
@@ -33,21 +32,6 @@ Ce dossier est la **source de vérité** pour contribuer au design system All-Ab
 | T21 — CI Storybook conditionnelle | ✅ | `65a1596` |
 | T22 — `verify:push` + build SB | ✅ | `65a1596` |
 | #25 — AppShell + routes MOC | ✅ | `65a1596` |
-| Polish DS (branche `feat/design-storybook-polish`) | ✅ | 2026-05-26 — kit MVP local |
-| Extension produit (sans merge) | ✅ | 2026-05-26 — Sonner, Select, tests 11/11 |
-
-**Primitives (branche polish)** : Alert, Badge, Button, Card, Input, Label, Separator, Skeleton, Textarea, **Sonner (Toast)**, **Select** — **Patterns Storybook** : EmptyState, ErrorAlert, FeedItemCard, FormField, PageHeader, LoadingFeed — **Foundations SB** : Tokens, Typography, Spacing & Radius, Motion, Welcome.
-
-### Maturité kit (produit local)
-
-| Zone | Niveau | Critère |
-|------|--------|---------|
-| Fondations | **100 %** | Tokens complets + typo / espacements / motion documentés |
-| Primitives | **100 %** | 11 composants, stories + autodocs + tests Vitest (11/11) |
-| Storybook local | **100 %** | Documentation/Welcome + Components + Patterns + Foundations + Catalog 01–11 |
-| Patterns | **100 %** | 6 sections alignées sur les écrans `apps/web` |
-| Intégration app | **100 %** | 9 primitives MVP consommées (Sonner/Select catalogue SB uniquement) |
-| storybook.allaboard.fr | **En attente merge** | Redeploy Dokploy post-merge `Dev` (décision ultérieure) |
 
 **Stack figée (MVP)** : Tailwind **4.3** · shadcn **v4** · Storybook **10.4** · React **19** · Next **15** · Node **22+** · pnpm **9.15.4**.
 
@@ -56,7 +40,7 @@ Ce dossier est la **source de vérité** pour contribuer au design system All-Ab
 ## Arborescence code (rappel)
 
 ```text
-packages/ui/          @allaboard/ui — tokens, primitives, patterns/*.stories, tests
+packages/ui/          @allaboard/ui — tokens, primitives, stories, tests
 apps/storybook/       @allaboard/storybook — config SB uniquement
 apps/web/
   app/(app)/          pages produit sous AppShell
@@ -102,8 +86,8 @@ git remote set-url origin git@github.com:AllAboard-THP/All-Aboard.git
 
 | Sujet | Issue / note |
 |-------|----------------|
-| Merge polish → `Dev` + redeploy [storybook.allaboard.fr](https://storybook.allaboard.fr) | **Reporté** — branche locale suffisante pour le catalogue design |
-| Intégration app Sonner / Select | Quand un écran MVP en a besoin (ex. toast post-soumission formulaire) |
+| Feed réelle SSR | [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) — réutilise AppShell |
+| Alert / Skeleton dans UI | reporté post-#25 |
 | Déploiement catalogue SB | `infra/docker/Dockerfile.storybook` (nginx, port 8080) — matrice Dokploy |
 
 ---

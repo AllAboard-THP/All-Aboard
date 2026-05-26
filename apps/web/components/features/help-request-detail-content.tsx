@@ -14,10 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@allaboard/ui/components/card";
-import { Separator } from "@allaboard/ui/components/separator";
 
 import { HelpRequestDetailClient } from "@/components/features/help-request-detail-client";
-import { FeedItemTags } from "@/components/features/feed-item-tags";
 
 type Props = {
   id: string;
@@ -92,13 +90,11 @@ export function HelpRequestDetailContent({
           <span>{formatCreatedAt(item.createdAt)}</span>
         </CardDescription>
         {item.tags && item.tags.length > 0 ? (
-          <div className="mt-3">
-            <FeedItemTags tags={item.tags} />
-          </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Tags : {item.tags.join(", ")}
+          </p>
         ) : null}
       </header>
-
-      <Separator className="mb-6" />
 
       <section aria-label="Réponses" className="mb-6">
         <h2 className="mb-3 text-lg font-semibold text-foreground">Réponses</h2>

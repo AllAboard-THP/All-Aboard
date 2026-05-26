@@ -14,10 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@allaboard/ui/components/card";
-import { Separator } from "@allaboard/ui/components/separator";
 
 import { fetchAuthMe, fetchMentorFeed } from "@/lib/api-server";
-import { FeedItemTags } from "@/components/features/feed-item-tags";
 
 export const dynamic = "force-dynamic";
 
@@ -87,8 +85,6 @@ export default async function MentorDashboardPage() {
         </p>
       </header>
 
-      <Separator className="mb-6" />
-
       {feedResult.ok && feedResult.data.items.length === 0 ? (
         <Card data-testid="mentor-feed-empty">
           <CardHeader>
@@ -131,7 +127,9 @@ export default async function MentorDashboardPage() {
                 </CardHeader>
                 {item.tags && item.tags.length > 0 ? (
                   <CardContent className="pt-0">
-                    <FeedItemTags tags={item.tags} />
+                    <p className="m-0 text-xs text-muted-foreground">
+                      Tags : {item.tags.join(", ")}
+                    </p>
                   </CardContent>
                 ) : null}
               </Card>

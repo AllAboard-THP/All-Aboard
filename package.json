@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "turbo run dev --filter=!thp-final",
     "dev:local": "bash scripts/dev-local.sh",
-    "setup:postgres": "bash scripts/setup-postgres-local.sh",
     "build": "turbo run build --filter=!thp-final",
     "lint": "turbo run lint --filter=!thp-final",
     "typecheck": "turbo run typecheck --filter=!thp-final",

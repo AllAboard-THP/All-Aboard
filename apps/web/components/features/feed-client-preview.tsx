@@ -3,11 +3,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { FeedResponse } from "@allaboard/types";
 
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@allaboard/ui/components/alert";
 import { Button } from "@allaboard/ui/components/button";
 
 async function fetchFeedJson(): Promise<FeedResponse> {
@@ -34,10 +29,9 @@ export function FeedClientPreview() {
   }
   if (q.isError) {
     return (
-      <Alert variant="destructive" className="mt-2" data-testid="feed-client-error">
-        <AlertTitle>Erreur client</AlertTitle>
-        <AlertDescription>{q.error.message}</AlertDescription>
-      </Alert>
+      <p className="mt-2 text-sm text-destructive">
+        Erreur client : {q.error.message}
+      </p>
     );
   }
   return (

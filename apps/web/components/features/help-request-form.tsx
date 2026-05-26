@@ -5,15 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@allaboard/ui/components/alert";
 import { Button } from "@allaboard/ui/components/button";
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
-import { Textarea } from "@allaboard/ui/components/textarea";
 
 type CreateResult = {
   item: { id: string };
@@ -134,12 +128,10 @@ export function HelpRequestForm() {
       </div>
       <div className="grid gap-2">
         <Label htmlFor="help-title">Titre de la demande</Label>
-        <Textarea
+        <Input
           id="help-title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          rows={3}
-          placeholder="Décrivez votre problème en une ou plusieurs phrases"
         />
       </div>
       <div className="grid gap-2">
@@ -152,32 +144,24 @@ export function HelpRequestForm() {
         />
       </div>
       {errorMessage ? (
-        <Alert variant="destructive" data-testid="help-form-error">
-          <AlertTitle>Erreur</AlertTitle>
-          <AlertDescription>{errorMessage}</AlertDescription>
-        </Alert>
+        <p className="m-0 text-sm text-destructive">{errorMessage}</p>
       ) : null}
       {duplicateId ? (
-        <Alert variant="destructive" data-testid="help-form-duplicate">
-          <AlertTitle>Doublon détecté (MOC)</AlertTitle>
-          <AlertDescription>
-            <Link
-              href={`/requests/${duplicateId}`}
-              className="font-medium text-primary underline"
-            >
-              Voir la demande existante
-            </Link>
-          </AlertDescription>
-        </Alert>
+        <p className="m-0 text-sm text-destructive">
+          Doublon détecté (MOC).{" "}
+          <Link
+            href={`/requests/${duplicateId}`}
+            className="font-medium text-primary underline"
+          >
+            Voir la demande existante
+          </Link>
+        </p>
       ) : null}
       {rubberduckHint ? (
-        <Alert data-testid="help-form-rubberduck">
-          <AlertTitle>Rubberduck (stub)</AlertTitle>
-          <AlertDescription>
-            Titre court — piste IA possible (Phase 4). Publiez une nouvelle
-            demande ou consultez le feed.
-          </AlertDescription>
-        </Alert>
+        <p className="m-0 text-sm text-primary">
+          Rubberduck (stub) : titre court — piste IA possible (Phase 4). Publiez
+          une nouvelle demande ou consultez le feed.
+        </p>
       ) : null}
       <Button
         type="button"

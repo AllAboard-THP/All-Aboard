@@ -70,9 +70,7 @@ describe("HomeContent", () => {
     render(<HomeContent feed={sampleFeed} feedError={null} />);
 
     expect(screen.getByText(/Auteur : bob/i)).toBeTruthy();
-    expect(screen.getByTestId("feed-item-tags")).toBeTruthy();
-    expect(screen.getByText("javascript")).toBeTruthy();
-    expect(screen.getByText("async")).toBeTruthy();
+    expect(screen.getByText(/Tags : javascript, async/i)).toBeTruthy();
   });
 
   it("shows destructive alert when feed SSR fails", () => {
