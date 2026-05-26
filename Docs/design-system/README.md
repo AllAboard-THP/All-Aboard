@@ -1,6 +1,6 @@
 # Design system — documentation canonique
 
-**Dernière mise à jour** : 2026-05-20  
+**Dernière mise à jour** : 2026-05-26  
 **Décision archi** : [ADR 0002](../adr/0002-design-system-monorepo.md)  
 **Agents** : [AGENTS.md](../../AGENTS.md) (section Design system + verify)
 
@@ -32,6 +32,9 @@ Ce dossier est la **source de vérité** pour contribuer au design system All-Ab
 | T21 — CI Storybook conditionnelle | ✅ | `65a1596` |
 | T22 — `verify:push` + build SB | ✅ | `65a1596` |
 | #25 — AppShell + routes MOC | ✅ | `65a1596` |
+| Polish DS (branche `feat/design-storybook-polish`, non mergée) | ✅ local | 2026-05-26 |
+
+**Primitives (branche polish)** : Alert, Badge, Button, Card, Input, Label, Separator, Skeleton, Textarea — **Patterns Storybook** : EmptyState, ErrorAlert, FeedItemCard, FormField.
 
 **Stack figée (MVP)** : Tailwind **4.3** · shadcn **v4** · Storybook **10.4** · React **19** · Next **15** · Node **22+** · pnpm **9.15.4**.
 
@@ -40,7 +43,7 @@ Ce dossier est la **source de vérité** pour contribuer au design system All-Ab
 ## Arborescence code (rappel)
 
 ```text
-packages/ui/          @allaboard/ui — tokens, primitives, stories, tests
+packages/ui/          @allaboard/ui — tokens, primitives, patterns/*.stories, tests
 apps/storybook/       @allaboard/storybook — config SB uniquement
 apps/web/
   app/(app)/          pages produit sous AppShell
@@ -86,8 +89,8 @@ git remote set-url origin git@github.com:AllAboard-THP/All-Aboard.git
 
 | Sujet | Issue / note |
 |-------|----------------|
-| Feed réelle SSR | [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) — réutilise AppShell |
-| Alert / Skeleton dans UI | reporté post-#25 |
+| Merge polish → `Dev` + redeploy [storybook.allaboard.fr](https://storybook.allaboard.fr) | ops / PR — hors scope branche locale |
+| Toast / Select | backlog shadcn — pas de flux app MVP |
 | Déploiement catalogue SB | `infra/docker/Dockerfile.storybook` (nginx, port 8080) — matrice Dokploy |
 
 ---

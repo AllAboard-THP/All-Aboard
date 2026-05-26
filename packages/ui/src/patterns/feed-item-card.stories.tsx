@@ -61,3 +61,21 @@ export const WithoutTags: Story = {
     </Card>
   ),
 };
+
+export const HoverFocus: Story = {
+  render: () => (
+    <Card className="w-full max-w-3xl border-primary/50 transition-colors hover:border-primary/50">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg">
+          <a
+            href="#feed-item"
+            className="text-primary underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            Titre avec focus clavier visible
+          </a>
+        </CardTitle>
+        <CardDescription>État hover / focus documenté pour les liens feed.</CardDescription>
+      </CardHeader>
+    </Card>
+  ),
+};

@@ -48,3 +48,16 @@ export const ResponsesEmpty: Story = {
     </Card>
   ),
 };
+
+export const MentorFeedEmpty: Story = {
+  render: () => (
+    <Card className="w-full max-w-3xl bg-background">
+      <CardHeader>
+        <CardTitle className="text-lg">Aucune demande taguée</CardTitle>
+        <CardDescription>
+          Les demandes avec des tags mentor ou domaine apparaîtront ici.
+        </CardDescription>
+      </CardHeader>
+    </Card>
+  ),
+};

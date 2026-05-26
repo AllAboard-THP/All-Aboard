@@ -1,9 +1,22 @@
 # Journal de livraison — design system & shell
 
-**Branche principale** : `feat/design-system-ui-storybook` (base `Dev`)  
-**Dernière livraison documentée** : `65a1596` (2026-05-20)
+**Branche polish (local, non mergée)** : `feat/design-storybook-polish` (base `Dev`)  
+**Dernière livraison documentée** : 2026-05-26 (branche polish)
 
 Ce journal trace les **commits** et **issues** pour l’audit et l’onboarding. Le détail technique historique (snippets, tasklist T00–T23) reste dans le spec Hermes `WorkSpace/Todo/allaboard-design-system-storybook-monorepo.md`.
+
+---
+
+## Branche `feat/design-storybook-polish` (2026-05-26, sans merge Dev)
+
+| Lot | Résumé |
+|-----|--------|
+| Storybook polish | Alert, Skeleton, Input invalid, Card FeedEmpty, Button Loading |
+| Primitives | Badge, Textarea, Separator + stories |
+| Patterns | EmptyState, ErrorAlert, FeedItemCard, FormField (enrichis) |
+| Intégration app | Badge tags feed, Alert formulaire / feed client, Separator home, `FeedSkeleton` + `loading.tsx` |
+
+**Inventaire `@allaboard/ui`** : Alert, Badge, Button, Card, Input, Label, Separator, Skeleton, Textarea — + dossier `packages/ui/src/patterns/` (stories catalogue).
 
 ---
 
@@ -62,4 +75,4 @@ Détail T22 : `verify:push` = `test && build && build:storybook`.
 | Issue | Dépend de | Doc cible |
 |-------|-----------|-----------|
 | [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) Feed réelle | #25 AppShell | `Docs/tasks/` + plan Web/API |
-| Alert/Skeleton UI | optionnel | `contributor-guide.md` |
+| Toast / Select | backlog | shadcn — hors scope MVP actuel |

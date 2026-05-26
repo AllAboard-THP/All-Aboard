@@ -5,6 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@allaboard/ui/components/alert";
 import { Button } from "@allaboard/ui/components/button";
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
@@ -144,24 +149,32 @@ export function HelpRequestForm() {
         />
       </div>
       {errorMessage ? (
-        <p className="m-0 text-sm text-destructive">{errorMessage}</p>
+        <Alert variant="destructive" data-testid="help-form-error">
+          <AlertTitle>Erreur</AlertTitle>
+          <AlertDescription>{errorMessage}</AlertDescription>
+        </Alert>
       ) : null}
       {duplicateId ? (
-        <p className="m-0 text-sm text-destructive">
-          Doublon détecté (MOC).{" "}
-          <Link
-            href={`/requests/${duplicateId}`}
-            className="font-medium text-primary underline"
-          >
-            Voir la demande existante
-          </Link>
-        </p>
+        <Alert variant="destructive" data-testid="help-form-duplicate">
+          <AlertTitle>Doublon détecté (MOC)</AlertTitle>
+          <AlertDescription>
+            <Link
+              href={`/requests/${duplicateId}`}
+              className="font-medium text-primary underline"
+            >
+              Voir la demande existante
+            </Link>
+          </AlertDescription>
+        </Alert>
       ) : null}
       {rubberduckHint ? (
-        <p className="m-0 text-sm text-primary">
-          Rubberduck (stub) : titre court — piste IA possible (Phase 4). Publiez
-          une nouvelle demande ou consultez le feed.
-        </p>
+        <Alert data-testid="help-form-rubberduck">
+          <AlertTitle>Rubberduck (stub)</AlertTitle>
+          <AlertDescription>
+            Titre court — piste IA possible (Phase 4). Publiez une nouvelle
+            demande ou consultez le feed.
+          </AlertDescription>
+        </Alert>
       ) : null}
       <Button
         type="button"

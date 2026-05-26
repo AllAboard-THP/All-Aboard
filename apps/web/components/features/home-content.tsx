@@ -6,6 +6,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@allaboard/ui/components/alert";
+import { Badge } from "@allaboard/ui/components/badge";
 import { Button } from "@allaboard/ui/components/button";
 import {
   Card,
@@ -14,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@allaboard/ui/components/card";
+import { Separator } from "@allaboard/ui/components/separator";
 
 import { FeedClientPreview } from "@/components/features/feed-client-preview";
 
@@ -49,9 +51,16 @@ function FeedItemCard({ item }: { item: HelpRequest }) {
         </CardHeader>
         {item.tags && item.tags.length > 0 ? (
           <CardContent className="pt-0">
-            <p className="m-0 text-xs text-muted-foreground">
-              Tags : {item.tags.join(", ")}
-            </p>
+            <div className="flex flex-wrap gap-2" data-testid="feed-item-tags">
+              {item.tags.map((tag, index) => (
+                <Badge
+                  key={tag}
+                  variant={index === 0 ? "secondary" : "outline"}
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
           </CardContent>
         ) : null}
       </Card>
@@ -81,6 +90,8 @@ export function HomeContent({ feed, feedError }: Props) {
           </Button>
         </div>
       </header>
+
+      <Separator className="mb-6" />
 
       <section aria-label="Feed des demandes d'aide">
         {feedError ? (

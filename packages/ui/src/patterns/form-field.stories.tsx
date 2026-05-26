@@ -1,5 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "../components/alert";
 import { Button } from "../components/button";
 import { Input } from "../components/input";
 import { Label } from "../components/label";
@@ -53,8 +58,36 @@ export const InlineError: Story = {
         type="password"
         aria-invalid={true}
       />
-      <p className="m-0 text-sm text-destructive">Identifiants invalides.</p>
+      <Alert variant="destructive">
+        <AlertTitle>Erreur</AlertTitle>
+        <AlertDescription>Identifiants invalides.</AlertDescription>
+      </Alert>
     </div>
+  ),
+};
+
+export const DuplicateError: Story = {
+  render: () => (
+    <Alert variant="destructive" className="w-full max-w-md">
+      <AlertTitle>Doublon détecté (MOC)</AlertTitle>
+      <AlertDescription>
+        <span className="font-medium text-primary underline">
+          Voir la demande existante
+        </span>
+      </AlertDescription>
+    </Alert>
+  ),
+};
+
+export const RubberduckHint: Story = {
+  render: () => (
+    <Alert className="w-full max-w-md">
+      <AlertTitle>Rubberduck (stub)</AlertTitle>
+      <AlertDescription>
+        Titre court — piste IA possible (Phase 4). Publiez une nouvelle demande
+        ou consultez le feed.
+      </AlertDescription>
+    </Alert>
   ),
 };
 
