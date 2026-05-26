@@ -1,13 +1,28 @@
 # Journal de livraison — design system & shell
 
-**Branche polish** : `feat/design-storybook-polish` (base `Dev`) — **kit MVP 100 %**  
+**Branche polish** : `feat/design-storybook-polish` (base `Dev`) — **kit produit local**  
 **Dernière livraison documentée** : 2026-05-26
 
 Ce journal trace les **commits** et **issues** pour l’audit et l’onboarding. Le détail technique historique (snippets, tasklist T00–T23) reste dans le spec Hermes `WorkSpace/Todo/allaboard-design-system-storybook-monorepo.md`.
 
 ---
 
-## Branche `feat/design-storybook-polish` — kit MVP 100 % (2026-05-26)
+## Extension produit sans merge (2026-05-26)
+
+| Lot | Résumé |
+|-----|--------|
+| Primitives | Sonner (toast), Select — shadcn v4 + stories autodocs |
+| Catalog SB | Entrées 10–11 + listing complet 11 primitives |
+| Tests UI | input, label, card, separator, textarea, sonner, select — **11/11** primitives couvertes |
+| Infra test | `test-setup.ts` (cleanup + matchMedia pour next-themes) |
+
+**Inventaire `@allaboard/ui`** : Alert, Badge, Button, Card, Input, Label, Separator, Skeleton, Textarea, Sonner, Select — + `patterns/` (6 story files) + `foundations/` (5 entrées SB).
+
+**Hors scope immédiat** : merge `Dev`, redeploy [storybook.allaboard.fr](https://storybook.allaboard.fr), intégration Sonner/Select dans `apps/web`.
+
+---
+
+## Branche `feat/design-storybook-polish` — kit MVP (2026-05-26)
 
 | Lot | Résumé |
 |-----|--------|
@@ -77,4 +92,4 @@ Détail T22 : `verify:push` = `test && build && build:storybook`.
 | Issue | Dépend de | Doc cible |
 |-------|-----------|-----------|
 | [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) Feed réelle | #25 AppShell | `Docs/tasks/` + plan Web/API |
-| Toast / Select | backlog | shadcn — hors scope MVP actuel |
+| Merge DS polish → `Dev` | décision équipe | redeploy Storybook public |
