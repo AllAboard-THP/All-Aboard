@@ -35,6 +35,7 @@ SSR feed, socle Query, merge Dokploy dev, `useQuery` + `invalidateQueries` sur `
 | 2026-05-21 | CI / local | Parcours MOC : `GET /help-requests/:id`, `GET /mentor/feed`, `GET /auth/me` ; pages `/requests/[id]`, `/mentor` ; TanStack mutation création + query détail ; smoke `GET /help-requests/:id` ; Playwright e2e socle ; [ADR 0003](adr/0003-authentication-users-production.md) proposé ; [staging-checklist](staging-checklist.md). |
 | 2026-05-24 | CI / local | Playwright e2e complet (#35) : scénarios feed + création → détail ; job CI `e2e` (paths-filter `apps/web`) ; script `pnpm test:e2e`. Clôture epic frontend [#15](https://github.com/AllAboard-THP/All-Aboard/issues/15). |
 | 2026-05-25 | Dokploy **dev** + CI | Housekeeping MVP dev : `pnpm smoke:dev` OK (health, feed, BFF `/api/feed`) ; smoke auth + `GET /help-requests/:id` si `MVP_LOGIN_PASSWORD` aligné Dokploy ([runbook](runbook-dokploy-dev-phase2.md)) ; `pnpm verify:commit` OK local ; parcours Bob validé (code PR #51, e2e CI PR #52) ; [staging-checklist](staging-checklist.md) section dev cochée. |
+| 2026-05-25 | Dokploy **staging** (ops #32) | Env staging confirmé (MCP) ; vars API Phase 2 posées ; promotion code PR [#54](https://github.com/AllAboard-THP/All-Aboard/pull/54) `Dev`→`staging` ; smoke HTTPS staging post-merge — [runbook staging](runbook-dokploy-staging-phase2.md). |
 
 ---
 
