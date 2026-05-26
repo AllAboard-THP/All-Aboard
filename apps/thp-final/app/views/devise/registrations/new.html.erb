@@ -1,0 +1,66 @@
+<% content_for :title, "Créer un compte" %>
+
+<div class="auth-shell">
+  <div class="auth-grid max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid lg:grid-cols-2 gap-12 items-center min-h-screen">
+      <div>
+        <%= link_to root_path, class: "inline-flex items-center gap-3 mb-8" do %>
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <i class="fas fa-graduation-cap text-white text-lg"></i>
+          </div>
+          <span class="text-2xl font-bold gradient-text">AllAboard</span>
+        <% end %>
+
+        <p class="uppercase tracking-[0.3em] text-xs text-primary mb-4">Création de compte</p>
+        <h1 class="text-5xl font-extrabold leading-tight mb-6">Entre dans une communauté qui résout vraiment.</h1>
+        <p class="text-lg text-gray-300 leading-relaxed max-w-xl">Inscris-toi pour publier des requêtes, aider d’autres étudiants et basculer en messagerie instantanée.</p>
+      </div>
+
+      <div class="glass rounded-[2rem] p-8 md:p-10">
+        <h2 class="text-3xl font-bold mb-2">Créer un compte</h2>
+        <p class="text-gray-400 mb-8">Quelques infos et ton espace est prêt.</p>
+
+        <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-5" }) do |f| %>
+          <%= render "devise/shared/error_messages", resource: resource %>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <%= f.label :full_name, "Nom complet", class: "block text-sm font-medium mb-2 text-gray-300" %>
+              <%= f.text_field :full_name, class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
+            </div>
+            <div>
+              <%= f.label :education_level, "Niveau", class: "block text-sm font-medium mb-2 text-gray-300" %>
+              <%= f.text_field :education_level, placeholder: "Ex: Licence Informatique", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
+            </div>
+          </div>
+
+          <div>
+            <%= f.label :headline, "Headline", class: "block text-sm font-medium mb-2 text-gray-300" %>
+            <%= f.text_field :headline, placeholder: "Ex: Étudiant full-stack et passionné de maths", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
+          </div>
+
+          <div>
+            <%= f.label :email, class: "block text-sm font-medium mb-2 text-gray-300" %>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <%= f.label :password, "Mot de passe", class: "block text-sm font-medium mb-2 text-gray-300" %>
+              <%= f.password_field :password, autocomplete: "new-password", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
+              <p class="text-xs text-gray-500 mt-1">1 majuscule, 1 chiffre, 1 caractère spécial</p>
+            </div>
+            <div>
+              <%= f.label :password_confirmation, "Confirmation", class: "block text-sm font-medium mb-2 text-gray-300" %>
+              <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
+            </div>
+          </div>
+
+          <%= f.submit "Créer mon compte", class: "w-full py-3 rounded-xl bg-primary hover:bg-primary/80 text-white font-medium transition-colors" %>
+        <% end %>
+
+        <%= render "devise/shared/links" %>
+      </div>
+    </div>
+  </div>
+</div>

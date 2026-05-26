@@ -17,9 +17,57 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      storybook: ${{ steps.filter.outputs.storybook }}
+      e2e: ${{ steps.filter.outputs.e2e }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect Storybook-related changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            storybook:
+              - 'packages/ui/**'
+              - 'apps/storybook/**'
+              - 'pnpm-workspace.yaml'
+              - 'pnpm-lock.yaml'
+              - 'turbo.json'
+              - 'package.json'
+              - '.github/workflows/ci.yml'
+            e2e:
+              - 'apps/web/**'
+              - 'apps/api/**'
+              - 'packages/types/**'
+              - 'scripts/e2e-playwright.sh'
+              - 'pnpm-lock.yaml'
+              - '.github/workflows/ci.yml'
+
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: allaboard
+          POSTGRES_PASSWORD: allaboard
+          POSTGRES_DB: allaboard_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U allaboard -d allaboard_test"
+          --health-interval 4s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://allaboard:allaboard@127.0.0.1:5432/allaboard_test
+      JWT_SECRET: ci-test-jwt-secret-min-32-chars-long!!
+      MVP_LOGIN_PASSWORD: ci-test-login-password
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,8 +90,91 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: API database migrations
+        run: pnpm --filter api run db:migrate
+
       - name: Test
         run: pnpm test
 
       - name: Build
         run: pnpm build
+
+  e2e:
+    needs: changes
+    if: needs.changes.outputs.e2e == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: allaboard
+          POSTGRES_PASSWORD: allaboard
+          POSTGRES_DB: allaboard_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U allaboard -d allaboard_test"
+          --health-interval 4s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      CI: true
+      DATABASE_URL: postgresql://allaboard:allaboard@127.0.0.1:5432/allaboard_test
+      JWT_SECRET: ci-test-jwt-secret-min-32-chars-long!!
+      MVP_LOGIN_PASSWORD: ci-test-login-password
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: API database migrations
+        run: pnpm --filter api run db:migrate
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter web exec playwright install chromium --with-deps
+
+      - name: Playwright e2e
+        run: pnpm --filter web run test:e2e
+
+  storybook:
+    needs: changes
+    if: needs.changes.outputs.storybook == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Storybook
+        run: pnpm build:storybook
+
+      - name: Upload Storybook static
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: apps/storybook/storybook-static
+          retention-days: 7

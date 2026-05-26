@@ -1,0 +1,51 @@
+<% content_for :title, @event.title %>
+
+<div class="max-w-3xl mx-auto py-8 px-4">
+  <%= link_to events_path, class: "text-gray-400 hover:text-white transition-colors text-sm inline-flex items-center gap-2 mb-6" do %>
+    <i class="fas fa-arrow-left"></i> Tous les événements
+  <% end %>
+
+  <div class="glass rounded-2xl p-8">
+    <div class="flex items-start justify-between gap-4 mb-4">
+      <h1 class="text-2xl font-bold"><%= @event.title %></h1>
+      <div class="flex flex-col items-end gap-2 shrink-0">
+        <span class="px-3 py-1 bg-white/10 rounded-full text-sm"><%= @event.event_type_label %></span>
+        <span class="px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-sm"><%= @event.category_label %></span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-6 pb-6 border-b border-white/10">
+      <% if @event.starts_at %>
+        <div class="glass rounded-xl p-4 text-center">
+          <i class="fas fa-calendar-alt text-accent text-xl mb-2 block"></i>
+          <p class="text-sm text-gray-400">Date</p>
+          <p class="font-semibold"><%= @event.starts_at.strftime("%d/%m/%Y à %Hh%M") %></p>
+        </div>
+      <% end %>
+      <div class="glass rounded-xl p-4 text-center">
+        <i class="fas fa-map-marker-alt text-accent text-xl mb-2 block"></i>
+        <p class="text-sm text-gray-400">Lieu</p>
+        <p class="font-semibold"><%= @event.online? ? "En ligne" : (@event.location.presence || "Non précisé") %></p>
+      </div>
+    </div>
+
+    <% if @event.organizer.present? %>
+      <p class="text-sm text-gray-400 mb-4">
+        <i class="fas fa-building mr-2"></i>Organisé par <span class="text-white font-medium"><%= @event.organizer %></span>
+      </p>
+    <% end %>
+
+    <% if @event.description.present? %>
+      <div class="text-gray-200 leading-relaxed whitespace-pre-wrap mb-6">
+        <%= @event.description %>
+      </div>
+    <% end %>
+
+    <% if @event.external_url.present? %>
+      <%= link_to @event.external_url, target: "_blank",
+          class: "inline-flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent/80 text-white rounded-xl font-semibold transition-colors" do %>
+        S'inscrire <i class="fas fa-external-link-alt"></i>
+      <% end %>
+    <% end %>
+  </div>
+</div>

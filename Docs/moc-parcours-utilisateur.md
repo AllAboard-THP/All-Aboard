@@ -1,5 +1,7 @@
 # MOC - Parcours utilisateur All-Aboard
 
+**Implémentation** : ordre des travaux techniques (web, API, auth, TanStack Query) — [README documentation canonique](README.md).
+
 ## Objectif
 
 Décrire le parcours principal d'une demande d'aide sur All-Aboard, depuis sa création par un etudiant jusqu'a la reponse finale via IA, pair, ou mentor.

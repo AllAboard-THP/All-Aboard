@@ -1,0 +1,457 @@
+{
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/eslint.config.mjs": {
+    "mtime": 1779292002.5568128,
+    "ast_hash": "9fb4a6e0a5f9db9e32b8bc4ac216964c",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/next-env.d.ts": {
+    "mtime": 1779284539.4358523,
+    "ast_hash": "ba64ff7d54714a8f64db89b1003207d8",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/next.config.ts": {
+    "mtime": 1779291226.8242779,
+    "ast_hash": "a5d720e1c35159fa0bb0c730a6a5aec3",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/package.json": {
+    "mtime": 1779291226.5902567,
+    "ast_hash": "3979d5409c91b126f88bf7c79674cf27",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/tsconfig.json": {
+    "mtime": 1779290334.4473767,
+    "ast_hash": "8d5f845aadf9187589f1fba553fa7dfe",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/turbo.json": {
+    "mtime": 1779284539.4368522,
+    "ast_hash": "41011ce5c7913fe5d8341d477faada1a",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/vitest.config.ts": {
+    "mtime": 1779284539.4368522,
+    "ast_hash": "a72f6a0eb7dca1f3f51ea1154947fcae",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/components.json": {
+    "mtime": 1779290846.2067647,
+    "ast_hash": "8ca9540e0dc2e112eaa0ec8e2b846c35",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/postcss.config.mjs": {
+    "mtime": 1779291226.9722912,
+    "ast_hash": "859da28371467cbb0ab0f8e402957ff9",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/app/layout.tsx": {
+    "mtime": 1779291229.1904924,
+    "ast_hash": "995df4cefd117bea59366b2cc11ee8fa",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/app/page.tsx": {
+    "mtime": 1779291694.1452808,
+    "ast_hash": "31e6838eb58611497c0eb9abe274260d",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/app/providers.tsx": {
+    "mtime": 1779284539.4358523,
+    "ast_hash": "cad28a3273a09377d9a81d3b35a0df14",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/app/api/auth/login/route.ts": {
+    "mtime": 1779284539.4348521,
+    "ast_hash": "39d6e4bb70a8302ce29e395f5450008e",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/app/api/feed/route.ts": {
+    "mtime": 1779284539.4358523,
+    "ast_hash": "5ab6e2a8dfac18ca4cdd012f0db13aed",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/app/api/help-requests/route.ts": {
+    "mtime": 1779284539.4358523,
+    "ast_hash": "a1a46d382a036acc9eaf3023efe52fc5",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/app/health/page.tsx": {
+    "mtime": 1779284539.4358523,
+    "ast_hash": "aa3d76066d75b1438629e3736e84f8bb",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/app/help/new/page.tsx": {
+    "mtime": 1779291705.7363114,
+    "ast_hash": "9b3eea0e27f6c1458ab15d63a6ccc585",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/components/features/home-content.tsx": {
+    "mtime": 1779291713.782027,
+    "ast_hash": "3cfc2d4d2ff317dda69121fdf109f505",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/components/features/feed-client-preview.tsx": {
+    "mtime": 1779291707.271448,
+    "ast_hash": "67942e1394ca567eb73c127e60388e41",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/components/features/help-request-form.tsx": {
+    "mtime": 1779291704.4751992,
+    "ast_hash": "0ff85698c4df8e386a4cc1303f372d82",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/components/features/marketing-page-shell.tsx": {
+    "mtime": 1779291702.2129982,
+    "ast_hash": "fae39ae5fc42eb2e033d360689c9b66d",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/lib/api-server.ts": {
+    "mtime": 1779284539.4358523,
+    "ast_hash": "3a21623898a31b47f54d3ca3be3fc9ba",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/tests/api-server.test.ts": {
+    "mtime": 1779284539.4358523,
+    "ast_hash": "bd648c8b1983bd53253f0131e78f0097",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/tests/bff-phase2.test.ts": {
+    "mtime": 1779284539.4358523,
+    "ast_hash": "2962ced5566a6e3ea69e1f6010508ad2",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/tests/feed-client-preview.test.tsx": {
+    "mtime": 1779291695.1973743,
+    "ast_hash": "2b14669ece8dd10c009d6afb9902f774",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/web/tests/health.test.tsx": {
+    "mtime": 1779284539.4368522,
+    "ast_hash": "fb67bf094c72b384055264f2e8c8658c",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/drizzle.config.ts": {
+    "mtime": 1779284539.4148502,
+    "ast_hash": "3df475653ccb7ee200f8fa7e64957ae9",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/eslint.config.js": {
+    "mtime": 1779284539.4148502,
+    "ast_hash": "7105b0d12d96ad4d20e43d857cd621ba",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/package.json": {
+    "mtime": 1779284539.4148502,
+    "ast_hash": "782b024d6e959aba8df5fe3aa96540e1",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/tsconfig.json": {
+    "mtime": 1779284539.4158504,
+    "ast_hash": "baed14821c130da1030d7c983dac8978",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/vitest.config.ts": {
+    "mtime": 1779284539.4158504,
+    "ast_hash": "87ccba62dfdfa1ff70c36f817875e8d2",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/drizzle/0000_help_requests.sql": {
+    "mtime": 1779284539.4148502,
+    "ast_hash": "0bb163c9bb181e7ef117e7ba390f6ff1",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/drizzle/meta/_journal.json": {
+    "mtime": 1779284539.4148502,
+    "ast_hash": "ef87f5033e9bd9dbf2d6d74eac8770a8",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/src/app.test.ts": {
+    "mtime": 1779284539.4148502,
+    "ast_hash": "aee13756cc982a467e026a69829b7b5e",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/src/app.ts": {
+    "mtime": 1779284539.4148502,
+    "ast_hash": "bbf07bb69e4d829f57a3ed1d10719c1a",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/src/fastify-augmentation.ts": {
+    "mtime": 1779284539.4148502,
+    "ast_hash": "eedc00c3594010a7d5b2bc77f57767eb",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/src/index.ts": {
+    "mtime": 1779284539.4148502,
+    "ast_hash": "dbbf037e61bbc683ff3640a2103f1262",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/src/migrate.ts": {
+    "mtime": 1779284539.4148502,
+    "ast_hash": "2dc4500e06271fbfa8669fc6c2563d2e",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/src/db/client.ts": {
+    "mtime": 1779284539.4148502,
+    "ast_hash": "f93334d1de4e9e37e5ace22239c2bc52",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/apps/api/src/db/schema.ts": {
+    "mtime": 1779284539.4148502,
+    "ast_hash": "060cc1821379739d533373bfe2c8cb16",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/config-eslint/base.mjs": {
+    "mtime": 1779284539.4388525,
+    "ast_hash": "18d33de5227dcd66931f9d2ff1236cb2",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/config-eslint/next.mjs": {
+    "mtime": 1779284539.4388525,
+    "ast_hash": "fa9a58673cec5c6b8314333f569556bd",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/config-eslint/node.mjs": {
+    "mtime": 1779284539.4388525,
+    "ast_hash": "6759d716111e1ff02a258b19abd86213",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/config-eslint/package.json": {
+    "mtime": 1779292001.8157465,
+    "ast_hash": "ecdbc82c1c4f500b70ea8215b9710cf7",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/config-eslint/design-system-boundaries.mjs": {
+    "mtime": 1779292001.6497316,
+    "ast_hash": "b10dfab700a4a3a340f64e382998b258",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/config-typescript/base.json": {
+    "mtime": 1779284539.4388525,
+    "ast_hash": "6c2f211d3b9a3049dedf157b17e059ac",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/config-typescript/next.json": {
+    "mtime": 1779284539.4388525,
+    "ast_hash": "4b5b178d8ab7202a6de186ab590e97c3",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/config-typescript/node.json": {
+    "mtime": 1779284539.4388525,
+    "ast_hash": "adfdaebb41594513c8c9da18230b8a4c",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/config-typescript/package.json": {
+    "mtime": 1779284539.4388525,
+    "ast_hash": "866a65ddeaa14b929885042fd383a3b4",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/types/eslint.config.js": {
+    "mtime": 1779284539.4388525,
+    "ast_hash": "24e5a248a827544f5f6c452b0680487c",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/types/package.json": {
+    "mtime": 1779284539.4388525,
+    "ast_hash": "b680be5da833d31bfc22dbdfa23a0253",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/types/tsconfig.json": {
+    "mtime": 1779284539.4388525,
+    "ast_hash": "eedd8fdee5611573e71b64cd12977fde",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/types/src/index.ts": {
+    "mtime": 1779284539.4388525,
+    "ast_hash": "04f6d8253015b75c805cc8235c09787a",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/package.json": {
+    "mtime": 1779290909.0844657,
+    "ast_hash": "a5fbaf72048d5f2bfcda6f42e63b69ee",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/tsconfig.json": {
+    "mtime": 1779290909.2004764,
+    "ast_hash": "44f8b70f769ed748d5dae1c653e75fc9",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/eslint.config.js": {
+    "mtime": 1779292003.0858603,
+    "ast_hash": "aded89cd8dd2156961aaeb259146fd61",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/postcss.config.mjs": {
+    "mtime": 1779289192.562009,
+    "ast_hash": "0f8aa602547b154dc06be77b007c51d2",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/components.json": {
+    "mtime": 1779289192.5790107,
+    "ast_hash": "cae41d026965df23ef00af0dd191d5bf",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/vitest.config.ts": {
+    "mtime": 1779290906.8312616,
+    "ast_hash": "133504026ccc3b56aed554346d0588b0",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/src/components/button.tsx": {
+    "mtime": 1779290874.9713728,
+    "ast_hash": "ef32404bf5fd9b813b7280064d934cc2",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/src/components/card.tsx": {
+    "mtime": 1779290875.094384,
+    "ast_hash": "1b7c62ad8dd6439eb48087b1b76ec4bd",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/src/components/input.tsx": {
+    "mtime": 1779290875.203394,
+    "ast_hash": "43f2ccd56b5216fff00cb28c6c49ed29",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/src/components/label.tsx": {
+    "mtime": 1779290875.305403,
+    "ast_hash": "231d5fc2ba6586e3d4838fca8b125719",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/src/components/button.stories.tsx": {
+    "mtime": 1779290901.9678206,
+    "ast_hash": "701b48fc06051e23f6e8abcd553569e8",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/src/components/input.stories.tsx": {
+    "mtime": 1779290902.8739028,
+    "ast_hash": "7ba14bfbf329b880429266e89d0d9fc8",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/src/components/label.stories.tsx": {
+    "mtime": 1779290903.2899404,
+    "ast_hash": "cf933312d74c7286f621daaef158ed35",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/src/components/card.stories.tsx": {
+    "mtime": 1779290904.5930586,
+    "ast_hash": "00a5306f873a13f63710bea135413b4e",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/src/components/button.test.tsx": {
+    "mtime": 1779290920.6265123,
+    "ast_hash": "30aac81423a8c94f798abf61cea95c8f",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/src/lib/utils.ts": {
+    "mtime": 1779289192.4309974,
+    "ast_hash": "d9837f38cc05303254571985e3164050",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/packages/ui/src/lib/utils.test.ts": {
+    "mtime": 1779290940.9433546,
+    "ast_hash": "b477be0457ca099a937d64a69527dd4e",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/README.md": {
+    "mtime": 1779284539.41185,
+    "ast_hash": "89b223f4ca420b85bb9451ba6679e6b7",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/To-do.md": {
+    "mtime": 1779284539.41185,
+    "ast_hash": "5294fe2a08baa0cf7f7261892a6fc3fe",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/dataflow-architecture.md": {
+    "mtime": 1779284539.4128501,
+    "ast_hash": "c534eb5170d23b01d43195b85becc34a",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/deploiement-dokploy-instance-allaboard.md": {
+    "mtime": 1779284539.4128501,
+    "ast_hash": "a771734afe3a13c9d404de6bb745613b",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/intuition-documentation-index.md": {
+    "mtime": 1779284539.4128501,
+    "ast_hash": "7564ed674066d29c580f74046d015420",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/map-of-content.md": {
+    "mtime": 1779292010.617535,
+    "ast_hash": "c659588854d7bccfb7cbad64e5502139",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/matrice-deploiement-dokploy-coolify.md": {
+    "mtime": 1779284539.4128501,
+    "ast_hash": "d7dfacdb402f0ef426f6bda89ec89890",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/moc-parcours-utilisateur.md": {
+    "mtime": 1779284539.4128501,
+    "ast_hash": "beae739ca58428bb0ee73e666dc4d006",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/plan-initialisation-turborepo-mvp.md": {
+    "mtime": 1779284539.4128501,
+    "ast_hash": "005265f10daa61adbf345d185f518dab",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/plan-mise-en-place-web-api-donnees.md": {
+    "mtime": 1779284539.4138503,
+    "ast_hash": "f800dc010dbce4e0113e408e5e70fedf",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/proposition-stack-technique-monorepo-2026.md": {
+    "mtime": 1779284539.4138503,
+    "ast_hash": "95b67d3ccb64bc167fe6691793e4a80c",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/runbook-dokploy-dev-phase2.md": {
+    "mtime": 1779284539.4138503,
+    "ast_hash": "563c9666db45b31c85f7e35f750de3ad",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/adr/0001-authentication-strategy.md": {
+    "mtime": 1779284539.41185,
+    "ast_hash": "8a6ef3b9be951016fd4402baac6fe9dd",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/adr/README.md": {
+    "mtime": 1779292009.3354201,
+    "ast_hash": "93fe2c34a40a27ff806917bd01eebce2",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/adr/0002-design-system-monorepo.md": {
+    "mtime": 1779292008.966387,
+    "ast_hash": "e903e9593fec36bd02e1b283c8c360dc",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/archive/plan-initialisation-turborepo-mvp-2026-01.md": {
+    "mtime": 1779284539.4128501,
+    "ast_hash": "b723620b46fce63a5d05976848bd8072",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/tasks/README.md": {
+    "mtime": 1779288144.788198,
+    "ast_hash": "79aa5aa2a1a7101cd2b3e13ab0419db8",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/tasks/18-adr-auth/README.md": {
+    "mtime": 1779284539.4138503,
+    "ast_hash": "358a9fae5e59dbd7ad992d7bce79bf4a",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/tasks/_template/README.md": {
+    "mtime": 1779284539.4138503,
+    "ast_hash": "7c55eaeb391125b5216a21a1f75bb04f",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/tasks/24-design-system-monorepo/README.md": {
+    "mtime": 1779288976.3434074,
+    "ast_hash": "b1b5c91e523266df4bb24bba2cd49615",
+    "semantic_hash": ""
+  },
+  "/home/mestryx/WorkSpace/repositories/All-Aboard/Docs/vision/README.md": {
+    "mtime": 1779284539.4138503,
+    "ast_hash": "36633af3e0fe0a9d65ec8c73dde97f7a",
+    "semantic_hash": ""
+  }
+}

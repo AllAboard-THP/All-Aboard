@@ -1,12 +1,15 @@
 # To-do
 
-## Priorite immediate
+**Backlog, priorités, checklist staging, dépendances et roadmap** : [GitHub Project — All-Aboard MVP](https://github.com/orgs/AllAboard-THP/projects/3) (issues #13–#37+).
 
-- [ ] Ajouter un mode maintenance active par variable d'environnement
-      (`MAINTENANCE_MODE=true`) dans `apps/web` pour afficher la page "Site en
-      construction" sans creer une app separee.
-- [ ] Definir un comportement clair:
-      - `MAINTENANCE_MODE=true` -> page statique "Site en construction".
-      - `MAINTENANCE_MODE=false` -> retour a la page produit normale.
-- [ ] Documenter la variable dans `.env.example` et dans le `README.md`.
-- [ ] Valider le rendu en environnement local et en preproduction.
+**Checklist promotion dev → staging** : [staging-checklist.md](staging-checklist.md) (issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31)).
+
+**Règles release** (inchangées) :
+
+- Rester sur l'environnement **dev** jusqu'au MVP bout-en-bout validé.
+- Aucun déploiement **prod** sans validation complète en **staging**.
+- Checklist promotion dev → staging : issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31).
+
+**Doc de travail par tâche** : [Docs/tasks/README.md](tasks/README.md).
+
+**Timeline phases & principes MVP** : [README.md](README.md).

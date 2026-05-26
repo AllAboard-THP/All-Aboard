@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  subject: one
+  title: MyString
+  body: MyText
+  code_snippet: MyText
+  urgent: false
+  status: 1
+  education_level: MyString
+  likes_count: 1
+  comments_count: 1
+  bookmarks_count: 1
+
+two:
+  user: two
+  subject: two
+  title: MyString
+  body: MyText
+  code_snippet: MyText
+  urgent: false
+  status: 1
+  education_level: MyString
+  likes_count: 1
+  comments_count: 1
+  bookmarks_count: 1

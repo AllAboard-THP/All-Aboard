@@ -1,5 +1,7 @@
 # Matrice de deploiement - Dokploy / Coolify
 
+**Documentation canonique** (timeline MVP, TanStack, auth) : [README.md](README.md).
+
 ## Objectif
 
 Standardiser le deploiement par service de All-Aboard dans Dokploy ou Coolify, avec une convention unique pour:
@@ -17,14 +19,23 @@ Standardiser le deploiement par service de All-Aboard dans Dokploy ou Coolify, a
 - Nommage ressources: `allaboard-<service>-<env>` (ex: `allaboard-api-staging`).
 - Environnements separes: `dev`, `staging`, `prod`.
 
+## Instance Dokploy de référence (All-Aboard)
+
+**Source canonique des faits** (domaines, branches, `API_URL` interne, statut Agent/Indexer) : **[deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md)**. Ne pas dupliquer ici les tableaux d’URLs par environnement.
+
+**Rappel flux feed** : le SSR utilise `API_URL` **interne** ; le client home utilise le **BFF** Next `GET /api/feed` (pas de `NEXT_PUBLIC_API_URL` ni CORS navigateur → Fastify pour ce flux). Détail : [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md).
+
+Points encore à harmoniser **côté instance** (pas dans cette matrice) : branches Agent/Indexer vs Web/API en prod — voir fiche instance.
+
 ## Matrice service -> deploiement
 
 | Service | Dossier app | Dockerfile | Port | Base Directory (Dokploy/Coolify) | Build Context | Type de service |
 |---|---|---|---:|---|---|---|
 | Web | `apps/web` | `infra/docker/Dockerfile.web` | 3000 | `/` | repo racine | HTTP public |
-| API | `apps/api` | `infra/docker/Dockerfile.api` | 4000 | `/` | repo racine | HTTP prive/public |
+| API | `apps/api` | `infra/docker/Dockerfile.api` | 4000 | `/` | repo racine | HTTP public dedie (`api*.allaboard.fr`) + appels internes SSR (`API_URL`) |
 | Agent | `apps/agent` | `infra/docker/Dockerfile.agent` | 4100 | `/` | repo racine | Worker/API interne |
 | Indexer | `apps/indexer` | `infra/docker/Dockerfile.indexer` | 4200 (optionnel) | `/` | repo racine | Worker (souvent non expose) |
+| Storybook (catalogue UI) | `apps/storybook` | `infra/docker/Dockerfile.storybook` | 8080 | `/` | repo racine | HTTP interne ou public (doc DS, hors prod web) |
 
 ## Variables d'environnement par service
 
@@ -51,11 +62,14 @@ Standardiser le deploiement par service de All-Aboard dans Dokploy ou Coolify, a
 
 ### Variables auth/securite
 
+Ces variables concernent **Phase 2** (auth sur l’API) ; voir [ADR 0001](adr/0001-authentication-strategy.md) et [README canonique](README.md).
+
 | Variable | Web | API | Agent | Indexer | Obligatoire |
 |---|:---:|:---:|:---:|:---:|:---:|
-| `JWT_SECRET` |  | x | x |  | Oui |
+| `JWT_SECRET` |  | x | x |  | Oui (API avec auth JWT — min. 32 caractères) |
+| `MVP_LOGIN_PASSWORD` |  | x |  |  | Oui en dev/MVP (login `POST /auth/login` ; à remplacer avant prod large) |
 | `SESSION_SECRET` | x | x |  |  | Oui si session |
-| `CORS_ALLOWED_ORIGINS` |  | x |  |  | Oui (API publique) |
+| `CORS_ALLOWED_ORIGINS` |  | x |  |  | Oui si le **navigateur** appelle l’API en direct ; **N/A** tant que le flux passe par le BFF Next (voir plan opérationnel) |
 | `RATE_LIMIT_ENABLED` |  | x |  |  | Recommande |
 
 ### Variables blockchain/indexation
