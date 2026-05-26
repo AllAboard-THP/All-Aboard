@@ -43,6 +43,22 @@ export const Default: Story = {
   ),
 };
 
+export const FeedEmpty: Story = {
+  render: () => (
+    <Card className="w-full max-w-3xl bg-background">
+      <CardHeader>
+        <CardTitle className="text-lg">Aucune demande pour l&apos;instant</CardTitle>
+        <CardDescription>
+          Soyez le premier à publier une demande d&apos;aide.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button variant="outline">Publier une demande</Button>
+      </CardContent>
+    </Card>
+  ),
+};
+
 export const LoginForm: Story = {
   render: () => (
     <Card className="w-full max-w-sm bg-background">
