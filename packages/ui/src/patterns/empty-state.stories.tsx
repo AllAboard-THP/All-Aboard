@@ -14,6 +14,7 @@ const meta = {
   parameters: {
     layout: "centered",
   },
+  tags: ["autodocs"],
 } satisfies Meta;
 
 export default meta;
@@ -45,6 +46,23 @@ export const ResponsesEmpty: Story = {
           Les mentors pourront répondre lorsque la demande sera visible.
         </CardDescription>
       </CardHeader>
+    </Card>
+  ),
+};
+
+export const NotFound: Story = {
+  render: () => (
+    <Card className="w-full max-w-3xl bg-background">
+      <CardHeader>
+        <CardTitle className="text-2xl">Demande introuvable</CardTitle>
+        <CardDescription>
+          Aucune demande ne correspond à l&apos;identifiant{" "}
+          <code className="text-foreground">req-unknown</code>.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button variant="outline">Retour au feed</Button>
+      </CardContent>
     </Card>
   ),
 };

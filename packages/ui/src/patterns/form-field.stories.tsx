@@ -15,6 +15,7 @@ const meta = {
   parameters: {
     layout: "centered",
   },
+  tags: ["autodocs"],
 } satisfies Meta;
 
 export default meta;
@@ -38,7 +39,11 @@ export const HelpRequestFields: Story = {
       </div>
       <div className="grid gap-2">
         <Label htmlFor="pattern-title">Titre de la demande</Label>
-        <Input id="pattern-title" placeholder="Résumer en une phrase" />
+        <Textarea
+          id="pattern-title"
+          rows={3}
+          placeholder="Décrivez votre problème en une ou plusieurs phrases"
+        />
       </div>
       <div className="grid gap-2">
         <Label htmlFor="pattern-tags">Tags (optionnel)</Label>

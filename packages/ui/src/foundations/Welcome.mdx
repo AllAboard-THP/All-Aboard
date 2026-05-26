@@ -1,0 +1,29 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Documentation/Welcome" />
+
+# All-Aboard Design System
+
+Catalogue **Storybook 10.4** du package `@allaboard/ui` — primitives shadcn v4, tokens Tailwind 4.3, thème **dark** (violet/indigo).
+
+## Navigation
+
+| Section | Contenu |
+|---------|---------|
+| **Foundations** | Tokens, typo, espacements, motion |
+| **Components** | 9 primitives MVP (Alert → Textarea) |
+| **Patterns** | Compositions alignées sur `apps/web` |
+
+## Stack
+
+- React **19** · Tailwind **4.3** · shadcn **v4** (New York)
+- Consommation app : `import { Button } from "@allaboard/ui/components/button"`
+- Métier : `apps/web/components/features/` uniquement
+
+## Commandes
+
+```bash
+pnpm storybook          # http://localhost:6006
+pnpm build:storybook    # artefact CI / Docker
+pnpm verify             # avant PR
+```

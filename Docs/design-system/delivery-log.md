@@ -1,22 +1,24 @@
 # Journal de livraison — design system & shell
 
-**Branche polish (local, non mergée)** : `feat/design-storybook-polish` (base `Dev`)  
-**Dernière livraison documentée** : 2026-05-26 (branche polish)
+**Branche polish** : `feat/design-storybook-polish` (base `Dev`) — **kit MVP 100 %**  
+**Dernière livraison documentée** : 2026-05-26
 
 Ce journal trace les **commits** et **issues** pour l’audit et l’onboarding. Le détail technique historique (snippets, tasklist T00–T23) reste dans le spec Hermes `WorkSpace/Todo/allaboard-design-system-storybook-monorepo.md`.
 
 ---
 
-## Branche `feat/design-storybook-polish` (2026-05-26, sans merge Dev)
+## Branche `feat/design-storybook-polish` — kit MVP 100 % (2026-05-26)
 
 | Lot | Résumé |
 |-----|--------|
 | Storybook polish | Alert, Skeleton, Input invalid, Card FeedEmpty, Button Loading |
-| Primitives | Badge, Textarea, Separator + stories |
-| Patterns | EmptyState, ErrorAlert, FeedItemCard, FormField (enrichis) |
-| Intégration app | Badge tags feed, Alert formulaire / feed client, Separator home, `FeedSkeleton` + `loading.tsx` |
+| Primitives | Badge, Textarea, Separator + stories autodocs |
+| Patterns | EmptyState (+ NotFound, MentorFeedEmpty), ErrorAlert, FeedItemCard, FormField, PageHeader, LoadingFeed |
+| Foundations SB | Typography, Spacing & Radius, Motion, Welcome.mdx, tokens enrichis |
+| Intégration app | Badge tags (feed, détail, mentor), Alert, Separator, Textarea titre, Skeleton feed + détail |
+| Tests UI | alert, badge, skeleton (+ button, utils existants) |
 
-**Inventaire `@allaboard/ui`** : Alert, Badge, Button, Card, Input, Label, Separator, Skeleton, Textarea — + dossier `packages/ui/src/patterns/` (stories catalogue).
+**Inventaire `@allaboard/ui`** : Alert, Badge, Button, Card, Input, Label, Separator, Skeleton, Textarea — + `patterns/` (6 story files) + `foundations/` (5 entrées SB).
 
 ---
 

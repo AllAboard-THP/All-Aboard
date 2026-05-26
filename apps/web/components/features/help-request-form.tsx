@@ -13,6 +13,7 @@ import {
 import { Button } from "@allaboard/ui/components/button";
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
+import { Textarea } from "@allaboard/ui/components/textarea";
 
 type CreateResult = {
   item: { id: string };
@@ -133,10 +134,12 @@ export function HelpRequestForm() {
       </div>
       <div className="grid gap-2">
         <Label htmlFor="help-title">Titre de la demande</Label>
-        <Input
+        <Textarea
           id="help-title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          rows={3}
+          placeholder="Décrivez votre problème en une ou plusieurs phrases"
         />
       </div>
       <div className="grid gap-2">

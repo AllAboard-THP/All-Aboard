@@ -6,7 +6,6 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@allaboard/ui/components/alert";
-import { Badge } from "@allaboard/ui/components/badge";
 import { Button } from "@allaboard/ui/components/button";
 import {
   Card,
@@ -18,6 +17,7 @@ import {
 import { Separator } from "@allaboard/ui/components/separator";
 
 import { FeedClientPreview } from "@/components/features/feed-client-preview";
+import { FeedItemTags } from "@/components/features/feed-item-tags";
 
 type Props = {
   feed: FeedResponse | null;
@@ -51,16 +51,7 @@ function FeedItemCard({ item }: { item: HelpRequest }) {
         </CardHeader>
         {item.tags && item.tags.length > 0 ? (
           <CardContent className="pt-0">
-            <div className="flex flex-wrap gap-2" data-testid="feed-item-tags">
-              {item.tags.map((tag, index) => (
-                <Badge
-                  key={tag}
-                  variant={index === 0 ? "secondary" : "outline"}
-                >
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+            <FeedItemTags tags={item.tags} />
           </CardContent>
         ) : null}
       </Card>

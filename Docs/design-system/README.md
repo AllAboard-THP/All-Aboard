@@ -1,6 +1,7 @@
 # Design system — documentation canonique
 
 **Dernière mise à jour** : 2026-05-26  
+**Branche** : `feat/design-storybook-polish` — kit MVP **100 %** (PR → `Dev` + redeploy Storybook)  
 **Décision archi** : [ADR 0002](../adr/0002-design-system-monorepo.md)  
 **Agents** : [AGENTS.md](../../AGENTS.md) (section Design system + verify)
 
@@ -32,9 +33,20 @@ Ce dossier est la **source de vérité** pour contribuer au design system All-Ab
 | T21 — CI Storybook conditionnelle | ✅ | `65a1596` |
 | T22 — `verify:push` + build SB | ✅ | `65a1596` |
 | #25 — AppShell + routes MOC | ✅ | `65a1596` |
-| Polish DS (branche `feat/design-storybook-polish`, non mergée) | ✅ local | 2026-05-26 |
+| Polish DS (branche `feat/design-storybook-polish`) | ✅ | 2026-05-26 — kit MVP 100 % local |
 
-**Primitives (branche polish)** : Alert, Badge, Button, Card, Input, Label, Separator, Skeleton, Textarea — **Patterns Storybook** : EmptyState, ErrorAlert, FeedItemCard, FormField.
+**Primitives (branche polish)** : Alert, Badge, Button, Card, Input, Label, Separator, Skeleton, Textarea — **Patterns Storybook** : EmptyState, ErrorAlert, FeedItemCard, FormField, PageHeader, LoadingFeed — **Foundations SB** : Tokens, Typography, Spacing & Radius, Motion, Welcome.
+
+### Maturité kit (MVP)
+
+| Zone | Niveau | Critère |
+|------|--------|---------|
+| Fondations | **100 %** | Tokens complets + typo / espacements / motion documentés |
+| Primitives | **100 %** | 9 composants, stories + autodocs + tests Vitest |
+| Storybook local | **100 %** | Documentation/Welcome + Components + Patterns + Foundations |
+| Patterns | **100 %** | 6 sections alignées sur les écrans `apps/web` |
+| Intégration app | **100 %** | 9 primitives consommées (Textarea titre, Skeleton loading, Badge tags, etc.) |
+| storybook.allaboard.fr | **100 %** après merge | Redeploy Dokploy post-merge `Dev` |
 
 **Stack figée (MVP)** : Tailwind **4.3** · shadcn **v4** · Storybook **10.4** · React **19** · Next **15** · Node **22+** · pnpm **9.15.4**.
 
@@ -89,8 +101,8 @@ git remote set-url origin git@github.com:AllAboard-THP/All-Aboard.git
 
 | Sujet | Issue / note |
 |-------|----------------|
-| Merge polish → `Dev` + redeploy [storybook.allaboard.fr](https://storybook.allaboard.fr) | ops / PR — hors scope branche locale |
-| Toast / Select | backlog shadcn — pas de flux app MVP |
+| Merge polish → `Dev` + redeploy [storybook.allaboard.fr](https://storybook.allaboard.fr) | PR #… → ops Dokploy |
+| Toast / Select | backlog shadcn — hors scope MVP actuel |
 | Déploiement catalogue SB | `infra/docker/Dockerfile.storybook` (nginx, port 8080) — matrice Dokploy |
 
 ---
