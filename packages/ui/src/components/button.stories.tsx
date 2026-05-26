@@ -86,6 +86,13 @@ export const Disabled: Story = {
   },
 };
 
+export const Loading: Story = {
+  args: {
+    disabled: true,
+    children: "Envoi…",
+  },
+};
+
 export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-3 bg-background p-4">
