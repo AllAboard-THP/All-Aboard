@@ -42,7 +42,7 @@ postgresql://<USER>:<PASSWORD>@<HOST_INTERNE_POSTGRES_STAGING>:5432/<DATABASE>
 
 - [x] Vars posées (2026-05-25, MCP Dokploy)
 - [ ] Redéploy API après merge code MVP si build antérieur
-- [ ] Logs : migrations OK, `GET /auth/login` → 401 (pas 404)
+- [ ] Logs : migrations OK ; `POST /auth/login` (credentials invalides) → **401** — route Phase 2 présente (`GET` reste **404**)
 
 ---
 
