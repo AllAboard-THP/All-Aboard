@@ -62,6 +62,7 @@ Modèle vierge : [_template/README.md](_template/README.md).
 | [18-adr-auth/](18-adr-auth/) | [#18 ADR auth](https://github.com/AllAboard-THP/All-Aboard/issues/18) |
 | [24-design-system-monorepo/](24-design-system-monorepo/) | [#24 Design system](https://github.com/AllAboard-THP/All-Aboard/issues/24) — ✅ livré |
 | [25-app-shell-navigation/](25-app-shell-navigation/) | [#25 AppShell](https://github.com/AllAboard-THP/All-Aboard/issues/25) — ✅ livré |
+| [49-openapi/](49-openapi/) | [#49 OpenAPI](https://github.com/AllAboard-THP/All-Aboard/issues/49) — ✅ livré (spike + spec MVP) |
 
 *(Ajouter une ligne ici à la création d’un nouveau dossier — une ligne par PR, conflits rares.)*
 

@@ -60,6 +60,7 @@ SSR feed, socle Query, merge Dokploy dev, `useQuery` + `invalidateQueries` sur `
 | `MVP_LOGIN_PASSWORD` | API | Mot de passe attendu pour `POST /auth/login` (MVP). |
 | `MVP_MENTOR_USER_IDS` | API | Liste CSV d'`userId` recevant `role: mentor` au login (défaut : `alice`). |
 | `CORS_ALLOWED_ORIGINS` | API Fastify | Liste d’origines séparées par des virgules : si définie, `@fastify/cors` est enregistré (`credentials: true`). **N/A** tant que le navigateur n’appelle pas l’API en direct (BFF). |
+| `OPENAPI_DOCS` | API | Override explicite pour Swagger UI (`true` / `false`). Par défaut : docs actifs si `APP_ENV` ≠ `production`. Spec : [`apps/api/openapi.yaml`](../apps/api/openapi.yaml), UI : `GET /docs`. |
 
 Référence instance : [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md). Tables détaillées par service : [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md).
 
@@ -67,7 +68,7 @@ Référence instance : [deploiement-dokploy-instance-allaboard.md](deploiement-d
 
 ## Contrats API (`apps/api`)
 
-Source de vérité types : [packages/types/src/index.ts](../packages/types/src/index.ts). Implémentation : [apps/api/src/app.ts](../apps/api/src/app.ts). Auth : [ADR 0001](adr/0001-authentication-strategy.md).
+Source de vérité types : [packages/types/src/index.ts](../packages/types/src/index.ts). Spec OpenAPI 3.1 : [apps/api/openapi.yaml](../apps/api/openapi.yaml) (Swagger UI `GET /docs` en dev/staging — [issue #49](https://github.com/AllAboard-THP/All-Aboard/issues/49)). Implémentation : [apps/api/src/app.ts](../apps/api/src/app.ts). Auth : [ADR 0001](adr/0001-authentication-strategy.md).
 
 ### Codes d’erreur communs (corps JSON)
 
