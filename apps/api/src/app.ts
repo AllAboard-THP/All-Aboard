@@ -3,6 +3,7 @@ import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
+import { registerOpenApiDocs } from "./openapi.js";
 import { desc, eq, sql } from "drizzle-orm";
 import type {
   AuthMeResponse,
@@ -69,12 +70,14 @@ function rowToHelpRequest(row: typeof helpRequests.$inferSelect): HelpRequest {
   };
 }
 
-export function buildApp(options?: BuildAppOptions) {
+export async function buildApp(options?: BuildAppOptions) {
   const pool =
     options?.pool !== undefined ? options.pool : createPool();
   const db: AppDatabase | null = pool ? createDb(pool) : null;
 
   const app = Fastify({ logger: false });
+
+  await registerOpenApiDocs(app);
 
   const corsOrigins = process.env.CORS_ALLOWED_ORIGINS?.split(",")
     .map((o) => o.trim())

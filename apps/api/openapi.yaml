@@ -1,0 +1,403 @@
+openapi: 3.1.0
+info:
+  title: All-Aboard API
+  description: |
+    Contrat HTTP Phase 2 MVP (feed, auth JWT, demandes d'aide, mentor feed).
+    Source de vérité types : `packages/types`. Doc opérationnelle : `Docs/plan-mise-en-place-web-api-donnees.md`.
+  version: 0.2.0
+  contact:
+    name: All-Aboard THP
+    url: https://github.com/AllAboard-THP/All-Aboard
+
+servers:
+  - url: http://localhost:4000
+    description: Développement local
+  - url: https://api-staging.allaboard.fr
+    description: Staging Dokploy
+
+tags:
+  - name: health
+    description: Healthcheck
+  - name: feed
+    description: Fil public des demandes d'aide
+  - name: auth
+    description: Authentification MVP (ADR 0001)
+  - name: help-requests
+    description: Demandes d'aide
+  - name: mentor
+    description: Fil mentor (tags)
+
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      tags: [health]
+      summary: Healthcheck
+      responses:
+        "200":
+          description: Service OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /feed:
+    get:
+      operationId: getFeed
+      tags: [feed]
+      summary: Liste des demandes d'aide (public)
+      responses:
+        "200":
+          description: Feed paginé (max 100, tri createdAt desc)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeedResponse"
+              example:
+                items:
+                  - id: "550e8400-e29b-41d4-a716-446655440000"
+                    title: "Comment déboguer une migration Rails ?"
+                    authorId: bob
+                    createdAt: "2026-05-19T12:00:00.000Z"
+                    tags: ["rails"]
+        "503":
+          description: Base de données indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: database_unavailable
+
+  /auth/login:
+    post:
+      operationId: postAuthLogin
+      tags: [auth]
+      summary: Connexion MVP (mot de passe partagé)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+      responses:
+        "200":
+          description: JWT émis (cookie httpOnly `access_token` + claims sub/role)
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: Cookie `access_token` (httpOnly, SameSite=Lax)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "400":
+          description: Corps invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: invalid_body
+        "401":
+          description: Identifiants incorrects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: invalid_credentials
+        "503":
+          description: MVP_LOGIN_PASSWORD non configuré
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: login_not_configured
+
+  /auth/me:
+    get:
+      operationId: getAuthMe
+      tags: [auth]
+      summary: Utilisateur courant (JWT)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Claims JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthMeResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: unauthorized
+
+  /help-requests:
+    post:
+      operationId: postHelpRequests
+      tags: [help-requests]
+      summary: Créer une demande d'aide
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateHelpRequestBody"
+      responses:
+        "201":
+          description: Demande créée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateHelpRequestResponse"
+        "400":
+          description: Corps invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Titre en doublon (normalisation espaces/casse)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DuplicateErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /help-requests/{id}:
+    get:
+      operationId: getHelpRequestById
+      tags: [help-requests]
+      summary: Détail d'une demande (public)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: "Détail avec réponses (MVP — responses toujours vide)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelpRequestDetailResponse"
+        "404":
+          description: Demande absente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: not_found
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /mentor/feed:
+    get:
+      operationId: getMentorFeed
+      tags: [mentor]
+      summary: Demandes avec au moins un tag (public)
+      responses:
+        "200":
+          description: Fil mentor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MentorFeedResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT émis par POST /auth/login (claim sub = userId)
+
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          const: ok
+
+    UserRole:
+      type: string
+      enum: [student, mentor]
+
+    HelpRequest:
+      type: object
+      required: [id, title, authorId, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        authorId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            type: string
+
+    Response:
+      type: object
+      required: [id, helpRequestId, body, authorId]
+      properties:
+        id:
+          type: string
+          format: uuid
+        helpRequestId:
+          type: string
+          format: uuid
+        body:
+          type: string
+        authorId:
+          type: string
+
+    FeedResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelpRequest"
+
+    MentorFeedResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelpRequest"
+
+    HelpRequestDetailResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/HelpRequest"
+        responses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Response"
+
+    CreateHelpRequestBody:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 500
+        tags:
+          type: array
+          maxItems: 32
+          items:
+            type: string
+            maxLength: 64
+
+    CreateHelpRequestResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/HelpRequest"
+        hints:
+          type: object
+          properties:
+            rubberduckEligible:
+              type: boolean
+              const: true
+
+    LoginBody:
+      type: object
+      required: [userId, password]
+      properties:
+        userId:
+          type: string
+          minLength: 1
+          maxLength: 256
+        password:
+          type: string
+          minLength: 1
+          maxLength: 256
+
+    LoginResponse:
+      type: object
+      required: [ok, userId, role]
+      properties:
+        ok:
+          type: boolean
+          const: true
+        userId:
+          type: string
+        role:
+          $ref: "#/components/schemas/UserRole"
+
+    AuthMeResponse:
+      type: object
+      required: [userId, role]
+      properties:
+        userId:
+          type: string
+        role:
+          $ref: "#/components/schemas/UserRole"
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    DuplicateErrorResponse:
+      type: object
+      required: [error, existingId]
+      properties:
+        error:
+          type: string
+          const: duplicate
+        existingId:
+          type: string
+          format: uuid

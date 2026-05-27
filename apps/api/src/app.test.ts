@@ -4,14 +4,17 @@ import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { drizzle } from "drizzle-orm/node-postgres";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
+import { parse as parseYaml } from "yaml";
 import { buildApp } from "./app";
+import { isOpenApiDocsEnabled } from "./openapi";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mvpPassword = process.env.MVP_LOGIN_PASSWORD;
 
 describe("api", () => {
   it("GET /health returns 200", async () => {
-    const app = buildApp({ pool: null });
+    const app = await buildApp({ pool: null });
     const res = await app.inject({ method: "GET", url: "/health" });
     expect(res.statusCode).toBe(200);
     expect(JSON.parse(res.payload)).toEqual({ status: "ok" });
@@ -19,7 +22,7 @@ describe("api", () => {
   });
 
   it("GET /feed returns 503 when database is not configured", async () => {
-    const app = buildApp({ pool: null });
+    const app = await buildApp({ pool: null });
     const res = await app.inject({ method: "GET", url: "/feed" });
     expect(res.statusCode).toBe(503);
     const body = JSON.parse(res.payload) as { error: string };
@@ -30,7 +33,7 @@ describe("api", () => {
   it("POST /auth/login returns 503 when MVP_LOGIN_PASSWORD is unset", async () => {
     const prev = process.env.MVP_LOGIN_PASSWORD;
     delete process.env.MVP_LOGIN_PASSWORD;
-    const app = buildApp({ pool: null });
+    const app = await buildApp({ pool: null });
     try {
       const res = await app.inject({
         method: "POST",
@@ -55,7 +58,7 @@ describe("api", () => {
     process.env.NODE_ENV = "production";
     process.env.JWT_SECRET = "test-jwt-secret-min-32-characters!!";
     process.env.MVP_LOGIN_PASSWORD = "test-login-password";
-    const app = buildApp({ pool: null });
+    const app = await buildApp({ pool: null });
     await app.ready();
     try {
       const res = await app.inject({
@@ -90,7 +93,7 @@ describe("api", () => {
   });
 
   it("POST /help-requests returns 503 when database is not configured", async () => {
-    const app = buildApp({ pool: null });
+    const app = await buildApp({ pool: null });
     await app.ready();
     const token = app.jwt.sign({ sub: "bob" });
     const res = await app.inject({
@@ -110,7 +113,7 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
   "api with database",
   () => {
     let pool: pg.Pool;
-    let app: ReturnType<typeof buildApp>;
+    let app: Awaited<ReturnType<typeof buildApp>>;
 
     beforeAll(async () => {
       pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
@@ -118,7 +121,7 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
       await migrate(db, {
         migrationsFolder: path.join(__dirname, "../drizzle"),
       });
-      app = buildApp({ pool });
+      app = await buildApp({ pool });
     });
 
     afterAll(async () => {
@@ -388,3 +391,65 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
     });
   },
 );
+
+describe("OpenAPI", () => {
+  const openapiPath = path.join(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "openapi.yaml",
+  );
+
+  it("openapi.yaml describes GET /feed as FeedResponse", () => {
+    const spec = parseYaml(readFileSync(openapiPath, "utf8")) as {
+      paths: Record<
+        string,
+        { get?: { responses?: { "200"?: { content?: unknown } } } }
+      >;
+      components: { schemas: Record<string, unknown> };
+    };
+    const feedGet = spec.paths["/feed"]?.get;
+    expect(feedGet).toBeDefined();
+    const schemaRef = (
+      feedGet?.responses?.["200"]?.content as {
+        "application/json"?: { schema?: { $ref?: string } };
+      }
+    )?.["application/json"]?.schema?.$ref;
+    expect(schemaRef).toBe("#/components/schemas/FeedResponse");
+    expect(spec.components.schemas.FeedResponse).toBeDefined();
+  });
+
+  it("serves Swagger UI at /docs when docs are enabled", async () => {
+    const prevAppEnv = process.env.APP_ENV;
+    delete process.env.APP_ENV;
+    const app = await buildApp({ pool: null });
+    try {
+      expect(isOpenApiDocsEnabled()).toBe(true);
+      const res = await app.inject({ method: "GET", url: "/docs" });
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/text\/html/);
+    } finally {
+      if (prevAppEnv !== undefined) {
+        process.env.APP_ENV = prevAppEnv;
+      }
+      await app.close();
+    }
+  });
+
+  it("does not expose /docs when APP_ENV is production", async () => {
+    const prevAppEnv = process.env.APP_ENV;
+    process.env.APP_ENV = "production";
+    const app = await buildApp({ pool: null });
+    try {
+      expect(isOpenApiDocsEnabled()).toBe(false);
+      const res = await app.inject({ method: "GET", url: "/docs" });
+      expect(res.statusCode).toBe(404);
+    } finally {
+      if (prevAppEnv !== undefined) {
+        process.env.APP_ENV = prevAppEnv;
+      } else {
+        delete process.env.APP_ENV;
+      }
+      await app.close();
+    }
+  });
+});
