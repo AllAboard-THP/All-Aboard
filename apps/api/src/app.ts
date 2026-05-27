@@ -139,6 +139,7 @@ export function buildApp(options?: BuildAppOptions) {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24,
     });
     return { ok: true as const, userId: parsed.data.userId, role };
