@@ -18,6 +18,7 @@ const meta = {
   parameters: {
     layout: "centered",
   },
+  tags: ["autodocs"],
 } satisfies Meta<typeof Card>;
 
 export default meta;
@@ -39,6 +40,22 @@ export const Default: Story = {
           Action
         </Button>
       </CardFooter>
+    </Card>
+  ),
+};
+
+export const FeedEmpty: Story = {
+  render: () => (
+    <Card className="w-full max-w-3xl bg-background">
+      <CardHeader>
+        <CardTitle className="text-lg">Aucune demande pour l&apos;instant</CardTitle>
+        <CardDescription>
+          Soyez le premier à publier une demande d&apos;aide.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button variant="outline">Publier une demande</Button>
+      </CardContent>
     </Card>
   ),
 };

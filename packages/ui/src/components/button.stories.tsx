@@ -8,6 +8,7 @@ const meta = {
   parameters: {
     layout: "centered",
   },
+  tags: ["autodocs"],
   argTypes: {
     variant: {
       control: "select",
@@ -83,6 +84,13 @@ export const Disabled: Story = {
   args: {
     disabled: true,
     children: "Disabled",
+  },
+};
+
+export const Loading: Story = {
+  args: {
+    disabled: true,
+    children: "Envoi…",
   },
 };
 
