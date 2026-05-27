@@ -113,7 +113,7 @@ describe("CORS", () => {
   it("does not set Access-Control-Allow-Origin when CORS_ALLOWED_ORIGINS is unset", async () => {
     const prev = process.env.CORS_ALLOWED_ORIGINS;
     delete process.env.CORS_ALLOWED_ORIGINS;
-    const app = buildApp({ pool: null });
+    const app = await buildApp({ pool: null });
     await app.ready();
     try {
       const getRes = await app.inject({
@@ -144,7 +144,7 @@ describe("CORS", () => {
   it("sets CORS headers with credentials for allowed origin preflight", async () => {
     const prev = process.env.CORS_ALLOWED_ORIGINS;
     process.env.CORS_ALLOWED_ORIGINS = "https://staging.allaboard.fr";
-    const app = buildApp({ pool: null });
+    const app = await buildApp({ pool: null });
     await app.ready();
     try {
       const optionsRes = await app.inject({
@@ -187,7 +187,7 @@ describe("CORS", () => {
   it("does not reflect disallowed origins", async () => {
     const prev = process.env.CORS_ALLOWED_ORIGINS;
     process.env.CORS_ALLOWED_ORIGINS = "https://staging.allaboard.fr";
-    const app = buildApp({ pool: null });
+    const app = await buildApp({ pool: null });
     await app.ready();
     try {
       const optionsRes = await app.inject({
