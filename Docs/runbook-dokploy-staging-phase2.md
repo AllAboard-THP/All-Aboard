@@ -12,8 +12,8 @@ Références : [plan opérationnel Web/API](plan-mise-en-place-web-api-donnees.m
 
 La branche **`staging`** est protégée — merge via PR depuis `Dev` (ex. PR #54).
 
-- [ ] PR `Dev` → `staging` mergée
-- [ ] Auto-deploy Dokploy Web + API (branche `staging`) terminé
+- [x] PR `Dev` → `staging` mergée (PR #54, 2026-05-26)
+- [x] Deploy Dokploy API terminé (PR #54) ; Web : build auto **en erreur** le 2026-05-26 → **deploy manuel réussi** le 2026-05-27 (commit `d9ca975`)
 
 ---
 
@@ -41,8 +41,8 @@ postgresql://<USER>:<PASSWORD>@<HOST_INTERNE_POSTGRES_STAGING>:5432/<DATABASE>
 | `APP_ENV` | Recommandé | `staging` |
 
 - [x] Vars posées (2026-05-25, MCP Dokploy)
-- [ ] Redéploy API après merge code MVP si build antérieur
-- [ ] Logs : migrations OK ; `POST /auth/login` (credentials invalides) → **401** — route Phase 2 présente (`GET` reste **404**)
+- [x] Redéploy API après merge PR #54 (2026-05-26)
+- [x] Smoke : `POST /auth/login` (invalides) → **401** ; `GET /feed` → UUID Postgres (pas stub Phase 1)
 
 ---
 
@@ -55,7 +55,7 @@ postgresql://<USER>:<PASSWORD>@<HOST_INTERNE_POSTGRES_STAGING>:5432/<DATABASE>
 | `APP_ENV` | Recommandé | `staging` |
 
 - [x] `API_URL` interne aligné (`app-back-up-mobile-microchip-nqw5cs:4000` au 2026-05-25)
-- [ ] Redéploy Web après merge PR promotion
+- [x] Redéploy Web après merge PR #54 (deploy manuel 2026-05-27 — voir §0 si build auto en erreur)
 
 ---
 
@@ -79,18 +79,20 @@ Attendu post-promotion : feed Postgres (UUID), pas stub Phase 1 (`id: "1"`).
 
 ## 5. Smoke navigateur (parcours Bob)
 
-- [ ] `https://staging.allaboard.fr` — feed produit, liens `/requests/[id]`
-- [ ] `/help/new` — login + création → détail
-- [ ] Doublon 409 + lien demande existante
-- [ ] `/mentor` — `alice` / `bob`
+Feed produit sur **`/`** (pas `/feed` — route absente).
+
+- [x] `https://staging.allaboard.fr/` — feed SSR + liens `/requests/[id]` (UUID Postgres)
+- [x] `/help/new` — login `bob` + création (feed mis à jour ; redirect détail optionnel)
+- [x] Doublon 409 + lien « Voir la demande existante »
+- [x] `/mentor` — `alice` (dashboard mentor + feed tagué) ; `bob` (étudiant, accès mentor refusé côté rôle)
 
 ---
 
 ## 6. Journal et pilotage
 
-- [ ] Ligne *Journal* dans [plan opérationnel](plan-mise-en-place-web-api-donnees.md)
-- [ ] Cocher [staging-checklist.md](staging-checklist.md) section infra + smoke
-- [ ] Clôturer ou commenter [#32](https://github.com/AllAboard-THP/All-Aboard/issues/32) après validation équipe
+- [x] Ligne *Journal* dans [plan opérationnel](plan-mise-en-place-web-api-donnees.md) (2026-05-27)
+- [x] Cocher [staging-checklist.md](staging-checklist.md) section infra + smoke
+- [x] Clôturer [#32](https://github.com/AllAboard-THP/All-Aboard/issues/32) et [#17](https://github.com/AllAboard-THP/All-Aboard/issues/17) (2026-05-27)
 
 ---
 
