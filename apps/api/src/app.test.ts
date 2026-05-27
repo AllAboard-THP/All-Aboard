@@ -48,6 +48,47 @@ describe("api", () => {
     }
   });
 
+  it("POST /auth/login sets Secure cookie when NODE_ENV is production", async () => {
+    const prevNodeEnv = process.env.NODE_ENV;
+    const prevJwt = process.env.JWT_SECRET;
+    const prevPassword = process.env.MVP_LOGIN_PASSWORD;
+    process.env.NODE_ENV = "production";
+    process.env.JWT_SECRET = "test-jwt-secret-min-32-characters!!";
+    process.env.MVP_LOGIN_PASSWORD = "test-login-password";
+    const app = buildApp({ pool: null });
+    await app.ready();
+    try {
+      const res = await app.inject({
+        method: "POST",
+        url: "/auth/login",
+        payload: { userId: "bob", password: "test-login-password" },
+      });
+      expect(res.statusCode).toBe(200);
+      const setCookie = res.headers["set-cookie"];
+      const cookieStr = Array.isArray(setCookie)
+        ? setCookie.join("; ")
+        : String(setCookie ?? "");
+      expect(cookieStr.toLowerCase()).toContain("secure");
+    } finally {
+      if (prevNodeEnv !== undefined) {
+        process.env.NODE_ENV = prevNodeEnv;
+      } else {
+        delete process.env.NODE_ENV;
+      }
+      if (prevJwt !== undefined) {
+        process.env.JWT_SECRET = prevJwt;
+      } else {
+        delete process.env.JWT_SECRET;
+      }
+      if (prevPassword !== undefined) {
+        process.env.MVP_LOGIN_PASSWORD = prevPassword;
+      } else {
+        delete process.env.MVP_LOGIN_PASSWORD;
+      }
+      await app.close();
+    }
+  });
+
   it("POST /help-requests returns 503 when database is not configured", async () => {
     const app = buildApp({ pool: null });
     await app.ready();
