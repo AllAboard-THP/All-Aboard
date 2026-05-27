@@ -106,6 +106,107 @@ describe("api", () => {
   });
 });
 
+describe("CORS", () => {
+  it("does not set Access-Control-Allow-Origin when CORS_ALLOWED_ORIGINS is unset", async () => {
+    const prev = process.env.CORS_ALLOWED_ORIGINS;
+    delete process.env.CORS_ALLOWED_ORIGINS;
+    const app = buildApp({ pool: null });
+    await app.ready();
+    try {
+      const getRes = await app.inject({
+        method: "GET",
+        url: "/health",
+        headers: { origin: "https://staging.allaboard.fr" },
+      });
+      expect(getRes.statusCode).toBe(200);
+      expect(getRes.headers["access-control-allow-origin"]).toBeUndefined();
+
+      const optionsRes = await app.inject({
+        method: "OPTIONS",
+        url: "/health",
+        headers: {
+          origin: "https://staging.allaboard.fr",
+          "access-control-request-method": "GET",
+        },
+      });
+      expect(optionsRes.headers["access-control-allow-origin"]).toBeUndefined();
+    } finally {
+      if (prev !== undefined) {
+        process.env.CORS_ALLOWED_ORIGINS = prev;
+      }
+      await app.close();
+    }
+  });
+
+  it("sets CORS headers with credentials for allowed origin preflight", async () => {
+    const prev = process.env.CORS_ALLOWED_ORIGINS;
+    process.env.CORS_ALLOWED_ORIGINS = "https://staging.allaboard.fr";
+    const app = buildApp({ pool: null });
+    await app.ready();
+    try {
+      const optionsRes = await app.inject({
+        method: "OPTIONS",
+        url: "/health",
+        headers: {
+          origin: "https://staging.allaboard.fr",
+          "access-control-request-method": "GET",
+        },
+      });
+      expect(optionsRes.headers["access-control-allow-origin"]).toBe(
+        "https://staging.allaboard.fr",
+      );
+      expect(optionsRes.headers["access-control-allow-credentials"]).toBe(
+        "true",
+      );
+
+      const getRes = await app.inject({
+        method: "GET",
+        url: "/health",
+        headers: { origin: "https://staging.allaboard.fr" },
+      });
+      expect(getRes.statusCode).toBe(200);
+      expect(getRes.headers["access-control-allow-origin"]).toBe(
+        "https://staging.allaboard.fr",
+      );
+      expect(getRes.headers["access-control-allow-credentials"]).toBe(
+        "true",
+      );
+    } finally {
+      if (prev !== undefined) {
+        process.env.CORS_ALLOWED_ORIGINS = prev;
+      } else {
+        delete process.env.CORS_ALLOWED_ORIGINS;
+      }
+      await app.close();
+    }
+  });
+
+  it("does not reflect disallowed origins", async () => {
+    const prev = process.env.CORS_ALLOWED_ORIGINS;
+    process.env.CORS_ALLOWED_ORIGINS = "https://staging.allaboard.fr";
+    const app = buildApp({ pool: null });
+    await app.ready();
+    try {
+      const optionsRes = await app.inject({
+        method: "OPTIONS",
+        url: "/health",
+        headers: {
+          origin: "https://evil.example.com",
+          "access-control-request-method": "GET",
+        },
+      });
+      expect(optionsRes.headers["access-control-allow-origin"]).toBeUndefined();
+    } finally {
+      if (prev !== undefined) {
+        process.env.CORS_ALLOWED_ORIGINS = prev;
+      } else {
+        delete process.env.CORS_ALLOWED_ORIGINS;
+      }
+      await app.close();
+    }
+  });
+});
+
 describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
   "api with database",
   () => {
