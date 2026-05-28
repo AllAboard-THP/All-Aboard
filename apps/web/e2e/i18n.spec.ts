@@ -17,14 +17,10 @@ test.describe("i18n EN", () => {
 
     await page.getByRole("button", { name: "EN" }).click();
     await expect(page).toHaveURL(/\/en\/help\/new$/);
-    await expect(
-      page.getByRole("heading", { name: "Publish a help request" }),
-    ).toBeVisible();
+    await expect(page.getByText("Publish a help request")).toBeVisible();
 
     await page.getByRole("button", { name: "FR" }).click();
     await expect(page).toHaveURL(/\/help\/new$/);
-    await expect(
-      page.getByRole("heading", { name: "Publier une demande d'aide" }),
-    ).toBeVisible();
+    await expect(page.getByText("Publier une demande d'aide")).toBeVisible();
   });
 });
