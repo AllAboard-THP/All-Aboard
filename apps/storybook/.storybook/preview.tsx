@@ -1,4 +1,5 @@
 import type { Preview } from "@storybook/react";
+import { withThemeByClassName } from "@storybook/addon-themes";
 import { themes } from "storybook/theming";
 import "@allaboard/ui/globals.css";
 import "./preview.css";
@@ -9,13 +10,18 @@ const preview: Preview = {
     docs: {
       theme: themes.dark,
     },
+    themes: {
+      disable: true,
+    },
   },
   decorators: [
-    (Story) => (
-      <div className="dark font-sans text-foreground">
-        <Story />
-      </div>
-    ),
+    withThemeByClassName({
+      themes: {
+        dark: "dark",
+      },
+      defaultTheme: "dark",
+      parentSelector: "html",
+    }),
   ],
 };
 

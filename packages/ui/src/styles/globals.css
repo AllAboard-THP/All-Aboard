@@ -94,11 +94,6 @@
 }
 
 @layer utilities {
-  .canvas-background {
-    @apply bg-background text-foreground;
-    background-image: var(--canvas-gradient);
-  }
-
   .glass-panel {
     @apply border border-border/60 bg-card/80 backdrop-blur-md shadow-xl;
   }
