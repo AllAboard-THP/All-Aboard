@@ -24,7 +24,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Horizontal: Story = {
   render: () => (
-    <div className="w-80 space-y-4 bg-background p-4">
+    <div className="w-80 space-y-4 p-4">
       <div>
         <p className="text-sm font-medium text-foreground">Section A</p>
         <p className="text-sm text-muted-foreground">Contenu au-dessus.</p>
@@ -40,7 +40,7 @@ export const Horizontal: Story = {
 
 export const InCard: Story = {
   render: () => (
-    <Card className="w-80 bg-background">
+    <Card className="w-80">
       <CardHeader>
         <CardTitle>Feed communautaire</CardTitle>
         <CardDescription>En-tête de page.</CardDescription>
@@ -55,7 +55,7 @@ export const InCard: Story = {
 
 export const Vertical: Story = {
   render: () => (
-    <div className="flex h-12 items-center gap-4 bg-background p-4">
+    <div className="flex h-12 items-center gap-4 p-4">
       <span className="text-sm text-foreground">Feed</span>
       <Separator orientation="vertical" className="h-6" />
       <span className="text-sm text-muted-foreground">Mentor</span>

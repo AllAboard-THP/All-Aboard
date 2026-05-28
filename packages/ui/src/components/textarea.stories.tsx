@@ -31,7 +31,7 @@ export const Disabled: Story = {
 
 export const WithLabel: Story = {
   render: () => (
-    <div className="flex w-96 flex-col gap-2 bg-background p-4">
+    <div className="flex w-96 flex-col gap-2 p-4">
       <Label htmlFor="help-description">Description</Label>
       <Textarea
         id="help-description"
@@ -44,7 +44,7 @@ export const WithLabel: Story = {
 
 export const Invalid: Story = {
   render: () => (
-    <div className="flex w-96 flex-col gap-2 bg-background p-4">
+    <div className="flex w-96 flex-col gap-2 p-4">
       <Label htmlFor="invalid-textarea">Description</Label>
       <Textarea
         id="invalid-textarea"

@@ -17,7 +17,7 @@ type Story = StoryObj<typeof meta>;
 
 export const FeedHero: Story = {
   render: () => (
-    <div className="mx-auto max-w-3xl bg-background p-6">
+    <div className="mx-auto max-w-3xl p-6">
       <header className="mb-6">
         <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
           All-Aboard
@@ -39,7 +39,7 @@ export const FeedHero: Story = {
 
 export const MentorHero: Story = {
   render: () => (
-    <div className="mx-auto max-w-3xl bg-background p-6">
+    <div className="mx-auto max-w-3xl p-6">
       <header className="mb-6">
         <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">Mentor</p>
         <h1 className="mt-2 mb-2 text-3xl font-semibold text-foreground">
@@ -56,7 +56,7 @@ export const MentorHero: Story = {
 
 export const DetailHero: Story = {
   render: () => (
-    <div className="mx-auto max-w-3xl bg-background p-6">
+    <div className="mx-auto max-w-3xl p-6">
       <header className="mb-6">
         <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
           Demande d&apos;aide

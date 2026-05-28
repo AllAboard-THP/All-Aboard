@@ -20,7 +20,7 @@ const durations = [
 
 export const Transitions: Story = {
   render: () => (
-    <div className="w-full max-w-md space-y-6 bg-background p-6">
+    <div className="w-full max-w-md space-y-6 p-6">
       <p className="text-sm text-muted-foreground">
         Tokens définis dans <code className="text-foreground">globals.css</code>. Respect de{" "}
         <code className="text-foreground">prefers-reduced-motion</code> au niveau base.

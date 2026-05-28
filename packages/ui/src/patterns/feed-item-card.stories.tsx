@@ -2,18 +2,15 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { Badge } from "../components/badge";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../components/card";
+  PatternDemoCardShell,
+  patternStoryParameters,
+  withPatternStoryFrame,
+} from "./pattern-story-frame";
 
 const meta = {
   title: "Patterns/FeedItemCard",
-  parameters: {
-    layout: "centered",
-  },
+  parameters: patternStoryParameters,
+  decorators: [withPatternStoryFrame()],
   tags: ["autodocs"],
 } satisfies Meta;
 
@@ -23,60 +20,54 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
-    <Card className="w-full max-w-3xl transition-colors hover:border-primary/50">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg">
-          <span className="text-foreground hover:text-primary hover:underline">
-            Comment structurer un monorepo Turborepo ?
-          </span>
-        </CardTitle>
-        <CardDescription className="flex flex-wrap gap-x-3 gap-y-1">
-          <span>Auteur : bob</span>
-          <span>26 mai 2026, 14:30</span>
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary">mentor</Badge>
-          <Badge variant="outline">turborepo</Badge>
-        </div>
-      </CardContent>
-    </Card>
+    <PatternDemoCardShell className="transition-colors hover:border-primary/50">
+      <p className="m-0 text-lg font-semibold">
+        <span className="text-foreground hover:text-primary hover:underline">
+          Comment structurer un monorepo Turborepo ?
+        </span>
+      </p>
+      <p className="m-0 flex flex-wrap justify-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+        <span>Auteur : bob</span>
+        <span>26 mai 2026, 14:30</span>
+      </p>
+      <div className="flex flex-wrap justify-center gap-2">
+        <Badge variant="secondary">mentor</Badge>
+        <Badge variant="outline">turborepo</Badge>
+      </div>
+    </PatternDemoCardShell>
   ),
 };
 
 export const WithoutTags: Story = {
   render: () => (
-    <Card className="w-full max-w-3xl transition-colors hover:border-primary/50">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg">
-          <span className="text-foreground hover:text-primary hover:underline">
-            Problème de connexion PostgreSQL
-          </span>
-        </CardTitle>
-        <CardDescription className="flex flex-wrap gap-x-3 gap-y-1">
-          <span>Auteur : alice</span>
-          <span>25 mai 2026, 09:15</span>
-        </CardDescription>
-      </CardHeader>
-    </Card>
+    <PatternDemoCardShell className="transition-colors hover:border-primary/50">
+      <p className="m-0 text-lg font-semibold">
+        <span className="text-foreground hover:text-primary hover:underline">
+          Problème de connexion PostgreSQL
+        </span>
+      </p>
+      <p className="m-0 flex flex-wrap justify-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+        <span>Auteur : alice</span>
+        <span>25 mai 2026, 09:15</span>
+      </p>
+    </PatternDemoCardShell>
   ),
 };
 
 export const HoverFocus: Story = {
   render: () => (
-    <Card className="w-full max-w-3xl border-primary/50 transition-colors hover:border-primary/50">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg">
-          <a
-            href="#feed-item"
-            className="text-primary underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            Titre avec focus clavier visible
-          </a>
-        </CardTitle>
-        <CardDescription>État hover / focus documenté pour les liens feed.</CardDescription>
-      </CardHeader>
-    </Card>
+    <PatternDemoCardShell className="border-primary/50 transition-colors hover:border-primary/50">
+      <p className="m-0 text-lg font-semibold">
+        <a
+          href="#feed-item"
+          className="text-primary underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          Titre avec focus clavier visible
+        </a>
+      </p>
+      <p className="m-0 text-sm text-muted-foreground">
+        État hover / focus documenté pour les liens feed.
+      </p>
+    </PatternDemoCardShell>
   ),
 };

@@ -30,10 +30,14 @@ function formatCreatedAt(iso: string): string {
 }
 
 function FeedItemCard({ item }: { item: HelpRequest }) {
+  const hasTags = Boolean(item.tags && item.tags.length > 0);
+
   return (
     <li>
-      <Card className="transition-colors hover:border-primary/50">
-        <CardHeader className="pb-2">
+      <Card className="w-full gap-0 py-4 transition-colors hover:border-primary/50">
+        <CardHeader
+          className={`gap-1.5 px-4 ${hasTags ? "pb-2" : "pb-0"}`}
+        >
           <CardTitle className="text-lg">
             <Link
               href={`/requests/${item.id}`}
@@ -47,10 +51,10 @@ function FeedItemCard({ item }: { item: HelpRequest }) {
             <span>{formatCreatedAt(item.createdAt)}</span>
           </CardDescription>
         </CardHeader>
-        {item.tags && item.tags.length > 0 ? (
-          <CardContent className="pt-0">
+        {hasTags ? (
+          <CardContent className="px-4 pt-0">
             <p className="m-0 text-xs text-muted-foreground">
-              Tags : {item.tags.join(", ")}
+              Tags : {item.tags!.join(", ")}
             </p>
           </CardContent>
         ) : null}

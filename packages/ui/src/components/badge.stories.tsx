@@ -50,7 +50,7 @@ export const Destructive: Story = {
 
 export const TagList: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-2 bg-background p-4">
+    <div className="flex flex-wrap gap-2 p-4">
       <Badge variant="secondary">mentor</Badge>
       <Badge variant="outline">rails</Badge>
       <Badge variant="outline">postgres</Badge>
@@ -60,7 +60,7 @@ export const TagList: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-2 bg-background p-4">
+    <div className="flex flex-wrap gap-2 p-4">
       <Badge variant="default">default</Badge>
       <Badge variant="secondary">secondary</Badge>
       <Badge variant="outline">outline</Badge>

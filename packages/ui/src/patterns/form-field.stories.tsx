@@ -9,12 +9,15 @@ import { Button } from "../components/button";
 import { Input } from "../components/input";
 import { Label } from "../components/label";
 import { Textarea } from "../components/textarea";
+import {
+  patternStoryParameters,
+  withPatternStoryFrame,
+} from "./pattern-story-frame";
 
 const meta = {
   title: "Patterns/FormField",
-  parameters: {
-    layout: "centered",
-  },
+  parameters: patternStoryParameters,
+  decorators: [withPatternStoryFrame("form")],
   tags: ["autodocs"],
 } satisfies Meta;
 
@@ -24,7 +27,7 @@ type Story = StoryObj<typeof meta>;
 
 export const HelpRequestFields: Story = {
   render: () => (
-    <div className="grid w-full max-w-md gap-4 bg-background p-4">
+    <div className="grid gap-4">
       <div className="grid gap-2">
         <Label htmlFor="pattern-user-id">Identifiant utilisateur</Label>
         <Input id="pattern-user-id" defaultValue="bob" autoComplete="username" />
@@ -56,7 +59,7 @@ export const HelpRequestFields: Story = {
 
 export const InlineError: Story = {
   render: () => (
-    <div className="grid w-full max-w-md gap-2 bg-background p-4">
+    <div className="grid gap-2">
       <Label htmlFor="pattern-invalid-login">Mot de passe MVP</Label>
       <Input
         id="pattern-invalid-login"
@@ -73,7 +76,7 @@ export const InlineError: Story = {
 
 export const DuplicateError: Story = {
   render: () => (
-    <Alert variant="destructive" className="w-full max-w-md">
+    <Alert variant="destructive">
       <AlertTitle>Doublon détecté (MOC)</AlertTitle>
       <AlertDescription>
         <span className="font-medium text-primary underline">
@@ -86,7 +89,7 @@ export const DuplicateError: Story = {
 
 export const RubberduckHint: Story = {
   render: () => (
-    <Alert className="w-full max-w-md">
+    <Alert>
       <AlertTitle>Rubberduck (stub)</AlertTitle>
       <AlertDescription>
         Titre court — piste IA possible (Phase 4). Publiez une nouvelle demande
@@ -98,7 +101,7 @@ export const RubberduckHint: Story = {
 
 export const TextareaField: Story = {
   render: () => (
-    <div className="grid w-full max-w-md gap-2 bg-background p-4">
+    <div className="grid gap-2">
       <Label htmlFor="pattern-description">Description détaillée</Label>
       <Textarea
         id="pattern-description"

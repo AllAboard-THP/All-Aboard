@@ -76,7 +76,7 @@ function CatalogSection({
 export const ListingComplet: Story = {
   name: "00 · Listing complet",
   render: () => (
-    <div className="mx-auto max-w-3xl bg-background">
+    <div className="mx-auto max-w-3xl">
       <header className="border-b border-border px-6 py-8">
         <h1 className="m-0 text-3xl font-semibold text-foreground">
           Catalogue primitives
