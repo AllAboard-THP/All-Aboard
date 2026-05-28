@@ -5,6 +5,7 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
+  tags: ["autodocs"],
 } satisfies Meta;
 
 export default meta;
@@ -21,6 +22,9 @@ const swatches = [
   { name: "destructive", className: "bg-destructive text-destructive-foreground" },
   { name: "card", className: "bg-card text-card-foreground" },
   { name: "border", className: "bg-border text-foreground" },
+  { name: "popover", className: "bg-popover text-popover-foreground" },
+  { name: "input", className: "bg-input text-foreground" },
+  { name: "ring", className: "bg-ring text-primary-foreground" },
 ] as const;
 
 export const ColorSwatches: Story = {

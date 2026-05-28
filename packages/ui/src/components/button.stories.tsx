@@ -8,6 +8,7 @@ const meta = {
   parameters: {
     layout: "centered",
   },
+  tags: ["autodocs"],
   argTypes: {
     variant: {
       control: "select",
@@ -86,9 +87,16 @@ export const Disabled: Story = {
   },
 };
 
+export const Loading: Story = {
+  args: {
+    disabled: true,
+    children: "Envoi…",
+  },
+};
+
 export const AllVariants: Story = {
   render: () => (
-    <div className="flex flex-wrap items-center gap-3 bg-background p-4">
+    <div className="flex flex-wrap items-center gap-3 p-4">
       <Button variant="default">Default</Button>
       <Button variant="destructive">Destructive</Button>
       <Button variant="outline">Outline</Button>

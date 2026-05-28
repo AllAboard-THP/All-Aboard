@@ -12,8 +12,8 @@ async function createHelpRequest(page: import("@playwright/test").Page, title: s
   await page.goto("/help/new");
   await expect(page.getByText("Publier une demande d'aide")).toBeVisible();
 
-  await page.getByLabel("Identifiant utilisateur").fill("bob");
-  await page.getByLabel("Mot de passe MVP").fill(loginPassword);
+  await page.getByLabel("Email").fill("bob@dev.local");
+  await page.getByLabel("Mot de passe", { exact: true }).fill(loginPassword);
   await page.getByLabel("Titre de la demande").fill(title);
   await page.getByRole("button", { name: "Connexion et publier" }).click();
 
@@ -29,7 +29,7 @@ test.describe("parcours création demande", () => {
 
     await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
     await expect(page.getByTestId("responses-empty")).toBeVisible();
-    await expect(page.getByText("Auteur : bob")).toBeVisible();
+    await expect(page.getByText("Auteur : bob@dev.local")).toBeVisible();
   });
 
   test("retour feed après création et refresh client", async ({ page }) => {

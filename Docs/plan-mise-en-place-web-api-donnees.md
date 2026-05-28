@@ -2,7 +2,7 @@
 
 Référence **canonique** pour le couplage `apps/web` ↔ `apps/api` : variables, contrat `GET /feed`, chemins code, journal de smoke, checklist Dokploy ciblée feed. La **timeline** des phases est dans [README.md](README.md) ; la **cartographie** des docs dans [map-of-content.md](map-of-content.md). Les **faits instance** (domaines, `API_URL` interne) : [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md).
 
-**Mise à jour** : 2026-05-25. **Décision** : **Option B** — socle TanStack dans la même livraison que le feed SSR ; home feed client + invalidation livrés (voir *Journal*). **Phase 2 (MVP dépôt)** : Postgres + `GET /feed` réel, `POST /help-requests`, JWT + BFF auth, stubs MOC (doublon, Rubberduck) — ADR [0001](adr/0001-authentication-strategy.md). **MVP parcours Bob (dev)** : livré sur `Dev` + Dokploy dev (PR #50–#52) ; validation housekeeping 2026-05-25 — voir [staging-checklist.md](staging-checklist.md).
+**Mise à jour** : 2026-05-27. **Décision** : **Option B** — socle TanStack dans la même livraison que le feed SSR ; home feed client + invalidation livrés (voir *Journal*). **Phase 2 (MVP dépôt)** : Postgres + `GET /feed` réel, `POST /help-requests`, JWT + BFF auth, stubs MOC (doublon, Rubberduck) — ADR [0001](adr/0001-authentication-strategy.md). **MVP parcours Bob (dev)** : livré sur `Dev` + Dokploy dev (PR #50–#52) ; validation housekeeping 2026-05-25 — voir [staging-checklist.md](staging-checklist.md).
 
 ---
 
@@ -36,6 +36,8 @@ SSR feed, socle Query, merge Dokploy dev, `useQuery` + `invalidateQueries` sur `
 | 2026-05-24 | CI / local | Playwright e2e complet (#35) : scénarios feed + création → détail ; job CI `e2e` (paths-filter `apps/web`) ; script `pnpm test:e2e`. Clôture epic frontend [#15](https://github.com/AllAboard-THP/All-Aboard/issues/15). |
 | 2026-05-25 | Dokploy **dev** + CI | Housekeeping MVP dev : `pnpm smoke:dev` OK (health, feed, BFF `/api/feed`) ; smoke auth + `GET /help-requests/:id` si `MVP_LOGIN_PASSWORD` aligné Dokploy ([runbook](runbook-dokploy-dev-phase2.md)) ; `pnpm verify:commit` OK local ; parcours Bob validé (code PR #51, e2e CI PR #52) ; [staging-checklist](staging-checklist.md) section dev cochée. |
 | 2026-05-25 | Dokploy **staging** (ops #32) | Env staging confirmé (MCP) ; vars API Phase 2 posées ; promotion code PR [#54](https://github.com/AllAboard-THP/All-Aboard/pull/54) `Dev`→`staging` ; smoke HTTPS staging post-merge — [runbook staging](runbook-dokploy-staging-phase2.md). |
+| 2026-05-27 | Dokploy **staging** (clôture #32 / #17) | PR #54 mergée ; API deploy OK ; Web redeploy manuel (build auto 2026-05-26 en erreur) ; `pnpm smoke:dev` OK (health, feed UUID, BFF `/api/feed`, auth + création + `GET /help-requests/:id`) ; parcours Bob navigateur OK (`/`, `/help/new`, 409, `/mentor` alice) — [runbook](runbook-dokploy-staging-phase2.md), [checklist](staging-checklist.md). |
+| 2026-05-28 | Code **ADR 0003** | Table `users`, login `{ email, password }` (hash argon2), seed `bob@dev.local` / `alice@dev.local` via `DEV_SEED_PASSWORD` ; fallback `MVP_LOGIN_PASSWORD` dev/CI seulement ; smoke `SMOKE_LOGIN_EMAIL` + `SMOKE_LOGIN_PASSWORD`. Ops staging : retirer `MVP_LOGIN_PASSWORD` après seed Dokploy. |
 
 ---
 
@@ -56,9 +58,11 @@ SSR feed, socle Query, merge Dokploy dev, `useQuery` + `invalidateQueries` sur `
 | `NEXT_PUBLIC_API_URL` | Client | Origine HTTPS si le **navigateur** appelle l’API directement. **Non utilisé** pour le feed actuel (BFF same-origin). |
 | `DATABASE_URL` | API | Connexion Postgres (Drizzle). Sans elle : `GET /feed` → 503, pas de persistance. |
 | `JWT_SECRET` | API | Signature JWT (min. 32 caractères en prod). Voir [ADR 0001](adr/0001-authentication-strategy.md). |
-| `MVP_LOGIN_PASSWORD` | API | Mot de passe attendu pour `POST /auth/login` (MVP). |
-| `MVP_MENTOR_USER_IDS` | API | Liste CSV d'`userId` recevant `role: mentor` au login (défaut : `alice`). |
+| `DEV_SEED_PASSWORD` | API | Mot de passe des comptes seed `bob@dev.local` / `alice@dev.local` ([ADR 0003](adr/0003-authentication-users-production.md)). Utilisé par `db:migrate` / `db:seed`. |
+| `MVP_LOGIN_PASSWORD` | API | **Dev/CI uniquement** : alias seed + fallback login sans DB. **Interdit** staging/prod (`APP_ENV`). |
+| `MVP_MENTOR_USER_IDS` | API | Fallback MVP uniquement (rôle mentor si pas de DB). Obsolète quand `users` est seedé. |
 | `CORS_ALLOWED_ORIGINS` | API Fastify | Liste d’origines séparées par des virgules : si définie, `@fastify/cors` est enregistré (`credentials: true`). **N/A** tant que le navigateur n’appelle pas l’API en direct (BFF). |
+| `OPENAPI_DOCS` | API | Override explicite pour Swagger UI (`true` / `false`). Par défaut : docs actifs si `APP_ENV` ≠ `production`. Spec : [`apps/api/openapi.yaml`](../apps/api/openapi.yaml), UI : `GET /docs`. |
 
 Référence instance : [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md). Tables détaillées par service : [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md).
 
@@ -66,7 +70,7 @@ Référence instance : [deploiement-dokploy-instance-allaboard.md](deploiement-d
 
 ## Contrats API (`apps/api`)
 
-Source de vérité types : [packages/types/src/index.ts](../packages/types/src/index.ts). Implémentation : [apps/api/src/app.ts](../apps/api/src/app.ts). Auth : [ADR 0001](adr/0001-authentication-strategy.md).
+Source de vérité types : [packages/types/src/index.ts](../packages/types/src/index.ts). Spec OpenAPI 3.1 : [apps/api/openapi.yaml](../apps/api/openapi.yaml) (Swagger UI `GET /docs` en dev/staging — [issue #49](https://github.com/AllAboard-THP/All-Aboard/issues/49)). Implémentation : [apps/api/src/app.ts](../apps/api/src/app.ts). Auth : [ADR 0001](adr/0001-authentication-strategy.md).
 
 ### Codes d’erreur communs (corps JSON)
 
@@ -78,7 +82,7 @@ Source de vérité types : [packages/types/src/index.ts](../packages/types/src/i
 | `duplicate` | 409 | Titre déjà existant (`existingId` présent) |
 | `not_found` | 404 | Demande absente (`GET /help-requests/:id`) |
 | `database_unavailable` | 503 | `DATABASE_URL` absent ou DB injoignable |
-| `login_not_configured` | 503 | `MVP_LOGIN_PASSWORD` absent sur l’API |
+| `login_not_configured` | 503 | Login indisponible (pas de DB + pas de fallback dev) |
 | `insert_failed` | 500 | Échec insertion (rare) |
 
 ### `GET /health`
@@ -99,8 +103,8 @@ Exemple :
 
 ### `POST /auth/login`
 
-- **Corps** : `{ "userId": string, "password": string }` (min. 1 caractère chacun).
-- **200** : `{ "ok": true, "userId": string, "role": "student" | "mentor" }` + cookie httpOnly `access_token` (JWT avec claims `sub`, `role`).
+- **Corps** : `{ "email": string, "password": string }` (voir [ADR 0003](adr/0003-authentication-users-production.md)). Alias legacy dev : `{ "userId": "bob"|"alice", "password" }` si fallback MVP actif.
+- **200** : `{ "ok": true, "userId": string, "role": "student" | "mentor" }` + cookie httpOnly `access_token` (JWT `sub` = email, `role` depuis `users`).
 - **400** : `{ "error": "invalid_body" }`
 - **401** : `{ "error": "invalid_credentials" }`
 - **503** : `{ "error": "login_not_configured" }`
@@ -169,7 +173,7 @@ Exemples :
 pnpm smoke:dev
 
 # Local (API + Web démarrés)
-BASE_WEB=http://127.0.0.1:3000 BASE_API=http://127.0.0.1:4000 MVP_LOGIN_PASSWORD=dev-only-password pnpm smoke:dev
+BASE_WEB=http://127.0.0.1:3000 BASE_API=http://127.0.0.1:4000 SMOKE_LOGIN_PASSWORD=dev-only-password pnpm smoke:dev
 ```
 
 Runbook manuel Dokploy : [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md).

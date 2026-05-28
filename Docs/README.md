@@ -60,7 +60,7 @@ Référence **architecture et produit** du dépôt. Le **pilotage des tâches** 
 | `apps/api` | Fastify : `/health`, Postgres + Drizzle, `GET /feed`, `POST /auth/login`, `POST /help-requests` (JWT), stubs doublon / Rubberduck ; migrations au démarrage. |
 | `apps/web` | SSR feed ; BFF ; `/help/new` ; **AppShell** (`app/(app)/`, nav MOC) — [app-shell.md](design-system/app-shell.md) ; `@allaboard/ui` + features/blocks. |
 | `packages/ui` + `apps/storybook` | Design system + catalogue SB — [design-system/README.md](design-system/README.md). |
-| Auth | JWT (cookie `access_token` + relais BFF Bearer) — [ADR 0001](adr/0001-authentication-strategy.md). Login MVP par `MVP_LOGIN_PASSWORD`. |
+| Auth | JWT (cookie `access_token` + relais BFF Bearer) — [ADR 0001](adr/0001-authentication-strategy.md), users hash — [ADR 0003](adr/0003-authentication-users-production.md). |
 | TanStack | Socle + usage home sur le feed — extension **Phase 3 résiduelle**. |
 | `apps/thp-final` | Rails historique — hors MVP JS sauf décision explicite. |
 

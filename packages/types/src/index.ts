@@ -47,6 +47,21 @@ export type HelpRequestDetailResponse = {
 /** Rôles MVP (claim JWT — ADR 0001 extension). */
 export type UserRole = "student" | "mentor";
 
+/** Corps JSON pour `POST /auth/login` (email préféré ; `userId` legacy dev). */
+export type LoginBody = {
+  email?: string;
+  password: string;
+  /** Alias legacy `bob` / `alice` → `*@dev.local` en dev uniquement. */
+  userId?: string;
+};
+
+/** Réponse `200` de `POST /auth/login`. */
+export type LoginResponse = {
+  ok: true;
+  userId: string;
+  role: UserRole;
+};
+
 /** Réponse `GET /auth/me`. */
 export type AuthMeResponse = {
   userId: string;

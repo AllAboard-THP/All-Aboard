@@ -3,6 +3,7 @@ import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
+import { registerOpenApiDocs } from "./openapi.js";
 import { desc, eq, sql } from "drizzle-orm";
 import type {
   AuthMeResponse,
@@ -14,13 +15,15 @@ import type {
 import type { AppDatabase } from "./db/client.js";
 import { createDb, createPool } from "./db/client.js";
 import { helpRequests } from "./db/schema.js";
+import {
+  authenticateWithDatabase,
+  authenticateWithMvpFallback,
+  isMvpPasswordFallbackEnabled,
+  loginBodySchema,
+  resolveLoginEmail,
+} from "./auth/login.js";
 import type pg from "pg";
 import { z } from "zod";
-
-const loginBodySchema = z.object({
-  userId: z.string().min(1).max(256),
-  password: z.string().min(1).max(256),
-});
 
 const createBodySchema = z.object({
   title: z.string().min(1).max(500),
@@ -48,14 +51,15 @@ function wordCount(title: string): number {
   return title.trim().split(/\s+/).filter(Boolean).length;
 }
 
-function mentorUserIds(): Set<string> {
-  const raw = process.env.MVP_MENTOR_USER_IDS?.trim();
-  const ids = raw && raw.length > 0 ? raw.split(",") : ["alice"];
-  return new Set(ids.map((id) => id.trim()).filter(Boolean));
-}
-
-function roleForUserId(userId: string): UserRole {
-  return mentorUserIds().has(userId) ? "mentor" : "student";
+function roleFromJwtClaims(
+  sub: string,
+  roleClaim: string | undefined,
+): UserRole {
+  if (roleClaim === "mentor" || roleClaim === "student") return roleClaim;
+  if (sub.endsWith("@dev.local")) {
+    return sub.startsWith("alice@") ? "mentor" : "student";
+  }
+  return "student";
 }
 
 function rowToHelpRequest(row: typeof helpRequests.$inferSelect): HelpRequest {
@@ -69,12 +73,14 @@ function rowToHelpRequest(row: typeof helpRequests.$inferSelect): HelpRequest {
   };
 }
 
-export function buildApp(options?: BuildAppOptions) {
+export async function buildApp(options?: BuildAppOptions) {
   const pool =
     options?.pool !== undefined ? options.pool : createPool();
   const db: AppDatabase | null = pool ? createDb(pool) : null;
 
   const app = Fastify({ logger: false });
+
+  await registerOpenApiDocs(app);
 
   const corsOrigins = process.env.CORS_ALLOWED_ORIGINS?.split(",")
     .map((o) => o.trim())
@@ -123,25 +129,43 @@ export function buildApp(options?: BuildAppOptions) {
     if (!parsed.success) {
       return reply.code(400).send({ error: "invalid_body" });
     }
-    const expected = process.env.MVP_LOGIN_PASSWORD?.trim();
-    if (!expected) {
+    const email = resolveLoginEmail(parsed.data);
+    if (!email) {
+      return reply.code(400).send({ error: "invalid_body" });
+    }
+
+    let auth: { userId: string; role: UserRole } | "invalid_credentials" | "login_not_configured";
+
+    if (db) {
+      auth = await authenticateWithDatabase(db, email, parsed.data.password);
+      if (auth === "invalid_credentials" && isMvpPasswordFallbackEnabled()) {
+        auth = authenticateWithMvpFallback(parsed.data);
+      }
+    } else if (isMvpPasswordFallbackEnabled()) {
+      auth = authenticateWithMvpFallback(parsed.data);
+    } else {
       return reply.code(503).send({ error: "login_not_configured" });
     }
-    if (parsed.data.password !== expected) {
+
+    if (auth === "login_not_configured") {
+      return reply.code(503).send({ error: "login_not_configured" });
+    }
+    if (auth === "invalid_credentials") {
       return reply.code(401).send({ error: "invalid_credentials" });
     }
-    const role = roleForUserId(parsed.data.userId);
+
     const token = await reply.jwtSign({
-      sub: parsed.data.userId,
-      role,
+      sub: auth.userId,
+      role: auth.role,
     });
     void reply.setCookie("access_token", token, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24,
     });
-    return { ok: true as const, userId: parsed.data.userId, role };
+    return { ok: true as const, userId: auth.userId, role: auth.role };
   });
 
   app.get(
@@ -149,10 +173,7 @@ export function buildApp(options?: BuildAppOptions) {
     { preHandler: [app.authenticate] },
     async (request): Promise<AuthMeResponse> => {
       const user = request.user as { sub: string; role?: UserRole };
-      const role =
-        user.role === "mentor" || user.role === "student"
-          ? user.role
-          : roleForUserId(user.sub);
+      const role = roleFromJwtClaims(user.sub, user.role);
       return { userId: user.sub, role };
     },
   );

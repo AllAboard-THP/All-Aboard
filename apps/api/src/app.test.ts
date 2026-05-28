@@ -4,14 +4,16 @@ import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { drizzle } from "drizzle-orm/node-postgres";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
+import { parse as parseYaml } from "yaml";
 import { buildApp } from "./app";
+import { defaultSeedUsers, seedUsers } from "./db/seed";
+import { isOpenApiDocsEnabled } from "./openapi";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const mvpPassword = process.env.MVP_LOGIN_PASSWORD;
-
 describe("api", () => {
   it("GET /health returns 200", async () => {
-    const app = buildApp({ pool: null });
+    const app = await buildApp({ pool: null });
     const res = await app.inject({ method: "GET", url: "/health" });
     expect(res.statusCode).toBe(200);
     expect(JSON.parse(res.payload)).toEqual({ status: "ok" });
@@ -19,7 +21,7 @@ describe("api", () => {
   });
 
   it("GET /feed returns 503 when database is not configured", async () => {
-    const app = buildApp({ pool: null });
+    const app = await buildApp({ pool: null });
     const res = await app.inject({ method: "GET", url: "/feed" });
     expect(res.statusCode).toBe(503);
     const body = JSON.parse(res.payload) as { error: string };
@@ -27,29 +29,86 @@ describe("api", () => {
     await app.close();
   });
 
-  it("POST /auth/login returns 503 when MVP_LOGIN_PASSWORD is unset", async () => {
-    const prev = process.env.MVP_LOGIN_PASSWORD;
+  it("POST /auth/login returns 503 when login is not configured (staging, no DB)", async () => {
+    const prevPassword = process.env.MVP_LOGIN_PASSWORD;
+    const prevAppEnv = process.env.APP_ENV;
     delete process.env.MVP_LOGIN_PASSWORD;
-    const app = buildApp({ pool: null });
+    process.env.APP_ENV = "staging";
+    const app = await buildApp({ pool: null });
     try {
       const res = await app.inject({
         method: "POST",
         url: "/auth/login",
-        payload: { userId: "bob", password: "any" },
+        payload: { email: "bob@dev.local", password: "any" },
       });
       expect(res.statusCode).toBe(503);
       const body = JSON.parse(res.payload) as { error: string };
       expect(body.error).toBe("login_not_configured");
     } finally {
-      if (prev !== undefined) {
-        process.env.MVP_LOGIN_PASSWORD = prev;
+      if (prevPassword !== undefined) {
+        process.env.MVP_LOGIN_PASSWORD = prevPassword;
+      } else {
+        delete process.env.MVP_LOGIN_PASSWORD;
+      }
+      if (prevAppEnv !== undefined) {
+        process.env.APP_ENV = prevAppEnv;
+      } else {
+        delete process.env.APP_ENV;
+      }
+      await app.close();
+    }
+  });
+
+  it("POST /auth/login sets Secure cookie when NODE_ENV is production", async () => {
+    const prevNodeEnv = process.env.NODE_ENV;
+    const prevAppEnv = process.env.APP_ENV;
+    const prevJwt = process.env.JWT_SECRET;
+    const prevPassword = process.env.MVP_LOGIN_PASSWORD;
+    process.env.NODE_ENV = "production";
+    process.env.APP_ENV = "development";
+    process.env.JWT_SECRET = "test-jwt-secret-min-32-characters!!";
+    process.env.MVP_LOGIN_PASSWORD = "test-login-password";
+    const app = await buildApp({ pool: null });
+    await app.ready();
+    try {
+      const res = await app.inject({
+        method: "POST",
+        url: "/auth/login",
+        payload: { userId: "bob", password: "test-login-password" },
+      });
+      expect(res.statusCode).toBe(200);
+      const setCookie = res.headers["set-cookie"];
+      const cookieStr = Array.isArray(setCookie)
+        ? setCookie.join("; ")
+        : String(setCookie ?? "");
+      expect(cookieStr.toLowerCase()).toContain("secure");
+    } finally {
+      if (prevNodeEnv !== undefined) {
+        process.env.NODE_ENV = prevNodeEnv;
+      } else {
+        delete process.env.NODE_ENV;
+      }
+      if (prevAppEnv !== undefined) {
+        process.env.APP_ENV = prevAppEnv;
+      } else {
+        delete process.env.APP_ENV;
+      }
+      if (prevJwt !== undefined) {
+        process.env.JWT_SECRET = prevJwt;
+      } else {
+        delete process.env.JWT_SECRET;
+      }
+      if (prevPassword !== undefined) {
+        process.env.MVP_LOGIN_PASSWORD = prevPassword;
+      } else {
+        delete process.env.MVP_LOGIN_PASSWORD;
       }
       await app.close();
     }
   });
 
   it("POST /help-requests returns 503 when database is not configured", async () => {
-    const app = buildApp({ pool: null });
+    const app = await buildApp({ pool: null });
     await app.ready();
     const token = app.jwt.sign({ sub: "bob" });
     const res = await app.inject({
@@ -65,11 +124,117 @@ describe("api", () => {
   });
 });
 
-describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
+describe("CORS", () => {
+  it("does not set Access-Control-Allow-Origin when CORS_ALLOWED_ORIGINS is unset", async () => {
+    const prev = process.env.CORS_ALLOWED_ORIGINS;
+    delete process.env.CORS_ALLOWED_ORIGINS;
+    const app = await buildApp({ pool: null });
+    await app.ready();
+    try {
+      const getRes = await app.inject({
+        method: "GET",
+        url: "/health",
+        headers: { origin: "https://staging.allaboard.fr" },
+      });
+      expect(getRes.statusCode).toBe(200);
+      expect(getRes.headers["access-control-allow-origin"]).toBeUndefined();
+
+      const optionsRes = await app.inject({
+        method: "OPTIONS",
+        url: "/health",
+        headers: {
+          origin: "https://staging.allaboard.fr",
+          "access-control-request-method": "GET",
+        },
+      });
+      expect(optionsRes.headers["access-control-allow-origin"]).toBeUndefined();
+    } finally {
+      if (prev !== undefined) {
+        process.env.CORS_ALLOWED_ORIGINS = prev;
+      }
+      await app.close();
+    }
+  });
+
+  it("sets CORS headers with credentials for allowed origin preflight", async () => {
+    const prev = process.env.CORS_ALLOWED_ORIGINS;
+    process.env.CORS_ALLOWED_ORIGINS = "https://staging.allaboard.fr";
+    const app = await buildApp({ pool: null });
+    await app.ready();
+    try {
+      const optionsRes = await app.inject({
+        method: "OPTIONS",
+        url: "/health",
+        headers: {
+          origin: "https://staging.allaboard.fr",
+          "access-control-request-method": "GET",
+        },
+      });
+      expect(optionsRes.headers["access-control-allow-origin"]).toBe(
+        "https://staging.allaboard.fr",
+      );
+      expect(optionsRes.headers["access-control-allow-credentials"]).toBe(
+        "true",
+      );
+
+      const getRes = await app.inject({
+        method: "GET",
+        url: "/health",
+        headers: { origin: "https://staging.allaboard.fr" },
+      });
+      expect(getRes.statusCode).toBe(200);
+      expect(getRes.headers["access-control-allow-origin"]).toBe(
+        "https://staging.allaboard.fr",
+      );
+      expect(getRes.headers["access-control-allow-credentials"]).toBe(
+        "true",
+      );
+    } finally {
+      if (prev !== undefined) {
+        process.env.CORS_ALLOWED_ORIGINS = prev;
+      } else {
+        delete process.env.CORS_ALLOWED_ORIGINS;
+      }
+      await app.close();
+    }
+  });
+
+  it("does not reflect disallowed origins", async () => {
+    const prev = process.env.CORS_ALLOWED_ORIGINS;
+    process.env.CORS_ALLOWED_ORIGINS = "https://staging.allaboard.fr";
+    const app = await buildApp({ pool: null });
+    await app.ready();
+    try {
+      const optionsRes = await app.inject({
+        method: "OPTIONS",
+        url: "/health",
+        headers: {
+          origin: "https://evil.example.com",
+          "access-control-request-method": "GET",
+        },
+      });
+      expect(optionsRes.headers["access-control-allow-origin"]).toBeUndefined();
+    } finally {
+      if (prev !== undefined) {
+        process.env.CORS_ALLOWED_ORIGINS = prev;
+      } else {
+        delete process.env.CORS_ALLOWED_ORIGINS;
+      }
+      await app.close();
+    }
+  });
+});
+
+const seedPassword =
+  process.env.DEV_SEED_PASSWORD?.trim() ||
+  process.env.MVP_LOGIN_PASSWORD?.trim() ||
+  "";
+
+describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
   "api with database",
   () => {
     let pool: pg.Pool;
-    let app: ReturnType<typeof buildApp>;
+    let app: Awaited<ReturnType<typeof buildApp>>;
 
     beforeAll(async () => {
       pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
@@ -77,7 +242,11 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
       await migrate(db, {
         migrationsFolder: path.join(__dirname, "../drizzle"),
       });
-      app = buildApp({ pool });
+      const specs = defaultSeedUsers();
+      if (specs.length > 0) {
+        await seedUsers(db, specs);
+      }
+      app = await buildApp({ pool });
     });
 
     afterAll(async () => {
@@ -120,18 +289,18 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
       const res = await app.inject({
         method: "POST",
         url: "/auth/login",
-        payload: { userId: "bob", password: "wrong" },
+        payload: { email: "bob@dev.local", password: "wrong" },
       });
       expect(res.statusCode).toBe(401);
       const body = JSON.parse(res.payload) as { error: string };
       expect(body.error).toBe("invalid_credentials");
     });
 
-    it("POST /auth/login succeeds and sets access_token cookie", async () => {
+    it("POST /auth/login succeeds with email and password hash", async () => {
       const res = await app.inject({
         method: "POST",
         url: "/auth/login",
-        payload: { userId: "bob", password: mvpPassword },
+        payload: { email: "bob@dev.local", password: seedPassword },
       });
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload) as {
@@ -139,7 +308,11 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
         userId: string;
         role: string;
       };
-      expect(body).toEqual({ ok: true, userId: "bob", role: "student" });
+      expect(body).toEqual({
+        ok: true,
+        userId: "bob@dev.local",
+        role: "student",
+      });
       const setCookie = res.headers["set-cookie"];
       const cookieStr = Array.isArray(setCookie)
         ? setCookie.join("; ")
@@ -290,11 +463,11 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
       expect(body.responses).toEqual([]);
     });
 
-    it("GET /auth/me returns role for mentor userId alice on login", async () => {
+    it("GET /auth/me returns role for mentor alice@dev.local on login", async () => {
       const loginRes = await app.inject({
         method: "POST",
         url: "/auth/login",
-        payload: { userId: "alice", password: mvpPassword },
+        payload: { email: "alice@dev.local", password: seedPassword },
       });
       expect(loginRes.statusCode).toBe(200);
       const loginBody = JSON.parse(loginRes.payload) as { role: string };
@@ -315,7 +488,7 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
       });
       expect(meRes.statusCode).toBe(200);
       const me = JSON.parse(meRes.payload) as { userId: string; role: string };
-      expect(me).toEqual({ userId: "alice", role: "mentor" });
+      expect(me).toEqual({ userId: "alice@dev.local", role: "mentor" });
     });
 
     it("GET /mentor/feed returns only tagged requests", async () => {
@@ -347,3 +520,65 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
     });
   },
 );
+
+describe("OpenAPI", () => {
+  const openapiPath = path.join(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "openapi.yaml",
+  );
+
+  it("openapi.yaml describes GET /feed as FeedResponse", () => {
+    const spec = parseYaml(readFileSync(openapiPath, "utf8")) as {
+      paths: Record<
+        string,
+        { get?: { responses?: { "200"?: { content?: unknown } } } }
+      >;
+      components: { schemas: Record<string, unknown> };
+    };
+    const feedGet = spec.paths["/feed"]?.get;
+    expect(feedGet).toBeDefined();
+    const schemaRef = (
+      feedGet?.responses?.["200"]?.content as {
+        "application/json"?: { schema?: { $ref?: string } };
+      }
+    )?.["application/json"]?.schema?.$ref;
+    expect(schemaRef).toBe("#/components/schemas/FeedResponse");
+    expect(spec.components.schemas.FeedResponse).toBeDefined();
+  });
+
+  it("serves Swagger UI at /docs when docs are enabled", async () => {
+    const prevAppEnv = process.env.APP_ENV;
+    delete process.env.APP_ENV;
+    const app = await buildApp({ pool: null });
+    try {
+      expect(isOpenApiDocsEnabled()).toBe(true);
+      const res = await app.inject({ method: "GET", url: "/docs" });
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/text\/html/);
+    } finally {
+      if (prevAppEnv !== undefined) {
+        process.env.APP_ENV = prevAppEnv;
+      }
+      await app.close();
+    }
+  });
+
+  it("does not expose /docs when APP_ENV is production", async () => {
+    const prevAppEnv = process.env.APP_ENV;
+    process.env.APP_ENV = "production";
+    const app = await buildApp({ pool: null });
+    try {
+      expect(isOpenApiDocsEnabled()).toBe(false);
+      const res = await app.inject({ method: "GET", url: "/docs" });
+      expect(res.statusCode).toBe(404);
+    } finally {
+      if (prevAppEnv !== undefined) {
+        process.env.APP_ENV = prevAppEnv;
+      } else {
+        delete process.env.APP_ENV;
+      }
+      await app.close();
+    }
+  });
+});

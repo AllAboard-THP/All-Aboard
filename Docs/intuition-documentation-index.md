@@ -104,6 +104,7 @@ Les URL ci-dessous utilisent le hôte **`https://www.docs.intuition.systems`** ;
 ## Notes pour le monorepo All-Aboard
 
 - La doc décrit la **couche d’indexation Rust (subnet)** et les **endpoints GraphQL** comme interface principale de lecture sur le graphe ; voir [Intuition Network](https://www.docs.intuition.systems/docs/intuition-network) et [GraphQL API](https://www.docs.intuition.systems/docs/graphql-api/overview).
+- **All-Aboard consomme cet indexer** — pas de `apps/indexer` maison. Publication métier → SDK/contrats ; lecture enrichie → GraphQL. Décision : [ADR 0004](adr/0004-agent-indexer-architecture.md).
 - Pour une liste exhaustive avec corps de page, privilégier **`llms-full.txt`** plutôt que de crawler le site (sitemap non fiable au moment de la génération de cet index).
 
 ---
