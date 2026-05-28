@@ -17,6 +17,7 @@ ENV NODE_ENV=production
 
 COPY --from=installer /app/apps/api/dist ./apps/api/dist
 COPY --from=installer /app/apps/api/drizzle ./apps/api/drizzle
+COPY --from=installer /app/apps/api/openapi.yaml ./apps/api/openapi.yaml
 COPY --from=installer /app/apps/api/package.json ./apps/api/package.json
 COPY --from=installer /app/node_modules ./node_modules
 COPY --from=installer /app/packages/types/dist ./packages/types/dist
