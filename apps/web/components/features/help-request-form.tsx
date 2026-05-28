@@ -1,13 +1,15 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@allaboard/ui/components/button";
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
+
+import { Link, useRouter } from "@/i18n/navigation";
+import { mapApiErrorToKey } from "@/lib/map-api-error";
 
 type CreateResult = {
   item: { id: string };
@@ -31,8 +33,10 @@ async function loginAndCreate(input: {
     body: JSON.stringify({ email: input.email, password: input.password }),
   });
   if (!loginRes.ok) {
-    const t = await loginRes.text();
-    throw new Error(loginRes.status === 401 ? "Identifiants invalides." : t);
+    const text = await loginRes.text();
+    throw new Error(
+      loginRes.status === 401 ? "invalid_credentials" : text || "generic",
+    );
   }
 
   const createRes = await fetch("/api/help-requests", {
@@ -53,7 +57,7 @@ async function loginAndCreate(input: {
     throw err;
   }
   if (!createRes.ok) {
-    throw new Error(createText || `Erreur ${createRes.status}`);
+    throw new Error(createText || "generic");
   }
   return JSON.parse(createText) as CreateResult;
 }
@@ -61,6 +65,8 @@ async function loginAndCreate(input: {
 export function HelpRequestForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const t = useTranslations("helpRequest");
+  const tErrors = useTranslations("errors");
   const [email, setEmail] = useState("bob@dev.local");
   const [password, setPassword] = useState("");
   const [title, setTitle] = useState("");
@@ -100,15 +106,15 @@ export function HelpRequestForm() {
     mutation.mutate({ email, password, title, tags });
   }
 
-  const errorMessage =
+  const errorKey =
     mutation.error && mutation.error.message !== "duplicate"
-      ? mutation.error.message
+      ? mapApiErrorToKey(mutation.error.message)
       : null;
 
   return (
     <div className="mt-5 grid gap-4">
       <div className="grid gap-2">
-        <Label htmlFor="help-email">Email</Label>
+        <Label htmlFor="help-email">{t("emailLabel")}</Label>
         <Input
           id="help-email"
           type="email"
@@ -118,7 +124,7 @@ export function HelpRequestForm() {
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="help-password">Mot de passe</Label>
+        <Label htmlFor="help-password">{t("passwordLabel")}</Label>
         <Input
           id="help-password"
           type="password"
@@ -128,7 +134,7 @@ export function HelpRequestForm() {
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="help-title">Titre de la demande</Label>
+        <Label htmlFor="help-title">{t("titleLabel")}</Label>
         <Input
           id="help-title"
           value={title}
@@ -136,33 +142,30 @@ export function HelpRequestForm() {
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="help-tags">Tags (optionnel, séparés par virgule)</Label>
+        <Label htmlFor="help-tags">{t("tagsLabel")}</Label>
         <Input
           id="help-tags"
           value={tagsRaw}
           onChange={(e) => setTagsRaw(e.target.value)}
-          placeholder="mentor, rails"
+          placeholder={t("tagsPlaceholder")}
         />
       </div>
-      {errorMessage ? (
-        <p className="m-0 text-sm text-destructive">{errorMessage}</p>
+      {errorKey ? (
+        <p className="m-0 text-sm text-destructive">{tErrors(errorKey)}</p>
       ) : null}
       {duplicateId ? (
         <p className="m-0 text-sm text-destructive">
-          Doublon détecté (MOC).{" "}
+          {t("duplicateMessage")}{" "}
           <Link
             href={`/requests/${duplicateId}`}
             className="font-medium text-primary underline"
           >
-            Voir la demande existante
+            {t("viewExisting")}
           </Link>
         </p>
       ) : null}
       {rubberduckHint ? (
-        <p className="m-0 text-sm text-primary">
-          Rubberduck (stub) : titre court — piste IA possible (Phase 4). Publiez
-          une nouvelle demande ou consultez le feed.
-        </p>
+        <p className="m-0 text-sm text-primary">{t("rubberduckHint")}</p>
       ) : null}
       <Button
         type="button"
@@ -170,7 +173,7 @@ export function HelpRequestForm() {
         onClick={() => submit()}
         className="mt-1 w-full"
       >
-        {mutation.isPending ? "Envoi…" : "Connexion et publier"}
+        {mutation.isPending ? t("submitPending") : t("submit")}
       </Button>
     </div>
   );

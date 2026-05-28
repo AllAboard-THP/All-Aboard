@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import {
   Card,
@@ -9,22 +9,21 @@ import {
 } from "@allaboard/ui/components/card";
 import { HelpRequestForm } from "@/components/features/help-request-form";
 import { MarketingPageShell } from "@/components/features/marketing-page-shell";
+import { Link } from "@/i18n/navigation";
 
-export default function NewHelpRequestPage() {
+export default async function NewHelpRequestPage() {
+  const t = await getTranslations("helpRequest");
+  const tCommon = await getTranslations("common");
+
   return (
     <MarketingPageShell maxWidth="narrow">
       <Card className="bg-card/90">
         <CardHeader>
           <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
-            Nouvelle demande
+            {t("eyebrow")}
           </p>
-          <CardTitle className="text-2xl">
-            Publier une demande d&apos;aide
-          </CardTitle>
-          <CardDescription>
-            Connexion MVP (ADR 0001), puis envoi vers l&apos;API via le BFF{" "}
-            <code className="text-foreground">/api/help-requests</code>.
-          </CardDescription>
+          <CardTitle className="text-2xl">{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <HelpRequestForm />
@@ -33,7 +32,7 @@ export default function NewHelpRequestPage() {
               href="/"
               className="text-sm font-semibold text-primary hover:underline"
             >
-              Retour accueil
+              {tCommon("backHome")}
             </Link>
           </p>
         </CardContent>

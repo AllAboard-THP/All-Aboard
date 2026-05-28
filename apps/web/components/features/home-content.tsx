@@ -1,5 +1,5 @@
 import type { FeedResponse, HelpRequest } from "@allaboard/types";
-import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import {
   Alert,
@@ -16,20 +16,26 @@ import {
 } from "@allaboard/ui/components/card";
 
 import { FeedClientPreview } from "@/components/features/feed-client-preview";
+import { Link } from "@/i18n/navigation";
+import { formatDateTime } from "@/lib/format-datetime";
+import { mapApiErrorToKey } from "@/lib/map-api-error";
 
 type Props = {
   feed: FeedResponse | null;
   feedError: string | null;
 };
 
-function formatCreatedAt(iso: string): string {
-  return new Date(iso).toLocaleString("fr-FR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
-
-function FeedItemCard({ item }: { item: HelpRequest }) {
+function FeedItemCard({
+  item,
+  locale,
+  authorLabel,
+  tagsLabel,
+}: {
+  item: HelpRequest;
+  locale: string;
+  authorLabel: string;
+  tagsLabel: string | null;
+}) {
   const hasTags = Boolean(item.tags && item.tags.length > 0);
 
   return (
@@ -47,15 +53,13 @@ function FeedItemCard({ item }: { item: HelpRequest }) {
             </Link>
           </CardTitle>
           <CardDescription className="flex flex-wrap gap-x-3 gap-y-1">
-            <span>Auteur : {item.authorId}</span>
-            <span>{formatCreatedAt(item.createdAt)}</span>
+            <span>{authorLabel}</span>
+            <span>{formatDateTime(item.createdAt, locale)}</span>
           </CardDescription>
         </CardHeader>
-        {hasTags ? (
+        {hasTags && tagsLabel ? (
           <CardContent className="px-4 pt-0">
-            <p className="m-0 text-xs text-muted-foreground">
-              Tags : {item.tags!.join(", ")}
-            </p>
+            <p className="m-0 text-xs text-muted-foreground">{tagsLabel}</p>
           </CardContent>
         ) : null}
       </Card>
@@ -63,50 +67,52 @@ function FeedItemCard({ item }: { item: HelpRequest }) {
   );
 }
 
-export function HomeContent({ feed, feedError }: Props) {
+export async function HomeContent({ feed, feedError }: Props) {
+  const locale = await getLocale();
+  const t = await getTranslations("home");
+  const tCommon = await getTranslations("common");
+  const tErrors = await getTranslations("errors");
   const hasItems = Boolean(feed && feed.items.length > 0);
+  const feedErrorKey = feedError ? mapApiErrorToKey(feedError) : null;
 
   return (
     <div className="mx-auto w-full max-w-3xl p-6">
       <header className="mb-6">
         <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
-          All-Aboard
+          {t("eyebrow")}
         </p>
         <h1 className="mt-2 mb-2 text-3xl font-semibold text-foreground md:text-4xl">
-          Feed communautaire
+          {t("title")}
         </h1>
         <p className="m-0 max-w-prose text-base text-muted-foreground">
-          Parcourez les demandes d&apos;aide publiées par la communauté. Posez la
-          vôtre ou consultez une demande pour voir les réponses.
+          {t("description")}
         </p>
         <div className="mt-4">
           <Button asChild>
-            <Link href="/help/new">Nouvelle demande</Link>
+            <Link href="/help/new">{t("newRequestCta")}</Link>
           </Button>
         </div>
       </header>
 
-      <section aria-label="Feed des demandes d'aide">
+      <section aria-label={t("feedSectionAriaLabel")}>
         {feedError ? (
           <Alert variant="destructive" data-testid="feed-ssr-error">
-            <AlertTitle>Impossible de charger le feed</AlertTitle>
-            <AlertDescription>{feedError}</AlertDescription>
+            <AlertTitle>{t("loadErrorTitle")}</AlertTitle>
+            <AlertDescription>
+              {tErrors(feedErrorKey ?? "generic")}
+            </AlertDescription>
           </Alert>
         ) : null}
 
         {!feedError && feed && feed.items.length === 0 ? (
           <Card data-testid="feed-empty">
             <CardHeader>
-              <CardTitle className="text-lg">
-                Aucune demande pour l&apos;instant
-              </CardTitle>
-              <CardDescription>
-                Soyez le premier à publier une demande d&apos;aide.
-              </CardDescription>
+              <CardTitle className="text-lg">{t("emptyTitle")}</CardTitle>
+              <CardDescription>{t("emptyDescription")}</CardDescription>
             </CardHeader>
             <CardContent>
               <Button variant="outline" asChild>
-                <Link href="/help/new">Publier une demande</Link>
+                <Link href="/help/new">{t("publishRequest")}</Link>
               </Button>
             </CardContent>
           </Card>
@@ -118,7 +124,17 @@ export function HomeContent({ feed, feedError }: Props) {
             data-testid="feed-ssr-list"
           >
             {feed!.items.map((item) => (
-              <FeedItemCard key={item.id} item={item} />
+              <FeedItemCard
+                key={item.id}
+                item={item}
+                locale={locale}
+                authorLabel={tCommon("author", { authorId: item.authorId })}
+                tagsLabel={
+                  item.tags && item.tags.length > 0
+                    ? tCommon("tags", { tags: item.tags.join(", ") })
+                    : null
+                }
+              />
             ))}
           </ul>
         ) : null}
