@@ -352,16 +352,24 @@ components:
 
     LoginBody:
       type: object
-      required: [userId, password]
+      required: [password]
       properties:
+        email:
+          type: string
+          format: email
+          maxLength: 256
         userId:
           type: string
+          description: Alias legacy dev (bob, alice) — ignoré en staging/prod
           minLength: 1
           maxLength: 256
         password:
           type: string
           minLength: 1
           maxLength: 256
+      oneOf:
+        - required: [email]
+        - required: [userId]
 
     LoginResponse:
       type: object

@@ -35,7 +35,8 @@ postgresql://<USER>:<PASSWORD>@<HOST_INTERNE_POSTGRES_STAGING>:5432/<DATABASE>
 |----------|-------------|------|
 | `DATABASE_URL` | Oui | Postgres staging interne |
 | `JWT_SECRET` | Oui | ≥ 32 caractères (**distinct** de dev) |
-| `MVP_LOGIN_PASSWORD` | Oui (MVP interne) | Mot de passe partagé équipe — Dokploy uniquement |
+| `DEV_SEED_PASSWORD` | Oui (post ADR 0003) | Mot de passe comptes seed — Dokploy uniquement ; lancer `db:seed` une fois |
+| `MVP_LOGIN_PASSWORD` | **Non** (retirer) | Remplacé par users hash — [ADR 0003](adr/0003-authentication-users-production.md) |
 | `PORT` | Oui | `4000` |
 | `NODE_ENV` | Oui | `production` |
 | `APP_ENV` | Recommandé | `staging` |
@@ -67,11 +68,14 @@ postgresql://<USER>:<PASSWORD>@<HOST_INTERNE_POSTGRES_STAGING>:5432/<DATABASE>
 BASE_WEB=https://staging.allaboard.fr BASE_API=https://api-staging.allaboard.fr pnpm smoke:dev
 ```
 
-**Complet** (auth + création + détail) — `MVP_LOGIN_PASSWORD` = variable API Dokploy staging :
+**Complet** (auth + création + détail) — après seed users (`bob@dev.local` ou compte équipe) :
 
 ```bash
-BASE_WEB=https://staging.allaboard.fr BASE_API=https://api-staging.allaboard.fr MVP_LOGIN_PASSWORD='<secret-dokploy>' pnpm smoke:dev
+BASE_WEB=https://staging.allaboard.fr BASE_API=https://api-staging.allaboard.fr \
+SMOKE_LOGIN_EMAIL='bob@dev.local' SMOKE_LOGIN_PASSWORD='<secret-seed>' pnpm smoke:dev
 ```
+
+**Seed staging** (une fois, shell Dokploy ou job) : `DATABASE_URL` + `DEV_SEED_PASSWORD` → `pnpm --filter api run db:seed`.
 
 Attendu post-promotion : feed Postgres (UUID), pas stub Phase 1 (`id: "1"`).
 

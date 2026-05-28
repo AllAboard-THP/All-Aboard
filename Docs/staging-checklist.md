@@ -17,14 +17,14 @@ Référence issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31) /
 
 ## Auth (bloquant staging public)
 
-- [ ] [ADR 0003](adr/0003-authentication-users-production.md) validé
-- [ ] `MVP_LOGIN_PASSWORD` retiré de staging
-- [ ] Comptes réels ou SSO tranchés
+- [x] [ADR 0003](adr/0003-authentication-users-production.md) accepté (code 2026-05-28)
+- [ ] `MVP_LOGIN_PASSWORD` retiré de staging Dokploy (ops : après seed comptes équipe)
+- [ ] Comptes réels seedés sur Postgres staging (`pnpm --filter api run db:seed` + `DEV_SEED_PASSWORD` hors repo)
 
 ## Infra Dokploy staging
 
 - [x] Env Dokploy `staging` provisionné (Web, API, Postgres) — domaines `staging.allaboard.fr` / `api-staging.allaboard.fr`
-- [x] Vars API Phase 2 (`DATABASE_URL`, `JWT_SECRET`, `MVP_LOGIN_PASSWORD`) — 2026-05-25
+- [x] Vars API Phase 2 (`DATABASE_URL`, `JWT_SECRET`) — 2026-05-25 ; `MVP_LOGIN_PASSWORD` à retirer post-seed ADR 0003
 - [x] `API_URL` interne Web → API staging cohérent
 - [x] Code MVP déployé (PR #54 + redeploy Web manuel 2026-05-27 après build auto en erreur)
 - [x] Smoke HTTPS : `BASE_WEB=https://staging.allaboard.fr BASE_API=https://api-staging.allaboard.fr pnpm smoke:dev` (base + auth, 2026-05-27)

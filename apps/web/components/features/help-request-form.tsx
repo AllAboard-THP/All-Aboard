@@ -19,7 +19,7 @@ type DuplicateError = {
 };
 
 async function loginAndCreate(input: {
-  userId: string;
+  email: string;
   password: string;
   title: string;
   tags: string[];
@@ -28,7 +28,7 @@ async function loginAndCreate(input: {
     method: "POST",
     headers: { "content-type": "application/json" },
     credentials: "include",
-    body: JSON.stringify({ userId: input.userId, password: input.password }),
+    body: JSON.stringify({ email: input.email, password: input.password }),
   });
   if (!loginRes.ok) {
     const t = await loginRes.text();
@@ -61,7 +61,7 @@ async function loginAndCreate(input: {
 export function HelpRequestForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [userId, setUserId] = useState("bob");
+  const [email, setEmail] = useState("bob@dev.local");
   const [password, setPassword] = useState("");
   const [title, setTitle] = useState("");
   const [tagsRaw, setTagsRaw] = useState("");
@@ -97,7 +97,7 @@ export function HelpRequestForm() {
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
-    mutation.mutate({ userId, password, title, tags });
+    mutation.mutate({ email, password, title, tags });
   }
 
   const errorMessage =
@@ -108,16 +108,17 @@ export function HelpRequestForm() {
   return (
     <div className="mt-5 grid gap-4">
       <div className="grid gap-2">
-        <Label htmlFor="help-user-id">Identifiant utilisateur</Label>
+        <Label htmlFor="help-email">Email</Label>
         <Input
-          id="help-user-id"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
+          id="help-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           autoComplete="username"
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="help-password">Mot de passe MVP</Label>
+        <Label htmlFor="help-password">Mot de passe</Label>
         <Input
           id="help-password"
           type="password"
