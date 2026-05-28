@@ -1,0 +1,95 @@
+{
+  "metadata": {
+    "title": "All-Aboard",
+    "description": "Plateforme communautaire d'entraide pour développeurs."
+  },
+  "nav": {
+    "feed": "Feed",
+    "newRequest": "Nouvelle demande",
+    "mentor": "Mentor",
+    "mainAriaLabel": "Navigation principale"
+  },
+  "common": {
+    "brand": "All-Aboard",
+    "author": "Auteur : {authorId}",
+    "tags": "Tags : {tags}",
+    "backToFeed": "Retour au feed",
+    "backHome": "Retour accueil",
+    "refetching": "Mise à jour…"
+  },
+  "home": {
+    "eyebrow": "All-Aboard",
+    "title": "Feed communautaire",
+    "description": "Parcourez les demandes d'aide publiées par la communauté. Posez la vôtre ou consultez une demande pour voir les réponses.",
+    "newRequestCta": "Nouvelle demande",
+    "feedSectionAriaLabel": "Feed des demandes d'aide",
+    "loadErrorTitle": "Impossible de charger le feed",
+    "emptyTitle": "Aucune demande pour l'instant",
+    "emptyDescription": "Soyez le premier à publier une demande d'aide.",
+    "publishRequest": "Publier une demande"
+  },
+  "feed": {
+    "loading": "Chargement du feed (client)…",
+    "clientError": "Erreur client : {message}",
+    "useQuerySummary": "useQuery : {count} entrée(s) — même source que le SSR (BFF /api/feed).",
+    "refresh": "Rafraîchir",
+    "refreshAriaLabel": "Rafraîchir le feed"
+  },
+  "helpRequest": {
+    "eyebrow": "Nouvelle demande",
+    "title": "Publier une demande d'aide",
+    "description": "Connexion MVP (ADR 0001), puis envoi vers l'API via le BFF /api/help-requests.",
+    "emailLabel": "Email",
+    "passwordLabel": "Mot de passe",
+    "titleLabel": "Titre de la demande",
+    "tagsLabel": "Tags (optionnel, séparés par virgule)",
+    "tagsPlaceholder": "mentor, rails",
+    "duplicateMessage": "Doublon détecté (MOC).",
+    "viewExisting": "Voir la demande existante",
+    "rubberduckHint": "Rubberduck (stub) : titre court — piste IA possible (Phase 4). Publiez une nouvelle demande ou consultez le feed.",
+    "submitPending": "Envoi…",
+    "submit": "Connexion et publier"
+  },
+  "detail": {
+    "eyebrow": "Demande d'aide",
+    "notFoundTitle": "Demande introuvable",
+    "notFoundDescription": "Aucune demande ne correspond à l'identifiant {id}.",
+    "loadErrorTitle": "Impossible de charger la demande",
+    "responsesSectionAriaLabel": "Réponses",
+    "responsesTitle": "Réponses",
+    "responsesEmptyTitle": "Aucune réponse pour l'instant",
+    "responsesEmptyDescription": "Les réponses de la communauté et des mentors apparaîtront ici."
+  },
+  "mentor": {
+    "eyebrow": "Mentor",
+    "title": "Demandes à traiter",
+    "connectedAs": "Connecté en tant que {userId} — demandes taguées mentor/domaine.",
+    "unauthenticatedTitle": "Connexion requise",
+    "unauthenticatedDescriptionBefore": "Connectez-vous via",
+    "unauthenticatedDescriptionAfter": "pour accéder au dashboard mentor.",
+    "forbiddenTitle": "Accès réservé aux mentors",
+    "forbiddenDescription": "Compte MVP mentor : utilisez l'identifiant alice (ou un id listé dans MVP_MENTOR_USER_IDS).",
+    "emptyTitle": "Aucune demande taguée",
+    "emptyDescription": "Les demandes avec des tags mentor ou domaine apparaîtront ici.",
+    "loadErrorTitle": "Impossible de charger les demandes"
+  },
+  "errors": {
+    "not_found": "Ressource introuvable.",
+    "invalid_credentials": "Identifiants invalides.",
+    "duplicate": "Doublon détecté.",
+    "database_unavailable": "Service temporairement indisponible.",
+    "unauthorized": "Authentification requise.",
+    "generic": "Une erreur est survenue.",
+    "unknown": "Erreur inconnue"
+  },
+  "localeSwitcher": {
+    "label": "Langue",
+    "fr": "FR",
+    "en": "EN"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "La page demandée n'existe pas.",
+    "backHome": "Retour à l'accueil"
+  }
+}

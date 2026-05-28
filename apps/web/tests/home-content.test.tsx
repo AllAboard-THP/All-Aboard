@@ -2,9 +2,17 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { cleanup, render, screen, within } from "@testing-library/react";
 
 import { HomeContent } from "@/components/features/home-content";
+import { createServerTranslator } from "./render-with-intl";
 
-vi.mock("next/link", () => ({
-  default: ({
+vi.mock("next-intl/server", () => ({
+  getLocale: vi.fn(() => Promise.resolve("fr")),
+  getTranslations: vi.fn((namespace: string) =>
+    Promise.resolve(createServerTranslator(namespace, "fr")),
+  ),
+}));
+
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({
     children,
     href,
     ...props
@@ -47,15 +55,17 @@ const sampleFeed = {
 };
 
 describe("HomeContent", () => {
-  it("renders community feed hero instead of construction page", () => {
-    render(<HomeContent feed={sampleFeed} feedError={null} />);
+  it("renders community feed hero instead of construction page", async () => {
+    render(await HomeContent({ feed: sampleFeed, feedError: null }));
 
-    expect(screen.getByRole("heading", { level: 1, name: /Feed communautaire/i })).toBeTruthy();
+    expect(
+      screen.getByRole("heading", { level: 1, name: /Feed communautaire/i }),
+    ).toBeTruthy();
     expect(screen.queryByText(/Site en construction/i)).toBeNull();
   });
 
-  it("renders feed items with links to request detail pages", () => {
-    render(<HomeContent feed={sampleFeed} feedError={null} />);
+  it("renders feed items with links to request detail pages", async () => {
+    render(await HomeContent({ feed: sampleFeed, feedError: null }));
 
     const list = screen.getByTestId("feed-ssr-list");
     const links = within(list).getAllByRole("link");
@@ -66,27 +76,29 @@ describe("HomeContent", () => {
     expect(links[1]?.getAttribute("href")).toBe("/requests/req-2");
   });
 
-  it("shows item metadata including author, date and tags", () => {
-    render(<HomeContent feed={sampleFeed} feedError={null} />);
+  it("shows item metadata including author, date and tags", async () => {
+    render(await HomeContent({ feed: sampleFeed, feedError: null }));
 
     expect(screen.getByText(/Auteur : bob/i)).toBeTruthy();
     expect(screen.getByText(/Tags : javascript, async/i)).toBeTruthy();
   });
 
-  it("shows destructive alert when feed SSR fails", () => {
+  it("shows destructive alert when feed SSR fails", async () => {
     render(
-      <HomeContent feed={null} feedError="API indisponible (503)" />,
+      await HomeContent({ feed: null, feedError: "API indisponible (503)" }),
     );
 
     const alert = screen.getByTestId("feed-ssr-error");
     expect(alert.getAttribute("role")).toBe("alert");
     expect(screen.getByText(/Impossible de charger le feed/i)).toBeTruthy();
-    expect(screen.getByText("API indisponible (503)")).toBeTruthy();
+    expect(
+      screen.getByText(/Service temporairement indisponible/i),
+    ).toBeTruthy();
     expect(screen.queryByTestId("feed-ssr-list")).toBeNull();
   });
 
-  it("shows empty state with link to create a request", () => {
-    render(<HomeContent feed={{ items: [] }} feedError={null} />);
+  it("shows empty state with link to create a request", async () => {
+    render(await HomeContent({ feed: { items: [] }, feedError: null }));
 
     expect(screen.getByTestId("feed-empty")).toBeTruthy();
     expect(screen.getByText(/Aucune demande pour l'instant/i)).toBeTruthy();
@@ -95,15 +107,15 @@ describe("HomeContent", () => {
     expect(createLink.getAttribute("href")).toBe("/help/new");
   });
 
-  it("keeps Nouvelle demande CTA in the hero", () => {
-    render(<HomeContent feed={sampleFeed} feedError={null} />);
+  it("keeps Nouvelle demande CTA in the hero", async () => {
+    render(await HomeContent({ feed: sampleFeed, feedError: null }));
 
     const cta = screen.getByRole("link", { name: /Nouvelle demande/i });
     expect(cta.getAttribute("href")).toBe("/help/new");
   });
 
-  it("includes client feed preview for refresh", () => {
-    render(<HomeContent feed={sampleFeed} feedError={null} />);
+  it("includes client feed preview for refresh", async () => {
+    render(await HomeContent({ feed: sampleFeed, feedError: null }));
 
     expect(screen.getByTestId("feed-client-preview")).toBeTruthy();
   });

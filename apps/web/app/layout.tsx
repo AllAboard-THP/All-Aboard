@@ -1,23 +1,7 @@
-import type { Metadata } from "next";
-
-import "./globals.css";
-
-import { Providers } from "./providers";
-
-export const metadata: Metadata = {
-  title: "All-Aboard",
+type Props = {
+  children: React.ReactNode;
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="fr" className="dark" suppressHydrationWarning>
-      <body className="min-h-screen antialiased">
-        <Providers>{children}</Providers>
-      </body>
-    </html>
-  );
+export default function RootLayout({ children }: Props) {
+  return children;
 }

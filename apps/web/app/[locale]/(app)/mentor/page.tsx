@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { cookies } from "next/headers";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import {
   Alert,
@@ -15,18 +15,19 @@ import {
   CardTitle,
 } from "@allaboard/ui/components/card";
 
+import { Link } from "@/i18n/navigation";
 import { fetchAuthMe, fetchMentorFeed } from "@/lib/api-server";
+import { formatDateTime } from "@/lib/format-datetime";
+import { mapApiErrorToKey } from "@/lib/map-api-error";
 
 export const dynamic = "force-dynamic";
 
-function formatCreatedAt(iso: string): string {
-  return new Date(iso).toLocaleString("fr-FR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
-
 export default async function MentorDashboardPage() {
+  const locale = await getLocale();
+  const t = await getTranslations("mentor");
+  const tCommon = await getTranslations("common");
+  const tNav = await getTranslations("nav");
+  const tErrors = await getTranslations("errors");
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
 
@@ -34,13 +35,13 @@ export default async function MentorDashboardPage() {
     return (
       <div className="mx-auto w-full max-w-3xl p-6">
         <Alert data-testid="mentor-unauthenticated">
-          <AlertTitle>Connexion requise</AlertTitle>
+          <AlertTitle>{t("unauthenticatedTitle")}</AlertTitle>
           <AlertDescription>
-            Connectez-vous via{" "}
+            {t("unauthenticatedDescriptionBefore")}{" "}
             <Link href="/help/new" className="text-primary underline">
-              Nouvelle demande
+              {tNav("newRequest")}
             </Link>{" "}
-            pour accéder au dashboard mentor.
+            {t("unauthenticatedDescriptionAfter")}
           </AlertDescription>
         </Alert>
       </div>
@@ -52,16 +53,12 @@ export default async function MentorDashboardPage() {
     return (
       <div className="mx-auto w-full max-w-3xl p-6">
         <Alert variant="destructive" data-testid="mentor-forbidden">
-          <AlertTitle>Accès réservé aux mentors</AlertTitle>
-          <AlertDescription>
-            Compte MVP mentor : utilisez l&apos;identifiant{" "}
-            <code className="text-foreground">alice</code> (ou un id listé dans{" "}
-            <code className="text-foreground">MVP_MENTOR_USER_IDS</code>).
-          </AlertDescription>
+          <AlertTitle>{t("forbiddenTitle")}</AlertTitle>
+          <AlertDescription>{t("forbiddenDescription")}</AlertDescription>
         </Alert>
         <div className="mt-4">
           <Button variant="outline" asChild>
-            <Link href="/">Retour au feed</Link>
+            <Link href="/">{tCommon("backToFeed")}</Link>
           </Button>
         </div>
       </div>
@@ -74,32 +71,31 @@ export default async function MentorDashboardPage() {
     <div className="mx-auto w-full max-w-3xl p-6">
       <header className="mb-6">
         <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
-          Mentor
+          {t("eyebrow")}
         </p>
         <h1 className="mt-2 mb-2 text-3xl font-semibold text-foreground">
-          Demandes à traiter
+          {t("title")}
         </h1>
         <p className="m-0 text-muted-foreground">
-          Connecté en tant que {meResult.data.userId} — demandes taguées
-          mentor/domaine.
+          {t("connectedAs", { userId: meResult.data.userId })}
         </p>
       </header>
 
       {feedResult.ok && feedResult.data.items.length === 0 ? (
         <Card data-testid="mentor-feed-empty">
           <CardHeader>
-            <CardTitle className="text-lg">Aucune demande taguée</CardTitle>
-            <CardDescription>
-              Les demandes avec des tags mentor ou domaine apparaîtront ici.
-            </CardDescription>
+            <CardTitle className="text-lg">{t("emptyTitle")}</CardTitle>
+            <CardDescription>{t("emptyDescription")}</CardDescription>
           </CardHeader>
         </Card>
       ) : null}
 
       {!feedResult.ok ? (
         <Alert variant="destructive" data-testid="mentor-feed-error">
-          <AlertTitle>Impossible de charger les demandes</AlertTitle>
-          <AlertDescription>{feedResult.error}</AlertDescription>
+          <AlertTitle>{t("loadErrorTitle")}</AlertTitle>
+          <AlertDescription>
+            {tErrors(mapApiErrorToKey(feedResult.error))}
+          </AlertDescription>
         </Alert>
       ) : null}
 
@@ -121,14 +117,14 @@ export default async function MentorDashboardPage() {
                     </Link>
                   </CardTitle>
                   <CardDescription className="flex flex-wrap gap-x-3 gap-y-1">
-                    <span>Auteur : {item.authorId}</span>
-                    <span>{formatCreatedAt(item.createdAt)}</span>
+                    <span>{tCommon("author", { authorId: item.authorId })}</span>
+                    <span>{formatDateTime(item.createdAt, locale)}</span>
                   </CardDescription>
                 </CardHeader>
                 {item.tags && item.tags.length > 0 ? (
                   <CardContent className="pt-0">
                     <p className="m-0 text-xs text-muted-foreground">
-                      Tags : {item.tags.join(", ")}
+                      {tCommon("tags", { tags: item.tags.join(", ") })}
                     </p>
                   </CardContent>
                 ) : null}
@@ -140,7 +136,7 @@ export default async function MentorDashboardPage() {
 
       <div className="mt-6">
         <Button variant="outline" asChild>
-          <Link href="/">Retour au feed</Link>
+          <Link href="/">{tCommon("backToFeed")}</Link>
         </Button>
       </div>
     </div>

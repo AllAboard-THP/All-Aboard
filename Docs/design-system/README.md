@@ -43,9 +43,9 @@ Ce dossier est la **source de vérité** pour contribuer au design system All-Ab
 packages/ui/          @allaboard/ui — tokens, primitives, stories, tests
 apps/storybook/       @allaboard/storybook — config SB uniquement
 apps/web/
-  app/(app)/          pages produit sous AppShell
+  app/[locale]/(app)/   pages produit sous AppShell (i18n next-intl)
   app/health/         hors shell
-  components/features/   métier (dont app-shell*.tsx)
+  components/features/   métier (dont app-shell*.tsx) — textes UI dans messages/{fr,en}.json (ADR [0005](../adr/0005-i18n-web-next-intl.md))
   components/blocks/     blocks shadcn page
 ```
 

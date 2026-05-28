@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { AppShellNav } from "@/components/features/app-shell-nav";
+import { LocaleSwitcher } from "@/components/features/locale-switcher";
 
 type AppShellProps = {
   children: ReactNode;
@@ -14,7 +15,10 @@ export function AppShell({ children }: AppShellProps) {
           <p className="m-0 text-sm font-bold tracking-widest text-primary uppercase">
             All-Aboard
           </p>
-          <AppShellNav />
+          <div className="flex flex-wrap items-center gap-3">
+            <AppShellNav />
+            <LocaleSwitcher />
+          </div>
         </div>
       </header>
       <main id="main-content" className="flex-1">

@@ -1,19 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 
 import {
   APP_SHELL_NAV,
   AppShellNav,
 } from "@/components/features/app-shell-nav";
+import { renderWithIntl } from "./render-with-intl";
 
 const usePathname = vi.fn(() => "/");
 
-vi.mock("next/navigation", () => ({
-  usePathname: () => usePathname(),
-}));
-
-vi.mock("next/link", () => ({
-  default: ({
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({
     children,
     href,
     ...props
@@ -25,6 +22,7 @@ vi.mock("next/link", () => ({
       {children}
     </a>
   ),
+  usePathname: () => usePathname(),
 }));
 
 function getPrimaryNav() {
@@ -40,26 +38,40 @@ describe("AppShellNav", () => {
   });
 
   it("renders three navigation links", () => {
-    render(<AppShellNav />);
+    renderWithIntl(<AppShellNav />);
     const nav = getPrimaryNav();
-    for (const { label } of APP_SHELL_NAV) {
+    for (const { labelKey } of APP_SHELL_NAV) {
+      const label =
+        labelKey === "feed"
+          ? "Feed"
+          : labelKey === "newRequest"
+            ? "Nouvelle demande"
+            : "Mentor";
       expect(nav.getByRole("link", { name: label })).toBeTruthy();
     }
   });
 
   it("marks Feed as current page on /", () => {
-    render(<AppShellNav />);
+    renderWithIntl(<AppShellNav />);
     const nav = getPrimaryNav();
     const home = nav.getByRole("link", { name: "Feed" });
     expect(home.getAttribute("aria-current")).toBe("page");
-    expect(nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute("aria-current")).toBeNull();
+    expect(
+      nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute(
+        "aria-current",
+      ),
+    ).toBeNull();
   });
 
   it("marks Nouvelle demande as current on /help/new", () => {
     usePathname.mockReturnValue("/help/new");
-    render(<AppShellNav />);
+    renderWithIntl(<AppShellNav />);
     const nav = getPrimaryNav();
-    expect(nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute("aria-current")).toBe("page");
+    expect(
+      nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute(
+        "aria-current",
+      ),
+    ).toBe("page");
     expect(nav.getByRole("link", { name: "Feed" }).getAttribute("aria-current")).toBeNull();
   });
 });

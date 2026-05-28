@@ -2,6 +2,7 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { FeedResponse } from "@allaboard/types";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@allaboard/ui/components/button";
 
@@ -15,6 +16,8 @@ async function fetchFeedJson(): Promise<FeedResponse> {
 
 export function FeedClientPreview() {
   const queryClient = useQueryClient();
+  const t = useTranslations("feed");
+  const tCommon = useTranslations("common");
   const q = useQuery({
     queryKey: ["feed"],
     queryFn: fetchFeedJson,
@@ -22,24 +25,19 @@ export function FeedClientPreview() {
 
   if (q.isPending) {
     return (
-      <p className="mt-2 text-sm text-muted-foreground">
-        Chargement du feed (client)…
-      </p>
+      <p className="mt-2 text-sm text-muted-foreground">{t("loading")}</p>
     );
   }
   if (q.isError) {
     return (
       <p className="mt-2 text-sm text-destructive">
-        Erreur client : {q.error.message}
+        {t("clientError", { message: q.error.message })}
       </p>
     );
   }
   return (
     <div className="mt-2">
-      <p className="m-0 text-sm text-primary">
-        useQuery : {q.data.items.length} entrée(s) — même source que le SSR (BFF{" "}
-        <code className="text-foreground">/api/feed</code>).
-      </p>
+      <p className="m-0 text-sm text-primary">{t("useQuerySummary", { count: q.data.items.length })}</p>
       <div className="mt-2.5 flex flex-wrap items-center gap-2.5">
         <Button
           type="button"
@@ -48,16 +46,16 @@ export function FeedClientPreview() {
           onClick={() => {
             void queryClient.invalidateQueries({ queryKey: ["feed"] });
           }}
-          aria-label="Rafraîchir le feed"
+          aria-label={t("refreshAriaLabel")}
         >
-          Rafraîchir
+          {t("refresh")}
         </Button>
         {q.isFetching && !q.isPending ? (
           <span
             className="text-sm text-muted-foreground"
             data-testid="feed-refetching"
           >
-            Mise à jour…
+            {tCommon("refetching")}
           </span>
         ) : null}
       </div>

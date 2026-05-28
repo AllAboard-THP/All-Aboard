@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import type { HelpRequestDetailResponse } from "@allaboard/types";
+import { useTranslations } from "next-intl";
 
 type Props = {
   requestId: string;
@@ -19,6 +20,7 @@ async function fetchDetail(
 }
 
 export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
+  const t = useTranslations("common");
   const q = useQuery({
     queryKey: ["help-request", requestId],
     queryFn: () => fetchDetail(requestId),
@@ -32,7 +34,7 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
         className="text-sm text-muted-foreground"
         data-testid="help-request-refetching"
       >
-        Mise à jour…
+        {t("refetching")}
       </p>
     );
   }

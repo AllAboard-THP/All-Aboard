@@ -1,0 +1,95 @@
+{
+  "metadata": {
+    "title": "All-Aboard",
+    "description": "Community help platform for developers."
+  },
+  "nav": {
+    "feed": "Feed",
+    "newRequest": "New request",
+    "mentor": "Mentor",
+    "mainAriaLabel": "Main navigation"
+  },
+  "common": {
+    "brand": "All-Aboard",
+    "author": "Author: {authorId}",
+    "tags": "Tags: {tags}",
+    "backToFeed": "Back to feed",
+    "backHome": "Back home",
+    "refetching": "Updating…"
+  },
+  "home": {
+    "eyebrow": "All-Aboard",
+    "title": "Community feed",
+    "description": "Browse help requests published by the community. Post your own or open a request to see responses.",
+    "newRequestCta": "New request",
+    "feedSectionAriaLabel": "Help requests feed",
+    "loadErrorTitle": "Unable to load feed",
+    "emptyTitle": "No requests yet",
+    "emptyDescription": "Be the first to publish a help request.",
+    "publishRequest": "Publish a request"
+  },
+  "feed": {
+    "loading": "Loading feed (client)…",
+    "clientError": "Client error: {message}",
+    "useQuerySummary": "useQuery: {count} item(s) — same source as SSR (BFF /api/feed).",
+    "refresh": "Refresh",
+    "refreshAriaLabel": "Refresh feed"
+  },
+  "helpRequest": {
+    "eyebrow": "New request",
+    "title": "Publish a help request",
+    "description": "MVP login (ADR 0001), then submit to the API via BFF /api/help-requests.",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "titleLabel": "Request title",
+    "tagsLabel": "Tags (optional, comma-separated)",
+    "tagsPlaceholder": "mentor, rails",
+    "duplicateMessage": "Duplicate detected (MOC).",
+    "viewExisting": "View existing request",
+    "rubberduckHint": "Rubberduck (stub): short title — AI hint possible (Phase 4). Publish a new request or browse the feed.",
+    "submitPending": "Sending…",
+    "submit": "Sign in and publish"
+  },
+  "detail": {
+    "eyebrow": "Help request",
+    "notFoundTitle": "Request not found",
+    "notFoundDescription": "No request matches identifier {id}.",
+    "loadErrorTitle": "Unable to load request",
+    "responsesSectionAriaLabel": "Responses",
+    "responsesTitle": "Responses",
+    "responsesEmptyTitle": "No responses yet",
+    "responsesEmptyDescription": "Community and mentor responses will appear here."
+  },
+  "mentor": {
+    "eyebrow": "Mentor",
+    "title": "Requests to handle",
+    "connectedAs": "Signed in as {userId} — requests tagged mentor/domain.",
+    "unauthenticatedTitle": "Sign-in required",
+    "unauthenticatedDescriptionBefore": "Sign in via",
+    "unauthenticatedDescriptionAfter": "to access the mentor dashboard.",
+    "forbiddenTitle": "Mentors only",
+    "forbiddenDescription": "MVP mentor account: use identifier alice (or an id listed in MVP_MENTOR_USER_IDS).",
+    "emptyTitle": "No tagged requests",
+    "emptyDescription": "Requests with mentor or domain tags will appear here.",
+    "loadErrorTitle": "Unable to load requests"
+  },
+  "errors": {
+    "not_found": "Resource not found.",
+    "invalid_credentials": "Invalid credentials.",
+    "duplicate": "Duplicate detected.",
+    "database_unavailable": "Service temporarily unavailable.",
+    "unauthorized": "Authentication required.",
+    "generic": "Something went wrong.",
+    "unknown": "Unknown error"
+  },
+  "localeSwitcher": {
+    "label": "Language",
+    "fr": "FR",
+    "en": "EN"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The requested page does not exist.",
+    "backHome": "Back to home"
+  }
+}
