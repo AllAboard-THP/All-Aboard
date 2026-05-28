@@ -55,7 +55,7 @@ export const Info: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-2 bg-background p-4">
+    <div className="flex flex-wrap gap-2 p-4">
       <Button onClick={() => toast.success("Succès")}>Succès</Button>
       <Button variant="destructive" onClick={() => toast.error("Erreur")}>
         Erreur

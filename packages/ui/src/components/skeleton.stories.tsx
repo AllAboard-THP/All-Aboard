@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
+import { PatternStoryFrame } from "../patterns/pattern-story-frame";
 import { Skeleton } from "./skeleton";
 
 const meta = {
@@ -17,7 +18,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
-    <div className="flex w-80 flex-col gap-3 bg-background p-4">
+    <div className="flex w-80 flex-col gap-3 p-4">
       <Skeleton className="h-4 w-3/4" />
       <Skeleton className="h-4 w-1/2" />
       <Skeleton className="h-4 w-full" />
@@ -26,13 +27,16 @@ export const Default: Story = {
 };
 
 export const FeedItemPlaceholder: Story = {
+  parameters: { layout: "fullscreen" },
   render: () => (
-    <div className="w-full max-w-3xl rounded-lg border border-border bg-card p-6">
-      <Skeleton className="mb-3 h-6 w-2/3" />
-      <div className="flex flex-col gap-2">
-        <Skeleton className="h-4 w-1/3" />
-        <Skeleton className="h-4 w-1/4" />
+    <PatternStoryFrame>
+      <div className="rounded-lg border border-border bg-card p-6">
+        <Skeleton className="mb-3 h-6 w-2/3" />
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-4 w-1/3" />
+          <Skeleton className="h-4 w-1/4" />
+        </div>
       </div>
-    </div>
+    </PatternStoryFrame>
   ),
 };

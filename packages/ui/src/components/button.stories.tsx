@@ -96,7 +96,7 @@ export const Loading: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <div className="flex flex-wrap items-center gap-3 bg-background p-4">
+    <div className="flex flex-wrap items-center gap-3 p-4">
       <Button variant="default">Default</Button>
       <Button variant="destructive">Destructive</Button>
       <Button variant="outline">Outline</Button>

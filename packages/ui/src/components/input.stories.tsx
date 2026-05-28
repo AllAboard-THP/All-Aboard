@@ -31,7 +31,7 @@ export const Disabled: Story = {
 
 export const WithLabel: Story = {
   render: () => (
-    <div className="flex w-80 flex-col gap-2 bg-background p-4">
+    <div className="flex w-80 flex-col gap-2 p-4">
       <label htmlFor="email" className="text-sm font-medium text-foreground">
         Email
       </label>
@@ -42,7 +42,7 @@ export const WithLabel: Story = {
 
 export const Invalid: Story = {
   render: () => (
-    <div className="flex w-80 flex-col gap-2 bg-background p-4">
+    <div className="flex w-80 flex-col gap-2 p-4">
       <Input
         id="invalid-field"
         type="text"
@@ -59,7 +59,7 @@ export const Invalid: Story = {
 
 export const InvalidWithLabel: Story = {
   render: () => (
-    <div className="flex w-80 flex-col gap-2 bg-background p-4">
+    <div className="flex w-80 flex-col gap-2 p-4">
       <label htmlFor="invalid-title" className="text-sm font-medium text-foreground">
         Titre
       </label>

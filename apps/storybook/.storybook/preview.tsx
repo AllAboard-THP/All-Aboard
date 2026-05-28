@@ -1,16 +1,17 @@
 import type { Preview } from "@storybook/react";
+import { themes } from "storybook/theming";
 import "@allaboard/ui/globals.css";
 
 const preview: Preview = {
   parameters: {
-    backgrounds: {
-      default: "dark",
-      values: [{ name: "dark", value: "hsl(222 47% 4%)" }],
+    backgrounds: { disable: true },
+    docs: {
+      theme: themes.dark,
     },
   },
   decorators: [
     (Story) => (
-      <div className="dark min-h-screen bg-background p-6 font-sans text-foreground">
+      <div className="dark canvas-background min-h-screen p-6 font-sans">
         <Story />
       </div>
     ),

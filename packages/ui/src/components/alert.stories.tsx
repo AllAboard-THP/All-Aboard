@@ -1,13 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
+import {
+  patternDemoAlertClassName,
+  patternStoryParameters,
+  withPatternStoryFrame,
+} from "../patterns/pattern-story-frame";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
 
 const meta = {
   title: "Components/Alert",
   component: Alert,
-  parameters: {
-    layout: "centered",
-  },
+  parameters: patternStoryParameters,
+  decorators: [withPatternStoryFrame()],
   tags: ["autodocs"],
 } satisfies Meta<typeof Alert>;
 
@@ -17,7 +21,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
-    <Alert className="w-full max-w-lg">
+    <Alert className={patternDemoAlertClassName}>
       <AlertTitle>Information</AlertTitle>
       <AlertDescription>
         Message informatif pour l&apos;utilisateur.
@@ -28,7 +32,7 @@ export const Default: Story = {
 
 export const ConnexionRequise: Story = {
   render: () => (
-    <Alert className="w-full max-w-lg">
+    <Alert className={patternDemoAlertClassName}>
       <AlertTitle>Connexion requise</AlertTitle>
       <AlertDescription>
         Connectez-vous via{" "}
@@ -41,7 +45,7 @@ export const ConnexionRequise: Story = {
 
 export const Destructive: Story = {
   render: () => (
-    <Alert variant="destructive" className="w-full max-w-lg">
+    <Alert variant="destructive" className={patternDemoAlertClassName}>
       <AlertTitle>Impossible de charger le feed</AlertTitle>
       <AlertDescription>Feed HTTP 502</AlertDescription>
     </Alert>
@@ -50,12 +54,12 @@ export const Destructive: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <div className="flex w-full max-w-lg flex-col gap-4 bg-background p-4">
-      <Alert>
+    <div className="flex max-w-lg flex-col gap-4">
+      <Alert className={patternDemoAlertClassName}>
         <AlertTitle>Information</AlertTitle>
         <AlertDescription>Message informatif neutre.</AlertDescription>
       </Alert>
-      <Alert variant="destructive">
+      <Alert variant="destructive" className={patternDemoAlertClassName}>
         <AlertTitle>Impossible de charger le feed</AlertTitle>
         <AlertDescription>Feed HTTP 502</AlertDescription>
       </Alert>

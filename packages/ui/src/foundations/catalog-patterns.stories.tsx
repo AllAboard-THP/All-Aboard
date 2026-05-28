@@ -2,19 +2,16 @@ import type { Meta, StoryObj } from "@storybook/react";
 import type { ReactNode } from "react";
 
 import {
+  PatternDemoCardShell,
+  patternDemoAlertClassName,
+} from "../patterns/pattern-story-frame";
+import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from "../components/alert";
 import { Badge } from "../components/badge";
 import { Button } from "../components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../components/card";
 import { Input } from "../components/input";
 import { Label } from "../components/label";
 import { Skeleton } from "../components/skeleton";
@@ -60,7 +57,7 @@ function PatternSection({
 export const ListingPatterns: Story = {
   name: "00 · Listing patterns",
   render: () => (
-    <div className="mx-auto max-w-3xl bg-background px-6 py-8">
+    <div className="mx-auto max-w-3xl px-6 py-8">
       <h1 className="m-0 text-3xl font-semibold text-foreground">Catalogue patterns</h1>
       <p className="mt-2 text-muted-foreground">
         Six compositions alignées sur <code className="text-foreground">apps/web</code>.
@@ -83,15 +80,11 @@ export const EmptyStatePattern: Story = {
   render: () => (
     <div className="p-8">
       <PatternSection index={1} name="EmptyState" storyPath="Patterns/EmptyState">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Aucune demande pour l&apos;instant</CardTitle>
-            <CardDescription>Soyez le premier à publier.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline">Publier une demande</Button>
-          </CardContent>
-        </Card>
+        <PatternDemoCardShell>
+          <p className="m-0 text-lg font-semibold">Aucune demande pour l&apos;instant</p>
+          <p className="m-0 text-sm text-muted-foreground">Soyez le premier à publier.</p>
+          <Button variant="outline">Publier une demande</Button>
+        </PatternDemoCardShell>
       </PatternSection>
     </div>
   ),
@@ -102,7 +95,7 @@ export const ErrorAlertPattern: Story = {
   render: () => (
     <div className="p-8">
       <PatternSection index={2} name="ErrorAlert" storyPath="Patterns/ErrorAlert">
-        <Alert variant="destructive">
+        <Alert variant="destructive" className={patternDemoAlertClassName}>
           <AlertTitle>Impossible de charger le feed</AlertTitle>
           <AlertDescription>Feed HTTP 502</AlertDescription>
         </Alert>
@@ -116,16 +109,14 @@ export const FeedItemCardPattern: Story = {
   render: () => (
     <div className="p-8">
       <PatternSection index={3} name="FeedItemCard" storyPath="Patterns/FeedItemCard">
-        <Card className="hover:border-primary/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Comment structurer un monorepo ?</CardTitle>
-            <CardDescription>Auteur : bob</CardDescription>
-          </CardHeader>
-          <CardContent className="flex gap-2 pt-0">
+        <PatternDemoCardShell className="hover:border-primary/50">
+          <p className="m-0 text-lg font-semibold">Comment structurer un monorepo ?</p>
+          <p className="m-0 text-sm text-muted-foreground">Auteur : bob</p>
+          <div className="flex flex-wrap justify-center gap-2">
             <Badge variant="secondary">mentor</Badge>
             <Badge variant="outline">turborepo</Badge>
-          </CardContent>
-        </Card>
+          </div>
+        </PatternDemoCardShell>
       </PatternSection>
     </div>
   ),

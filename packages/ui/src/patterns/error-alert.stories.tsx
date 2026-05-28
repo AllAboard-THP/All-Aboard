@@ -1,12 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Alert, AlertDescription, AlertTitle } from "../components/alert";
+import {
+  patternDemoAlertClassName,
+  patternStoryParameters,
+  withPatternStoryFrame,
+} from "./pattern-story-frame";
 
 const meta = {
   title: "Patterns/ErrorAlert",
-  parameters: {
-    layout: "centered",
-  },
+  parameters: patternStoryParameters,
+  decorators: [withPatternStoryFrame()],
   tags: ["autodocs"],
 } satisfies Meta;
 
@@ -16,7 +20,7 @@ type Story = StoryObj<typeof meta>;
 
 export const FeedLoadError: Story = {
   render: () => (
-    <Alert variant="destructive" className="w-full max-w-3xl">
+    <Alert variant="destructive" className={patternDemoAlertClassName}>
       <AlertTitle>Impossible de charger le feed</AlertTitle>
       <AlertDescription>Feed HTTP 502</AlertDescription>
     </Alert>
@@ -25,7 +29,7 @@ export const FeedLoadError: Story = {
 
 export const DetailLoadError: Story = {
   render: () => (
-    <Alert variant="destructive" className="w-full max-w-3xl">
+    <Alert variant="destructive" className={patternDemoAlertClassName}>
       <AlertTitle>Impossible de charger la demande</AlertTitle>
       <AlertDescription>not_found</AlertDescription>
     </Alert>
@@ -34,7 +38,7 @@ export const DetailLoadError: Story = {
 
 export const AuthRequired: Story = {
   render: () => (
-    <Alert className="w-full max-w-3xl">
+    <Alert className={patternDemoAlertClassName}>
       <AlertTitle>Connexion requise</AlertTitle>
       <AlertDescription>
         Connectez-vous via{" "}
@@ -47,7 +51,7 @@ export const AuthRequired: Story = {
 
 export const MentorForbidden: Story = {
   render: () => (
-    <Alert variant="destructive" className="w-full max-w-3xl">
+    <Alert variant="destructive" className={patternDemoAlertClassName}>
       <AlertTitle>Accès réservé aux mentors</AlertTitle>
       <AlertDescription>
         Ce tableau de bord est réservé aux comptes mentor (MVP).

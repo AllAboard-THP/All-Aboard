@@ -33,6 +33,12 @@
   --motion-duration-normal: 250ms;
   --motion-duration-slow: 400ms;
   --motion-ease-kit: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --canvas-gradient: radial-gradient(
+    90% 80% at 20% 0%,
+    hsl(239 84% 67% / 0.25) 0%,
+    transparent 60%
+  );
 }
 
 @theme inline {
@@ -72,11 +78,7 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    background-image: radial-gradient(
-      90% 80% at 20% 0%,
-      hsl(239 84% 67% / 0.25) 0%,
-      transparent 60%
-    );
+    background-image: var(--canvas-gradient);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -92,6 +94,11 @@
 }
 
 @layer utilities {
+  .canvas-background {
+    @apply bg-background text-foreground;
+    background-image: var(--canvas-gradient);
+  }
+
   .glass-panel {
     @apply border border-border/60 bg-card/80 backdrop-blur-md shadow-xl;
   }
