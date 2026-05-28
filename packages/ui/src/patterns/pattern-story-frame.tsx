@@ -46,7 +46,7 @@ export function PatternStoryFrame({
   width?: FrameWidth;
 }) {
   return (
-    <div className="flex min-h-[calc(100dvh-6rem)] w-full items-center justify-center p-6">
+    <div className="flex min-h-[100dvh] w-full items-center justify-center p-6">
       <div className={width === "form" ? "w-full max-w-md" : "flex justify-center"}>
         {children}
       </div>

@@ -1,0 +1,6 @@
+/* Storybook preview iframe — gradient on body (globals.css), no duplicate wrapper. */
+html,
+body,
+#storybook-root {
+  min-height: 100%;
+}

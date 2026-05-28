@@ -1,6 +1,7 @@
 import type { Preview } from "@storybook/react";
 import { themes } from "storybook/theming";
 import "@allaboard/ui/globals.css";
+import "./preview.css";
 
 const preview: Preview = {
   parameters: {
@@ -11,7 +12,7 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => (
-      <div className="dark canvas-background min-h-screen p-6 font-sans">
+      <div className="dark font-sans text-foreground">
         <Story />
       </div>
     ),
