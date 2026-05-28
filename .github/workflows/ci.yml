@@ -68,6 +68,7 @@ jobs:
       DATABASE_URL: postgresql://allaboard:allaboard@127.0.0.1:5432/allaboard_test
       JWT_SECRET: ci-test-jwt-secret-min-32-chars-long!!
       MVP_LOGIN_PASSWORD: ci-test-login-password
+      DEV_SEED_PASSWORD: ci-test-login-password
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -123,6 +124,7 @@ jobs:
       DATABASE_URL: postgresql://allaboard:allaboard@127.0.0.1:5432/allaboard_test
       JWT_SECRET: ci-test-jwt-secret-min-32-chars-long!!
       MVP_LOGIN_PASSWORD: ci-test-login-password
+      DEV_SEED_PASSWORD: ci-test-login-password
     steps:
       - name: Checkout
         uses: actions/checkout@v4

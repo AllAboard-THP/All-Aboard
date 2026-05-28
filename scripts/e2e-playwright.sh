@@ -20,6 +20,7 @@ if [[ -z "${DATABASE_URL:-}" ]]; then
 fi
 
 export MVP_LOGIN_PASSWORD="${MVP_LOGIN_PASSWORD:-dev-only-password}"
+export DEV_SEED_PASSWORD="${DEV_SEED_PASSWORD:-$MVP_LOGIN_PASSWORD}"
 export JWT_SECRET="${JWT_SECRET:-dev-only-jwt-secret-min-32-characters!!}"
 
 pnpm --filter api run db:migrate

@@ -7,11 +7,10 @@ import { fileURLToPath } from "node:url";
 import { readFileSync } from "node:fs";
 import { parse as parseYaml } from "yaml";
 import { buildApp } from "./app";
+import { defaultSeedUsers, seedUsers } from "./db/seed";
 import { isOpenApiDocsEnabled } from "./openapi";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const mvpPassword = process.env.MVP_LOGIN_PASSWORD;
-
 describe("api", () => {
   it("GET /health returns 200", async () => {
     const app = await buildApp({ pool: null });
@@ -30,22 +29,31 @@ describe("api", () => {
     await app.close();
   });
 
-  it("POST /auth/login returns 503 when MVP_LOGIN_PASSWORD is unset", async () => {
-    const prev = process.env.MVP_LOGIN_PASSWORD;
+  it("POST /auth/login returns 503 when login is not configured (staging, no DB)", async () => {
+    const prevPassword = process.env.MVP_LOGIN_PASSWORD;
+    const prevAppEnv = process.env.APP_ENV;
     delete process.env.MVP_LOGIN_PASSWORD;
+    process.env.APP_ENV = "staging";
     const app = await buildApp({ pool: null });
     try {
       const res = await app.inject({
         method: "POST",
         url: "/auth/login",
-        payload: { userId: "bob", password: "any" },
+        payload: { email: "bob@dev.local", password: "any" },
       });
       expect(res.statusCode).toBe(503);
       const body = JSON.parse(res.payload) as { error: string };
       expect(body.error).toBe("login_not_configured");
     } finally {
-      if (prev !== undefined) {
-        process.env.MVP_LOGIN_PASSWORD = prev;
+      if (prevPassword !== undefined) {
+        process.env.MVP_LOGIN_PASSWORD = prevPassword;
+      } else {
+        delete process.env.MVP_LOGIN_PASSWORD;
+      }
+      if (prevAppEnv !== undefined) {
+        process.env.APP_ENV = prevAppEnv;
+      } else {
+        delete process.env.APP_ENV;
       }
       await app.close();
     }
@@ -53,9 +61,11 @@ describe("api", () => {
 
   it("POST /auth/login sets Secure cookie when NODE_ENV is production", async () => {
     const prevNodeEnv = process.env.NODE_ENV;
+    const prevAppEnv = process.env.APP_ENV;
     const prevJwt = process.env.JWT_SECRET;
     const prevPassword = process.env.MVP_LOGIN_PASSWORD;
     process.env.NODE_ENV = "production";
+    process.env.APP_ENV = "development";
     process.env.JWT_SECRET = "test-jwt-secret-min-32-characters!!";
     process.env.MVP_LOGIN_PASSWORD = "test-login-password";
     const app = await buildApp({ pool: null });
@@ -77,6 +87,11 @@ describe("api", () => {
         process.env.NODE_ENV = prevNodeEnv;
       } else {
         delete process.env.NODE_ENV;
+      }
+      if (prevAppEnv !== undefined) {
+        process.env.APP_ENV = prevAppEnv;
+      } else {
+        delete process.env.APP_ENV;
       }
       if (prevJwt !== undefined) {
         process.env.JWT_SECRET = prevJwt;
@@ -210,7 +225,12 @@ describe("CORS", () => {
   });
 });
 
-describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
+const seedPassword =
+  process.env.DEV_SEED_PASSWORD?.trim() ||
+  process.env.MVP_LOGIN_PASSWORD?.trim() ||
+  "";
+
+describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
   "api with database",
   () => {
     let pool: pg.Pool;
@@ -222,6 +242,10 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
       await migrate(db, {
         migrationsFolder: path.join(__dirname, "../drizzle"),
       });
+      const specs = defaultSeedUsers();
+      if (specs.length > 0) {
+        await seedUsers(db, specs);
+      }
       app = await buildApp({ pool });
     });
 
@@ -265,18 +289,18 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
       const res = await app.inject({
         method: "POST",
         url: "/auth/login",
-        payload: { userId: "bob", password: "wrong" },
+        payload: { email: "bob@dev.local", password: "wrong" },
       });
       expect(res.statusCode).toBe(401);
       const body = JSON.parse(res.payload) as { error: string };
       expect(body.error).toBe("invalid_credentials");
     });
 
-    it("POST /auth/login succeeds and sets access_token cookie", async () => {
+    it("POST /auth/login succeeds with email and password hash", async () => {
       const res = await app.inject({
         method: "POST",
         url: "/auth/login",
-        payload: { userId: "bob", password: mvpPassword },
+        payload: { email: "bob@dev.local", password: seedPassword },
       });
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload) as {
@@ -284,7 +308,11 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
         userId: string;
         role: string;
       };
-      expect(body).toEqual({ ok: true, userId: "bob", role: "student" });
+      expect(body).toEqual({
+        ok: true,
+        userId: "bob@dev.local",
+        role: "student",
+      });
       const setCookie = res.headers["set-cookie"];
       const cookieStr = Array.isArray(setCookie)
         ? setCookie.join("; ")
@@ -435,11 +463,11 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
       expect(body.responses).toEqual([]);
     });
 
-    it("GET /auth/me returns role for mentor userId alice on login", async () => {
+    it("GET /auth/me returns role for mentor alice@dev.local on login", async () => {
       const loginRes = await app.inject({
         method: "POST",
         url: "/auth/login",
-        payload: { userId: "alice", password: mvpPassword },
+        payload: { email: "alice@dev.local", password: seedPassword },
       });
       expect(loginRes.statusCode).toBe(200);
       const loginBody = JSON.parse(loginRes.payload) as { role: string };
@@ -460,7 +488,7 @@ describe.skipIf(!process.env.DATABASE_URL || !process.env.MVP_LOGIN_PASSWORD)(
       });
       expect(meRes.statusCode).toBe(200);
       const me = JSON.parse(meRes.payload) as { userId: string; role: string };
-      expect(me).toEqual({ userId: "alice", role: "mentor" });
+      expect(me).toEqual({ userId: "alice@dev.local", role: "mentor" });
     });
 
     it("GET /mentor/feed returns only tagged requests", async () => {

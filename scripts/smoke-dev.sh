@@ -4,7 +4,9 @@ set -euo pipefail
 
 BASE_WEB="${BASE_WEB:-https://dev.allaboard.fr}"
 BASE_API="${BASE_API:-https://api-dev.allaboard.fr}"
-MVP_LOGIN_PASSWORD="${MVP_LOGIN_PASSWORD:-}"
+SMOKE_LOGIN_EMAIL="${SMOKE_LOGIN_EMAIL:-bob@dev.local}"
+# Password: prefer SMOKE_LOGIN_PASSWORD; MVP_LOGIN_PASSWORD kept for backward compat.
+SMOKE_LOGIN_PASSWORD="${SMOKE_LOGIN_PASSWORD:-${MVP_LOGIN_PASSWORD:-}}"
 
 fail() {
   echo "smoke-dev: FAIL — $*" >&2
@@ -33,10 +35,11 @@ bff="$(curl -sf "$BASE_WEB/api/feed")" || fail "GET $BASE_WEB/api/feed"
 echo "$bff" | grep -q '"items"' || fail "unexpected BFF /api/feed body: $bff"
 ok "GET /api/feed (BFF)"
 
-if [[ -n "$MVP_LOGIN_PASSWORD" ]]; then
+if [[ -n "$SMOKE_LOGIN_PASSWORD" ]]; then
+  login_json="{\"email\":\"$SMOKE_LOGIN_EMAIL\",\"password\":\"$SMOKE_LOGIN_PASSWORD\"}"
   login_body="$(curl -sf -X POST "$BASE_API/auth/login" \
     -H 'content-type: application/json' \
-    -d "{\"userId\":\"smoke-bot\",\"password\":\"$MVP_LOGIN_PASSWORD\"}")" \
+    -d "$login_json")" \
     || fail "POST /auth/login"
   echo "$login_body" | grep -q '"ok"' || fail "login body: $login_body"
 
@@ -44,7 +47,7 @@ if [[ -n "$MVP_LOGIN_PASSWORD" ]]; then
   trap 'rm -f "$cookie_jar"' EXIT
   curl -sf -c "$cookie_jar" -X POST "$BASE_API/auth/login" \
     -H 'content-type: application/json' \
-    -d "{\"userId\":\"smoke-bot\",\"password\":\"$MVP_LOGIN_PASSWORD\"}" \
+    -d "$login_json" \
     >/dev/null || fail "POST /auth/login (cookie)"
 
   token_line="$(grep access_token "$cookie_jar" | tail -1 || true)"
@@ -68,7 +71,7 @@ if [[ -n "$MVP_LOGIN_PASSWORD" ]]; then
 
   ok "POST /auth/login + POST /help-requests"
 else
-  echo "smoke-dev: skip auth/create (set MVP_LOGIN_PASSWORD to test login + help-requests)"
+  echo "smoke-dev: skip auth/create (set SMOKE_LOGIN_PASSWORD or seed account password)"
 fi
 
 ok "all checks passed"

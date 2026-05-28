@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import pg from "pg";
 import { createDb } from "./db/client.js";
+import { runSeedIfConfigured } from "./db/seed.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -19,6 +20,7 @@ export async function runMigrationsIfConfigured(): Promise<void> {
   const db = createDb(pool);
   try {
     await migrate(db, { migrationsFolder: path.join(__dirname, "../drizzle") });
+    await runSeedIfConfigured(db);
   } finally {
     await pool.end();
   }
