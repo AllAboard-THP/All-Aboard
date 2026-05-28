@@ -75,3 +75,4 @@ flowchart TB
 - Les directions de fleches sont simplifiees pour une lecture produit/technique mixte.
 - Les details protocolaires (events, jobs, batch) seront precises dans une version technique detaillee.
 - **MVP court terme** : la brique « API : Node » peut être **REST Fastify** ; l’illustration GraphQL reste valable pour la **cible** documentée dans [proposition-stack-technique-monorepo-2026.md](proposition-stack-technique-monorepo-2026.md).
+- **Indexer (sous-graphe Blockchain)** : indexer du **réseau Intuition** (subnet + GraphQL) — pas un service `apps/indexer` All-Aboard. All-Aboard **publie** via un bridge (outbox → SDK) ; voir [ADR 0004](adr/0004-agent-indexer-architecture.md).

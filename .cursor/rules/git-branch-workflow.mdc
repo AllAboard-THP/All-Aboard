@@ -1,0 +1,43 @@
+---
+description: Branche dédiée, commit et push en fin de travail agent
+alwaysApply: true
+---
+
+# Git — branche dédiée obligatoire
+
+Quand l'agent modifie le dépôt (code, doc, config), **ne pas laisser le travail uniquement en local** ni committer sur `Dev`, `staging` ou `main`.
+
+## Début de session (travail non trivial)
+
+1. Vérifier la branche courante (`git branch --show-current`).
+2. Si sur `Dev` / `staging` / `main` : créer une branche **avant** les edits :
+   ```bash
+   git fetch origin
+   git checkout Dev && git pull origin Dev
+   git checkout -b <type>/<issue>-<slug-court>
+   ```
+3. **Nommage** (aligné [.github/PROJECT.md](../../.github/PROJECT.md)) :
+   - `feat/<NN>-<slug>` — feature / impl
+   - `docs/<NN>-<slug>` — doc, ADR, runbook
+   - `fix/<NN>-<slug>` — correctif
+   - Sans issue : `docs/<slug-date>` ou `chore/<slug>`
+
+## Fin de travail
+
+1. `git status` + `git diff` — pas de secrets (`.env`, clés).
+2. Doc/code MVP : `pnpm verify` avant commit si le hook ou la PR l'exige ([AGENTS.md](../../AGENTS.md)).
+3. **Commit** avec message clair (pourquoi > quoi) ; `Refs #NN` si issue liée.
+4. **Push** la branche :
+   ```bash
+   git push -u origin HEAD
+   ```
+5. Indiquer à l'humain : branche, commit, URL remote ; proposer PR si pertinent.
+
+## Interdit sans accord explicite
+
+- Commit / push sur `Dev`, `staging`, `main`
+- `--no-verify`, force push, amend d'un commit déjà poussé
+
+## Exception
+
+Questions read-only, ou l'humain demande explicitement de **ne pas** committer.
