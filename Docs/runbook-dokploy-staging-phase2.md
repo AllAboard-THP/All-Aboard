@@ -42,8 +42,10 @@ postgresql://<USER>:<PASSWORD>@<HOST_INTERNE_POSTGRES_STAGING>:5432/<DATABASE>
 | `APP_ENV` | Recommandé | `staging` |
 
 - [x] Vars posées (2026-05-25, MCP Dokploy)
-- [x] Redéploy API après merge PR #54 (2026-05-26)
-- [x] Smoke : `POST /auth/login` (invalides) → **401** ; `GET /feed` → UUID Postgres (pas stub Phase 1)
+- [x] `MVP_LOGIN_PASSWORD` retiré ; `DEV_SEED_PASSWORD` seul (2026-05-29)
+- [x] Redéploy API après merge PR #54 (2026-05-26) ; promotion PR #63 (ADR 0003, 2026-05-28)
+- [x] Smoke : `POST /auth/login` (invalides) → **401** ; login `bob@dev.local` / `alice@dev.local` → **200** (seed ADR 0003, 2026-05-29)
+- [x] `GET /feed` → UUID Postgres (pas stub Phase 1)
 
 ---
 
@@ -95,7 +97,7 @@ Feed produit sur **`/`** (pas `/feed` — route absente).
 ## 6. Journal et pilotage
 
 - [x] Ligne *Journal* dans [plan opérationnel](plan-mise-en-place-web-api-donnees.md) (2026-05-27)
-- [x] Cocher [staging-checklist.md](staging-checklist.md) section infra + smoke
+- [x] Cocher [staging-checklist.md](staging-checklist.md) section infra + smoke + auth ADR 0003 (2026-05-29)
 - [x] Clôturer [#32](https://github.com/AllAboard-THP/All-Aboard/issues/32) et [#17](https://github.com/AllAboard-THP/All-Aboard/issues/17) (2026-05-27)
 
 ---

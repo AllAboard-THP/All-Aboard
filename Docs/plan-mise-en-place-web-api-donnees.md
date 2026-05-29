@@ -2,7 +2,7 @@
 
 Référence **canonique** pour le couplage `apps/web` ↔ `apps/api` : variables, contrat `GET /feed`, chemins code, journal de smoke, checklist Dokploy ciblée feed. La **timeline** des phases est dans [README.md](README.md) ; la **cartographie** des docs dans [map-of-content.md](map-of-content.md). Les **faits instance** (domaines, `API_URL` interne) : [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md).
 
-**Mise à jour** : 2026-05-27. **Décision** : **Option B** — socle TanStack dans la même livraison que le feed SSR ; home feed client + invalidation livrés (voir *Journal*). **Phase 2 (MVP dépôt)** : Postgres + `GET /feed` réel, `POST /help-requests`, JWT + BFF auth, stubs MOC (doublon, Rubberduck) — ADR [0001](adr/0001-authentication-strategy.md). **MVP parcours Bob (dev)** : livré sur `Dev` + Dokploy dev (PR #50–#52) ; validation housekeeping 2026-05-25 — voir [staging-checklist.md](staging-checklist.md).
+**Mise à jour** : 2026-05-29. **Décision** : **Option B** — socle TanStack dans la même livraison que le feed SSR ; home feed client + invalidation livrés (voir *Journal*). **Phase 2 (MVP dépôt)** : Postgres + `GET /feed` réel, `POST /help-requests`, JWT + BFF auth, stubs MOC (doublon, Rubberduck) — ADR [0001](adr/0001-authentication-strategy.md). **MVP parcours Bob (dev)** : livré sur `Dev` + Dokploy dev (PR #50–#52) ; validation housekeeping 2026-05-25 — voir [staging-checklist.md](staging-checklist.md).
 
 ---
 
@@ -37,7 +37,8 @@ SSR feed, socle Query, merge Dokploy dev, `useQuery` + `invalidateQueries` sur `
 | 2026-05-25 | Dokploy **dev** + CI | Housekeeping MVP dev : `pnpm smoke:dev` OK (health, feed, BFF `/api/feed`) ; smoke auth + `GET /help-requests/:id` si `MVP_LOGIN_PASSWORD` aligné Dokploy ([runbook](runbook-dokploy-dev-phase2.md)) ; `pnpm verify:commit` OK local ; parcours Bob validé (code PR #51, e2e CI PR #52) ; [staging-checklist](staging-checklist.md) section dev cochée. |
 | 2026-05-25 | Dokploy **staging** (ops #32) | Env staging confirmé (MCP) ; vars API Phase 2 posées ; promotion code PR [#54](https://github.com/AllAboard-THP/All-Aboard/pull/54) `Dev`→`staging` ; smoke HTTPS staging post-merge — [runbook staging](runbook-dokploy-staging-phase2.md). |
 | 2026-05-27 | Dokploy **staging** (clôture #32 / #17) | PR #54 mergée ; API deploy OK ; Web redeploy manuel (build auto 2026-05-26 en erreur) ; `pnpm smoke:dev` OK (health, feed UUID, BFF `/api/feed`, auth + création + `GET /help-requests/:id`) ; parcours Bob navigateur OK (`/`, `/help/new`, 409, `/mentor` alice) — [runbook](runbook-dokploy-staging-phase2.md), [checklist](staging-checklist.md). |
-| 2026-05-28 | Code **ADR 0003** | Table `users`, login `{ email, password }` (hash argon2), seed `bob@dev.local` / `alice@dev.local` via `DEV_SEED_PASSWORD` ; fallback `MVP_LOGIN_PASSWORD` dev/CI seulement ; smoke `SMOKE_LOGIN_EMAIL` + `SMOKE_LOGIN_PASSWORD`. Ops staging : retirer `MVP_LOGIN_PASSWORD` après seed Dokploy. |
+| 2026-05-28 | Code **ADR 0003** | Table `users`, login `{ email, password }` (hash argon2), seed `bob@dev.local` / `alice@dev.local` via `DEV_SEED_PASSWORD` ; fallback `MVP_LOGIN_PASSWORD` dev/CI seulement ; smoke `SMOKE_LOGIN_EMAIL` + `SMOKE_LOGIN_PASSWORD`. |
+| 2026-05-29 | Dokploy **staging** (ops ADR 0003) | `MVP_LOGIN_PASSWORD` retiré ; `DEV_SEED_PASSWORD` + seed users OK ; login `bob@dev.local` / `alice@dev.local` → 200 ; `pnpm smoke:dev` complet (auth + création + détail) — [staging-checklist](staging-checklist.md). |
 
 ---
 
