@@ -4,7 +4,7 @@ Référence issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31) /
 
 **Dernière validation dev** : 2026-05-25 (housekeeping post PR #50–#52).
 
-**Promotion staging** : PR [#54](https://github.com/AllAboard-THP/All-Aboard/pull/54) mergée 2026-05-26 ; validation smoke HTTPS + parcours Bob **2026-05-27** — [runbook staging](runbook-dokploy-staging-phase2.md).
+**Promotion staging** : PR [#54](https://github.com/AllAboard-THP/All-Aboard/pull/54) mergée 2026-05-26 ; validation smoke HTTPS + parcours Bob **2026-05-27**. **ADR 0003** : PR [#63](https://github.com/AllAboard-THP/All-Aboard/pull/63) + fix Docker [#74](https://github.com/AllAboard-THP/All-Aboard/pull/74) ; validation auth hash + smoke **2026-05-29** — [runbook staging](runbook-dokploy-staging-phase2.md).
 
 ## Parcours produit (dev)
 
@@ -18,16 +18,16 @@ Référence issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31) /
 ## Auth (bloquant staging public)
 
 - [x] [ADR 0003](adr/0003-authentication-users-production.md) accepté (code 2026-05-28)
-- [ ] `MVP_LOGIN_PASSWORD` retiré de staging Dokploy (ops : après seed comptes équipe)
-- [ ] Comptes réels seedés sur Postgres staging (`pnpm --filter api run db:seed` + `DEV_SEED_PASSWORD` hors repo)
+- [x] `MVP_LOGIN_PASSWORD` retiré de staging Dokploy (2026-05-29)
+- [x] Comptes seedés `bob@dev.local` / `alice@dev.local` (`DEV_SEED_PASSWORD` + migration au boot API — 2026-05-29)
 
 ## Infra Dokploy staging
 
 - [x] Env Dokploy `staging` provisionné (Web, API, Postgres) — domaines `staging.allaboard.fr` / `api-staging.allaboard.fr`
-- [x] Vars API Phase 2 (`DATABASE_URL`, `JWT_SECRET`) — 2026-05-25 ; `MVP_LOGIN_PASSWORD` à retirer post-seed ADR 0003
+- [x] Vars API Phase 2 (`DATABASE_URL`, `JWT_SECRET`, `DEV_SEED_PASSWORD`) — 2026-05-29 ; sans `MVP_LOGIN_PASSWORD`
 - [x] `API_URL` interne Web → API staging cohérent
-- [x] Code MVP déployé (PR #54 + redeploy Web manuel 2026-05-27 après build auto en erreur)
-- [x] Smoke HTTPS : `BASE_WEB=https://staging.allaboard.fr BASE_API=https://api-staging.allaboard.fr pnpm smoke:dev` (base + auth, 2026-05-27)
+- [x] Code ADR 0003 déployé (PR #63 + #74, commit `d8e2372` — 2026-05-29)
+- [x] Smoke HTTPS ADR 0003 : `SMOKE_LOGIN_EMAIL=bob@dev.local` + `SMOKE_LOGIN_PASSWORD` (seed Dokploy) — login, création, détail OK (2026-05-29)
 - [x] Aucun secret committé dans le dépôt
 
 ## Qualité

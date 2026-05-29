@@ -12,8 +12,9 @@ Références : [plan opérationnel Web/API](plan-mise-en-place-web-api-donnees.m
 
 La branche **`staging`** est protégée — merge via PR depuis `Dev` (ex. PR #54).
 
-- [x] PR `Dev` → `staging` mergée (PR #54, 2026-05-26)
+- [x] PR `Dev` → `staging` mergée (PR #54, 2026-05-26 ; PR #63 ADR 0003, 2026-05-28 ; PR #74 fix Docker OpenAPI, 2026-05-29)
 - [x] Deploy Dokploy API terminé (PR #54) ; Web : build auto **en erreur** le 2026-05-26 → **deploy manuel réussi** le 2026-05-27 (commit `d9ca975`)
+- [x] Redéploy post-#63 / #74 (commit `d8e2372`, 2026-05-29) — API + Web auto-deploy OK
 
 ---
 
@@ -41,9 +42,9 @@ postgresql://<USER>:<PASSWORD>@<HOST_INTERNE_POSTGRES_STAGING>:5432/<DATABASE>
 | `NODE_ENV` | Oui | `production` |
 | `APP_ENV` | Recommandé | `staging` |
 
-- [x] Vars posées (2026-05-25, MCP Dokploy)
-- [x] Redéploy API après merge PR #54 (2026-05-26)
-- [x] Smoke : `POST /auth/login` (invalides) → **401** ; `GET /feed` → UUID Postgres (pas stub Phase 1)
+- [x] Vars posées (2026-05-25, MCP Dokploy) ; `DEV_SEED_PASSWORD` ajouté, `MVP_LOGIN_PASSWORD` retiré (2026-05-29)
+- [x] Redéploy API après merge PR #54 (2026-05-26) ; post-ADR 0003 PR #63 + #74 (2026-05-29)
+- [x] Smoke : login `{ email, password }` hash → **200** ; mauvais mot de passe → **401** ; `GET /feed` → UUID Postgres
 
 ---
 
@@ -86,7 +87,7 @@ Attendu post-promotion : feed Postgres (UUID), pas stub Phase 1 (`id: "1"`).
 Feed produit sur **`/`** (pas `/feed` — route absente).
 
 - [x] `https://staging.allaboard.fr/` — feed SSR + liens `/requests/[id]` (UUID Postgres)
-- [x] `/help/new` — login `bob` + création (feed mis à jour ; redirect détail optionnel)
+- [x] `/help/new` — login `bob@dev.local` + création (feed mis à jour ; auteur `bob@dev.local` — 2026-05-29)
 - [x] Doublon 409 + lien « Voir la demande existante »
 - [x] `/mentor` — `alice` (dashboard mentor + feed tagué) ; `bob` (étudiant, accès mentor refusé côté rôle)
 
