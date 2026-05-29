@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { useLegacyLabels } from "../i18n/storybook-locale";
+import { AllAboardLogoMark } from "../components/allaboard-logo-mark";
 import {
   BrandLogo,
   Eyebrow,
@@ -61,6 +62,19 @@ function FeaturePillsStory() {
 export const BrandLogoDefault: Story = {
   name: "BrandLogo",
   render: () => <BrandLogoStory />,
+};
+
+export const LogoMark: Story = {
+  name: "AllAboardLogoMark",
+  render: () => {
+    const labels = useLegacyLabels();
+    return (
+      <div className="flex items-center gap-8">
+        <AllAboardLogoMark className="size-10" title={labels.brandName} />
+        <AllAboardLogoMark className="size-16" title={labels.brandName} />
+      </div>
+    );
+  },
 };
 
 export const EyebrowDefault: Story = {

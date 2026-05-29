@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { GraduationCap, Info } from "lucide-react";
+import { Info } from "lucide-react";
 
+import { AllAboardLogoMark } from "../components/allaboard-logo-mark";
 import { Button } from "../components/button";
 import { Checkbox } from "../components/checkbox";
 import {
@@ -239,9 +240,7 @@ export function CguAcceptanceModal({
       >
         <DialogHeader className="gap-4 text-left">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent">
-              <GraduationCap className="size-5 text-primary-foreground" />
-            </div>
+            <AllAboardLogoMark className="size-10" title={copy.welcome} />
             <div>
               <DialogTitle className="text-xl">{copy.welcome}</DialogTitle>
               <DialogDescription>{copy.subtitle}</DialogDescription>

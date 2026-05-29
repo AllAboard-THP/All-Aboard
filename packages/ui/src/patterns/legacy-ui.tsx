@@ -23,6 +23,7 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
 import { Avatar, AvatarFallback } from "../components/avatar";
+import { AllAboardLogoMark } from "../components/allaboard-logo-mark";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,16 +56,23 @@ const navIcons: Record<LegacyNavLink, LucideIcon> = {
 export function BrandLogo({
   labels = legacyLabelsFr,
   className,
+  markClassName,
+  showWordmark = true,
 }: {
   labels?: LegacyLabels;
   className?: string;
+  markClassName?: string;
+  showWordmark?: boolean;
 }) {
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent">
-        <GraduationCap className="size-5 text-primary-foreground" />
-      </div>
-      <span className="gradient-text text-xl font-bold">{labels.brandName}</span>
+      <AllAboardLogoMark
+        className={markClassName ?? "size-10"}
+        title={labels.brandName}
+      />
+      {showWordmark ? (
+        <span className="gradient-text text-xl font-bold">{labels.brandName}</span>
+      ) : null}
     </div>
   );
 }
@@ -313,9 +321,7 @@ export function AppFooter({
     <footer className={cn("mt-12 border-t border-white/5 py-8", className)}>
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:px-6 md:flex-row lg:px-8">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <div className="flex size-5 items-center justify-center rounded-md bg-gradient-to-br from-primary to-accent">
-            <GraduationCap className="size-3 text-primary-foreground" />
-          </div>
+          <AllAboardLogoMark className="size-5" title={labels.brandName} />
           <span className="gradient-text font-semibold">{labels.brandName}</span>
           <span>{labels.footer.rights(year)}</span>
         </div>
