@@ -222,9 +222,11 @@ export function SubjectCard({
 export function ProposeSubjectCard({
   labels = legacyLabelsFr,
   className,
+  onProposeClick,
 }: {
   labels?: LegacyLabels;
   className?: string;
+  onProposeClick?: () => void;
 }) {
   return (
     <button
@@ -233,7 +235,11 @@ export function ProposeSubjectCard({
         "glass group block w-full rounded-2xl border-2 border-dashed border-white/10 p-6 text-left transition-colors hover:border-primary/50 hover:bg-white/5",
         className,
       )}
-      onClick={() => legacyDemoToast(labels.subjectCard.proposeTitle)}
+      onClick={() =>
+        onProposeClick
+          ? onProposeClick()
+          : legacyDemoToast(labels.subjectCard.proposeTitle)
+      }
     >
       <div className="mb-4 size-14 rounded-2xl bg-gradient-to-br from-primary to-accent p-[2px] transition-transform group-hover:scale-110">
         <div className="flex size-full items-center justify-center rounded-2xl bg-card">
@@ -257,9 +263,11 @@ export function ProposeSubjectCard({
 export function SubjectCardGrid({
   labels = legacyLabelsFr,
   className,
+  onProposeSubjectClick,
 }: {
   labels?: LegacyLabels;
   className?: string;
+  onProposeSubjectClick?: () => void;
 }) {
   return (
     <div
@@ -271,7 +279,10 @@ export function SubjectCardGrid({
       {legacySubjects.map((subject) => (
         <SubjectCard key={subject.slug} subject={subject} labels={labels} />
       ))}
-      <ProposeSubjectCard labels={labels} />
+      <ProposeSubjectCard
+        labels={labels}
+        onProposeClick={onProposeSubjectClick}
+      />
     </div>
   );
 }

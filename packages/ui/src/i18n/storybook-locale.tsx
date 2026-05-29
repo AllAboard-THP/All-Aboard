@@ -19,6 +19,11 @@ import {
   type AlertLabels,
 } from "./alert-labels";
 import {
+  mvpPatternLabelsEn,
+  mvpPatternLabelsFr,
+  type MvpPatternLabels,
+} from "./mvp-pattern-labels";
+import {
   legacyResources,
   legacyResourcesEn,
   type LegacyResource,
@@ -103,6 +108,14 @@ export function useAlertLabels(): AlertLabels {
   const locale = useStorybookLocale();
   return useMemo(
     () => (locale === "en" ? alertLabelsEn : alertLabelsFr),
+    [locale],
+  );
+}
+
+export function useMvpPatternLabels(): MvpPatternLabels {
+  const locale = useStorybookLocale();
+  return useMemo(
+    () => (locale === "en" ? mvpPatternLabelsEn : mvpPatternLabelsFr),
     [locale],
   );
 }

@@ -6,7 +6,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "../components/alert";
-import { useAlertLabels } from "../i18n/storybook-locale";
+import { useAlertLabels, useMvpPatternLabels } from "../i18n/storybook-locale";
 import { Badge } from "../components/badge";
 import { Button } from "../components/button";
 import {
@@ -108,18 +108,20 @@ function CatalogAlertDetailSamples() {
 }
 
 /** Vue d’ensemble — toutes les primitives sur une page (scroll). */
-export const ListingComplet: Story = {
-  name: "00 · Listing complet",
-  render: () => (
+function ListingCompletStory() {
+  const catalog = useMvpPatternLabels().catalog;
+  const toastLabels = useMvpPatternLabels().toast;
+
+  return (
     <div className="mx-auto max-w-3xl">
       <header className="border-b border-border px-6 py-8">
         <h1 className="m-0 text-3xl font-semibold text-foreground">
-          Catalogue primitives
+          {catalog.listingTitle}
         </h1>
         <p className="mt-2 max-w-prose text-muted-foreground">
-          Onze composants MVP. Utilise la sidebar{" "}
-          <strong className="text-foreground">Documentation → Catalog → 01…11</strong> pour
-          les voir un par un, ou fais défiler cette page.
+          {catalog.listingLead}{" "}
+          <strong className="text-foreground">{catalog.listingStrong}</strong>{" "}
+          {catalog.listingTail}
         </p>
         <ul className="mt-4 grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
           {[
@@ -170,34 +172,34 @@ export const ListingComplet: Story = {
       <CatalogSection index={4} name="Card" importPath='@allaboard/ui/components/card'>
         <Card>
           <CardHeader>
-            <CardTitle>Titre carte</CardTitle>
-            <CardDescription>Sous-titre ou métadonnées.</CardDescription>
+            <CardTitle>{catalog.cardTitle}</CardTitle>
+            <CardDescription>{catalog.cardDescription}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="m-0 text-sm text-foreground">Contenu principal.</p>
+            <p className="m-0 text-sm text-foreground">{catalog.cardContent}</p>
           </CardContent>
         </Card>
       </CatalogSection>
 
       <CatalogSection index={5} name="Input" importPath='@allaboard/ui/components/input'>
         <div className="grid gap-3">
-          <Input placeholder="Champ texte" />
-          <Input aria-invalid placeholder="État invalide" />
+          <Input placeholder={catalog.textField} />
+          <Input aria-invalid placeholder={catalog.invalidState} />
         </div>
       </CatalogSection>
 
       <CatalogSection index={6} name="Label" importPath='@allaboard/ui/components/label'>
         <div className="grid gap-2">
-          <Label htmlFor="catalog-label">Libellé de champ</Label>
-          <Input id="catalog-label" placeholder="Associé à un input" />
+          <Label htmlFor="catalog-label">{catalog.fieldLabel}</Label>
+          <Input id="catalog-label" placeholder={catalog.associatedInput} />
         </div>
       </CatalogSection>
 
       <CatalogSection index={7} name="Separator" importPath='@allaboard/ui/components/separator'>
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">Au-dessus</p>
+          <p className="text-sm text-muted-foreground">{catalog.above}</p>
           <Separator />
-          <p className="text-sm text-muted-foreground">En-dessous</p>
+          <p className="text-sm text-muted-foreground">{catalog.below}</p>
         </div>
       </CatalogSection>
 
@@ -209,7 +211,7 @@ export const ListingComplet: Story = {
       </CatalogSection>
 
       <CatalogSection index={9} name="Textarea" importPath='@allaboard/ui/components/textarea'>
-        <Textarea rows={3} placeholder="Texte multiligne" />
+        <Textarea rows={3} placeholder={catalog.multiline} />
       </CatalogSection>
 
       <CatalogSection
@@ -218,7 +220,9 @@ export const ListingComplet: Story = {
         importPath='@allaboard/ui/components/sonner'
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <Button onClick={() => toast.success("Toast catalogue")}>Afficher un toast</Button>
+          <Button onClick={() => toast.success(toastLabels.catalogMessage)}>
+            {toastLabels.catalogButton}
+          </Button>
           <Toaster />
         </ThemeProvider>
       </CatalogSection>
@@ -235,7 +239,12 @@ export const ListingComplet: Story = {
         </Select>
       </CatalogSection>
     </div>
-  ),
+  );
+}
+
+export const ListingComplet: Story = {
+  name: "00 · Listing complet",
+  render: () => <ListingCompletStory />,
 };
 
 export const AlertCatalog: Story = {
@@ -265,58 +274,74 @@ export const BadgeCatalog: Story = {
 
 export const ButtonCatalog: Story = {
   name: "03 · Button",
-  render: () => (
-    <div className="p-8">
-      <CatalogSection index={3} name="Button" importPath='@allaboard/ui/components/button'>
-        <div className="flex flex-wrap gap-2">
-          <Button>Nouvelle demande</Button>
-          <Button variant="outline">Retour</Button>
-          <Button disabled>Envoi…</Button>
-        </div>
-      </CatalogSection>
-    </div>
-  ),
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+
+    return (
+      <div className="p-8">
+        <CatalogSection index={3} name="Button" importPath='@allaboard/ui/components/button'>
+          <div className="flex flex-wrap gap-2">
+            <Button>{catalog.newRequest}</Button>
+            <Button variant="outline">{catalog.back}</Button>
+            <Button disabled>{catalog.sending}</Button>
+          </div>
+        </CatalogSection>
+      </div>
+    );
+  },
 };
 
 export const CardCatalog: Story = {
   name: "04 · Card",
-  render: () => (
-    <div className="p-8">
-      <CatalogSection index={4} name="Card" importPath='@allaboard/ui/components/card'>
-        <Card className="transition-colors hover:border-primary/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Titre feed</CardTitle>
-            <CardDescription>Auteur : bob · 26 mai 2026</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <Badge variant="secondary">mentor</Badge>
-          </CardContent>
-        </Card>
-      </CatalogSection>
-    </div>
-  ),
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+
+    return (
+      <div className="p-8">
+        <CatalogSection index={4} name="Card" importPath='@allaboard/ui/components/card'>
+          <Card className="transition-colors hover:border-primary/50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">{catalog.feedCardTitle}</CardTitle>
+              <CardDescription>{catalog.feedCardDescription}</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <Badge variant="secondary">mentor</Badge>
+            </CardContent>
+          </Card>
+        </CatalogSection>
+      </div>
+    );
+  },
 };
 
 export const InputCatalog: Story = {
   name: "05 · Input",
-  render: () => (
-    <div className="p-8">
-      <CatalogSection index={5} name="Input" importPath='@allaboard/ui/components/input'>
-        <Input placeholder="Tags (optionnel)" />
-      </CatalogSection>
-    </div>
-  ),
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+
+    return (
+      <div className="p-8">
+        <CatalogSection index={5} name="Input" importPath='@allaboard/ui/components/input'>
+          <Input placeholder={catalog.tagsOptional} />
+        </CatalogSection>
+      </div>
+    );
+  },
 };
 
 export const LabelCatalog: Story = {
   name: "06 · Label",
-  render: () => (
-    <div className="p-8">
-      <CatalogSection index={6} name="Label" importPath='@allaboard/ui/components/label'>
-        <Label htmlFor="cat-label-demo">Mot de passe MVP</Label>
-      </CatalogSection>
-    </div>
-  ),
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+
+    return (
+      <div className="p-8">
+        <CatalogSection index={6} name="Label" importPath='@allaboard/ui/components/label'>
+          <Label htmlFor="cat-label-demo">{catalog.passwordMvp}</Label>
+        </CatalogSection>
+      </div>
+    );
+  },
 };
 
 export const SeparatorCatalog: Story = {
@@ -343,48 +368,62 @@ export const SkeletonCatalog: Story = {
 
 export const TextareaCatalog: Story = {
   name: "09 · Textarea",
-  render: () => (
-    <div className="p-8">
-      <CatalogSection index={9} name="Textarea" importPath='@allaboard/ui/components/textarea'>
-        <Textarea rows={4} placeholder="Titre / description de la demande" />
-      </CatalogSection>
-    </div>
-  ),
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+
+    return (
+      <div className="p-8">
+        <CatalogSection index={9} name="Textarea" importPath='@allaboard/ui/components/textarea'>
+          <Textarea rows={4} placeholder={catalog.titleDescription} />
+        </CatalogSection>
+      </div>
+    );
+  },
 };
 
 export const SonnerCatalog: Story = {
   name: "10 · Sonner (Toast)",
-  render: () => (
-    <div className="p-8">
-      <CatalogSection
-        index={10}
-        name="Sonner (Toast)"
-        importPath='@allaboard/ui/components/sonner'
-      >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <Button onClick={() => toast("Notification catalogue")}>Toast</Button>
-          <Toaster />
-        </ThemeProvider>
-      </CatalogSection>
-    </div>
-  ),
+  render: () => {
+    const toastLabels = useMvpPatternLabels().toast;
+
+    return (
+      <div className="p-8">
+        <CatalogSection
+          index={10}
+          name="Sonner (Toast)"
+          importPath='@allaboard/ui/components/sonner'
+        >
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+            <Button onClick={() => toast(toastLabels.catalogNotification)}>
+              Toast
+            </Button>
+            <Toaster />
+          </ThemeProvider>
+        </CatalogSection>
+      </div>
+    );
+  },
 };
 
 export const SelectCatalog: Story = {
   name: "11 · Select",
-  render: () => (
-    <div className="p-8">
-      <CatalogSection index={11} name="Select" importPath='@allaboard/ui/components/select'>
-        <Select defaultValue="mentor">
-          <SelectTrigger className="w-[220px]">
-            <SelectValue placeholder="Tag" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="mentor">Mentor</SelectItem>
-            <SelectItem value="help">Aide</SelectItem>
-          </SelectContent>
-        </Select>
-      </CatalogSection>
-    </div>
-  ),
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+
+    return (
+      <div className="p-8">
+        <CatalogSection index={11} name="Select" importPath='@allaboard/ui/components/select'>
+          <Select defaultValue="mentor">
+            <SelectTrigger className="w-[220px]">
+              <SelectValue placeholder="Tag" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="mentor">{catalog.selectMentor}</SelectItem>
+              <SelectItem value="help">{catalog.selectHelp}</SelectItem>
+            </SelectContent>
+          </Select>
+        </CatalogSection>
+      </div>
+    );
+  },
 };

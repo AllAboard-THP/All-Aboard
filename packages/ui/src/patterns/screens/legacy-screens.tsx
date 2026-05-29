@@ -79,6 +79,7 @@ import {
   ResourcesPageHeader,
   SearchBar,
 } from "../legacy-resource-patterns";
+import { SubjectRequestModal } from "../legacy-modal-patterns";
 import { AppChrome } from "../pattern-app-chrome";
 import { legacyDemoToast } from "../legacy-story-feedback";
 import { GraduationCap } from "lucide-react";
@@ -172,28 +173,41 @@ export function LandingLoginScreen() {
   );
 }
 
-export function ExploreSubjectsScreen() {
+export function ExploreSubjectsScreen({
+  mobileChrome = false,
+}: { mobileChrome?: boolean } = {}) {
   const labels = useLegacyLabels();
+  const [subjectRequestOpen, setSubjectRequestOpen] = useState(false);
 
   return (
-    <AppChrome activeLink="explore">
+    <AppChrome activeLink="explore" mobileChrome={mobileChrome}>
       <div className="animate-fade-in">
         <div className="mb-8">
           <h2 className="mb-2 text-3xl font-bold">{labels.explore.title}</h2>
           <p className="text-muted-foreground">{labels.explore.subtitle}</p>
         </div>
-        <SubjectCardGrid labels={labels} />
+        <SubjectCardGrid
+          labels={labels}
+          onProposeSubjectClick={() => setSubjectRequestOpen(true)}
+        />
       </div>
+      <SubjectRequestModal
+        open={subjectRequestOpen}
+        onOpenChange={setSubjectRequestOpen}
+        labels={labels}
+      />
     </AppChrome>
   );
 }
 
-export function ResourcesListScreen() {
+export function ResourcesListScreen({
+  mobileChrome = false,
+}: { mobileChrome?: boolean } = {}) {
   const labels = useLegacyLabels();
   const resources = useLegacyResources().slice(0, 3);
 
   return (
-    <AppChrome activeLink="resources">
+    <AppChrome activeLink="resources" mobileChrome={mobileChrome}>
       <div className="mx-auto max-w-4xl animate-fade-in">
         <ResourcesPageHeader labels={labels} />
         <SearchBar
@@ -207,11 +221,13 @@ export function ResourcesListScreen() {
   );
 }
 
-export function AdminDashboardScreen() {
+export function AdminDashboardScreen({
+  mobileChrome = false,
+}: { mobileChrome?: boolean } = {}) {
   const labels = useLegacyLabels();
 
   return (
-    <AppChrome activeLink="feed" isAdmin>
+    <AppChrome activeLink="feed" isAdmin mobileChrome={mobileChrome}>
       <div className="animate-fade-in">
         <div className="mb-8">
           <h1 className="mb-2 text-4xl font-bold">{labels.admin.title}</h1>
@@ -224,12 +240,14 @@ export function AdminDashboardScreen() {
   );
 }
 
-export function NavWithAdminUserScreen() {
+export function NavWithAdminUserScreen({
+  mobileChrome = false,
+}: { mobileChrome?: boolean } = {}) {
   const labels = useLegacyLabels();
   const isEn = labels.nav.feed === "Home";
 
   return (
-    <AppChrome activeLink="feed" isAdmin>
+    <AppChrome activeLink="feed" isAdmin mobileChrome={mobileChrome}>
       <div className="animate-fade-in">
         <p className="text-muted-foreground">
           {isEn
@@ -272,12 +290,14 @@ export function MessagesInboxScreen({ mobileChrome = false }: { mobileChrome?: b
   );
 }
 
-export function UserProfileScreen() {
+export function UserProfileScreen({
+  mobileChrome = false,
+}: { mobileChrome?: boolean } = {}) {
   const labels = useLegacyLabels();
   const profile = useLegacyProfile();
 
   return (
-    <AppChrome activeLink="feed">
+    <AppChrome activeLink="feed" mobileChrome={mobileChrome}>
       <div className="mx-auto max-w-5xl animate-fade-in space-y-6">
         <ProfileHeaderCard profile={profile} labels={labels} />
         <ProfileAboutCard profile={profile} labels={labels} />
@@ -334,12 +354,40 @@ export function LegalCguScreen() {
   );
 }
 
-export function MentorDashboardScreen() {
+export function LegalPrivacyScreen() {
+  const labels = useLegacyLabels();
+  const content = useLegacyLegalContent("privacy");
+
+  return (
+    <AppChrome showNav={false}>
+      <div className="animate-fade-in px-4 py-10">
+        <LegalPageLayout content={content} labels={labels} />
+      </div>
+    </AppChrome>
+  );
+}
+
+export function LegalMentionsScreen() {
+  const labels = useLegacyLabels();
+  const content = useLegacyLegalContent("mentions");
+
+  return (
+    <AppChrome showNav={false}>
+      <div className="animate-fade-in px-4 py-10">
+        <LegalPageLayout content={content} labels={labels} />
+      </div>
+    </AppChrome>
+  );
+}
+
+export function MentorDashboardScreen({
+  mobileChrome = false,
+}: { mobileChrome?: boolean } = {}) {
   const labels = useLegacyLabels();
   const fixture = useLegacyMentorDashboard();
 
   return (
-    <AppChrome activeLink="feed" isAdmin isMentor showMentorDot>
+    <AppChrome activeLink="feed" isAdmin isMentor showMentorDot mobileChrome={mobileChrome}>
       <div className="mx-auto max-w-4xl animate-fade-in">
         <div className="mb-8">
           <h1 className="mb-1 flex items-center gap-3 text-3xl font-bold">
@@ -359,12 +407,14 @@ export function MentorDashboardScreen() {
   );
 }
 
-export function AdminModerationScreen() {
+export function AdminModerationScreen({
+  mobileChrome = false,
+}: { mobileChrome?: boolean } = {}) {
   const labels = useLegacyLabels();
   const fixture = useLegacyModeration();
 
   return (
-    <AppChrome activeLink="feed" isAdmin>
+    <AppChrome activeLink="feed" isAdmin mobileChrome={mobileChrome}>
       <div className="animate-fade-in">
         <AdminModerationQueue fixture={fixture} labels={labels} />
       </div>
@@ -372,12 +422,14 @@ export function AdminModerationScreen() {
   );
 }
 
-export function AdminUsersScreen() {
+export function AdminUsersScreen({
+  mobileChrome = false,
+}: { mobileChrome?: boolean } = {}) {
   const labels = useLegacyLabels();
   const users = useLegacyAdminUsers();
 
   return (
-    <AppChrome activeLink="feed" isAdmin>
+    <AppChrome activeLink="feed" isAdmin mobileChrome={mobileChrome}>
       <div className="animate-fade-in">
         <AdminUsersTable users={users} labels={labels} />
       </div>

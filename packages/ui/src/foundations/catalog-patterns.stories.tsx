@@ -10,7 +10,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "../components/alert";
-import { useAlertLabels } from "../i18n/storybook-locale";
+import { useAlertLabels, useMvpPatternLabels } from "../i18n/storybook-locale";
 import { Badge } from "../components/badge";
 import { Button } from "../components/button";
 import { Input } from "../components/input";
@@ -41,6 +41,8 @@ function PatternSection({
   storyPath: string;
   children: ReactNode;
 }) {
+  const labels = useMvpPatternLabels().catalog;
+
   return (
     <section className="border-b border-border px-6 py-10 last:border-b-0">
       <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
@@ -48,21 +50,26 @@ function PatternSection({
       </p>
       <h2 className="mt-2 mb-1 text-2xl font-semibold text-foreground">{name}</h2>
       <p className="mb-6 text-xs text-muted-foreground">
-        Détail : <code className="text-foreground">{storyPath}</code>
+        {labels.detailPrefix}{" "}
+        <code className="text-foreground">{storyPath}</code>
       </p>
       <div className="max-w-2xl">{children}</div>
     </section>
   );
 }
 
-export const ListingPatterns: Story = {
-  name: "00 · Listing patterns",
-  render: () => (
+function ListingPatternsStory() {
+  const labels = useMvpPatternLabels().catalog;
+
+  return (
     <div className="mx-auto max-w-3xl px-6 py-8">
-      <h1 className="m-0 text-3xl font-semibold text-foreground">Catalogue patterns</h1>
+      <h1 className="m-0 text-3xl font-semibold text-foreground">
+        {labels.patternsListingTitle}
+      </h1>
       <p className="mt-2 text-muted-foreground">
-        Six compositions alignées sur <code className="text-foreground">apps/web</code>.
-        Entrées <strong className="text-foreground">01…06</strong> dans la sidebar.
+        {labels.patternsListingLead}{" "}
+        <code className="text-foreground">{labels.patternsListingStrong}</code>
+        {labels.patternsListingTail}
       </p>
       <ol className="mt-4 list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
         <li>EmptyState</li>
@@ -73,50 +80,51 @@ export const ListingPatterns: Story = {
         <li>LoadingFeed</li>
       </ol>
     </div>
-  ),
-};
+  );
+}
 
-export const EmptyStatePattern: Story = {
-  name: "01 · EmptyState",
-  render: () => (
+function EmptyStatePatternStory() {
+  const empty = useMvpPatternLabels().emptyState;
+
+  return (
     <div className="p-8">
       <PatternSection index={1} name="EmptyState" storyPath="Patterns/EmptyState">
         <PatternDemoCardShell>
-          <p className="m-0 text-lg font-semibold">Aucune demande pour l&apos;instant</p>
-          <p className="m-0 text-sm text-muted-foreground">Soyez le premier à publier.</p>
-          <Button variant="outline">Publier une demande</Button>
+          <p className="m-0 text-lg font-semibold">{empty.feedTitle}</p>
+          <p className="m-0 text-sm text-muted-foreground">
+            {empty.catalogDescription}
+          </p>
+          <Button variant="outline">{empty.feedCta}</Button>
         </PatternDemoCardShell>
       </PatternSection>
     </div>
-  ),
-};
+  );
+}
 
-export const ErrorAlertPattern: Story = {
-  name: "02 · ErrorAlert",
-  render: () => {
-    const labels = useAlertLabels();
+function ErrorAlertPatternStory() {
+  const labels = useAlertLabels();
 
-    return (
-      <div className="p-8">
-        <PatternSection index={2} name="ErrorAlert" storyPath="Patterns/ErrorAlert">
-          <Alert variant="destructive" className={patternDemoAlertClassName}>
-            <AlertTitle>{labels.feedLoadError}</AlertTitle>
-            <AlertDescription>{labels.http502}</AlertDescription>
-          </Alert>
-        </PatternSection>
-      </div>
-    );
-  },
-};
+  return (
+    <div className="p-8">
+      <PatternSection index={2} name="ErrorAlert" storyPath="Patterns/ErrorAlert">
+        <Alert variant="destructive" className={patternDemoAlertClassName}>
+          <AlertTitle>{labels.feedLoadError}</AlertTitle>
+          <AlertDescription>{labels.http502}</AlertDescription>
+        </Alert>
+      </PatternSection>
+    </div>
+  );
+}
 
-export const FeedItemCardPattern: Story = {
-  name: "03 · FeedItemCard",
-  render: () => (
+function FeedItemCardPatternStory() {
+  const labels = useMvpPatternLabels().catalog;
+
+  return (
     <div className="p-8">
       <PatternSection index={3} name="FeedItemCard" storyPath="Patterns/FeedItemCard">
         <PatternDemoCardShell className="hover:border-primary/50">
-          <p className="m-0 text-lg font-semibold">Comment structurer un monorepo ?</p>
-          <p className="m-0 text-sm text-muted-foreground">Auteur : bob</p>
+          <p className="m-0 text-lg font-semibold">{labels.feedItemTitle}</p>
+          <p className="m-0 text-sm text-muted-foreground">{labels.feedItemAuthor}</p>
           <div className="flex flex-wrap justify-center gap-2">
             <Badge variant="secondary">mentor</Badge>
             <Badge variant="outline">turborepo</Badge>
@@ -124,50 +132,51 @@ export const FeedItemCardPattern: Story = {
         </PatternDemoCardShell>
       </PatternSection>
     </div>
-  ),
-};
+  );
+}
 
-export const FormFieldPattern: Story = {
-  name: "04 · FormField",
-  render: () => (
+function FormFieldPatternStory() {
+  const labels = useMvpPatternLabels().formField;
+
+  return (
     <div className="p-8">
       <PatternSection index={4} name="FormField" storyPath="Patterns/FormField">
         <div className="grid max-w-md gap-3">
           <div className="grid gap-2">
-            <Label htmlFor="p-user">Identifiant</Label>
+            <Label htmlFor="p-user">{labels.userIdLabelShort}</Label>
             <Input id="p-user" defaultValue="bob" />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="p-title">Titre</Label>
+            <Label htmlFor="p-title">{labels.titleLabelShort}</Label>
             <Textarea id="p-title" rows={2} />
           </div>
-          <Button className="w-full">Connexion et publier</Button>
+          <Button className="w-full">{labels.submitButton}</Button>
         </div>
       </PatternSection>
     </div>
-  ),
-};
+  );
+}
 
-export const PageHeaderPattern: Story = {
-  name: "05 · PageHeader",
-  render: () => (
+function PageHeaderPatternStory() {
+  const labels = useMvpPatternLabels().pageHeader;
+
+  return (
     <div className="p-8">
       <PatternSection index={5} name="PageHeader" storyPath="Patterns/PageHeader">
         <header>
           <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
-            All-Aboard
+            {labels.feedEyebrow}
           </p>
-          <h1 className="mt-2 text-3xl font-semibold">Feed communautaire</h1>
-          <p className="text-muted-foreground">Description de page.</p>
+          <h1 className="mt-2 text-3xl font-semibold">{labels.feedTitle}</h1>
+          <p className="text-muted-foreground">{labels.catalogDescription}</p>
         </header>
       </PatternSection>
     </div>
-  ),
-};
+  );
+}
 
-export const LoadingFeedPattern: Story = {
-  name: "06 · LoadingFeed",
-  render: () => (
+function LoadingFeedPatternStory() {
+  return (
     <div className="p-8">
       <PatternSection index={6} name="LoadingFeed" storyPath="Patterns/LoadingFeed">
         <div className="space-y-3">
@@ -176,5 +185,40 @@ export const LoadingFeedPattern: Story = {
         </div>
       </PatternSection>
     </div>
-  ),
+  );
+}
+
+export const ListingPatterns: Story = {
+  name: "00 · Listing patterns",
+  render: () => <ListingPatternsStory />,
+};
+
+export const EmptyStatePattern: Story = {
+  name: "01 · EmptyState",
+  render: () => <EmptyStatePatternStory />,
+};
+
+export const ErrorAlertPattern: Story = {
+  name: "02 · ErrorAlert",
+  render: () => <ErrorAlertPatternStory />,
+};
+
+export const FeedItemCardPattern: Story = {
+  name: "03 · FeedItemCard",
+  render: () => <FeedItemCardPatternStory />,
+};
+
+export const FormFieldPattern: Story = {
+  name: "04 · FormField",
+  render: () => <FormFieldPatternStory />,
+};
+
+export const PageHeaderPattern: Story = {
+  name: "05 · PageHeader",
+  render: () => <PageHeaderPatternStory />,
+};
+
+export const LoadingFeedPattern: Story = {
+  name: "06 · LoadingFeed",
+  render: () => <LoadingFeedPatternStory />,
 };

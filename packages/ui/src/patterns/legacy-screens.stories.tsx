@@ -10,6 +10,8 @@ import {
   ForgotPasswordScreen,
   LandingLoginScreen,
   LegalCguScreen,
+  LegalMentionsScreen,
+  LegalPrivacyScreen,
   MentorDashboardScreen,
   MessagesInboxScreen,
   NavWithAdminUserScreen,
@@ -85,6 +87,16 @@ export const LegalCgu: Story = {
   render: () => <LegalCguScreen />,
 };
 
+export const LegalPrivacy: Story = {
+  name: "LegalPrivacy",
+  render: () => <LegalPrivacyScreen />,
+};
+
+export const LegalMentions: Story = {
+  name: "LegalMentions",
+  render: () => <LegalMentionsScreen />,
+};
+
 export const MentorDashboard: Story = {
   name: "MentorDashboard",
   render: () => <MentorDashboardScreen />,
@@ -121,4 +133,88 @@ export const MessagesInboxMobile: Story = {
   name: "MessagesInbox/Mobile",
   parameters: mobileStoryParameters,
   render: () => <MessagesInboxScreen mobileChrome />,
+};
+
+export const ExploreSubjectsMobile: Story = {
+  name: "ExploreSubjects/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <ExploreSubjectsScreen mobileChrome />,
+};
+
+export const ResourcesListMobile: Story = {
+  name: "ResourcesList/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <ResourcesListScreen mobileChrome />,
+};
+
+export const UserProfileMobile: Story = {
+  name: "UserProfile/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <UserProfileScreen mobileChrome />,
+};
+
+export const MentorDashboardMobile: Story = {
+  name: "MentorDashboard/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <MentorDashboardScreen mobileChrome />,
+};
+
+export const AdminDashboardMobile: Story = {
+  name: "AdminDashboard/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <AdminDashboardScreen mobileChrome />,
+};
+
+export const AdminModerationMobile: Story = {
+  name: "AdminModeration/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <AdminModerationScreen mobileChrome />,
+};
+
+export const AdminUsersMobile: Story = {
+  name: "AdminUsers/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <AdminUsersScreen mobileChrome />,
+};
+
+export const NavWithAdminUserMobile: Story = {
+  name: "NavWithAdminUser/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <NavWithAdminUserScreen mobileChrome />,
+};
+
+export const LandingLoginMobile: Story = {
+  name: "LandingLogin/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <LandingLoginScreen />,
+};
+
+export const RegisterMobile: Story = {
+  name: "Register/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <RegisterScreen />,
+};
+
+export const ForgotPasswordMobile: Story = {
+  name: "ForgotPassword/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <ForgotPasswordScreen />,
+};
+
+export const LegalCguMobile: Story = {
+  name: "LegalCgu/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <LegalCguScreen />,
+};
+
+export const LegalPrivacyMobile: Story = {
+  name: "LegalPrivacy/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <LegalPrivacyScreen />,
+};
+
+export const LegalMentionsMobile: Story = {
+  name: "LegalMentions/Mobile",
+  parameters: mobileStoryParameters,
+  render: () => <LegalMentionsScreen />,
 };

@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 
 import { useLegacyLabels } from "../i18n/storybook-locale";
 import { legacySubjects } from "./fixtures/legacy-subjects";
+import { SubjectRequestModal } from "./legacy-modal-patterns";
 import {
   ProposeSubjectCard,
   SubjectCard,
@@ -42,14 +44,38 @@ function SubjectCardStory() {
 
 function ProposeSubjectStory() {
   const labels = useLegacyLabels();
-  return <ProposeSubjectCard labels={labels} />;
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <ProposeSubjectCard
+        labels={labels}
+        onProposeClick={() => setOpen(true)}
+      />
+      <SubjectRequestModal
+        open={open}
+        onOpenChange={setOpen}
+        labels={labels}
+      />
+    </>
+  );
 }
 
 function SubjectGridStory() {
   const labels = useLegacyLabels();
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="w-full max-w-6xl px-4">
-      <SubjectCardGrid labels={labels} />
+      <SubjectCardGrid
+        labels={labels}
+        onProposeSubjectClick={() => setOpen(true)}
+      />
+      <SubjectRequestModal
+        open={open}
+        onOpenChange={setOpen}
+        labels={labels}
+      />
     </div>
   );
 }
