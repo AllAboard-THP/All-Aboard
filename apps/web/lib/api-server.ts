@@ -4,6 +4,7 @@ import type {
   HelpRequest,
   HelpRequestDetailResponse,
   MentorFeedResponse,
+  Response,
 } from "@allaboard/types";
 
 const DEFAULT_API_URL = "http://127.0.0.1:4000";
@@ -26,6 +27,17 @@ function isHelpRequest(value: unknown): value is HelpRequest {
     typeof o.authorId === "string" &&
     typeof o.createdAt === "string" &&
     tagsOk
+  );
+}
+
+function isResponse(value: unknown): value is Response {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.id === "string" &&
+    typeof o.helpRequestId === "string" &&
+    typeof o.body === "string" &&
+    typeof o.authorId === "string"
   );
 }
 
@@ -56,6 +68,9 @@ export function parseHelpRequestDetailResponse(
   if (o.responses !== undefined) {
     if (!Array.isArray(o.responses)) {
       throw new Error("Invalid detail: responses must be an array");
+    }
+    if (!o.responses.every(isResponse)) {
+      throw new Error("Invalid detail: response shape");
     }
   }
   return {

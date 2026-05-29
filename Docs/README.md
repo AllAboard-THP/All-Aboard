@@ -47,7 +47,7 @@ Référence **architecture et produit** du dépôt. Le **pilotage des tâches** 
 | 0 — Socle monorepo, Web/API, Dokploy | Livré | plan opérationnel (journal) |
 | 1 — Feed SSR + types | Livré | idem |
 | 2 — Auth + parcours demande d'aide | **Livré** (MVP dépôt ; durcissement / staging à suivre) | [ADR 0001](adr/0001-authentication-strategy.md), [MOC](moc-parcours-utilisateur.md), epic [#13](https://github.com/AllAboard-THP/All-Aboard/issues/13) |
-| 3 — TanStack hors home | Partiel (home OK) | [#36](https://github.com/AllAboard-THP/All-Aboard/issues/36) |
+| 3 — TanStack hors home | **Livré** (feed, détail, mutations création) | [#36](https://github.com/AllAboard-THP/All-Aboard/issues/36) |
 | 4 — Design system + shell navigation | **Livré** (dépôt) | [design-system/](design-system/README.md), [#24](https://github.com/AllAboard-THP/All-Aboard/issues/24), [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25) |
 | 5 — Agent / Indexer | Backlog | [#37](https://github.com/AllAboard-THP/All-Aboard/issues/37), [vision](vision/README.md) |
 
@@ -61,7 +61,7 @@ Référence **architecture et produit** du dépôt. Le **pilotage des tâches** 
 | `apps/web` | SSR feed ; BFF ; `/help/new` ; **AppShell** (`app/(app)/`, nav MOC) — [app-shell.md](design-system/app-shell.md) ; `@allaboard/ui` + features/blocks. |
 | `packages/ui` + `apps/storybook` | Design system + catalogue SB — [design-system/README.md](design-system/README.md). |
 | Auth | JWT (cookie `access_token` + relais BFF Bearer) — [ADR 0001](adr/0001-authentication-strategy.md), users hash — [ADR 0003](adr/0003-authentication-users-production.md). |
-| TanStack | Socle + usage home sur le feed — extension **Phase 3 résiduelle**. |
+| TanStack | Socle + `useQuery` feed/détail, `useMutation` création — [#36](https://github.com/AllAboard-THP/All-Aboard/issues/36). |
 | `apps/thp-final` | Rails historique — hors MVP JS sauf décision explicite. |
 
 ---
@@ -73,4 +73,4 @@ Référence **architecture et produit** du dépôt. Le **pilotage des tâches** 
 3. Décision archi **validée** : `Docs/adr/` (brouillon dans `tasks/`).
 4. Phase **terminée** : mettre à jour le tableau ci-dessus (date en tête de section si besoin).
 
-**Mise à jour** : 2026-05-20.
+**Mise à jour** : 2026-05-29.

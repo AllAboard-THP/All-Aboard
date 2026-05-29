@@ -4,7 +4,7 @@ Référence issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31) /
 
 **Dernière validation dev** : 2026-05-25 (housekeeping post PR #50–#52).
 
-**Promotion staging** : PR [#54](https://github.com/AllAboard-THP/All-Aboard/pull/54) mergée 2026-05-26 ; validation smoke HTTPS + parcours Bob **2026-05-27** — [runbook staging](runbook-dokploy-staging-phase2.md).
+**Promotion staging** : PR [#54](https://github.com/AllAboard-THP/All-Aboard/pull/54) mergée 2026-05-26 ; validation smoke HTTPS + parcours Bob **2026-05-27** ; auth ADR 0003 ops **2026-05-29** — [runbook staging](runbook-dokploy-staging-phase2.md).
 
 ## Parcours produit (dev)
 
@@ -18,16 +18,16 @@ Référence issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31) /
 ## Auth (bloquant staging public)
 
 - [x] [ADR 0003](adr/0003-authentication-users-production.md) accepté (code 2026-05-28)
-- [ ] `MVP_LOGIN_PASSWORD` retiré de staging Dokploy (ops : après seed comptes équipe)
-- [ ] Comptes réels seedés sur Postgres staging (`pnpm --filter api run db:seed` + `DEV_SEED_PASSWORD` hors repo)
+- [x] `MVP_LOGIN_PASSWORD` retiré de staging Dokploy (2026-05-29)
+- [x] Comptes seed `bob@dev.local` / `alice@dev.local` sur Postgres staging (`DEV_SEED_PASSWORD` Dokploy ; login email + hash validé 2026-05-29)
 
 ## Infra Dokploy staging
 
 - [x] Env Dokploy `staging` provisionné (Web, API, Postgres) — domaines `staging.allaboard.fr` / `api-staging.allaboard.fr`
-- [x] Vars API Phase 2 (`DATABASE_URL`, `JWT_SECRET`) — 2026-05-25 ; `MVP_LOGIN_PASSWORD` à retirer post-seed ADR 0003
+- [x] Vars API Phase 2 (`DATABASE_URL`, `JWT_SECRET`, `DEV_SEED_PASSWORD`, `APP_ENV=staging`) — 2026-05-29 ; pas de `MVP_LOGIN_PASSWORD`
 - [x] `API_URL` interne Web → API staging cohérent
 - [x] Code MVP déployé (PR #54 + redeploy Web manuel 2026-05-27 après build auto en erreur)
-- [x] Smoke HTTPS : `BASE_WEB=https://staging.allaboard.fr BASE_API=https://api-staging.allaboard.fr pnpm smoke:dev` (base + auth, 2026-05-27)
+- [x] Smoke HTTPS : `BASE_WEB=… BASE_API=… SMOKE_LOGIN_EMAIL=bob@dev.local SMOKE_LOGIN_PASSWORD=<secret Dokploy> pnpm smoke:dev` (complet ADR 0003, 2026-05-29)
 - [x] Aucun secret committé dans le dépôt
 
 ## Qualité

@@ -74,7 +74,7 @@ export function HelpRequestDetailContent({
     );
   }
 
-  const { item, responses = [] } = detail;
+  const { item } = detail;
 
   return (
     <div className="mx-auto w-full max-w-3xl p-6">
@@ -95,37 +95,6 @@ export function HelpRequestDetailContent({
           </p>
         ) : null}
       </header>
-
-      <section aria-label="Réponses" className="mb-6">
-        <h2 className="mb-3 text-lg font-semibold text-foreground">Réponses</h2>
-        {responses.length === 0 ? (
-          <Card data-testid="responses-empty">
-            <CardHeader>
-              <CardTitle className="text-base">
-                Aucune réponse pour l&apos;instant
-              </CardTitle>
-              <CardDescription>
-                Les réponses de la communauté et des mentors apparaîtront ici.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        ) : (
-          <ul className="flex list-none flex-col gap-3 p-0">
-            {responses.map((r) => (
-              <li key={r.id}>
-                <Card>
-                  <CardContent className="pt-6">
-                    <p className="m-0 text-sm text-foreground">{r.body}</p>
-                    <p className="mt-2 mb-0 text-xs text-muted-foreground">
-                      {r.authorId}
-                    </p>
-                  </CardContent>
-                </Card>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
 
       <HelpRequestDetailClient initialDetail={detail} requestId={id} />
 
