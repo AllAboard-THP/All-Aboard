@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   ArrowLeft,
   Check,
@@ -28,11 +29,16 @@ import {
   type ModerationFlaggedComment,
   type ModerationFlaggedPost,
 } from "./fixtures/legacy-moderation";
+import { legacyDemoToast } from "./legacy-story-feedback";
 
 function ModerationItemActions({
   labels,
+  onApprove,
+  onReject,
 }: {
   labels: LegacyLabels;
+  onApprove: () => void;
+  onReject: () => void;
 }) {
   return (
     <div className="flex gap-3">
@@ -40,6 +46,10 @@ function ModerationItemActions({
         type="button"
         size="sm"
         className="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30"
+        onClick={() => {
+          onApprove();
+          legacyDemoToast(labels.moderation.approve);
+        }}
       >
         <Check data-icon="inline-start" />
         {labels.moderation.approve}
@@ -48,6 +58,10 @@ function ModerationItemActions({
         type="button"
         size="sm"
         className="bg-red-500/10 text-red-400 hover:bg-red-500/20"
+        onClick={() => {
+          onReject();
+          legacyDemoToast(labels.moderation.reject);
+        }}
       >
         <Trash2 data-icon="inline-start" />
         {labels.moderation.reject}
@@ -59,9 +73,13 @@ function ModerationItemActions({
 function FlaggedPostRow({
   post,
   labels,
+  onApprove,
+  onReject,
 }: {
   post: ModerationFlaggedPost;
   labels: LegacyLabels;
+  onApprove: () => void;
+  onReject: () => void;
 }) {
   return (
     <div className="p-5">
@@ -81,7 +99,11 @@ function FlaggedPostRow({
           <p className="line-clamp-3 text-sm text-muted-foreground">{post.body}</p>
         </div>
       </div>
-      <ModerationItemActions labels={labels} />
+      <ModerationItemActions
+        labels={labels}
+        onApprove={onApprove}
+        onReject={onReject}
+      />
     </div>
   );
 }
@@ -89,9 +111,13 @@ function FlaggedPostRow({
 function FlaggedCommentRow({
   comment,
   labels,
+  onApprove,
+  onReject,
 }: {
   comment: ModerationFlaggedComment;
   labels: LegacyLabels;
+  onApprove: () => void;
+  onReject: () => void;
 }) {
   return (
     <div className="p-5">
@@ -116,7 +142,11 @@ function FlaggedCommentRow({
           <p className="text-sm text-muted-foreground">{comment.body}</p>
         </div>
       </div>
-      <ModerationItemActions labels={labels} />
+      <ModerationItemActions
+        labels={labels}
+        onApprove={onApprove}
+        onReject={onReject}
+      />
     </div>
   );
 }
@@ -130,7 +160,11 @@ export function AdminModerationQueue({
   labels?: LegacyLabels;
   className?: string;
 }) {
-  const total = fixture.flaggedPosts.length + fixture.flaggedComments.length;
+  const [flaggedPosts, setFlaggedPosts] = useState(fixture.flaggedPosts);
+  const [flaggedComments, setFlaggedComments] = useState(
+    fixture.flaggedComments,
+  );
+  const total = flaggedPosts.length + flaggedComments.length;
 
   return (
     <div className={cn("mx-auto max-w-4xl", className)}>
@@ -139,6 +173,7 @@ export function AdminModerationQueue({
           type="button"
           className="text-muted-foreground transition-colors hover:text-foreground"
           aria-label={labels.adminUsers.back}
+          onClick={() => legacyDemoToast(labels.adminUsers.back)}
         >
           <ArrowLeft className="size-4" />
         </button>
@@ -153,6 +188,7 @@ export function AdminModerationQueue({
           variant="outline"
           size="sm"
           className="ml-auto border-white/10 bg-white/5"
+          onClick={() => legacyDemoToast(labels.moderation.denylist)}
         >
           <Shield data-icon="inline-start" />
           {labels.moderation.denylist}
@@ -164,13 +200,27 @@ export function AdminModerationQueue({
           <FileText className="size-4 text-orange-400" />
           <h2 className="font-semibold">{labels.moderation.postsTitle}</h2>
           <span className="rounded-full bg-orange-400/15 px-2 py-0.5 text-xs font-medium text-orange-400">
-            {fixture.flaggedPosts.length}
+            {flaggedPosts.length}
           </span>
         </div>
-        {fixture.flaggedPosts.length > 0 ? (
+        {flaggedPosts.length > 0 ? (
           <div className="divide-y divide-white/5">
-            {fixture.flaggedPosts.map((post) => (
-              <FlaggedPostRow key={post.id} post={post} labels={labels} />
+            {flaggedPosts.map((post) => (
+              <FlaggedPostRow
+                key={post.id}
+                post={post}
+                labels={labels}
+                onApprove={() =>
+                  setFlaggedPosts((items) =>
+                    items.filter((item) => item.id !== post.id),
+                  )
+                }
+                onReject={() =>
+                  setFlaggedPosts((items) =>
+                    items.filter((item) => item.id !== post.id),
+                  )
+                }
+              />
             ))}
           </div>
         ) : (
@@ -185,16 +235,26 @@ export function AdminModerationQueue({
           <MessageCircle className="size-4 text-orange-400" />
           <h2 className="font-semibold">{labels.moderation.commentsTitle}</h2>
           <span className="rounded-full bg-orange-400/15 px-2 py-0.5 text-xs font-medium text-orange-400">
-            {fixture.flaggedComments.length}
+            {flaggedComments.length}
           </span>
         </div>
-        {fixture.flaggedComments.length > 0 ? (
+        {flaggedComments.length > 0 ? (
           <div className="divide-y divide-white/5">
-            {fixture.flaggedComments.map((comment) => (
+            {flaggedComments.map((comment) => (
               <FlaggedCommentRow
                 key={comment.id}
                 comment={comment}
                 labels={labels}
+                onApprove={() =>
+                  setFlaggedComments((items) =>
+                    items.filter((item) => item.id !== comment.id),
+                  )
+                }
+                onReject={() =>
+                  setFlaggedComments((items) =>
+                    items.filter((item) => item.id !== comment.id),
+                  )
+                }
               />
             ))}
           </div>
@@ -209,7 +269,7 @@ export function AdminModerationQueue({
 }
 
 export function AdminUsersTable({
-  users = legacyAdminUsers,
+  users: initialUsers = legacyAdminUsers,
   labels = legacyLabelsFr,
   className,
 }: {
@@ -217,7 +277,29 @@ export function AdminUsersTable({
   labels?: LegacyLabels;
   className?: string;
 }) {
+  const [users, setUsers] = useState(initialUsers);
   const columns = labels.adminUsers.columns;
+
+  const toggleAdmin = (userId: string) => {
+    setUsers((items) =>
+      items.map((user) =>
+        user.id === userId
+          ? {
+              ...user,
+              role: user.role === "admin" ? "student" : "admin",
+            }
+          : user,
+      ),
+    );
+  };
+
+  const toggleMentor = (userId: string) => {
+    setUsers((items) =>
+      items.map((user) =>
+        user.id === userId ? { ...user, isMentor: !user.isMentor } : user,
+      ),
+    );
+  };
 
   return (
     <div className={cn("mx-auto max-w-7xl", className)}>
@@ -228,7 +310,10 @@ export function AdminUsersTable({
             {labels.adminUsers.total(users.length)}
           </p>
         </div>
-        <Button className="rounded-lg">
+        <Button
+          className="rounded-lg"
+          onClick={() => legacyDemoToast(labels.adminUsers.createAdmin)}
+        >
           <Crown data-icon="inline-start" />
           {labels.adminUsers.createAdmin}
         </Button>
@@ -237,6 +322,7 @@ export function AdminUsersTable({
       <button
         type="button"
         className="mb-4 inline-flex items-center text-sm text-primary hover:underline"
+        onClick={() => legacyDemoToast(labels.adminUsers.back)}
       >
         <ArrowLeft className="mr-2 size-3" />
         {labels.adminUsers.back}
@@ -318,6 +404,14 @@ export function AdminUsersTable({
                           ? "text-orange-400 hover:text-orange-300"
                           : "text-yellow-400 hover:text-yellow-300",
                       )}
+                      onClick={() => {
+                        toggleAdmin(user.id);
+                        legacyDemoToast(
+                          user.role === "admin"
+                            ? labels.adminUsers.demoteAdmin
+                            : labels.adminUsers.promoteAdmin,
+                        );
+                      }}
                     >
                       {user.role === "admin"
                         ? labels.adminUsers.demoteAdmin
@@ -331,6 +425,14 @@ export function AdminUsersTable({
                           ? "text-red-400 hover:text-red-300"
                           : "text-emerald-400 hover:text-emerald-300",
                       )}
+                      onClick={() => {
+                        toggleMentor(user.id);
+                        legacyDemoToast(
+                          user.isMentor
+                            ? labels.adminUsers.removeMentor
+                            : labels.adminUsers.promoteMentor,
+                        );
+                      }}
                     >
                       {user.isMentor
                         ? labels.adminUsers.removeMentor

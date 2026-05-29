@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { Calendar, ExternalLink, Hourglass, MapPin, Building2 } from "lucide-react";
 
 import { Button } from "../components/button";
@@ -13,6 +14,30 @@ import {
   type LegacyEvent,
 } from "./fixtures/legacy-events";
 import { legacySubjects } from "./fixtures/legacy-subjects";
+import { legacyDemoToast } from "./legacy-story-feedback";
+
+const EVENTS_PAGE_SIZE = 2;
+
+function filterEventsByPill(
+  events: LegacyEvent[],
+  pillId: string,
+  generalLabel: string,
+) {
+  if (pillId === "all") return events;
+  if (pillId === "general") {
+    return events.filter(
+      (event) =>
+        event.category === generalLabel ||
+        event.category === "Général" ||
+        event.category === "General",
+    );
+  }
+
+  const subject = legacySubjects.find((item) => item.slug === pillId);
+  if (!subject) return events;
+
+  return events.filter((event) => event.category === subject.name);
+}
 
 export function EventCard({
   event,
@@ -83,6 +108,7 @@ export function EventCard({
             type="button"
             size="xs"
             className="shrink-0 bg-accent/20 text-accent hover:bg-accent/30"
+            onClick={() => legacyDemoToast(labels.events.registerCta)}
           >
             {labels.events.registerCta}
             <ExternalLink data-icon="inline-end" />
@@ -113,13 +139,31 @@ export function EventCardList({
 
 export function FilterPillBar({
   labels = legacyLabelsFr,
-  activeId = "all",
+  activeId: activeIdProp = "all",
+  onActiveIdChange,
   className,
 }: {
   labels?: LegacyLabels;
   activeId?: string;
+  onActiveIdChange?: (id: string) => void;
   className?: string;
 }) {
+  const [internalActiveId, setInternalActiveId] = useState(activeIdProp);
+  const activeId = onActiveIdChange ? activeIdProp : internalActiveId;
+
+  useEffect(() => {
+    if (!onActiveIdChange) {
+      setInternalActiveId(activeIdProp);
+    }
+  }, [activeIdProp, onActiveIdChange]);
+
+  const setActiveId = (id: string) => {
+    onActiveIdChange?.(id);
+    if (!onActiveIdChange) {
+      setInternalActiveId(id);
+    }
+  };
+
   const pills = [
     { id: "all", label: labels.events.filterAll },
     { id: "general", label: labels.events.filterGeneral },
@@ -144,6 +188,7 @@ export function FilterPillBar({
                 ? "bg-primary text-primary-foreground"
                 : "bg-white/10 text-muted-foreground hover:bg-white/20",
             )}
+            onClick={() => setActiveId(pill.id)}
           >
             {pill.label}
           </button>
@@ -154,14 +199,32 @@ export function FilterPillBar({
 }
 
 export function PaginationBar({
-  currentPage = 1,
+  currentPage: currentPageProp = 1,
   totalPages = 3,
+  onPageChange,
   className,
 }: {
   currentPage?: number;
   totalPages?: number;
+  onPageChange?: (page: number) => void;
   className?: string;
 }) {
+  const [internalPage, setInternalPage] = useState(currentPageProp);
+  const currentPage = onPageChange ? currentPageProp : internalPage;
+
+  useEffect(() => {
+    if (!onPageChange) {
+      setInternalPage(currentPageProp);
+    }
+  }, [currentPageProp, onPageChange]);
+
+  const setPage = (page: number) => {
+    onPageChange?.(page);
+    if (!onPageChange) {
+      setInternalPage(page);
+    }
+  };
+
   const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
 
   return (
@@ -173,6 +236,7 @@ export function PaginationBar({
         type="button"
         disabled={currentPage <= 1}
         className="rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-white/10 disabled:opacity-40"
+        onClick={() => setPage(Math.max(1, currentPage - 1))}
       >
         ‹
       </button>
@@ -186,6 +250,7 @@ export function PaginationBar({
               ? "bg-primary text-primary-foreground"
               : "text-muted-foreground hover:bg-white/10",
           )}
+          onClick={() => setPage(page)}
         >
           {page}
         </button>
@@ -194,6 +259,7 @@ export function PaginationBar({
         type="button"
         disabled={currentPage >= totalPages}
         className="rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-white/10 disabled:opacity-40"
+        onClick={() => setPage(Math.min(totalPages, currentPage + 1))}
       >
         ›
       </button>
@@ -241,5 +307,70 @@ export function EventsUpcomingSection({
         <PaginationBar className="mt-8" currentPage={1} totalPages={3} />
       ) : null}
     </section>
+  );
+}
+
+export function EventsListWithFilters({
+  events = legacyEvents,
+  labels = legacyLabelsFr,
+  showPagination = false,
+  className,
+}: {
+  events?: LegacyEvent[];
+  labels?: LegacyLabels;
+  showPagination?: boolean;
+  className?: string;
+}) {
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [page, setPage] = useState(1);
+
+  const filteredEvents = useMemo(
+    () => filterEventsByPill(events, activeFilter, labels.events.filterGeneral),
+    [activeFilter, events, labels.events.filterGeneral],
+  );
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredEvents.length / EVENTS_PAGE_SIZE),
+  );
+  const safePage = Math.min(page, totalPages);
+  const pageEvents = showPagination
+    ? filteredEvents.slice(
+        (safePage - 1) * EVENTS_PAGE_SIZE,
+        safePage * EVENTS_PAGE_SIZE,
+      )
+    : filteredEvents;
+
+  useEffect(() => {
+    setPage(1);
+  }, [activeFilter]);
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  return (
+    <div className={className}>
+      <FilterPillBar
+        labels={labels}
+        activeId={activeFilter}
+        onActiveIdChange={setActiveFilter}
+      />
+      <EventsUpcomingSection
+        events={pageEvents}
+        labels={labels}
+        showPagination={false}
+      />
+      {showPagination && filteredEvents.length > EVENTS_PAGE_SIZE ? (
+        <PaginationBar
+          className="mt-8"
+          currentPage={safePage}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      ) : null}
+    </div>
   );
 }

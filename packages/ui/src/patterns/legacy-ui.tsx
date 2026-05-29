@@ -20,6 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 
 import { Avatar, AvatarFallback } from "../components/avatar";
 import {
@@ -39,6 +40,7 @@ import {
   legacySubjects,
   type LegacySubject,
 } from "./fixtures/legacy-subjects";
+import { legacyDemoToast } from "./legacy-story-feedback";
 
 export type { LegacyLabels, LegacyNavLink } from "../i18n/legacy-labels";
 
@@ -180,11 +182,13 @@ export function SubjectCard({
   const Icon = subject.icon;
 
   return (
-    <article
+    <button
+      type="button"
       className={cn(
-        "glass group block rounded-2xl p-6 transition-colors hover:bg-white/5",
+        "glass group block w-full rounded-2xl p-6 text-left transition-colors hover:bg-white/5",
         className,
       )}
+      onClick={() => legacyDemoToast(subject.name)}
     >
       <div
         className="mb-4 flex size-14 items-center justify-center rounded-2xl transition-transform group-hover:scale-110"
@@ -203,7 +207,7 @@ export function SubjectCard({
         </span>
         <ArrowRight className="size-4 text-primary transition-transform group-hover:translate-x-1" />
       </div>
-    </article>
+    </button>
   );
 }
 
@@ -215,11 +219,13 @@ export function ProposeSubjectCard({
   className?: string;
 }) {
   return (
-    <article
+    <button
+      type="button"
       className={cn(
-        "glass group block rounded-2xl border-2 border-dashed border-white/10 p-6 text-left transition-colors hover:border-primary/50 hover:bg-white/5",
+        "glass group block w-full rounded-2xl border-2 border-dashed border-white/10 p-6 text-left transition-colors hover:border-primary/50 hover:bg-white/5",
         className,
       )}
+      onClick={() => legacyDemoToast(labels.subjectCard.proposeTitle)}
     >
       <div className="mb-4 size-14 rounded-2xl bg-gradient-to-br from-primary to-accent p-[2px] transition-transform group-hover:scale-110">
         <div className="flex size-full items-center justify-center rounded-2xl bg-card">
@@ -236,7 +242,7 @@ export function ProposeSubjectCard({
         </span>
         <Send className="size-4 text-primary transition-transform group-hover:translate-x-1" />
       </div>
-    </article>
+    </button>
   );
 }
 
@@ -319,6 +325,7 @@ export function AppFooter({
               key={link}
               type="button"
               className="transition-colors hover:text-foreground"
+              onClick={() => legacyDemoToast(link)}
             >
               {link}
             </button>
@@ -352,6 +359,12 @@ export function AppNavBar({
   labels?: LegacyLabels;
   className?: string;
 }) {
+  const [currentLink, setCurrentLink] = useState(activeLink);
+
+  useEffect(() => {
+    setCurrentLink(activeLink);
+  }, [activeLink]);
+
   return (
     <nav
       className={cn(
@@ -364,7 +377,7 @@ export function AppNavBar({
         <div className="hidden items-center gap-6 md:flex">
           {(Object.keys(navIcons) as LegacyNavLink[]).map((link) => {
             const Icon = navIcons[link];
-            const active = activeLink === link;
+            const active = currentLink === link;
 
             return (
               <button
@@ -374,6 +387,7 @@ export function AppNavBar({
                   "relative flex items-center gap-2 text-sm font-medium transition-colors",
                   active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
+                onClick={() => setCurrentLink(link)}
               >
                 <Icon className="size-4" />
                 {labels.nav[link]}
@@ -417,8 +431,10 @@ export function UserMenu({
   defaultOpen?: boolean;
   labels?: LegacyLabels;
 }) {
+  const [open, setOpen] = useState(defaultOpen);
+
   return (
-    <DropdownMenu defaultOpen={defaultOpen}>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <button type="button" className="rounded-full focus-visible:outline-none">
           <Avatar className="size-10 border-2 border-primary">
@@ -433,22 +449,25 @@ export function UserMenu({
             <p className="text-xs text-muted-foreground">{userEmail}</p>
           ) : null}
         </div>
-        <DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => legacyDemoToast(labels.userMenu.profile)}>
           <User data-icon="inline-start" />
           {labels.userMenu.profile}
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => legacyDemoToast(labels.userMenu.myPosts)}>
           <Paperclip data-icon="inline-start" />
           {labels.userMenu.myPosts}
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => legacyDemoToast(labels.userMenu.bookmarks)}>
           <Bookmark data-icon="inline-start" />
           {labels.userMenu.bookmarks}
         </DropdownMenuItem>
         {isMentor ? (
           <>
             <DropdownMenuSeparator className="my-2 bg-white/10" />
-            <DropdownMenuItem className="font-medium text-emerald-400 focus:text-emerald-400">
+            <DropdownMenuItem
+              className="font-medium text-emerald-400 focus:text-emerald-400"
+              onSelect={() => legacyDemoToast(labels.userMenu.mentorSpace)}
+            >
               <GraduationCap data-icon="inline-start" />
               {labels.userMenu.mentorSpace}
             </DropdownMenuItem>
@@ -457,14 +476,20 @@ export function UserMenu({
         {isAdmin ? (
           <>
             <DropdownMenuSeparator className="my-2 bg-white/10" />
-            <DropdownMenuItem className="font-medium text-yellow-400 focus:text-yellow-400">
+            <DropdownMenuItem
+              className="font-medium text-yellow-400 focus:text-yellow-400"
+              onSelect={() => legacyDemoToast(labels.userMenu.adminDashboard)}
+            >
               <Crown data-icon="inline-start" />
               {labels.userMenu.adminDashboard}
             </DropdownMenuItem>
           </>
         ) : null}
         <DropdownMenuSeparator className="my-2 bg-white/10" />
-        <DropdownMenuItem variant="destructive">
+        <DropdownMenuItem
+          variant="destructive"
+          onSelect={() => legacyDemoToast(labels.userMenu.signOut)}
+        >
           <LogOut data-icon="inline-start" />
           {labels.userMenu.signOut}
         </DropdownMenuItem>

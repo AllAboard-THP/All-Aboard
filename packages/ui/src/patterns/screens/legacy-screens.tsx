@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useState } from "react";
 import { Button } from "../../components/button";
 import {
   Card,
@@ -15,6 +16,7 @@ import {
   useLegacyAdminUsers,
   useLegacyConversations,
   useLegacyEvents,
+  useLegacyFeedThreadComments,
   useLegacyLabels,
   useLegacyLegalContent,
   useLegacyMentorDashboard,
@@ -38,9 +40,8 @@ import {
   RegisterHeroPanel,
 } from "../legacy-auth-patterns";
 import {
+  EventsListWithFilters,
   EventsPageHeader,
-  EventsUpcomingSection,
-  FilterPillBar,
 } from "../legacy-event-patterns";
 import {
   LegalPageLayout,
@@ -51,12 +52,14 @@ import {
   MentorValidationPanel,
 } from "../legacy-mentor-patterns";
 import {
+  FeedPostWithThread,
   FeedSearchCard,
   FeedSidebarContributions,
-  FeedSidebarRecentEmpty,
+  FeedSidebarRecentViewed,
   FeedSidebarUnanswered,
-  QuickReply,
+  ScrollToTopFab,
 } from "../legacy-feed-patterns";
+import type { LegacyRecentlyViewedPost } from "../fixtures/legacy-feed-thread";
 import { MessagesInboxLayout } from "../legacy-messages-patterns";
 import {
   ProfileAboutCard,
@@ -77,12 +80,8 @@ import {
   SearchBar,
 } from "../legacy-resource-patterns";
 import { AppChrome } from "../pattern-app-chrome";
-import { PostCard } from "../post-card";
+import { legacyDemoToast } from "../legacy-story-feedback";
 import { GraduationCap } from "lucide-react";
-
-const javascriptIcon = (
-  <span className="inline-block size-2.5 rounded-sm bg-yellow-400" aria-hidden />
-);
 
 export function LandingLoginScreen() {
   const labels = useLegacyLabels();
@@ -148,10 +147,19 @@ export function LandingLoginScreen() {
                 </div>
               </CardContent>
               <CardFooter className="flex-col gap-4 px-0">
-                <Button className="w-full rounded-2xl">{labels.auth.submit}</Button>
+                <Button
+                  className="w-full rounded-2xl"
+                  onClick={() => legacyDemoToast(labels.auth.submit)}
+                >
+                  {labels.auth.submit}
+                </Button>
                 <p className="text-center text-sm text-muted-foreground">
                   {labels.auth.noAccount}{" "}
-                  <button type="button" className="text-primary hover:underline">
+                  <button
+                    type="button"
+                    className="text-primary hover:underline"
+                    onClick={() => legacyDemoToast(labels.auth.signUp)}
+                  >
                     {labels.auth.signUp}
                   </button>
                 </p>
@@ -216,14 +224,17 @@ export function AdminDashboardScreen() {
   );
 }
 
-export function NavWithUserMenuOpenScreen() {
+export function NavWithAdminUserScreen() {
   const labels = useLegacyLabels();
+  const isEn = labels.nav.feed === "Home";
 
   return (
-    <AppChrome activeLink="feed" userMenuOpen isAdmin>
+    <AppChrome activeLink="feed" isAdmin>
       <div className="animate-fade-in">
         <p className="text-muted-foreground">
-          {labels.userMenu.adminDashboard} — menu ouvert (Admin AllAboard).
+          {isEn
+            ? `${labels.userMenu.adminDashboard} — click the AA avatar to open the menu.`
+            : `${labels.userMenu.adminDashboard} — cliquez sur l’avatar AA pour ouvrir le menu.`}
         </p>
       </div>
     </AppChrome>
@@ -238,8 +249,7 @@ export function EventsListScreen({ mobileChrome = false }: { mobileChrome?: bool
     <AppChrome activeLink="events" mobileChrome={mobileChrome}>
       <div className="mx-auto max-w-4xl animate-fade-in">
         <EventsPageHeader labels={labels} />
-        <FilterPillBar labels={labels} />
-        <EventsUpcomingSection
+        <EventsListWithFilters
           events={events}
           labels={labels}
           showPagination
@@ -379,44 +389,81 @@ export function FeedThreeColumnScreen({ mobileChrome = false }: { mobileChrome?:
   const labels = useLegacyLabels();
   const postLabels = usePostCardLabels();
   const fixture = usePostCardFixture();
+  const threadComments = useLegacyFeedThreadComments();
+  const [recentlyViewed, setRecentlyViewed] = useState<LegacyRecentlyViewedPost[]>([]);
+  const isEn = labels.nav.feed === "Home";
+
+  const markMainPostViewed = useCallback(() => {
+    setRecentlyViewed((current) => {
+      const entry: LegacyRecentlyViewedPost = {
+        id: "feed-main-post",
+        title: fixture.title,
+        subjectName: fixture.subjectName,
+        accentColor: "#EAB308",
+        timeAgo: isEn ? "just now" : "à l'instant",
+      };
+
+      return [
+        entry,
+        ...current.filter((item) => item.id !== entry.id),
+      ].slice(0, 4);
+    });
+  }, [fixture.subjectName, fixture.title, isEn]);
+
+  const handleRecentItemClick = (id: string) => {
+    const item = recentlyViewed.find((entry) => entry.id === id);
+    if (item) {
+      legacyDemoToast(item.title);
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleUnansweredClick = (item: {
+    id: string;
+    title: string;
+    subjectName: string;
+    accentColor: string;
+  }) => {
+    setRecentlyViewed((current) => {
+      const entry: LegacyRecentlyViewedPost = {
+        id: item.id,
+        title: item.title,
+        subjectName: item.subjectName,
+        accentColor: item.accentColor,
+        timeAgo: isEn ? "just now" : "à l'instant",
+      };
+
+      return [
+        entry,
+        ...current.filter((existing) => existing.id !== entry.id),
+      ].slice(0, 4);
+    });
+    legacyDemoToast(item.title);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <AppChrome activeLink="feed" messageCount={2} mobileChrome={mobileChrome}>
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+      <div className="grid grid-cols-1 items-start gap-6 pb-24 lg:grid-cols-12 lg:pb-8">
         <div className="hidden space-y-6 lg:col-span-3 lg:block">
-          <FeedSidebarRecentEmpty labels={labels} />
-          <FeedSidebarUnanswered labels={labels} />
+          <FeedSidebarRecentViewed
+            items={recentlyViewed}
+            labels={labels}
+            onItemClick={handleRecentItemClick}
+          />
+          <FeedSidebarUnanswered
+            labels={labels}
+            onItemClick={handleUnansweredClick}
+          />
         </div>
 
         <div className="col-span-1 space-y-6 lg:col-span-6">
-          <PostCard
-            authorName={fixture.authorName}
-            authorInitials={fixture.authorInitials}
-            postedAt={fixture.postedAt}
-            educationLevel={fixture.educationLevel}
-            title={fixture.title}
-            body={fixture.body}
-            subject={{
-              name: fixture.subjectName,
-              accentColor: "#EAB308",
-              icon: javascriptIcon,
-            }}
-            hashtags={fixture.hashtags}
-            urgent
-            code={{
-              language: "javascript",
-              snippet: `useEffect(() => {
-  fetchData();
-}, [data]); ${fixture.codeComment}`,
-            }}
-            likesCount={3}
-            commentsCount={3}
-            showActionsMenu
-            labels={postLabels}
-          />
-          <QuickReply
-            placeholder={labels.feed.quickReplyPlaceholder}
-            submitLabel={labels.feed.quickReplySubmit}
+          <FeedPostWithThread
+            fixture={fixture}
+            postLabels={postLabels}
+            labels={labels}
+            initialComments={threadComments}
+            onPostEngage={markMainPostViewed}
           />
         </div>
 
@@ -425,6 +472,12 @@ export function FeedThreeColumnScreen({ mobileChrome = false }: { mobileChrome?:
           <FeedSidebarContributions labels={labels} />
         </div>
       </div>
+
+      <ScrollToTopFab
+        ariaLabel={labels.feed.scrollTop}
+        trackScroll
+        scrollThreshold={mobileChrome ? 180 : 320}
+      />
     </AppChrome>
   );
 }

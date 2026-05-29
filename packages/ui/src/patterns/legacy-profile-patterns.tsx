@@ -20,6 +20,7 @@ import {
   type LegacyProfile,
 } from "./fixtures/legacy-profile";
 import { StatCard } from "./legacy-ui";
+import { legacyDemoToast } from "./legacy-story-feedback";
 
 export function ProfileHeaderCard({
   profile = legacyProfile,
@@ -53,7 +54,10 @@ export function ProfileHeaderCard({
       </div>
 
       {showMessageCta ? (
-        <Button className="rounded-xl">
+        <Button
+          className="rounded-xl"
+          onClick={() => legacyDemoToast(labels.profile.sendMessage)}
+        >
           <Mail data-icon="inline-start" />
           {labels.profile.sendMessage}
         </Button>

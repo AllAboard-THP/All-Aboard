@@ -14,6 +14,11 @@ import {
   type LegacyLabels,
 } from "./legacy-labels";
 import {
+  alertLabelsEn,
+  alertLabelsFr,
+  type AlertLabels,
+} from "./alert-labels";
+import {
   legacyResources,
   legacyResourcesEn,
   type LegacyResource,
@@ -37,6 +42,11 @@ import {
   legacyAdminUsersEn,
   type AdminUserRow,
 } from "../patterns/fixtures/legacy-admin-users";
+import {
+  legacyFeedThreadComments,
+  legacyFeedThreadCommentsEn,
+  type LegacyFeedComment,
+} from "../patterns/fixtures/legacy-feed-thread";
 import {
   legacyModeration,
   legacyModerationEn,
@@ -87,6 +97,14 @@ export function StorybookLocaleProvider({
 
 export function useStorybookLocale(): StorybookLocale {
   return useContext(StorybookLocaleContext);
+}
+
+export function useAlertLabels(): AlertLabels {
+  const locale = useStorybookLocale();
+  return useMemo(
+    () => (locale === "en" ? alertLabelsEn : alertLabelsFr),
+    [locale],
+  );
 }
 
 export function usePostCardLabels(): PostCardLabels {
@@ -172,6 +190,15 @@ export function useLegacyAdminUsers(): AdminUserRow[] {
   const locale = useStorybookLocale();
   return useMemo(
     () => (locale === "en" ? legacyAdminUsersEn : legacyAdminUsers),
+    [locale],
+  );
+}
+
+export function useLegacyFeedThreadComments(): LegacyFeedComment[] {
+  const locale = useStorybookLocale();
+  return useMemo(
+    () =>
+      locale === "en" ? legacyFeedThreadCommentsEn : legacyFeedThreadComments,
     [locale],
   );
 }

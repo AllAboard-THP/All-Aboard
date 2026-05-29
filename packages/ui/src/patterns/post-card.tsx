@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Bookmark,
   Copy,
@@ -25,6 +25,7 @@ import {
   type PostCardLabels,
 } from "../i18n/post-card-labels";
 import { cn } from "@allaboard/ui/lib/utils";
+import { legacyDemoToast } from "./legacy-story-feedback";
 
 export type { PostCardLabels } from "../i18n/post-card-labels";
 
@@ -61,6 +62,11 @@ export type PostCardProps = {
   showPrivateMessage?: boolean;
   labels?: PostCardLabels;
   className?: string;
+  repliesExpanded?: boolean;
+  onRepliesClick?: () => void;
+  onTitleClick?: () => void;
+  onHashtagClick?: (tag: string) => void;
+  onSubjectClick?: () => void;
 };
 
 function SubjectTag({ subject }: { subject: PostCardSubjectTag }) {
@@ -140,13 +146,16 @@ export function PostCardActionsMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="glass min-w-[150px] rounded-xl">
         {canEdit ? (
-          <DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => legacyDemoToast(labels.edit)}>
             <Pencil data-icon="inline-start" />
             {labels.edit}
           </DropdownMenuItem>
         ) : null}
         {canDelete ? (
-          <DropdownMenuItem variant="destructive">
+          <DropdownMenuItem
+            variant="destructive"
+            onSelect={() => legacyDemoToast(labels.delete)}
+          >
             <Trash2 data-icon="inline-start" />
             {labels.delete}
           </DropdownMenuItem>
@@ -178,7 +187,28 @@ export function PostCard({
   showPrivateMessage = true,
   labels = postCardLabelsFr,
   className,
+  repliesExpanded = false,
+  onRepliesClick,
+  onTitleClick,
+  onHashtagClick,
+  onSubjectClick,
 }: PostCardProps) {
+  const [isLiked, setIsLiked] = useState(liked);
+  const [isBookmarked, setIsBookmarked] = useState(bookmarked);
+  const [likes, setLikes] = useState(likesCount);
+
+  useEffect(() => {
+    setIsLiked(liked);
+  }, [liked]);
+
+  useEffect(() => {
+    setIsBookmarked(bookmarked);
+  }, [bookmarked]);
+
+  useEffect(() => {
+    setLikes(likesCount);
+  }, [likesCount]);
+
   const initials =
     authorInitials ??
     authorName
@@ -219,22 +249,51 @@ export function PostCard({
           ) : null}
         </div>
 
-        <h3 className="mb-2 text-lg font-semibold text-foreground">{title}</h3>
+        <h3 className="mb-2 text-lg font-semibold text-foreground">
+          {onTitleClick ? (
+            <button
+              type="button"
+              className="text-left transition-colors hover:text-primary"
+              onClick={onTitleClick}
+            >
+              {title}
+            </button>
+          ) : (
+            title
+          )}
+        </h3>
         <p className="mb-4 text-sm leading-relaxed text-muted-foreground">{body}</p>
 
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <SubjectTag subject={subject} />
+          {onSubjectClick ? (
+            <button type="button" onClick={onSubjectClick}>
+              <SubjectTag subject={subject} />
+            </button>
+          ) : (
+            <SubjectTag subject={subject} />
+          )}
           {hashtags.length > 0 ? (
             <span className="select-none text-xs text-white/15">·</span>
           ) : null}
-          {hashtags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-muted-foreground"
-            >
-              #{tag}
-            </span>
-          ))}
+          {hashtags.map((tag) =>
+            onHashtagClick ? (
+              <button
+                key={tag}
+                type="button"
+                className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
+                onClick={() => onHashtagClick(tag)}
+              >
+                #{tag}
+              </button>
+            ) : (
+              <span
+                key={tag}
+                className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-muted-foreground"
+              >
+                #{tag}
+              </span>
+            ),
+          )}
           {urgent ? (
             <span className="rounded-full border border-orange-400/30 bg-orange-400/10 px-3 py-1 text-xs font-medium text-orange-400">
               🔥 {labels.urgent}
@@ -257,35 +316,60 @@ export function PostCard({
               type="button"
               className={cn(
                 "flex items-center gap-2 text-sm transition-colors",
-                liked
+                isLiked
                   ? "text-pink-500"
                   : "text-muted-foreground hover:text-pink-500",
               )}
+              onClick={() => {
+                setIsLiked((current) => {
+                  const next = !current;
+                  setLikes((count) => count + (next ? 1 : -1));
+                  return next;
+                });
+              }}
             >
-              <Heart className={cn("size-5", liked && "fill-current")} />
-              <span>{likesCount}</span>
+              <Heart className={cn("size-5", isLiked && "fill-current")} />
+              <span>{likes}</span>
             </button>
-            <span className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MessageCircle className="size-5" />
-              <span>{labels.replies(commentsCount)}</span>
-            </span>
+            {onRepliesClick ? (
+              <button
+                type="button"
+                className={cn(
+                  "flex items-center gap-2 text-sm transition-colors",
+                  repliesExpanded
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-primary",
+                )}
+                onClick={onRepliesClick}
+              >
+                <MessageCircle className="size-5" />
+                <span>{labels.replies(commentsCount)}</span>
+              </button>
+            ) : (
+              <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                <MessageCircle className="size-5" />
+                <span>{labels.replies(commentsCount)}</span>
+              </span>
+            )}
             <button
               type="button"
               className={cn(
                 "flex items-center gap-2 transition-colors",
-                bookmarked
+                isBookmarked
                   ? "text-blue-400"
                   : "text-muted-foreground hover:text-blue-400",
               )}
               aria-label={labels.bookmarkAria}
+              onClick={() => setIsBookmarked((current) => !current)}
             >
-              <Bookmark className={cn("size-5", bookmarked && "fill-current")} />
+              <Bookmark className={cn("size-5", isBookmarked && "fill-current")} />
             </button>
           </div>
           {showPrivateMessage ? (
             <button
               type="button"
               className="flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-foreground"
+              onClick={() => legacyDemoToast(labels.privateMessage)}
             >
               <Lock className="size-3.5" />
               {labels.privateMessage}

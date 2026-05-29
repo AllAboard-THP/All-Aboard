@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
+import { useAlertLabels } from "../i18n/storybook-locale";
 import {
   patternDemoAlertClassName,
   patternStoryParameters,
@@ -19,50 +20,83 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  render: () => (
+function LoginRequiredDescription() {
+  const labels = useAlertLabels();
+
+  return (
+    <>
+      {labels.loginRequiredBodyBefore}{" "}
+      <span className="text-primary underline">{labels.loginRequiredLink}</span>{" "}
+      {labels.loginRequiredBodyAfter}
+    </>
+  );
+}
+
+function DefaultStory() {
+  const labels = useAlertLabels();
+
+  return (
     <Alert className={patternDemoAlertClassName}>
-      <AlertTitle>Information</AlertTitle>
+      <AlertTitle>{labels.information}</AlertTitle>
+      <AlertDescription>{labels.neutralMessage}</AlertDescription>
+    </Alert>
+  );
+}
+
+function ConnexionRequiseStory() {
+  const labels = useAlertLabels();
+
+  return (
+    <Alert className={patternDemoAlertClassName}>
+      <AlertTitle>{labels.loginRequired}</AlertTitle>
       <AlertDescription>
-        Message informatif pour l&apos;utilisateur.
+        <LoginRequiredDescription />
       </AlertDescription>
     </Alert>
-  ),
+  );
+}
+
+function DestructiveStory() {
+  const labels = useAlertLabels();
+
+  return (
+    <Alert variant="destructive" className={patternDemoAlertClassName}>
+      <AlertTitle>{labels.feedLoadError}</AlertTitle>
+      <AlertDescription>{labels.http502}</AlertDescription>
+    </Alert>
+  );
+}
+
+function AllVariantsStory() {
+  const labels = useAlertLabels();
+
+  return (
+    <div className="flex max-w-lg flex-col gap-4">
+      <Alert className={patternDemoAlertClassName}>
+        <AlertTitle>{labels.information}</AlertTitle>
+        <AlertDescription>{labels.neutralMessageShort}</AlertDescription>
+      </Alert>
+      <Alert variant="destructive" className={patternDemoAlertClassName}>
+        <AlertTitle>{labels.feedLoadError}</AlertTitle>
+        <AlertDescription>{labels.http502}</AlertDescription>
+      </Alert>
+    </div>
+  );
+}
+
+export const Default: Story = {
+  render: () => <DefaultStory />,
 };
 
 export const ConnexionRequise: Story = {
-  render: () => (
-    <Alert className={patternDemoAlertClassName}>
-      <AlertTitle>Connexion requise</AlertTitle>
-      <AlertDescription>
-        Connectez-vous via{" "}
-        <span className="text-primary underline">Nouvelle demande</span> pour
-        accéder au dashboard mentor.
-      </AlertDescription>
-    </Alert>
-  ),
+  name: "ConnexionRequise",
+  render: () => <ConnexionRequiseStory />,
 };
 
 export const Destructive: Story = {
-  render: () => (
-    <Alert variant="destructive" className={patternDemoAlertClassName}>
-      <AlertTitle>Impossible de charger le feed</AlertTitle>
-      <AlertDescription>Feed HTTP 502</AlertDescription>
-    </Alert>
-  ),
+  render: () => <DestructiveStory />,
 };
 
 export const AllVariants: Story = {
-  render: () => (
-    <div className="flex max-w-lg flex-col gap-4">
-      <Alert className={patternDemoAlertClassName}>
-        <AlertTitle>Information</AlertTitle>
-        <AlertDescription>Message informatif neutre.</AlertDescription>
-      </Alert>
-      <Alert variant="destructive" className={patternDemoAlertClassName}>
-        <AlertTitle>Impossible de charger le feed</AlertTitle>
-        <AlertDescription>Feed HTTP 502</AlertDescription>
-      </Alert>
-    </div>
-  ),
+  render: () => <AllVariantsStory />,
 };

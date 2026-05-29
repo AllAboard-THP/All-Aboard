@@ -18,6 +18,7 @@ import {
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
 import { StatCard } from "./legacy-ui";
+import { legacyDemoToast } from "./legacy-story-feedback";
 
 type AdminActionTone = "primary" | "yellow" | "emerald" | "accent" | "orange";
 
@@ -58,6 +59,7 @@ export function AdminActionButton({
         actionToneClass[tone],
         className,
       )}
+      onClick={() => legacyDemoToast(label)}
     >
       <Icon className="size-4 shrink-0" />
       <span>{label}</span>

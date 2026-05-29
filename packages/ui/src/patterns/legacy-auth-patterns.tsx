@@ -19,6 +19,7 @@ import {
   BrandLogo,
   Eyebrow,
 } from "./legacy-ui";
+import { legacyDemoToast } from "./legacy-story-feedback";
 
 export function RegisterForm({
   labels = legacyLabelsFr,
@@ -97,10 +98,19 @@ export function RegisterForm({
         </div>
       </CardContent>
       <CardFooter className="flex-col gap-4 px-0">
-        <Button className="w-full rounded-xl">{labels.auth.registerSubmit}</Button>
+        <Button
+          className="w-full rounded-xl"
+          onClick={() => legacyDemoToast(labels.auth.registerSubmit)}
+        >
+          {labels.auth.registerSubmit}
+        </Button>
         <p className="text-center text-sm text-muted-foreground">
           {labels.auth.hasAccount}{" "}
-          <button type="button" className="text-primary hover:underline">
+          <button
+            type="button"
+            className="text-primary hover:underline"
+            onClick={() => legacyDemoToast(labels.auth.signIn)}
+          >
             {labels.auth.signIn}
           </button>
         </p>
@@ -138,9 +148,18 @@ export function ForgotPasswordForm({
         </div>
       </CardContent>
       <CardFooter className="flex-col gap-4 px-0">
-        <Button className="w-full rounded-xl">{labels.auth.forgotSubmit}</Button>
+        <Button
+          className="w-full rounded-xl"
+          onClick={() => legacyDemoToast(labels.auth.forgotSubmit)}
+        >
+          {labels.auth.forgotSubmit}
+        </Button>
         <p className="text-center text-sm text-muted-foreground">
-          <button type="button" className="text-primary hover:underline">
+          <button
+            type="button"
+            className="text-primary hover:underline"
+            onClick={() => legacyDemoToast(labels.auth.signIn)}
+          >
             {labels.auth.signIn}
           </button>
         </p>

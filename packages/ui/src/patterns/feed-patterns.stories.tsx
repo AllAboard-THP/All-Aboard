@@ -102,7 +102,7 @@ export const ScrollToTopFabVisible: Story = {
   decorators: [withPatternStoryFrame("full")],
   render: () => {
     const labels = useLegacyLabels();
-    return <ScrollToTopFab ariaLabel={labels.feed.scrollTop} visible />;
+    return <ScrollToTopFab ariaLabel={labels.feed.scrollTop} visible trackScroll={false} />;
   },
 };
 

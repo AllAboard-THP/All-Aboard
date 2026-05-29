@@ -12,7 +12,7 @@ import {
   LegalCguScreen,
   MentorDashboardScreen,
   MessagesInboxScreen,
-  NavWithUserMenuOpenScreen,
+  NavWithAdminUserScreen,
   RegisterScreen,
   ResourcesListScreen,
   UserProfileScreen,
@@ -49,9 +49,10 @@ export const AdminDashboard: Story = {
   render: () => <AdminDashboardScreen />,
 };
 
+/** ID Storybook historique : `screens--nav-with-user-menu-open` */
 export const NavWithUserMenuOpen: Story = {
-  name: "NavWithUserMenuOpen",
-  render: () => <NavWithUserMenuOpenScreen />,
+  name: "NavWithAdminUser",
+  render: () => <NavWithAdminUserScreen />,
 };
 
 export const EventsList: Story = {

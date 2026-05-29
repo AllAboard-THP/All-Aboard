@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   ArrowRight,
   Check,
@@ -22,6 +23,7 @@ import {
   type MentorPendingResource,
 } from "./fixtures/legacy-mentor";
 import { StatCard, SubjectTag } from "./legacy-ui";
+import { legacyDemoToast } from "./legacy-story-feedback";
 
 export function MentorStatsGrid({
   fixture = legacyMentorDashboard,
@@ -59,7 +61,7 @@ export function MentorStatsGrid({
 }
 
 export function MentorHelpPanel({
-  posts = legacyMentorDashboard.helpPosts,
+  posts: initialPosts = legacyMentorDashboard.helpPosts,
   labels = legacyLabelsFr,
   className,
 }: {
@@ -67,6 +69,8 @@ export function MentorHelpPanel({
   labels?: LegacyLabels;
   className?: string;
 }) {
+  const [posts, setPosts] = useState(initialPosts);
+
   return (
     <div className={cn("glass mb-6 rounded-2xl", className)}>
       <div className="flex items-center gap-2 border-b border-white/10 p-5">
@@ -108,6 +112,10 @@ export function MentorHelpPanel({
                 type="button"
                 size="xs"
                 className="shrink-0 bg-red-400/10 text-red-400 hover:bg-red-400/20"
+                onClick={() => {
+                  setPosts((items) => items.filter((item) => item.id !== post.id));
+                  legacyDemoToast(labels.mentor.helpCta);
+                }}
               >
                 {labels.mentor.helpCta}
                 <ArrowRight data-icon="inline-end" />
@@ -125,7 +133,7 @@ export function MentorHelpPanel({
 }
 
 export function MentorValidationPanel({
-  resources = legacyMentorDashboard.pendingResources,
+  resources: initialResources = legacyMentorDashboard.pendingResources,
   labels = legacyLabelsFr,
   className,
 }: {
@@ -133,6 +141,8 @@ export function MentorValidationPanel({
   labels?: LegacyLabels;
   className?: string;
 }) {
+  const [resources, setResources] = useState(initialResources);
+
   return (
     <div className={cn("glass rounded-2xl", className)}>
       <div className="flex items-center justify-between border-b border-white/10 p-5">
@@ -187,6 +197,12 @@ export function MentorValidationPanel({
                   type="button"
                   size="sm"
                   className="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30"
+                  onClick={() => {
+                    setResources((items) =>
+                      items.filter((item) => item.id !== resource.id),
+                    );
+                    legacyDemoToast(labels.mentor.approve);
+                  }}
                 >
                   <Check data-icon="inline-start" />
                   {labels.mentor.approve}
@@ -195,6 +211,12 @@ export function MentorValidationPanel({
                   type="button"
                   size="sm"
                   className="bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                  onClick={() => {
+                    setResources((items) =>
+                      items.filter((item) => item.id !== resource.id),
+                    );
+                    legacyDemoToast(labels.mentor.reject);
+                  }}
                 >
                   <X data-icon="inline-start" />
                   {labels.mentor.reject}

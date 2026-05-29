@@ -1,5 +1,6 @@
 import type { Decorator, Preview } from "@storybook/react";
 import { withThemeByClassName } from "@storybook/addon-themes";
+import { Toaster } from "sonner";
 import { themes } from "storybook/theming";
 
 import {
@@ -13,6 +14,7 @@ import "./preview.css";
 const withStorybookLocale: Decorator = (Story, { globals }) => (
   <StorybookLocaleProvider locale={resolveStorybookLocale(globals.locale)}>
     <Story />
+    <Toaster theme="dark" richColors closeButton />
   </StorybookLocaleProvider>
 );
 

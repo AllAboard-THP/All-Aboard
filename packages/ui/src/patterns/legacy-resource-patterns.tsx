@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { ArrowRight, BookOpen, GraduationCap, Plus, Search } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "../components/avatar";
@@ -16,6 +17,7 @@ import {
 } from "./fixtures/legacy-resources";
 import { legacySubjects } from "./fixtures/legacy-subjects";
 import { SubjectTag } from "./legacy-ui";
+import { legacyDemoToast } from "./legacy-story-feedback";
 
 export function SearchBar({
   placeholder,
@@ -30,6 +32,7 @@ export function SearchBar({
   tone?: "emerald" | "primary";
   className?: string;
 }) {
+  const [value, setValue] = useState(defaultValue);
   const buttonClass =
     tone === "emerald"
       ? "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30"
@@ -39,12 +42,27 @@ export function SearchBar({
     <div className={cn("relative", className)}>
       <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
-        defaultValue={defaultValue}
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" && value.trim()) {
+            legacyDemoToast(buttonLabel);
+          }
+        }}
         placeholder={placeholder}
         className="h-12 rounded-xl border-white/10 bg-white/5 pr-28 pl-10"
       />
       <div className="absolute top-1/2 right-2 flex -translate-y-1/2 items-center gap-2">
-        <Button type="button" size="xs" className={buttonClass}>
+        <Button
+          type="button"
+          size="xs"
+          className={buttonClass}
+          onClick={() => {
+            if (value.trim()) {
+              legacyDemoToast(buttonLabel);
+            }
+          }}
+        >
           {buttonLabel}
         </Button>
       </div>
@@ -81,7 +99,10 @@ export function PageHeaderWithIcon({
         </h1>
         <p className="text-muted-foreground">{subtitle}</p>
       </div>
-      <Button className="shrink-0 bg-emerald-500 text-white hover:bg-emerald-400">
+      <Button
+        className="shrink-0 bg-emerald-500 text-white hover:bg-emerald-400"
+        onClick={() => legacyDemoToast(ctaLabel)}
+      >
         <Plus data-icon="inline-start" />
         {ctaLabel}
       </Button>
@@ -99,11 +120,13 @@ export function ResourceCard({
   const subject = legacySubjects.find((s) => s.slug === resource.subjectSlug);
 
   return (
-    <article
+    <button
+      type="button"
       className={cn(
-        "glass rounded-2xl p-6 transition-colors hover:bg-white/5",
+        "glass w-full rounded-2xl p-6 text-left transition-colors hover:bg-white/5",
         className,
       )}
+      onClick={() => legacyDemoToast(resource.title)}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
@@ -147,7 +170,7 @@ export function ResourceCard({
         </div>
         <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-colors hover:text-emerald-400" />
       </div>
-    </article>
+    </button>
   );
 }
 

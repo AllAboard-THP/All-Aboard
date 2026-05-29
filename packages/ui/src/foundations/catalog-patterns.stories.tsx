@@ -10,6 +10,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "../components/alert";
+import { useAlertLabels } from "../i18n/storybook-locale";
 import { Badge } from "../components/badge";
 import { Button } from "../components/button";
 import { Input } from "../components/input";
@@ -92,16 +93,20 @@ export const EmptyStatePattern: Story = {
 
 export const ErrorAlertPattern: Story = {
   name: "02 · ErrorAlert",
-  render: () => (
-    <div className="p-8">
-      <PatternSection index={2} name="ErrorAlert" storyPath="Patterns/ErrorAlert">
-        <Alert variant="destructive" className={patternDemoAlertClassName}>
-          <AlertTitle>Impossible de charger le feed</AlertTitle>
-          <AlertDescription>Feed HTTP 502</AlertDescription>
-        </Alert>
-      </PatternSection>
-    </div>
-  ),
+  render: () => {
+    const labels = useAlertLabels();
+
+    return (
+      <div className="p-8">
+        <PatternSection index={2} name="ErrorAlert" storyPath="Patterns/ErrorAlert">
+          <Alert variant="destructive" className={patternDemoAlertClassName}>
+            <AlertTitle>{labels.feedLoadError}</AlertTitle>
+            <AlertDescription>{labels.http502}</AlertDescription>
+          </Alert>
+        </PatternSection>
+      </div>
+    );
+  },
 };
 
 export const FeedItemCardPattern: Story = {

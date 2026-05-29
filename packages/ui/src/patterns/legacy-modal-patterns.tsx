@@ -21,6 +21,7 @@ import {
   type LegacyLabels,
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
+import { legacyDemoToast } from "./legacy-story-feedback";
 
 type ModalShellProps = {
   open?: boolean;
@@ -63,6 +64,17 @@ export function CreatePostModal({
   labels?: LegacyLabels;
 }) {
   const copy = labels.modals.createPost;
+  const [title, setTitle] = useState("");
+  const [subject, setSubject] = useState("");
+  const [body, setBody] = useState("");
+
+  const handleSubmit = () => {
+    legacyDemoToast(copy.submit);
+    onOpenChange?.(false);
+    setTitle("");
+    setSubject("");
+    setBody("");
+  };
 
   return (
     <LegacyDialogShell
@@ -81,6 +93,8 @@ export function CreatePostModal({
             id="create-post-title"
             placeholder={copy.requestTitle}
             className="rounded-xl border-white/10 bg-white/5"
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -89,6 +103,8 @@ export function CreatePostModal({
             id="create-post-subject"
             placeholder={copy.subjectPlaceholder}
             className="rounded-xl border-white/10 bg-white/5"
+            value={subject}
+            onChange={(event) => setSubject(event.target.value)}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -98,12 +114,20 @@ export function CreatePostModal({
             rows={4}
             placeholder={copy.bodyPlaceholder}
             className="resize-none rounded-xl border-white/10 bg-white/5"
+            value={body}
+            onChange={(event) => setBody(event.target.value)}
           />
         </div>
       </div>
 
       <DialogFooter className="pt-2 sm:justify-stretch">
-        <Button className="w-full rounded-xl">{copy.submit}</Button>
+        <Button
+          className="w-full rounded-xl"
+          disabled={!title.trim() || !body.trim()}
+          onClick={handleSubmit}
+        >
+          {copy.submit}
+        </Button>
       </DialogFooter>
     </LegacyDialogShell>
   );
@@ -121,6 +145,15 @@ export function SubjectRequestModal({
   labels?: LegacyLabels;
 }) {
   const copy = labels.modals.subjectRequest;
+  const [name, setName] = useState("");
+  const [why, setWhy] = useState("");
+
+  const handleSubmit = () => {
+    legacyDemoToast(copy.submit);
+    onOpenChange?.(false);
+    setName("");
+    setWhy("");
+  };
 
   return (
     <LegacyDialogShell
@@ -140,6 +173,8 @@ export function SubjectRequestModal({
             id="subject-request-name"
             placeholder={copy.namePlaceholder}
             className="rounded-xl border-white/10 bg-white/5"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -149,6 +184,8 @@ export function SubjectRequestModal({
             rows={3}
             placeholder={copy.whyPlaceholder}
             className="resize-none rounded-xl border-white/10 bg-white/5 text-sm"
+            value={why}
+            onChange={(event) => setWhy(event.target.value)}
           />
         </div>
         <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/10 p-3 text-sm text-muted-foreground">
@@ -158,10 +195,20 @@ export function SubjectRequestModal({
       </div>
 
       <DialogFooter className="gap-3 pt-2 sm:justify-stretch">
-        <Button variant="outline" className="flex-1 rounded-xl border-white/20">
+        <Button
+          variant="outline"
+          className="flex-1 rounded-xl border-white/20"
+          onClick={() => onOpenChange?.(false)}
+        >
           {copy.cancel}
         </Button>
-        <Button className="flex-1 rounded-xl">{copy.submit}</Button>
+        <Button
+          className="flex-1 rounded-xl"
+          disabled={!name.trim() || !why.trim()}
+          onClick={handleSubmit}
+        >
+          {copy.submit}
+        </Button>
       </DialogFooter>
     </LegacyDialogShell>
   );
@@ -224,6 +271,10 @@ export function CguAcceptanceModal({
             "w-full rounded-xl",
             !canSubmit && "cursor-not-allowed opacity-50",
           )}
+          onClick={() => {
+            legacyDemoToast(copy.submit);
+            onOpenChange?.(false);
+          }}
         >
           {copy.submit}
         </Button>

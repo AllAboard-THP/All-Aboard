@@ -6,6 +6,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "../components/alert";
+import { useAlertLabels } from "../i18n/storybook-locale";
 import { Badge } from "../components/badge";
 import { Button } from "../components/button";
 import {
@@ -72,6 +73,40 @@ function CatalogSection({
   );
 }
 
+function CatalogAlertSamples() {
+  const labels = useAlertLabels();
+
+  return (
+    <div className="space-y-3">
+      <Alert>
+        <AlertTitle>{labels.information}</AlertTitle>
+        <AlertDescription>{labels.neutralMessageCatalog}</AlertDescription>
+      </Alert>
+      <Alert variant="destructive">
+        <AlertTitle>{labels.error}</AlertTitle>
+        <AlertDescription>{labels.feedLoadErrorCatalog}</AlertDescription>
+      </Alert>
+    </div>
+  );
+}
+
+function CatalogAlertDetailSamples() {
+  const labels = useAlertLabels();
+
+  return (
+    <div className="space-y-3">
+      <Alert>
+        <AlertTitle>{labels.loginRequired}</AlertTitle>
+        <AlertDescription>{labels.neutralMessageCatalog}</AlertDescription>
+      </Alert>
+      <Alert variant="destructive">
+        <AlertTitle>{labels.feedLoadError}</AlertTitle>
+        <AlertDescription>{labels.http502}</AlertDescription>
+      </Alert>
+    </div>
+  );
+}
+
 /** Vue d’ensemble — toutes les primitives sur une page (scroll). */
 export const ListingComplet: Story = {
   name: "00 · Listing complet",
@@ -110,16 +145,7 @@ export const ListingComplet: Story = {
         name="Alert"
         importPath='@allaboard/ui/components/alert'
       >
-        <div className="space-y-3">
-          <Alert>
-            <AlertTitle>Information</AlertTitle>
-            <AlertDescription>Message neutre.</AlertDescription>
-          </Alert>
-          <Alert variant="destructive">
-            <AlertTitle>Erreur</AlertTitle>
-            <AlertDescription>Impossible de charger le feed.</AlertDescription>
-          </Alert>
-        </div>
+        <CatalogAlertSamples />
       </CatalogSection>
 
       <CatalogSection index={2} name="Badge" importPath='@allaboard/ui/components/badge'>
@@ -217,16 +243,7 @@ export const AlertCatalog: Story = {
   render: () => (
     <div className="p-8">
       <CatalogSection index={1} name="Alert" importPath='@allaboard/ui/components/alert'>
-        <div className="space-y-3">
-          <Alert>
-            <AlertTitle>Connexion requise</AlertTitle>
-            <AlertDescription>Message informatif.</AlertDescription>
-          </Alert>
-          <Alert variant="destructive">
-            <AlertTitle>Impossible de charger le feed</AlertTitle>
-            <AlertDescription>Feed HTTP 502</AlertDescription>
-          </Alert>
-        </div>
+        <CatalogAlertDetailSamples />
       </CatalogSection>
     </div>
   ),
