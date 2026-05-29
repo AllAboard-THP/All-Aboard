@@ -3,6 +3,7 @@ import {
   parseAuthMeResponse,
   parseFeedResponse,
   parseHelpRequestDetailResponse,
+  parseMentorFeedResponse,
 } from "@/lib/api-server";
 
 describe("parseFeedResponse", () => {
@@ -75,5 +76,57 @@ describe("parseAuthMeResponse", () => {
       userId: "alice",
       role: "mentor",
     });
+  });
+});
+
+describe("parseMentorFeedResponse", () => {
+  it("accepts enriched mentor feed items", () => {
+    const data = {
+      items: [
+        {
+          id: "1",
+          title: "Help",
+          authorId: "bob@dev.local",
+          createdAt: "2020-01-01T00:00:00.000Z",
+          tags: ["mentor"],
+          responseCount: 2,
+          lastResponseAt: "2020-01-02T00:00:00.000Z",
+          hasUnreadForMentor: true,
+        },
+      ],
+    };
+    expect(parseMentorFeedResponse(data)).toEqual(data);
+  });
+
+  it("accepts null lastResponseAt", () => {
+    const data = {
+      items: [
+        {
+          id: "1",
+          title: "Help",
+          authorId: "bob@dev.local",
+          createdAt: "2020-01-01T00:00:00.000Z",
+          responseCount: 0,
+          lastResponseAt: null,
+          hasUnreadForMentor: false,
+        },
+      ],
+    };
+    expect(parseMentorFeedResponse(data)).toEqual(data);
+  });
+
+  it("rejects missing notification fields", () => {
+    expect(() =>
+      parseMentorFeedResponse({
+        items: [
+          {
+            id: "1",
+            title: "Help",
+            authorId: "u",
+            createdAt: "2020-01-01T00:00:00.000Z",
+          },
+        ],
+      }),
+    ).toThrow("item shape");
   });
 });

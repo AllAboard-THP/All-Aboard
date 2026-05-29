@@ -1,15 +1,29 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getApiBaseUrl, parseMentorFeedResponse } from "@/lib/api-server";
 
 export async function GET() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
+  if (!token) {
+    return NextResponse.json({ error: "missing_token" }, { status: 401 });
+  }
+
   const url = `${getApiBaseUrl()}/mentor/feed`;
   try {
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch(url, {
+      headers: { authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
     if (!res.ok) {
-      return NextResponse.json(
-        { error: `upstream ${res.status}` },
-        { status: 502 },
-      );
+      const text = await res.text();
+      return new NextResponse(text, {
+        status: res.status,
+        headers: {
+          "content-type":
+            res.headers.get("content-type") ?? "application/json; charset=utf-8",
+        },
+      });
     }
     const text = await res.text();
     let json: unknown;

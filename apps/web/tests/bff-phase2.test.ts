@@ -5,6 +5,7 @@ import { GET as authMeGet } from "@/app/api/auth/me/route";
 import { POST as helpRequestsPost } from "@/app/api/help-requests/route";
 import { GET as helpRequestByIdGet } from "@/app/api/help-requests/[id]/route";
 import { POST as helpRequestResponsesPost } from "@/app/api/help-requests/[id]/responses/route";
+import { GET as mentorFeedGet } from "@/app/api/mentor/feed/route";
 
 vi.mock("@/lib/api-server", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/api-server")>();
@@ -289,6 +290,61 @@ describe("BFF Phase 2", () => {
           headers: { authorization: "Bearer jwt-mentor" },
         }),
       );
+    });
+  });
+
+  describe("GET /api/mentor/feed", () => {
+    it("returns 401 missing_token when no cookie", async () => {
+      vi.mocked(cookies).mockResolvedValue({
+        get: () => undefined,
+      } as Awaited<ReturnType<typeof cookies>>);
+
+      const res = await mentorFeedGet();
+      expect(res.status).toBe(401);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("forwards Bearer and relays enriched feed", async () => {
+      vi.mocked(cookies).mockResolvedValue({
+        get: (name: string) =>
+          name === "access_token" ? { value: "jwt-mentor" } : undefined,
+      } as Awaited<ReturnType<typeof cookies>>);
+
+      fetchMock.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            items: [
+              {
+                id: "hr-1",
+                title: "Tagged",
+                authorId: "bob@dev.local",
+                createdAt: "2020-01-01T00:00:00.000Z",
+                tags: ["mentor"],
+                responseCount: 1,
+                lastResponseAt: "2020-01-02T00:00:00.000Z",
+                hasUnreadForMentor: true,
+              },
+            ],
+          }),
+          {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          },
+        ),
+      );
+
+      const res = await mentorFeedGet();
+      expect(res.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://api.test:4000/mentor/feed",
+        expect.objectContaining({
+          headers: { authorization: "Bearer jwt-mentor" },
+        }),
+      );
+      const body = (await res.json()) as {
+        items: Array<{ hasUnreadForMentor: boolean }>;
+      };
+      expect(body.items[0]?.hasUnreadForMentor).toBe(true);
     });
   });
 });

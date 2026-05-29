@@ -6,6 +6,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@allaboard/ui/components/alert";
+import { Badge } from "@allaboard/ui/components/badge";
 import { Button } from "@allaboard/ui/components/button";
 import {
   Card,
@@ -68,7 +69,11 @@ export default async function MentorDashboardPage() {
     );
   }
 
-  const feedResult = await fetchMentorFeed();
+  const feedResult = await fetchMentorFeed(token);
+  const unreadCount =
+    feedResult.ok ?
+      feedResult.data.items.filter((item) => item.hasUnreadForMentor).length
+    : 0;
 
   return (
     <div className="mx-auto w-full max-w-3xl p-6">
@@ -81,7 +86,11 @@ export default async function MentorDashboardPage() {
         </h1>
         <p className="m-0 text-muted-foreground">
           Connecté en tant que {meResult.data.userId} — demandes taguées
-          mentor/domaine.
+          mentor/domaine
+          {unreadCount > 0 ?
+            ` — ${unreadCount} avec nouvelles réponses`
+          : null}
+          .
         </p>
       </header>
 
@@ -112,17 +121,38 @@ export default async function MentorDashboardPage() {
             <li key={item.id}>
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">
-                    <Link
-                      href={`/requests/${item.id}`}
-                      className="text-foreground hover:text-primary hover:underline"
-                    >
-                      {item.title}
-                    </Link>
-                  </CardTitle>
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <CardTitle className="text-lg">
+                      <Link
+                        href={`/requests/${item.id}`}
+                        className="text-foreground hover:text-primary hover:underline"
+                      >
+                        {item.title}
+                      </Link>
+                    </CardTitle>
+                    {item.hasUnreadForMentor ? (
+                      <Badge
+                        variant="destructive"
+                        data-testid="mentor-notification-badge"
+                      >
+                        Nouvelle réponse
+                      </Badge>
+                    ) : null}
+                  </div>
                   <CardDescription className="flex flex-wrap gap-x-3 gap-y-1">
                     <span>Auteur : {item.authorId}</span>
                     <span>{formatCreatedAt(item.createdAt)}</span>
+                    {item.responseCount > 0 ? (
+                      <span>
+                        {item.responseCount} réponse
+                        {item.responseCount > 1 ? "s" : ""}
+                        {item.lastResponseAt ?
+                          ` — dernière ${formatCreatedAt(item.lastResponseAt)}`
+                        : null}
+                      </span>
+                    ) : (
+                      <span>Aucune réponse</span>
+                    )}
                   </CardDescription>
                 </CardHeader>
                 {item.tags && item.tags.length > 0 ? (

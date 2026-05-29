@@ -4,13 +4,14 @@ import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
 import { registerOpenApiDocs } from "./openapi.js";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, inArray, sql } from "drizzle-orm";
 import type {
   AuthMeResponse,
   CreateHelpRequestResponse,
   CreateResponseResponse,
   HelpRequest,
   HelpRequestDetailResponse,
+  MentorFeedItem,
   Response,
   UserRole,
 } from "@allaboard/types";
@@ -257,18 +258,68 @@ export async function buildApp(options?: BuildAppOptions) {
     },
   );
 
-  app.get("/mentor/feed", async (_request, reply) => {
-    if (!db) {
-      return reply.code(503).send({ error: "database_unavailable" });
-    }
-    const rows = await db
-      .select()
-      .from(helpRequests)
-      .where(sql`cardinality(${helpRequests.tags}) > 0`)
-      .orderBy(desc(helpRequests.createdAt))
-      .limit(100);
-    return { items: rows.map(rowToHelpRequest) };
-  });
+  app.get(
+    "/mentor/feed",
+    { preHandler: [app.authenticate] },
+    async (request, reply) => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      const user = request.user as { sub: string; role?: UserRole };
+      const role = roleFromJwtClaims(user.sub, user.role);
+      if (role !== "mentor") {
+        return reply.code(403).send({ error: "forbidden" });
+      }
+      const mentorId = user.sub;
+
+      const rows = await db
+        .select()
+        .from(helpRequests)
+        .where(sql`cardinality(${helpRequests.tags}) > 0`)
+        .orderBy(desc(helpRequests.createdAt))
+        .limit(100);
+
+      const ids = rows.map((row) => row.id);
+      const responsesByRequest = new Map<
+        string,
+        Array<typeof responses.$inferSelect>
+      >();
+
+      if (ids.length > 0) {
+        const responseRows = await db
+          .select()
+          .from(responses)
+          .where(inArray(responses.helpRequestId, ids))
+          .orderBy(responses.createdAt);
+        for (const row of responseRows) {
+          const list = responsesByRequest.get(row.helpRequestId) ?? [];
+          list.push(row);
+          responsesByRequest.set(row.helpRequestId, list);
+        }
+      }
+
+      const items: MentorFeedItem[] = rows.map((row) => {
+        const base = rowToHelpRequest(row);
+        const requestResponses = responsesByRequest.get(row.id) ?? [];
+        const responseCount = requestResponses.length;
+        let lastResponseAt: string | null = null;
+        let hasUnreadForMentor = false;
+        if (responseCount > 0) {
+          const last = requestResponses[responseCount - 1]!;
+          lastResponseAt = last.createdAt.toISOString();
+          hasUnreadForMentor = last.authorId !== mentorId;
+        }
+        return {
+          ...base,
+          responseCount,
+          lastResponseAt,
+          hasUnreadForMentor,
+        };
+      });
+
+      return { items };
+    },
+  );
 
   app.post(
     "/help-requests",
