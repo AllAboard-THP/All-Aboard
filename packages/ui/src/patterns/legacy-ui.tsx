@@ -22,7 +22,6 @@ import {
 import type { ReactNode } from "react";
 
 import { Avatar, AvatarFallback } from "../components/avatar";
-import { Button } from "../components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,

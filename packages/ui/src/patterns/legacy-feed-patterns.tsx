@@ -20,7 +20,6 @@ import {
 import { cn } from "@allaboard/ui/lib/utils";
 import { legacySubjects } from "./fixtures/legacy-subjects";
 import { PostCardCodeBlock } from "./post-card";
-import { SubjectTag } from "./legacy-ui";
 
 export function CommentCard({
   authorName,
