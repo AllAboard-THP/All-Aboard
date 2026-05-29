@@ -144,6 +144,77 @@ describe("BFF Phase 2", () => {
   });
 
   describe("GET /api/help-requests/[id]", () => {
+    it("relays certification filter query with bearer cookie", async () => {
+      vi.mocked(cookies).mockResolvedValue({
+        get: (name: string) =>
+          name === "access_token" ? { value: "mentor-jwt" } : undefined,
+      } as Awaited<ReturnType<typeof cookies>>);
+
+      const detail = {
+        item: {
+          id: "id-1",
+          title: "Help",
+          authorId: "bob@dev.local",
+          createdAt: "2026-01-01T00:00:00.000Z",
+          tags: ["react"],
+        },
+        responses: [
+          {
+            id: "r1",
+            helpRequestId: "id-1",
+            body: "Mentor",
+            authorId: "alice@dev.local",
+          },
+        ],
+        certificationFilter: {
+          applied: true,
+          totalCount: 2,
+          visibleCount: 1,
+        },
+      };
+      fetchMock.mockResolvedValueOnce(
+        new Response(JSON.stringify(detail), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+
+      const res = await helpRequestByIdGet(
+        new Request(
+          "http://localhost/api/help-requests/id-1?filterByCertifications=true",
+        ),
+        { params: Promise.resolve({ id: "id-1" }) },
+      );
+
+      expect(res.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://api.test:4000/help-requests/id-1?filterByCertifications=true",
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            authorization: "Bearer mentor-jwt",
+          }),
+        }),
+      );
+      const body = (await res.json()) as typeof detail;
+      expect(body.certificationFilter?.visibleCount).toBe(1);
+    });
+
+    it("returns 401 for certification filter without cookie", async () => {
+      vi.mocked(cookies).mockResolvedValue({
+        get: () => undefined,
+      } as Awaited<ReturnType<typeof cookies>>);
+
+      const res = await helpRequestByIdGet(
+        new Request(
+          "http://localhost/api/help-requests/id-1?filterByCertifications=true",
+        ),
+        { params: Promise.resolve({ id: "id-1" }) },
+      );
+
+      expect(res.status).toBe(401);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
     it("relays upstream 200", async () => {
       const detail = {
         item: {
@@ -169,7 +240,9 @@ describe("BFF Phase 2", () => {
       expect(res.status).toBe(200);
       expect(fetchMock).toHaveBeenCalledWith(
         "http://api.test:4000/help-requests/id-1",
-        expect.objectContaining({ cache: "no-store" }),
+        expect.objectContaining({
+          headers: expect.objectContaining({ cache: "no-store" }),
+        }),
       );
       const body = (await res.json()) as typeof detail;
       expect(body.item.id).toBe("id-1");

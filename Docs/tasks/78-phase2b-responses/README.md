@@ -11,8 +11,8 @@ Combler l’écart MOC vs MVP sur le fil de réponses aux demandes d’aide ([mo
 | [#79](https://github.com/AllAboard-THP/All-Aboard/issues/79) | API + DB `responses` + `POST` authentifié | ✅ livré (cette branche) |
 | [#80](https://github.com/AllAboard-THP/All-Aboard/issues/80) | BFF + TanStack mutation | ✅ livré (cette branche) |
 | [#81](https://github.com/AllAboard-THP/All-Aboard/issues/81) | UI thread détail | ✅ livré (cette branche) |
-| [#82](https://github.com/AllAboard-THP/All-Aboard/issues/82) | Notifications mentor | Backlog |
-| [#83](https://github.com/AllAboard-THP/All-Aboard/issues/83) | Filtrage réponses | Post-MVP |
+| [#82](https://github.com/AllAboard-THP/All-Aboard/issues/82) | Notifications mentor | ✅ livré (PR #87) |
+| [#83](https://github.com/AllAboard-THP/All-Aboard/issues/83) | Filtrage réponses | ✅ livré — [83-response-filtering](../83-response-filtering/README.md) |
 
 ## Livraison MVP thread réponses
 
@@ -36,6 +36,6 @@ Combler l’écart MOC vs MVP sur le fil de réponses aux demandes d’aide ([mo
 - `apps/api/src/app.test.ts` — création réponse + détail peuplé
 - `apps/web/tests/bff-phase2.test.ts` — relay BFF POST responses
 
-## Hors scope (issues #82–#83)
+## Hors scope restant
 
-Notifications mentor, filtrage certifications, réponse finale étudiant (workflow statut).
+Réponse finale étudiant (workflow statut).

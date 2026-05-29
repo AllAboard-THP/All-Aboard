@@ -79,4 +79,5 @@ flowchart TD
 - Cette version est volontairement simple et orientee flux produit.
 - Les etapes de moderation, SLA, scoring qualite et anti-spam pourront etre ajoutees ensuite.
 - Les termes affiches reprennent au plus proche ceux du schema source.
+- **Etape 8 (livré #83)** : filtre mentor sur fiche demande — `users.certification_tags`, overlap avec `help_requests.tags`, demandeur toujours visible. Doc : [tasks/83-response-filtering/README.md](tasks/83-response-filtering/README.md).
 - Voir aussi la vue technique: [MOC - Dataflow et architecture](dataflow-architecture.md).

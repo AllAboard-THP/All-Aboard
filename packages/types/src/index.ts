@@ -38,10 +38,18 @@ export type CreateHelpRequestResponse = {
   };
 };
 
+/** Métadonnées quand `GET /help-requests/:id?filterByCertifications=true` (mentor JWT). */
+export type CertificationFilterMeta = {
+  applied: true;
+  totalCount: number;
+  visibleCount: number;
+};
+
 /** JSON body of `GET /help-requests/:id` from `apps/api`. */
 export type HelpRequestDetailResponse = {
   item: HelpRequest;
   responses?: Response[];
+  certificationFilter?: CertificationFilterMeta;
 };
 
 /** Corps JSON pour `POST /help-requests/:id/responses` (auteur = sujet JWT). */

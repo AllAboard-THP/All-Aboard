@@ -537,6 +537,105 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       expect(detail.responses[0]?.authorId).toBe("alice@dev.local");
     });
 
+    it("GET /help-requests/:id?filterByCertifications=true returns 401 without token", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/help-requests/00000000-0000-0000-0000-000000000099?filterByCertifications=true",
+      });
+      expect(res.statusCode).toBe(401);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("unauthorized");
+    });
+
+    it("GET /help-requests/:id?filterByCertifications=true returns 403 for student", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "GET",
+        url: "/help-requests/00000000-0000-0000-0000-000000000099?filterByCertifications=true",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(res.statusCode).toBe(403);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("forbidden");
+    });
+
+    it("GET /help-requests/:id filters responses by certification overlap for mentor", async () => {
+      const title = `Cert filter ${Date.now()}`;
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title, tags: ["react", "rails"] },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+      const id = created.item.id;
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const charlieToken = app.jwt.sign({
+        sub: "charlie@dev.local",
+        role: "student",
+      });
+
+      await app.inject({
+        method: "POST",
+        url: `/help-requests/${id}/responses`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+        payload: { body: "Piste mentor react" },
+      });
+      await app.inject({
+        method: "POST",
+        url: `/help-requests/${id}/responses`,
+        headers: { authorization: `Bearer ${charlieToken}` },
+        payload: { body: "Piste hors certifications" },
+      });
+      await app.inject({
+        method: "POST",
+        url: `/help-requests/${id}/responses`,
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { body: "Précision du demandeur" },
+      });
+
+      const unfilteredRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${id}`,
+      });
+      expect(unfilteredRes.statusCode).toBe(200);
+      const unfiltered = JSON.parse(unfilteredRes.payload) as {
+        responses: Array<{ authorId: string }>;
+      };
+      expect(unfiltered.responses).toHaveLength(3);
+
+      const filteredRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${id}?filterByCertifications=true`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(filteredRes.statusCode).toBe(200);
+      const filtered = JSON.parse(filteredRes.payload) as {
+        responses: Array<{ authorId: string; body: string }>;
+        certificationFilter: {
+          applied: boolean;
+          totalCount: number;
+          visibleCount: number;
+        };
+      };
+      expect(filtered.certificationFilter).toEqual({
+        applied: true,
+        totalCount: 3,
+        visibleCount: 2,
+      });
+      expect(filtered.responses).toHaveLength(2);
+      const authors = filtered.responses.map((r) => r.authorId);
+      expect(authors).toContain("alice@dev.local");
+      expect(authors).toContain("bob@dev.local");
+      expect(authors).not.toContain("charlie@dev.local");
+    });
+
     it("GET /auth/me returns role for mentor alice@dev.local on login", async () => {
       const loginRes = await app.inject({
         method: "POST",

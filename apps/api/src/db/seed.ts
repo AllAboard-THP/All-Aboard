@@ -7,6 +7,7 @@ export type SeedUserSpec = {
   email: string;
   role: "student" | "mentor";
   password: string;
+  certificationTags?: string[];
 };
 
 /** Comptes dev/CI documentés — mots de passe via env, jamais en repo. */
@@ -18,7 +19,12 @@ export function defaultSeedUsers(): SeedUserSpec[] {
   if (!password) return [];
   return [
     { email: "bob@dev.local", role: "student", password },
-    { email: "alice@dev.local", role: "mentor", password },
+    {
+      email: "alice@dev.local",
+      role: "mentor",
+      password,
+      certificationTags: ["react", "typescript", "rails"],
+    },
   ];
 }
 
@@ -30,16 +36,18 @@ export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise
       .from(users)
       .where(eq(users.email, spec.email))
       .limit(1);
+    const certificationTags = spec.certificationTags ?? [];
     if (existing.length > 0) {
       await db
         .update(users)
-        .set({ passwordHash, role: spec.role })
+        .set({ passwordHash, role: spec.role, certificationTags })
         .where(eq(users.email, spec.email));
     } else {
       await db.insert(users).values({
         email: spec.email,
         passwordHash,
         role: spec.role,
+        certificationTags,
       });
     }
   }

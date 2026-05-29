@@ -13,6 +13,8 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   role: userRoleEnum("role").notNull(),
+  /** Tags domaine / stack pour filtrage réponses mentor (MOC étape 8). */
+  certificationTags: text("certification_tags").array().notNull().default([]),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

@@ -65,6 +65,25 @@ describe("parseHelpRequestDetailResponse", () => {
     expect(parseHelpRequestDetailResponse(data)).toEqual(data);
   });
 
+  it("accepts certificationFilter metadata", () => {
+    const data = {
+      item: {
+        id: "1",
+        title: "Hello",
+        authorId: "bob@dev.local",
+        createdAt: "2020-01-01T00:00:00.000Z",
+        tags: ["react"],
+      },
+      responses: [],
+      certificationFilter: {
+        applied: true,
+        totalCount: 2,
+        visibleCount: 1,
+      },
+    };
+    expect(parseHelpRequestDetailResponse(data)).toEqual(data);
+  });
+
   it("rejects missing item", () => {
     expect(() => parseHelpRequestDetailResponse({})).toThrow("item shape");
   });

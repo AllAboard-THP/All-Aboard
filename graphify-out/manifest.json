@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/api/help-requests/[id]/route.ts": {
-    "mtime": 1779797451.2522173,
-    "ast_hash": "91ddc4b2e0b0444332cae01ee7e0b039",
+    "mtime": 1780067798.4701452,
+    "ast_hash": "2f5ff2adb6fab4e1c315005f1640c031",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/api/help-requests/[id]/responses/route.ts": {
@@ -140,8 +140,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/api-server.test.ts": {
-    "mtime": 1780066629.285168,
-    "ast_hash": "0a04a60fc3bc7980600daa2d02986a7c",
+    "mtime": 1780067819.8062155,
+    "ast_hash": "2a4f0cba38a30b5d59caf6e533e76a0a",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/home-content.test.tsx": {
@@ -155,8 +155,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/bff-phase2.test.ts": {
-    "mtime": 1780066630.6411147,
-    "ast_hash": "89ca94f328a7fee4809beb3a438026af",
+    "mtime": 1780067875.4455686,
+    "ast_hash": "63be3483263c33d4b18b036e9f1fc177",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/feed-client-preview.test.tsx": {
@@ -200,8 +200,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/help-request-detail-client.tsx": {
-    "mtime": 1780061979.295414,
-    "ast_hash": "8281986b5828c419993233d9c35fb857",
+    "mtime": 1780067812.2697752,
+    "ast_hash": "2c0600179a87973d411164796384c3c4",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/help-request-form.tsx": {
@@ -210,8 +210,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/api-server.ts": {
-    "mtime": 1780066605.2651925,
-    "ast_hash": "4839b18f24ce8f4e4c664b6a7fcf47e2",
+    "mtime": 1780067799.8067582,
+    "ast_hash": "ca4e43fcff669b867d6fcc6aaa37b324",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/package.json": {
@@ -255,8 +255,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/meta/_journal.json": {
-    "mtime": 1780061979.295414,
-    "ast_hash": "af36eb780cb6c1dc7c5c85b0d40916fb",
+    "mtime": 1780067787.8979003,
+    "ast_hash": "e83d5c03b47bc0cc7ebe64f3bb15533e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/migrate.ts": {
@@ -265,8 +265,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.ts": {
-    "mtime": 1780066600.6599052,
-    "ast_hash": "843799a5260aea7f0d9b9423e5caf81b",
+    "mtime": 1780067794.3179343,
+    "ast_hash": "48206c6eef8995103474f84a82023bda",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/fastify-augmentation.ts": {
@@ -285,8 +285,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.test.ts": {
-    "mtime": 1780066627.9277365,
-    "ast_hash": "6d61195f1bf03e0d5e02af16384e8a00",
+    "mtime": 1780067816.486873,
+    "ast_hash": "e74ec04476adde17be90e2d4b32daeb9",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/index.ts": {
@@ -295,13 +295,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/schema.ts": {
-    "mtime": 1780061979.295414,
-    "ast_hash": "dfc8207d4d7493da02d4111782415716",
+    "mtime": 1780067788.5438757,
+    "ast_hash": "fe1a5f15740d525427af2e4a8f296c84",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/seed.ts": {
-    "mtime": 1779983505.1285732,
-    "ast_hash": "64aa92ca6b2e3e01e596e81a0abf81a9",
+    "mtime": 1780067790.2507665,
+    "ast_hash": "36e32143734c872201bec72c1f80a937",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/client.ts": {
@@ -315,8 +315,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/openapi.yaml": {
-    "mtime": 1780066603.2729726,
-    "ast_hash": "37ca70f3c5cd22ea9bad88252159f660",
+    "mtime": 1780067802.8064756,
+    "ast_hash": "75f33e3e934d369ddaee583641286a8b",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/ui/package.json": {
@@ -605,8 +605,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/types/src/index.ts": {
-    "mtime": 1780066598.8048913,
-    "ast_hash": "9f654d3796a53c890e64df3052d50d80",
+    "mtime": 1780067789.142682,
+    "ast_hash": "3390e8f7e450ecbc0d04127e2aab3bf1",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/config-eslint/node.mjs": {
@@ -710,8 +710,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/moc-parcours-utilisateur.md": {
-    "mtime": 1779797451.2230604,
-    "ast_hash": "beae739ca58428bb0ee73e666dc4d006",
+    "mtime": 1780067822.4167905,
+    "ast_hash": "8cc77c29175ca1fb4153e4fbb0cb861d",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/staging-checklist.md": {
@@ -740,8 +740,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/78-phase2b-responses/README.md": {
-    "mtime": 1780061979.295414,
-    "ast_hash": "71f7d00e27ca8ec216b23f04f7dff753",
+    "mtime": 1780067824.4026785,
+    "ast_hash": "b809665fd08a8a1c84dd58c0f895c8e9",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/49-openapi/README.md": {
@@ -847,6 +847,16 @@
   "/home/dim/AllAboard/Docs/tasks/82-mentor-notifications/README.md": {
     "mtime": 1780066598.4382794,
     "ast_hash": "15aca123d09fa102e487ee89b45d8ba6",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/drizzle/0003_user_certifications.sql": {
+    "mtime": 1780067787.4111788,
+    "ast_hash": "8a9fbbf6137042e685124109fc9969a7",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/tasks/83-response-filtering/README.md": {
+    "mtime": 1780067821.4634225,
+    "ast_hash": "2defced98abedf5e8d1e04216b94eb23",
     "semantic_hash": ""
   }
 }
