@@ -4,7 +4,7 @@ Ce document decrit la configuration **effective** du projet All-Aboard sur Dokpl
 
 **Timeline produit / stack applicative** (ordre des phases, TanStack, auth) : [README documentation — canonique](README.md).
 
-**Mise a jour** : 2026-05-27 (staging valide : MVP Phase 2 deploye, smoke HTTPS + parcours Bob — [#32](https://github.com/AllAboard-THP/All-Aboard/issues/32) / [#17](https://github.com/AllAboard-THP/All-Aboard/issues/17) fermes). **2026-05-20** : domaines `allaboard.fr` + API dediees ; Agent/Indexer **desactives** ; post-merge PR #9 Phase 1 — smoke feed OK. Detail smoke : [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) (journal) ; runbooks : [dev Phase 2](runbook-dokploy-dev-phase2.md), [staging Phase 2](runbook-dokploy-staging-phase2.md).
+**Mise a jour** : 2026-05-29 (staging : MVP Phase 2 + auth ADR 0003 — `DEV_SEED_PASSWORD`, pas de `MVP_LOGIN_PASSWORD` ; smoke complet 2026-05-29). **2026-05-20** : domaines `allaboard.fr` + API dediees ; Agent/Indexer **desactives** ; post-merge PR #9 Phase 1 — smoke feed OK. Detail smoke : [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) (journal) ; runbooks : [dev Phase 2](runbook-dokploy-dev-phase2.md), [staging Phase 2](runbook-dokploy-staging-phase2.md).
 
 **Secrets** : mots de passe base de donnees, cles API et tokens GitHub se configurent **uniquement** dans Dokploy. Ne jamais les commiter dans ce depot.
 
@@ -118,7 +118,8 @@ Cles d’environnement typiques : `NODE_ENV`, `APP_ENV`, `LOG_LEVEL`, `PORT=4000
 |----------|------|
 | `DATABASE_URL` | Postgres interne (hote service Postgres dev, port 5432) |
 | `JWT_SECRET` | Min. 32 caracteres (`NODE_ENV=production` dans l’image Docker) |
-| `MVP_LOGIN_PASSWORD` | Login MVP `POST /auth/login` |
+| `MVP_LOGIN_PASSWORD` | Dev/CI uniquement (fallback login sans DB) — **pas** staging/prod |
+| `DEV_SEED_PASSWORD` | Seed `bob@dev.local` / `alice@dev.local` (ADR 0003) — staging + dev |
 
 Procedure : [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md). Auth : [ADR 0001](adr/0001-authentication-strategy.md).
 
@@ -168,7 +169,7 @@ Les applications Dokploy **Agent** et **Indexer** existent dans les trois enviro
 
 **Dev (2026-05-25)** : MVP parcours Bob validé — journal [plan opérationnel](plan-mise-en-place-web-api-donnees.md), [runbook dev](runbook-dokploy-dev-phase2.md).
 
-**Staging (2026-05-27)** : MVP Phase 2 valide (smoke HTTPS + parcours Bob) — [runbook staging](runbook-dokploy-staging-phase2.md). Healthchecks : `GET https://api-staging.allaboard.fr/health`, `GET …/feed` (UUID), `GET https://staging.allaboard.fr/api/feed`, `POST …/auth/login` → 401 si invalides.
+**Staging (2026-05-29)** : MVP Phase 2 + auth ADR 0003 (`DEV_SEED_PASSWORD`, comptes seed OK) — [runbook staging](runbook-dokploy-staging-phase2.md). Healthchecks : `GET …/health`, `GET …/feed` (UUID), BFF `/api/feed`, `POST …/auth/login` → 401 si invalides, 200 avec email seed si valides.
 
 Dernier etat connu Agent/Indexer : echec de build / runtime faute de packages `apps/agent` et `apps/indexer` dans le repo (services en pause).
 
