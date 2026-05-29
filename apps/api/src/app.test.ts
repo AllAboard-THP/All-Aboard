@@ -565,32 +565,126 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       expect(me).toEqual({ userId: "alice@dev.local", role: "mentor" });
     });
 
-    it("GET /mentor/feed returns only tagged requests", async () => {
+    it("GET /mentor/feed returns 401 without token", async () => {
+      const res = await app.inject({ method: "GET", url: "/mentor/feed" });
+      expect(res.statusCode).toBe(401);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("unauthorized");
+    });
+
+    it("GET /mentor/feed returns 403 for student", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "GET",
+        url: "/mentor/feed",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(res.statusCode).toBe(403);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("forbidden");
+    });
+
+    it("GET /mentor/feed returns only tagged requests for mentor", async () => {
       const taggedTitle = `Mentor tagged ${Date.now()}`;
       const plainTitle = `Mentor plain ${Date.now()}`;
-      const token = app.jwt.sign({ sub: "bob", role: "student" });
-      const headers = { authorization: `Bearer ${token}` };
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const bobHeaders = { authorization: `Bearer ${bobToken}` };
 
       await app.inject({
         method: "POST",
         url: "/help-requests",
-        headers,
+        headers: bobHeaders,
         payload: { title: taggedTitle, tags: ["mentor"] },
       });
       await app.inject({
         method: "POST",
         url: "/help-requests",
-        headers,
+        headers: bobHeaders,
         payload: { title: plainTitle },
       });
 
-      const res = await app.inject({ method: "GET", url: "/mentor/feed" });
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const res = await app.inject({
+        method: "GET",
+        url: "/mentor/feed",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload) as {
-        items: Array<{ title: string }>;
+        items: Array<{ title: string; responseCount: number }>;
       };
       expect(body.items.some((i) => i.title === taggedTitle)).toBe(true);
       expect(body.items.some((i) => i.title === plainTitle)).toBe(false);
+      for (const item of body.items) {
+        expect(typeof item.responseCount).toBe("number");
+      }
+    });
+
+    it("GET /mentor/feed sets hasUnreadForMentor when last response is not from mentor", async () => {
+      const title = `Mentor unread ${Date.now()}`;
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title, tags: ["mentor"] },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: { id: string };
+      };
+
+      await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/responses`,
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { body: "Réponse étudiant en attente de mentor." },
+      });
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const feedRes = await app.inject({
+        method: "GET",
+        url: "/mentor/feed",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(feedRes.statusCode).toBe(200);
+      const feed = JSON.parse(feedRes.payload) as {
+        items: Array<{
+          id: string;
+          responseCount: number;
+          lastResponseAt: string | null;
+          hasUnreadForMentor: boolean;
+        }>;
+      };
+      const item = feed.items.find((i) => i.id === created.item.id);
+      expect(item).toBeDefined();
+      expect(item?.responseCount).toBe(1);
+      expect(item?.lastResponseAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+      expect(item?.hasUnreadForMentor).toBe(true);
+
+      await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/responses`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+        payload: { body: "Réponse mentor — lu pour le dashboard." },
+      });
+
+      const feedAfterRes = await app.inject({
+        method: "GET",
+        url: "/mentor/feed",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      const feedAfter = JSON.parse(feedAfterRes.payload) as {
+        items: Array<{ id: string; hasUnreadForMentor: boolean }>;
+      };
+      const itemAfter = feedAfter.items.find((i) => i.id === created.item.id);
+      expect(itemAfter?.hasUnreadForMentor).toBe(false);
     });
   },
 );

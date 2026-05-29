@@ -277,14 +277,32 @@ paths:
     get:
       operationId: getMentorFeed
       tags: [mentor]
-      summary: Demandes avec au moins un tag (public)
+      summary: Demandes taguées pour le mentor connecté
+      security:
+        - bearerAuth: []
       responses:
         "200":
-          description: Fil mentor
+          description: Fil mentor enrichi (compteurs réponses, unread)
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/MentorFeedResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: unauthorized
+        "403":
+          description: Rôle mentor requis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: forbidden
         "503":
           description: Base indisponible
           content:
@@ -363,7 +381,23 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/HelpRequest"
+            $ref: "#/components/schemas/MentorFeedItem"
+
+    MentorFeedItem:
+      allOf:
+        - $ref: "#/components/schemas/HelpRequest"
+        - type: object
+          required: [responseCount, lastResponseAt, hasUnreadForMentor]
+          properties:
+            responseCount:
+              type: integer
+              minimum: 0
+            lastResponseAt:
+              type: string
+              format: date-time
+              nullable: true
+            hasUnreadForMentor:
+              type: boolean
 
     HelpRequestDetailResponse:
       type: object

@@ -6,11 +6,14 @@ import { usePathname } from "next/navigation";
 import { Button } from "@allaboard/ui/components/button";
 import { cn } from "@allaboard/ui/lib/utils";
 
+import { MentorNavLink } from "@/components/features/mentor-nav-link";
+
 export const APP_SHELL_NAV = [
   { href: "/", label: "Feed" },
   { href: "/help/new", label: "Nouvelle demande" },
-  { href: "/mentor", label: "Mentor" },
 ] as const;
+
+const MENTOR_HREF = "/mentor";
 
 function isNavActive(pathname: string | null, href: string): boolean {
   if (!pathname) {
@@ -49,6 +52,7 @@ export function AppShellNav() {
           </Button>
         );
       })}
+      <MentorNavLink active={isNavActive(pathname, MENTOR_HREF)} />
     </nav>
   );
 }

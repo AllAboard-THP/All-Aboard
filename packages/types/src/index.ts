@@ -78,7 +78,14 @@ export type AuthMeResponse = {
   role: UserRole;
 };
 
+/** Item enrichi de `GET /mentor/feed` — demande taguée + signalisation réponses. */
+export type MentorFeedItem = HelpRequest & {
+  responseCount: number;
+  lastResponseAt: string | null;
+  hasUnreadForMentor: boolean;
+};
+
 /** JSON body of `GET /mentor/feed` — demandes avec tags mentor/domaine. */
 export type MentorFeedResponse = {
-  items: HelpRequest[];
+  items: MentorFeedItem[];
 };

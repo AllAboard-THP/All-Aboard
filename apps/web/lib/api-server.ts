@@ -3,6 +3,7 @@ import type {
   FeedResponse,
   HelpRequest,
   HelpRequestDetailResponse,
+  MentorFeedItem,
   MentorFeedResponse,
   Response,
 } from "@allaboard/types";
@@ -79,8 +80,30 @@ export function parseHelpRequestDetailResponse(
   };
 }
 
+function isMentorFeedItem(value: unknown): value is MentorFeedItem {
+  if (!isHelpRequest(value)) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.responseCount === "number" &&
+    Number.isInteger(o.responseCount) &&
+    o.responseCount >= 0 &&
+    (o.lastResponseAt === null || typeof o.lastResponseAt === "string") &&
+    typeof o.hasUnreadForMentor === "boolean"
+  );
+}
+
 export function parseMentorFeedResponse(data: unknown): MentorFeedResponse {
-  return parseFeedResponse(data);
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid mentor feed: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!Array.isArray(o.items)) {
+    throw new Error("Invalid mentor feed: items must be an array");
+  }
+  if (!o.items.every(isMentorFeedItem)) {
+    throw new Error("Invalid mentor feed: item shape");
+  }
+  return { items: o.items };
 }
 
 export function parseAuthMeResponse(data: unknown): AuthMeResponse {
@@ -194,12 +217,21 @@ export async function fetchHelpRequest(
   }
 }
 
-export async function fetchMentorFeed(): Promise<FetchMentorFeedResult> {
+export async function fetchMentorFeed(
+  accessToken: string,
+): Promise<FetchMentorFeedResult> {
   const url = `${getApiBaseUrl()}/mentor/feed`;
   try {
     const { ok, status, json } = await fetchJson(url, {
-      next: { revalidate: 60 },
+      headers: { authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
     });
+    if (status === 401) {
+      return { ok: false, error: "unauthorized" };
+    }
+    if (status === 403) {
+      return { ok: false, error: "forbidden" };
+    }
     if (!ok) {
       return { ok: false, error: `Mentor feed HTTP ${status}` };
     }
