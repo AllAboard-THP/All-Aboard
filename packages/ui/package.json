@@ -9,6 +9,10 @@
   "exports": {
     "./globals.css": "./src/styles/globals.css",
     "./components/*": "./src/components/*.tsx",
+    "./i18n/post-card-labels": "./src/i18n/post-card-labels.ts",
+    "./i18n/legacy-labels": "./src/i18n/legacy-labels.ts",
+    "./i18n/storybook-locale": "./src/i18n/storybook-locale.tsx",
+    "./i18n/*": "./src/i18n/*",
     "./lib/*": "./src/lib/*.ts",
     "./hooks/*": "./src/hooks/*.ts"
   },
