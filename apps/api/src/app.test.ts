@@ -463,6 +463,80 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       expect(body.responses).toEqual([]);
     });
 
+    it("POST /help-requests/:id/responses returns 401 without token", async () => {
+      const res = await app.inject({
+        method: "POST",
+        url: "/help-requests/00000000-0000-0000-0000-000000000099/responses",
+        payload: { body: "Try without auth" },
+      });
+      expect(res.statusCode).toBe(401);
+    });
+
+    it("POST /help-requests/:id/responses returns 404 for unknown help request", async () => {
+      const token = app.jwt.sign({ sub: "alice@dev.local", role: "mentor" });
+      const res = await app.inject({
+        method: "POST",
+        url: "/help-requests/00000000-0000-0000-0000-000000000099/responses",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { body: "Helpful answer" },
+      });
+      expect(res.statusCode).toBe(404);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("not_found");
+    });
+
+    it("POST /help-requests/:id/responses creates response and GET detail includes it", async () => {
+      const title = `Responses thread ${Date.now()}`;
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title, tags: ["rails"] },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: { id: string };
+      };
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const responseBody = "Voici une piste pour débloquer ton erreur.";
+      const postRes = await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/responses`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+        payload: { body: responseBody },
+      });
+      expect(postRes.statusCode).toBe(201);
+      const posted = JSON.parse(postRes.payload) as {
+        item: {
+          id: string;
+          helpRequestId: string;
+          body: string;
+          authorId: string;
+        };
+      };
+      expect(posted.item.helpRequestId).toBe(created.item.id);
+      expect(posted.item.body).toBe(responseBody);
+      expect(posted.item.authorId).toBe("alice@dev.local");
+
+      const detailRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+      });
+      expect(detailRes.statusCode).toBe(200);
+      const detail = JSON.parse(detailRes.payload) as {
+        responses: Array<{ id: string; body: string; authorId: string }>;
+      };
+      expect(detail.responses).toHaveLength(1);
+      expect(detail.responses[0]?.id).toBe(posted.item.id);
+      expect(detail.responses[0]?.body).toBe(responseBody);
+      expect(detail.responses[0]?.authorId).toBe("alice@dev.local");
+    });
+
     it("GET /auth/me returns role for mentor alice@dev.local on login", async () => {
       const loginRes = await app.inject({
         method: "POST",

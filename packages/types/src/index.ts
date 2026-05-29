@@ -44,6 +44,16 @@ export type HelpRequestDetailResponse = {
   responses?: Response[];
 };
 
+/** Corps JSON pour `POST /help-requests/:id/responses` (auteur = sujet JWT). */
+export type CreateResponseBody = {
+  body: string;
+};
+
+/** Réponse `201` création réponse. */
+export type CreateResponseResponse = {
+  item: Response;
+};
+
 /** Rôles MVP (claim JWT — ADR 0001 extension). */
 export type UserRole = "student" | "mentor";
 

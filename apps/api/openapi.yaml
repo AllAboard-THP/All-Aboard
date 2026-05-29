@@ -199,11 +199,65 @@ paths:
             format: uuid
       responses:
         "200":
-          description: "Détail avec réponses (MVP — responses toujours vide)"
+          description: "Détail avec réponses (ordre chronologique)"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/HelpRequestDetailResponse"
+        "404":
+          description: Demande absente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: not_found
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /help-requests/{id}/responses:
+    post:
+      operationId: createHelpRequestResponse
+      tags: [help-requests]
+      summary: Ajouter une réponse (JWT requis)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateResponseBody"
+      responses:
+        "201":
+          description: Réponse créée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateResponseResponse"
+        "400":
+          description: Corps invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Demande absente
           content:
@@ -349,6 +403,22 @@ components:
             rubberduckEligible:
               type: boolean
               const: true
+
+    CreateResponseBody:
+      type: object
+      required: [body]
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 10000
+
+    CreateResponseResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/Response"
 
     LoginBody:
       type: object

@@ -27,3 +27,15 @@ export const helpRequests = pgTable("help_requests", {
     .notNull()
     .defaultNow(),
 });
+
+export const responses = pgTable("responses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  helpRequestId: uuid("help_request_id")
+    .notNull()
+    .references(() => helpRequests.id, { onDelete: "cascade" }),
+  body: text("body").notNull(),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});

@@ -8,13 +8,15 @@ import { desc, eq, sql } from "drizzle-orm";
 import type {
   AuthMeResponse,
   CreateHelpRequestResponse,
+  CreateResponseResponse,
   HelpRequest,
   HelpRequestDetailResponse,
+  Response,
   UserRole,
 } from "@allaboard/types";
 import type { AppDatabase } from "./db/client.js";
 import { createDb, createPool } from "./db/client.js";
-import { helpRequests } from "./db/schema.js";
+import { helpRequests, responses } from "./db/schema.js";
 import {
   authenticateWithDatabase,
   authenticateWithMvpFallback,
@@ -28,6 +30,10 @@ import { z } from "zod";
 const createBodySchema = z.object({
   title: z.string().min(1).max(500),
   tags: z.array(z.string().max(64)).max(32).optional(),
+});
+
+const createResponseBodySchema = z.object({
+  body: z.string().min(1).max(10_000),
 });
 
 export type BuildAppOptions = {
@@ -70,6 +76,15 @@ function rowToHelpRequest(row: typeof helpRequests.$inferSelect): HelpRequest {
     authorId: row.authorId,
     createdAt: row.createdAt.toISOString(),
     ...(tags ? { tags } : {}),
+  };
+}
+
+function rowToResponse(row: typeof responses.$inferSelect): Response {
+  return {
+    id: row.id,
+    helpRequestId: row.helpRequestId,
+    body: row.body,
+    authorId: row.authorId,
   };
 }
 
@@ -192,12 +207,55 @@ export async function buildApp(options?: BuildAppOptions) {
     if (!row) {
       return reply.code(404).send({ error: "not_found" });
     }
+    const responseRows = await db
+      .select()
+      .from(responses)
+      .where(eq(responses.helpRequestId, id))
+      .orderBy(responses.createdAt);
     const body: HelpRequestDetailResponse = {
       item: rowToHelpRequest(row),
-      responses: [],
+      responses: responseRows.map(rowToResponse),
     };
     return body;
   });
+
+  app.post(
+    "/help-requests/:id/responses",
+    { preHandler: [app.authenticate] },
+    async (request, reply): Promise<CreateResponseResponse | void> => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      const { id } = request.params as { id: string };
+      const parsed = createResponseBodySchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.code(400).send({ error: "invalid_body" });
+      }
+      const helpRows = await db
+        .select({ id: helpRequests.id })
+        .from(helpRequests)
+        .where(eq(helpRequests.id, id))
+        .limit(1);
+      if (helpRows.length === 0) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+      const user = request.user as { sub: string };
+      const inserted = await db
+        .insert(responses)
+        .values({
+          helpRequestId: id,
+          body: parsed.data.body.trim(),
+          authorId: user.sub,
+        })
+        .returning();
+      const row = inserted[0];
+      if (!row) {
+        return reply.code(500).send({ error: "insert_failed" });
+      }
+      void reply.code(201);
+      return { item: rowToResponse(row) };
+    },
+  );
 
   app.get("/mentor/feed", async (_request, reply) => {
     if (!db) {

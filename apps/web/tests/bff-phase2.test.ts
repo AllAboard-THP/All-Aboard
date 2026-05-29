@@ -4,6 +4,7 @@ import { POST as loginPost } from "@/app/api/auth/login/route";
 import { GET as authMeGet } from "@/app/api/auth/me/route";
 import { POST as helpRequestsPost } from "@/app/api/help-requests/route";
 import { GET as helpRequestByIdGet } from "@/app/api/help-requests/[id]/route";
+import { POST as helpRequestResponsesPost } from "@/app/api/help-requests/[id]/responses/route";
 
 vi.mock("@/lib/api-server", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/api-server")>();
@@ -187,6 +188,72 @@ describe("BFF Phase 2", () => {
       );
 
       expect(res.status).toBe(404);
+    });
+  });
+
+  describe("POST /api/help-requests/[id]/responses", () => {
+    it("returns 401 missing_token when no cookie", async () => {
+      vi.mocked(cookies).mockResolvedValue({
+        get: () => undefined,
+      } as Awaited<ReturnType<typeof cookies>>);
+
+      const req = new Request("http://localhost/api/help-requests/id-1/responses", {
+        method: "POST",
+        body: JSON.stringify({ body: "Answer" }),
+        headers: { "content-type": "application/json" },
+      });
+      const res = await helpRequestResponsesPost(req, {
+        params: Promise.resolve({ id: "id-1" }),
+      });
+
+      expect(res.status).toBe(401);
+      const body = (await res.json()) as { error: string };
+      expect(body.error).toBe("missing_token");
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("forwards Bearer token and relays 201 body", async () => {
+      vi.mocked(cookies).mockResolvedValue({
+        get: (name: string) =>
+          name === "access_token" ? { value: "jwt-token-xyz" } : undefined,
+      } as Awaited<ReturnType<typeof cookies>>);
+
+      const created = {
+        item: {
+          id: "resp-1",
+          helpRequestId: "id-1",
+          body: "Answer",
+          authorId: "alice@dev.local",
+        },
+      };
+      fetchMock.mockResolvedValueOnce(
+        new Response(JSON.stringify(created), {
+          status: 201,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+
+      const req = new Request("http://localhost/api/help-requests/id-1/responses", {
+        method: "POST",
+        body: JSON.stringify({ body: "Answer" }),
+        headers: { "content-type": "application/json" },
+      });
+      const res = await helpRequestResponsesPost(req, {
+        params: Promise.resolve({ id: "id-1" }),
+      });
+
+      expect(res.status).toBe(201);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://api.test:4000/help-requests/id-1/responses",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            authorization: "Bearer jwt-token-xyz",
+          }),
+        }),
+      );
+      const body = (await res.json()) as typeof created;
+      expect(body.item.id).toBe("resp-1");
     });
   });
 

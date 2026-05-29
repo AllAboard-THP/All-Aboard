@@ -64,6 +64,7 @@ Modèle vierge : [_template/README.md](_template/README.md).
 | [25-app-shell-navigation/](25-app-shell-navigation/) | [#25 AppShell](https://github.com/AllAboard-THP/All-Aboard/issues/25) — ✅ livré |
 | [49-openapi/](49-openapi/) | [#49 OpenAPI](https://github.com/AllAboard-THP/All-Aboard/issues/49) — ✅ livré (spike + spec MVP) |
 | [37-agent-indexer/](37-agent-indexer/) | [#37 Phase 4 Agent/Intuition](https://github.com/AllAboard-THP/All-Aboard/issues/37) — ADR 0004 (indexer Intuition + bridge #67) |
+| [78-phase2b-responses/](78-phase2b-responses/) | [#78 Phase 2b Réponses MOC](https://github.com/AllAboard-THP/All-Aboard/issues/78) — thread API/BFF/UI (#79–#81) |
 
 *(Ajouter une ligne ici à la création d’un nouveau dossier — une ligne par PR, conflits rares.)*
 

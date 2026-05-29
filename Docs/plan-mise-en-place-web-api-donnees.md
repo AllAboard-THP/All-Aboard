@@ -117,10 +117,17 @@ Exemple :
 
 ### `GET /help-requests/:id`
 
-- **200** : `HelpRequestDetailResponse` — `{ "item": HelpRequest, "responses": Response[] }` (MVP : `responses` toujours `[]`).
+- **200** : `HelpRequestDetailResponse` — `{ "item": HelpRequest, "responses": Response[] }` (ordre chronologique).
 - **404** : `{ "error": "not_found" }`
 - **503** : `{ "error": "database_unavailable" }`
 - Public (pas de JWT).
+
+### `POST /help-requests/:id/responses`
+
+- **Auth** : `Authorization: Bearer <jwt>`.
+- **Corps** : `CreateResponseBody` — `{ "body": string }` (1–10 000 caractères).
+- **201** : `CreateResponseResponse` — `{ "item": Response }`.
+- **400** / **401** / **404** / **503** : voir table ci-dessus.
 
 ### `GET /mentor/feed`
 
@@ -151,6 +158,7 @@ Le navigateur appelle le **Web** ; les Route Handlers relaient vers `API_URL` (s
 | `GET /api/auth/me` | `GET /auth/me` | **401** `{ "error": "missing_token" }` si cookie absent |
 | `POST /api/auth/login` | `POST /auth/login` | Propage `Set-Cookie` upstream |
 | `POST /api/help-requests` | `POST /help-requests` | **401** `{ "error": "missing_token" }` si cookie absent ; forward Bearer |
+| `POST /api/help-requests/:id/responses` | `POST /help-requests/:id/responses` | **401** `{ "error": "missing_token" }` si cookie absent ; forward Bearer |
 
 ---
 
