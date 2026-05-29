@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
+  AuthMeResponse,
   CreateResponseResponse,
   HelpRequestDetailResponse,
 } from "@allaboard/types";
@@ -17,15 +18,29 @@ import {
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
 import { Textarea } from "@allaboard/ui/components/textarea";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
   requestId: string;
   initialDetail: HelpRequestDetailResponse;
 };
 
-async function fetchDetail(id: string): Promise<HelpRequestDetailResponse> {
-  const res = await fetch(`/api/help-requests/${encodeURIComponent(id)}`);
+async function fetchAuthMe(): Promise<AuthMeResponse | null> {
+  const res = await fetch("/api/auth/me", { credentials: "include" });
+  if (res.status === 401) return null;
+  if (!res.ok) throw new Error(`Auth me ${res.status}`);
+  return (await res.json()) as AuthMeResponse;
+}
+
+async function fetchDetail(
+  id: string,
+  filterByCertifications: boolean,
+): Promise<HelpRequestDetailResponse> {
+  const qs = filterByCertifications ? "?filterByCertifications=true" : "";
+  const res = await fetch(
+    `/api/help-requests/${encodeURIComponent(id)}${qs}`,
+    { credentials: "include" },
+  );
   if (!res.ok) {
     throw new Error(`Detail ${res.status}`);
   }
@@ -70,11 +85,26 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
   const [email, setEmail] = useState("alice@dev.local");
   const [password, setPassword] = useState("");
   const [body, setBody] = useState("");
+  const [filterByCertifications, setFilterByCertifications] = useState(false);
+
+  const authQuery = useQuery({
+    queryKey: ["auth-me"],
+    queryFn: fetchAuthMe,
+    staleTime: 60_000,
+  });
+
+  const isMentor = authQuery.data?.role === "mentor";
+
+  useEffect(() => {
+    if (isMentor) {
+      setFilterByCertifications(true);
+    }
+  }, [isMentor]);
 
   const q = useQuery({
-    queryKey: ["help-request", requestId],
-    queryFn: () => fetchDetail(requestId),
-    initialData: initialDetail,
+    queryKey: ["help-request", requestId, filterByCertifications],
+    queryFn: () => fetchDetail(requestId, filterByCertifications),
+    initialData: filterByCertifications ? undefined : initialDetail,
     staleTime: 60_000,
   });
 
@@ -89,6 +119,12 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
 
   const detail = q.data ?? initialDetail;
   const responses = detail.responses ?? [];
+  const hiddenCount =
+    detail.certificationFilter &&
+    detail.certificationFilter.totalCount > detail.certificationFilter.visibleCount
+      ? detail.certificationFilter.totalCount -
+        detail.certificationFilter.visibleCount
+      : 0;
 
   function submit() {
     mutation.mutate({ email, password, body, requestId });
@@ -98,6 +134,33 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
 
   return (
     <>
+      {isMentor ? (
+        <div
+          className="mb-4 flex flex-wrap items-center gap-3 rounded-md border border-border bg-muted/30 px-4 py-3"
+          data-testid="mentor-cert-filter-panel"
+        >
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={filterByCertifications}
+              onChange={(e) => setFilterByCertifications(e.target.checked)}
+              data-testid="mentor-cert-filter-toggle"
+              className="size-4 rounded border-input"
+            />
+            Filtrer les réponses par certifications
+          </label>
+          {filterByCertifications && hiddenCount > 0 ? (
+            <p
+              className="m-0 text-sm text-muted-foreground"
+              data-testid="mentor-cert-filter-hidden-count"
+            >
+              {hiddenCount} réponse{hiddenCount > 1 ? "s" : ""} masquée
+              {hiddenCount > 1 ? "s" : ""} (hors certifications ou demandeur).
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       {q.isFetching && !q.isPending ? (
         <p
           className="mb-3 text-sm text-muted-foreground"

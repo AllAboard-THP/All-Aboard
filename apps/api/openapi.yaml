@@ -189,7 +189,7 @@ paths:
     get:
       operationId: getHelpRequestById
       tags: [help-requests]
-      summary: Détail d'une demande (public)
+      summary: Détail d'une demande (public ; filtre certifications mentor optionnel)
       parameters:
         - name: id
           in: path
@@ -197,6 +197,15 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: filterByCertifications
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: >
+            Si `true`, exige JWT mentor et ne renvoie que les réponses dont l'auteur
+            partage au moins un tag avec la demande, ou est l'auteur de la demande.
       responses:
         "200":
           description: "Détail avec réponses (ordre chronologique)"
@@ -204,6 +213,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HelpRequestDetailResponse"
+        "401":
+          description: JWT absent (filtre certifications)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Rôle non mentor (filtre certifications)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Demande absente
           content:
@@ -409,6 +430,19 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Response"
+        certificationFilter:
+          type: object
+          required: [applied, totalCount, visibleCount]
+          properties:
+            applied:
+              type: boolean
+              const: true
+            totalCount:
+              type: integer
+              minimum: 0
+            visibleCount:
+              type: integer
+              minimum: 0
 
     CreateHelpRequestBody:
       type: object

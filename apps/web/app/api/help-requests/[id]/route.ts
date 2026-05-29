@@ -1,13 +1,29 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getApiBaseUrl, parseHelpRequestDetailResponse } from "@/lib/api-server";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-export async function GET(_request: Request, context: RouteContext) {
+export async function GET(request: Request, context: RouteContext) {
   const { id } = await context.params;
-  const url = `${getApiBaseUrl()}/help-requests/${encodeURIComponent(id)}`;
+  const incoming = new URL(request.url);
+  const filterByCertifications =
+    incoming.searchParams.get("filterByCertifications") === "true";
+  const qs = filterByCertifications ? "?filterByCertifications=true" : "";
+  const url = `${getApiBaseUrl()}/help-requests/${encodeURIComponent(id)}${qs}`;
+
+  const headers: HeadersInit = { cache: "no-store" };
+  if (filterByCertifications) {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("access_token")?.value;
+    if (!token) {
+      return NextResponse.json({ error: "missing_token" }, { status: 401 });
+    }
+    headers.authorization = `Bearer ${token}`;
+  }
+
   try {
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch(url, { headers });
     const text = await res.text();
     if (res.status === 404) {
       return NextResponse.json({ error: "not_found" }, { status: 404 });
