@@ -15,6 +15,7 @@
 | [tasks/](tasks/README.md) | Doc **par issue** — `Docs/tasks/<NN>-slug/`. |
 | [adr/](adr/) | ADR validés ; ex. [0001](adr/0001-authentication-strategy.md), [0002 design system](adr/0002-design-system-monorepo.md). |
 | [design-system/](design-system/README.md) | **Hub DS** : architecture, guide contributeur, CI, AppShell, journal livraisons. |
+| [branding/](branding/README.md) | Concepts visuels marketing (hero, métaphore voyage) — brouillons hors prod. |
 | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Web ↔ API transverse : env, `/feed`, journal, smoke `pnpm smoke:dev`. |
 | [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md) | Checklist manuelle Dokploy **dev** (Postgres, secrets API/Web, smoke). |
 | [To-do.md](To-do.md) | **Stub** → Project GitHub (plus de checklist locale). |
@@ -41,6 +42,7 @@ Hors `Docs/` : [AGENTS.md](../AGENTS.md), [.github/PROJECT.md](../.github/PROJEC
 | Runbook Dokploy dev Phase 2 (vars, smoke HTTPS) | [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md) | Plan opérationnel (section Smoke) ; fiche instance |
 | Auth JWT / BFF / login MVP | [adr/0001-authentication-strategy.md](adr/0001-authentication-strategy.md) | README Phase 2, matrice `JWT_SECRET` / `MVP_LOGIN_PASSWORD`, plan opérationnel |
 | Design system (`@allaboard/ui`, Storybook, frontières web) | [design-system/README.md](design-system/README.md) | [ADR 0002](adr/0002-design-system-monorepo.md), [AGENTS.md](../AGENTS.md), [tasks/24](tasks/24-design-system-monorepo/), [tasks/25](tasks/25-app-shell-navigation/) |
+| Branding / concepts visuels | [branding/README.md](branding/README.md) | — |
 | AppShell / navigation web | [design-system/app-shell.md](design-system/app-shell.md) | [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25), [moc-parcours](moc-parcours-utilisateur.md) |
 | Variables déploiement | [matrice](matrice-deploiement-dokploy-coolify.md) | [instance](deploiement-dokploy-instance-allaboard.md) |
 | Parcours produit | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | — |

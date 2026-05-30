@@ -135,6 +135,40 @@
     overflow: hidden;
   }
 
+  /** Landing with external header/footer — glow only, no forced viewport height. */
+  .auth-shell-backdrop {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .auth-shell-backdrop::before,
+  .auth-shell-backdrop::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(24px);
+    opacity: 0.55;
+    z-index: 0;
+  }
+
+  .auth-shell-backdrop::before {
+    width: 28rem;
+    height: 28rem;
+    background: rgb(99 102 241 / 0.25);
+    top: -8rem;
+    left: -6rem;
+  }
+
+  .auth-shell-backdrop::after {
+    width: 24rem;
+    height: 24rem;
+    background: rgb(236 72 153 / 0.22);
+    right: -6rem;
+    bottom: -8rem;
+  }
+
   .auth-shell::before,
   .auth-shell::after {
     content: "";

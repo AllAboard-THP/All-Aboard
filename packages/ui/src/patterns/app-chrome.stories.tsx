@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { useLegacyLabels } from "../i18n/storybook-locale";
+import { LandingPublicHeader } from "./landing-public-header";
 import { AppFooter, AppNavBar, StatCard, UserMenu } from "./legacy-ui";
 import {
   patternStoryParameters,
@@ -29,6 +30,11 @@ function FooterStory() {
 function NavStory() {
   const labels = useLegacyLabels();
   return <AppNavBar activeLink="resources" messageCount={3} labels={labels} />;
+}
+
+function LandingHeaderStory() {
+  const labels = useLegacyLabels();
+  return <LandingPublicHeader labels={labels} />;
 }
 
 function UserMenuStory() {
@@ -69,6 +75,12 @@ export const AppNavBarDefault: Story = {
   name: "AppNavBar",
   decorators: [withPatternStoryFrame("full")],
   render: () => <NavStory />,
+};
+
+export const LandingPublicHeaderDefault: Story = {
+  name: "LandingPublicHeader",
+  decorators: [withPatternStoryFrame("full")],
+  render: () => <LandingHeaderStory />,
 };
 
 export const UserMenuOpen: Story = {

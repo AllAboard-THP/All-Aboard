@@ -314,18 +314,29 @@ export function StatCard({
   );
 }
 
+/** Canonical legal routes for a future apps/web port (`/legal/cgu`, etc.). */
+export type LegacyLegalLinkKey = "cgu" | "privacy" | "legal";
+
+const LEGAL_LINK_HREFS: Record<LegacyLegalLinkKey, string> = {
+  cgu: "/legal/cgu",
+  privacy: "/legal/privacy",
+  legal: "/legal/mentions",
+};
+
 export function AppFooter({
   labels = legacyLabelsFr,
   className,
+  onLegalLinkClick,
 }: {
   labels?: LegacyLabels;
   className?: string;
+  onLegalLinkClick?: (key: LegacyLegalLinkKey) => void;
 }) {
   const year = new Date().getFullYear();
-  const links = [
-    labels.footer.cgu,
-    labels.footer.privacy,
-    labels.footer.legal,
+  const links: { key: LegacyLegalLinkKey; label: string }[] = [
+    { key: "cgu", label: labels.footer.cgu },
+    { key: "privacy", label: labels.footer.privacy },
+    { key: "legal", label: labels.footer.legal },
   ];
 
   return (
@@ -336,15 +347,23 @@ export function AppFooter({
           <span className="gradient-text font-semibold">{labels.brandName}</span>
           <span>{labels.footer.rights(year)}</span>
         </div>
-        <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-          {links.map((link) => (
+        <nav
+          aria-label="Legal"
+          className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground"
+        >
+          {links.map(({ key, label }) => (
             <button
-              key={link}
+              key={key}
               type="button"
               className="transition-colors hover:text-foreground"
-              onClick={() => legacyDemoToast(link)}
+              title={LEGAL_LINK_HREFS[key]}
+              onClick={() =>
+                onLegalLinkClick
+                  ? onLegalLinkClick(key)
+                  : legacyDemoToast(label)
+              }
             >
-              {link}
+              {label}
             </button>
           ))}
         </nav>

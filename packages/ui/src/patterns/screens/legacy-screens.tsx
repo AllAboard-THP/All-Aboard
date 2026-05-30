@@ -67,8 +67,8 @@ import {
   ProfileHeaderCard,
   ProfileStatGrid,
 } from "../legacy-profile-patterns";
+import { LandingPageShell } from "../landing-page-shell";
 import {
-  BrandLogo,
   Eyebrow,
   FeaturePill,
   GradientHeading,
@@ -88,15 +88,12 @@ export function LandingLoginScreen() {
   const labels = useLegacyLabels();
 
   return (
-    <AppChrome showNav={false}>
-      <div className="auth-shell relative min-h-[100dvh] overflow-hidden">
-        <div className="landing-grid absolute inset-0" />
-        <div className="auth-grid relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-12 flex items-center justify-center">
-            <BrandLogo labels={labels} />
-          </div>
-
-          <div className="grid min-h-[78vh] items-center gap-12 lg:grid-cols-2">
+    <LandingPageShell labels={labels}>
+      <div className="relative flex flex-1 flex-col overflow-x-hidden">
+        <div className="auth-shell-backdrop" aria-hidden />
+        <div className="landing-grid absolute inset-0" aria-hidden />
+        <div className="auth-grid relative mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
             <div>
               <Eyebrow>{labels.landing.eyebrow}</Eyebrow>
               <GradientHeading
@@ -118,11 +115,8 @@ export function LandingLoginScreen() {
             </div>
 
             <Card className="hero-panel glass rounded-[2rem] border-white/10 p-8 shadow-none">
-              <CardHeader className="px-0 pb-0">
+              <CardHeader className="px-0 pb-0 text-center">
                 <CardTitle className="text-2xl">{labels.auth.loginTitle}</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {labels.auth.loginSubtitle}
-                </p>
               </CardHeader>
               <CardContent className="flex flex-col gap-4 px-0">
                 <div className="flex flex-col gap-2">
@@ -138,7 +132,6 @@ export function LandingLoginScreen() {
                   <Input
                     id="legacy-password"
                     type="password"
-                    placeholder="••••••••"
                     className="rounded-xl border-white/10 bg-white/5"
                   />
                 </div>
@@ -169,7 +162,7 @@ export function LandingLoginScreen() {
           </div>
         </div>
       </div>
-    </AppChrome>
+    </LandingPageShell>
   );
 }
 
