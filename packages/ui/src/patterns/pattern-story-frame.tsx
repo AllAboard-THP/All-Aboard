@@ -46,7 +46,12 @@ export function PatternStoryFrame({
   width?: FrameWidth;
 }) {
   if (width === "full") {
-    return <div className="min-h-[100dvh] w-full">{children}</div>;
+    // items-center: bounded children (max-w-*) sit centered like prod mx-auto layouts
+    return (
+      <div className="flex min-h-[100dvh] w-full flex-col items-center p-6">
+        {children}
+      </div>
+    );
   }
 
   return (

@@ -5639,7 +5639,7 @@
       "label": "withPatternStoryFrame()",
       "file_type": "code",
       "source_file": "ui/src/patterns/pattern-story-frame.tsx",
-      "source_location": "L61",
+      "source_location": "L66",
       "community": 13,
       "norm_label": "withpatternstoryframe()",
       "repo": "packages",
@@ -5650,7 +5650,7 @@
       "label": "patternStoryParameters",
       "file_type": "code",
       "source_file": "ui/src/patterns/pattern-story-frame.tsx",
-      "source_location": "L69",
+      "source_location": "L74",
       "community": 6,
       "norm_label": "patternstoryparameters",
       "repo": "packages",
@@ -29334,7 +29334,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "ui/src/patterns/pattern-story-frame.tsx",
-      "source_location": "L61",
+      "source_location": "L66",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "packages::ui_src_patterns_pattern_story_frame_tsx",
@@ -29344,7 +29344,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "ui/src/patterns/pattern-story-frame.tsx",
-      "source_location": "L69",
+      "source_location": "L74",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "packages::ui_src_patterns_pattern_story_frame_tsx",
@@ -45576,5 +45576,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "5b9cdf5ef9d49c827c3dc1d1e0100d0e6543177f"
+  "built_at_commit": "e378dfb35c8588bc9dad46e41d6c4c32d88d184c"
 }
