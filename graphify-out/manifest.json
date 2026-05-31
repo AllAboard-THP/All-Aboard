@@ -1155,18 +1155,23 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/branding/README.md": {
-    "mtime": 1780148617.4149938,
-    "ast_hash": "467b5c5c60524665daee37e89f8098c2",
+    "mtime": 1780187546.344694,
+    "ast_hash": "33d7495ccbc7605fcfc40490851c1442",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-2.png": {
-    "mtime": 1780148615.0070024,
-    "ast_hash": "73a7a7c017fda5442e23b287ea2d212b",
+    "mtime": 1780187478.725394,
+    "ast_hash": "324bbcd9d4febdad42f50d490d7d3f06",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-1.png": {
-    "mtime": 1780147551.2680006,
-    "ast_hash": "e66ac5b4318cb4f7af4fb9a9ce7c7d72",
+    "mtime": 1780187542.2927375,
+    "ast_hash": "324bbcd9d4febdad42f50d490d7d3f06",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-2-photo.png": {
+    "mtime": 1780182801.5213969,
+    "ast_hash": "d0af397dbf8cbbf7f780fc704a343c38",
     "semantic_hash": ""
   }
 }
