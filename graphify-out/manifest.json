@@ -760,8 +760,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/37-agent-indexer/README.md": {
-    "mtime": 1779983505.1245732,
-    "ast_hash": "c6028bc56841d47830e7bd52c3964f3d",
+    "mtime": 1780316633.1020288,
+    "ast_hash": "afbe14b45214a1d276771d70394443c0",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/_template/README.md": {
@@ -820,13 +820,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/README.md": {
-    "mtime": 1779983505.1245732,
-    "ast_hash": "9bcdb1d734844acc741859c2063e3fc8",
+    "mtime": 1780316632.719229,
+    "ast_hash": "d332f300825bb451a35e4e530a0885b6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0004-agent-indexer-architecture.md": {
-    "mtime": 1779983505.1245732,
-    "ast_hash": "d85b6a1cb76d9f5e546f40a6c802c446",
+    "mtime": 1780316632.481629,
+    "ast_hash": "890274532a17ccc5bf3905275d0df7f7",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0003-authentication-users-production.md": {

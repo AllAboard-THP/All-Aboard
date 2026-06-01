@@ -10941,7 +10941,7 @@
       "label": "Doc canonique (lecture)",
       "file_type": "document",
       "source_file": "tasks/37-agent-indexer/README.md",
-      "source_location": "L45",
+      "source_location": "L46",
       "community": 17,
       "norm_label": "doc canonique (lecture)",
       "repo": "Docs",
@@ -25099,7 +25099,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tasks/37-agent-indexer/README.md",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "Docs::37_agent_indexer_readme_t\u00e2che_37_phase_4_agent_rubberduck_intuition",
@@ -26487,5 +26487,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "4f854fa8730b558921b78db01788468c2b88c54a"
+  "built_at_commit": "02faeeab530a8b41aed959004b512f78b7a70e5f"
 }

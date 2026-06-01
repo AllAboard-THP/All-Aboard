@@ -2,7 +2,7 @@
 
 ## Statut
 
-Proposé — 2026-05-27 (cadrage backlog [#37](https://github.com/AllAboard-THP/All-Aboard/issues/37) ; révisé le même jour — **indexer Intuition**, pas de `apps/indexer` maison).
+Accepté — 2026-06-01 (cadrage backlog [#37](https://github.com/AllAboard-THP/All-Aboard/issues/37) validé ; révisé 2026-05-27 — **indexer Intuition**, pas de `apps/indexer` maison ; implémentation Phase 4 [#66](https://github.com/AllAboard-THP/All-Aboard/issues/66)–[#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) peut démarrer).
 
 ## Contexte
 
