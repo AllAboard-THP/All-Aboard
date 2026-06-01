@@ -79,5 +79,7 @@ flowchart TD
 - Cette version est volontairement simple et orientee flux produit.
 - Les etapes de moderation, SLA, scoring qualite et anti-spam pourront etre ajoutees ensuite.
 - Les termes affiches reprennent au plus proche ceux du schema source.
-- **Etape 8 (livré #83)** : filtre mentor sur fiche demande — `users.certification_tags`, overlap avec `help_requests.tags`, demandeur toujours visible. Doc : [tasks/83-response-filtering/README.md](tasks/83-response-filtering/README.md).
+- **Etapes 6–7 (livré #82)** : apres publication taguée, `GET /mentor/feed` (JWT mentor) expose `hasUnreadForMentor` ; badges sur dashboard `/mentor` et lien navigation Mentor. Doc : [tasks/82-mentor-notifications/README.md](tasks/82-mentor-notifications/README.md).
+- **Etape 8 (livré #83, PR #88)** : filtre mentor sur fiche demande — `users.certification_tags`, overlap avec `help_requests.tags`, demandeur toujours visible. Doc : [tasks/83-response-filtering/README.md](tasks/83-response-filtering/README.md).
+- **Epic Phase 2b** : hub [tasks/78-phase2b-responses/README.md](tasks/78-phase2b-responses/README.md) (PRs #84, #87, #88).
 - Voir aussi la vue technique: [MOC - Dataflow et architecture](dataflow-architecture.md).
