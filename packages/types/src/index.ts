@@ -97,3 +97,29 @@ export type MentorFeedItem = HelpRequest & {
 export type MentorFeedResponse = {
   items: MentorFeedItem[];
 };
+
+/** Corps `POST /rubberduck/evaluate` (`apps/agent`, interne). */
+export type RubberduckEvaluateBody = {
+  title: string;
+  tags?: string[];
+  authorId?: string;
+};
+
+/** Réponse `POST /rubberduck/evaluate`. */
+export type RubberduckEvaluateResponse = {
+  eligible: boolean;
+  reason?: string;
+};
+
+/** Corps `POST /rubberduck/respond` (`apps/agent`, interne). */
+export type RubberduckRespondBody = {
+  helpRequestId: string;
+  title: string;
+  context?: string;
+};
+
+/** Réponse `POST /rubberduck/respond`. */
+export type RubberduckRespondResponse = {
+  message: string;
+  sessionId?: string;
+};

@@ -42,6 +42,40 @@ importers:
         specifier: ^5.7.2
         version: 5.9.3
 
+  apps/agent:
+    dependencies:
+      '@allaboard/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      fastify:
+        specifier: ^5.2.0
+        version: 5.8.5
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+    devDependencies:
+      '@allaboard/config-eslint':
+        specifier: workspace:*
+        version: link:../../packages/config-eslint
+      '@allaboard/config-typescript':
+        specifier: workspace:*
+        version: link:../../packages/config-typescript
+      '@types/node':
+        specifier: ^22.10.2
+        version: 22.19.17
+      eslint:
+        specifier: ^9.17.0
+        version: 9.39.4(jiti@2.7.0)
+      tsx:
+        specifier: ^4.19.2
+        version: 4.21.0
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.19.17)(jsdom@25.0.1)(lightningcss@1.32.0)
+
   apps/api:
     dependencies:
       '@allaboard/types':

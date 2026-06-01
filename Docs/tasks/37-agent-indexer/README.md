@@ -17,7 +17,7 @@ Cadrer le backlog long terme **Agent Rubberduck + intégration Intuition** sans 
 
 | Issue | Titre | Statut |
 |-------|-------|--------|
-| [#66](https://github.com/AllAboard-THP/All-Aboard/issues/66) | Scaffold `apps/agent` (healthcheck, stub LLM) | Triage — pas de dev immédiat |
+| [#66](https://github.com/AllAboard-THP/All-Aboard/issues/66) | Scaffold `apps/agent` (healthcheck, stub LLM) | Livré — [`apps/agent`](../../../apps/agent/README.md) |
 | [#67](https://github.com/AllAboard-THP/All-Aboard/issues/67) | Bridge Intuition (publisher outbox + GraphQL) | Triage |
 | [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68) | Intégration API — remplacer heuristique Rubberduck | Triage — dépend #66 |
 | [#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) | CI/Dokploy Agent + retrait placeholder Indexer | Triage — dépend #66 |
@@ -32,7 +32,7 @@ Cadrer le backlog long terme **Agent Rubberduck + intégration Intuition** sans 
 
 - **Stub Rubberduck** : `POST /help-requests` renvoie `hints.rubberduckEligible` si titre ≤ 6 mots ([`apps/api/src/app.ts`](../../../apps/api/src/app.ts)).
 - **UI** : message stub dans [`help-request-form.tsx`](../../../apps/web/components/features/help-request-form.tsx).
-- **`apps/agent`** : absent ; service Dokploy Agent **désactivé**.
+- **`apps/agent`** : scaffold livré (#66) ; service Dokploy Agent **désactivé** jusqu’à #69.
 - **Intuition** : aucune intégration code ; index doc dans [`intuition-documentation-index.md`](../../intuition-documentation-index.md).
 
 ## Critères de clôture cadrage (#37 — partial)
