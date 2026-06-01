@@ -74,9 +74,29 @@ export function parseHelpRequestDetailResponse(
       throw new Error("Invalid detail: response shape");
     }
   }
+  let certificationFilter: HelpRequestDetailResponse["certificationFilter"];
+  if (o.certificationFilter !== undefined) {
+    if (typeof o.certificationFilter !== "object" || o.certificationFilter === null) {
+      throw new Error("Invalid detail: certificationFilter shape");
+    }
+    const cf = o.certificationFilter as Record<string, unknown>;
+    if (
+      cf.applied !== true ||
+      typeof cf.totalCount !== "number" ||
+      typeof cf.visibleCount !== "number"
+    ) {
+      throw new Error("Invalid detail: certificationFilter shape");
+    }
+    certificationFilter = {
+      applied: true,
+      totalCount: cf.totalCount,
+      visibleCount: cf.visibleCount,
+    };
+  }
   return {
     item: o.item,
     ...(Array.isArray(o.responses) ? { responses: o.responses } : {}),
+    ...(certificationFilter ? { certificationFilter } : {}),
   };
 }
 

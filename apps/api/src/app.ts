@@ -17,7 +17,7 @@ import type {
 } from "@allaboard/types";
 import type { AppDatabase } from "./db/client.js";
 import { createDb, createPool } from "./db/client.js";
-import { helpRequests, responses } from "./db/schema.js";
+import { helpRequests, responses, users } from "./db/schema.js";
 import {
   authenticateWithDatabase,
   authenticateWithMvpFallback,
@@ -87,6 +87,26 @@ function rowToResponse(row: typeof responses.$inferSelect): Response {
     body: row.body,
     authorId: row.authorId,
   };
+}
+
+function normalizeTag(tag: string): string {
+  return tag.trim().toLowerCase();
+}
+
+function tagsOverlap(requestTags: string[], authorCerts: string[]): boolean {
+  if (requestTags.length === 0 || authorCerts.length === 0) return false;
+  const requestSet = new Set(requestTags.map(normalizeTag));
+  return authorCerts.some((c) => requestSet.has(normalizeTag(c)));
+}
+
+function responseVisibleUnderCertificationFilter(
+  responseAuthorId: string,
+  requestAuthorId: string,
+  requestTags: string[],
+  authorCerts: string[],
+): boolean {
+  if (responseAuthorId === requestAuthorId) return true;
+  return tagsOverlap(requestTags, authorCerts);
 }
 
 export async function buildApp(options?: BuildAppOptions) {
@@ -198,6 +218,22 @@ export async function buildApp(options?: BuildAppOptions) {
     if (!db) {
       return reply.code(503).send({ error: "database_unavailable" });
     }
+    const query = request.query as { filterByCertifications?: string };
+    const filterByCertifications = query.filterByCertifications === "true";
+
+    if (filterByCertifications) {
+      try {
+        await request.jwtVerify();
+      } catch {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
+      const user = request.user as { sub: string; role?: UserRole };
+      const role = roleFromJwtClaims(user.sub, user.role);
+      if (role !== "mentor") {
+        return reply.code(403).send({ error: "forbidden" });
+      }
+    }
+
     const { id } = request.params as { id: string };
     const rows = await db
       .select()
@@ -213,9 +249,48 @@ export async function buildApp(options?: BuildAppOptions) {
       .from(responses)
       .where(eq(responses.helpRequestId, id))
       .orderBy(responses.createdAt);
+
+    let visibleRows = responseRows;
+    if (filterByCertifications) {
+      const authorEmails = [
+        ...new Set(responseRows.map((r) => r.authorId)),
+      ];
+      const certByEmail = new Map<string, string[]>();
+      if (authorEmails.length > 0) {
+        const userRows = await db
+          .select({
+            email: users.email,
+            certificationTags: users.certificationTags,
+          })
+          .from(users)
+          .where(inArray(users.email, authorEmails));
+        for (const u of userRows) {
+          certByEmail.set(u.email, u.certificationTags ?? []);
+        }
+      }
+      const requestTags = row.tags ?? [];
+      visibleRows = responseRows.filter((r) =>
+        responseVisibleUnderCertificationFilter(
+          r.authorId,
+          row.authorId,
+          requestTags,
+          certByEmail.get(r.authorId) ?? [],
+        ),
+      );
+    }
+
     const body: HelpRequestDetailResponse = {
       item: rowToHelpRequest(row),
-      responses: responseRows.map(rowToResponse),
+      responses: visibleRows.map(rowToResponse),
+      ...(filterByCertifications
+        ? {
+            certificationFilter: {
+              applied: true as const,
+              totalCount: responseRows.length,
+              visibleCount: visibleRows.length,
+            },
+          }
+        : {}),
     };
     return body;
   });
