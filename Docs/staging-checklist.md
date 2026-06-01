@@ -4,7 +4,7 @@ Référence issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31) /
 
 **Dernière validation dev** : 2026-05-25 (housekeeping post PR #50–#52).
 
-**Promotion staging** : PR [#54](https://github.com/AllAboard-THP/All-Aboard/pull/54) mergée 2026-05-26 ; validation smoke HTTPS + parcours Bob **2026-05-27** ; auth ADR 0003 ops **2026-05-29** — [runbook staging](runbook-dokploy-staging-phase2.md).
+**Promotion staging** : PR [#54](https://github.com/AllAboard-THP/All-Aboard/pull/54) mergée 2026-05-26 ; validation smoke HTTPS + parcours Bob **2026-05-27**. **ADR 0003** : PR [#63](https://github.com/AllAboard-THP/All-Aboard/pull/63) + fix Docker [#74](https://github.com/AllAboard-THP/All-Aboard/pull/74) ; validation auth hash + smoke **2026-05-29** — [runbook staging](runbook-dokploy-staging-phase2.md).
 
 ## Parcours produit (dev)
 
@@ -26,8 +26,8 @@ Référence issue [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31) /
 - [x] Env Dokploy `staging` provisionné (Web, API, Postgres) — domaines `staging.allaboard.fr` / `api-staging.allaboard.fr`
 - [x] Vars API Phase 2 (`DATABASE_URL`, `JWT_SECRET`, `DEV_SEED_PASSWORD`, `APP_ENV=staging`) — 2026-05-29 ; pas de `MVP_LOGIN_PASSWORD`
 - [x] `API_URL` interne Web → API staging cohérent
-- [x] Code MVP déployé (PR #54 + redeploy Web manuel 2026-05-27 après build auto en erreur)
-- [x] Smoke HTTPS : `BASE_WEB=… BASE_API=… SMOKE_LOGIN_EMAIL=bob@dev.local SMOKE_LOGIN_PASSWORD=<secret Dokploy> pnpm smoke:dev` (complet ADR 0003, 2026-05-29)
+- [x] Code ADR 0003 déployé (PR #63 + #74, commit `d8e2372` — 2026-05-29)
+- [x] Smoke HTTPS ADR 0003 : `SMOKE_LOGIN_EMAIL=bob@dev.local` + `SMOKE_LOGIN_PASSWORD` (seed Dokploy) — login, création, détail OK (2026-05-29)
 - [x] Aucun secret committé dans le dépôt
 
 ## Qualité
