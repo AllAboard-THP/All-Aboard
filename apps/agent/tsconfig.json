@@ -7,7 +7,6 @@
     "declaration": true,
     "declarationMap": true
   },
-  "references": [{ "path": "../../packages/types" }],
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.test.ts"]
 }
