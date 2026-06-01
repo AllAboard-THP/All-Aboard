@@ -39,6 +39,7 @@ Cadrer le backlog long terme **Agent Rubberduck + intégration Intuition** sans 
 
 - [x] ADR 0004 rédigé
 - [x] ADR révisé — indexer Intuition, pas `apps/indexer`
+- [x] ADR 0004 accepté (2026-06-01) — implémentation #66–#69 débloquée
 - [x] Sous-issues backlog créées et liées dans #37
 - [ ] Implémentation (#66–#69) — **hors scope** de ce cadrage ; epic #37 reste ouverte
 
