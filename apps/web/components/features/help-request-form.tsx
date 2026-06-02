@@ -160,8 +160,8 @@ export function HelpRequestForm() {
       ) : null}
       {rubberduckHint ? (
         <p className="m-0 text-sm text-primary">
-          Rubberduck (stub) : titre court — piste IA possible (Phase 4). Publiez
-          une nouvelle demande ou consultez le feed.
+          Handoff Rubberduck (stub, service externe) : titre court — redirection
+          possible (Phase 4). Publiez une nouvelle demande ou consultez le feed.
         </p>
       ) : null}
       <Button

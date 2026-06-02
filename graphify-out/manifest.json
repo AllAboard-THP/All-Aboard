@@ -54,6 +54,11 @@
     "ast_hash": "d553f583bb94e57e176bc42c46b2f494",
     "semantic_hash": ""
   },
+  "/home/dim/AllAboard/apps/web/e2e/mentor-notifications.spec.ts": {
+    "mtime": 1780068463.0452607,
+    "ast_hash": "475b827d4e583e8d07c29bd8f4d2979e",
+    "semantic_hash": ""
+  },
   "/home/dim/AllAboard/apps/web/e2e/feed.spec.ts": {
     "mtime": 1779797451.2563827,
     "ast_hash": "09d96c4347fbc9bb5a998770985ee4c0",
@@ -174,6 +179,11 @@
     "ast_hash": "fae39ae5fc42eb2e033d360689c9b66d",
     "semantic_hash": ""
   },
+  "/home/dim/AllAboard/apps/web/components/features/mentor-nav-link.tsx": {
+    "mtime": 1780068463.0452607,
+    "ast_hash": "77bb56ffbd974976770a236ae86efb0b",
+    "semantic_hash": ""
+  },
   "/home/dim/AllAboard/apps/web/components/features/home-content.tsx": {
     "mtime": 1779983505.1285732,
     "ast_hash": "336d7b422f9a1f10eafdc060b1140958",
@@ -205,8 +215,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/help-request-form.tsx": {
-    "mtime": 1779983505.1285732,
-    "ast_hash": "ae040774ff0af7107470c76310f8accb",
+    "mtime": 1780417030.8593087,
+    "ast_hash": "7d5648cdbbe0279f36b0176fbee82955",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/api-server.ts": {
@@ -237,6 +247,11 @@
   "/home/dim/AllAboard/apps/api/vitest.config.ts": {
     "mtime": 1778157579.9810615,
     "ast_hash": "87ccba62dfdfa1ff70c36f817875e8d2",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/drizzle/0003_user_certifications.sql": {
+    "mtime": 1780304924.4685628,
+    "ast_hash": "8a9fbbf6137042e685124109fc9969a7",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0001_users.sql": {
@@ -605,8 +620,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/types/src/index.ts": {
-    "mtime": 1780304924.4771855,
-    "ast_hash": "3390e8f7e450ecbc0d04127e2aab3bf1",
+    "mtime": 1780417055.2964823,
+    "ast_hash": "5b6e4cff4921b58f4fb370fd366718ac",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/config-eslint/node.mjs": {
@@ -739,6 +754,11 @@
     "ast_hash": "bbbcfcc9bdee8d76caa626025470ec23",
     "semantic_hash": ""
   },
+  "/home/dim/AllAboard/Docs/tasks/83-response-filtering/README.md": {
+    "mtime": 1780304924.4685628,
+    "ast_hash": "2defced98abedf5e8d1e04216b94eb23",
+    "semantic_hash": ""
+  },
   "/home/dim/AllAboard/Docs/tasks/78-phase2b-responses/README.md": {
     "mtime": 1780304927.227784,
     "ast_hash": "7e207b2cbf466a8bd7d04d34d6c57652",
@@ -747,6 +767,11 @@
   "/home/dim/AllAboard/Docs/tasks/49-openapi/README.md": {
     "mtime": 1779983505.1245732,
     "ast_hash": "4174db8a06019a89eb39c4e83b4f7d24",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/tasks/82-mentor-notifications/README.md": {
+    "mtime": 1780068463.0452607,
+    "ast_hash": "15aca123d09fa102e487ee89b45d8ba6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/24-design-system-monorepo/README.md": {
@@ -760,8 +785,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/37-agent-indexer/README.md": {
-    "mtime": 1780316633.1020288,
-    "ast_hash": "afbe14b45214a1d276771d70394443c0",
+    "mtime": 1780417063.9393456,
+    "ast_hash": "ea69a6dc9a3b9b9af066ababc8688c77",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/_template/README.md": {
@@ -820,43 +845,18 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/README.md": {
-    "mtime": 1780316632.719229,
-    "ast_hash": "d332f300825bb451a35e4e530a0885b6",
+    "mtime": 1780417006.6986969,
+    "ast_hash": "3b156f105bce69098fba42036cb7e4c9",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0004-agent-indexer-architecture.md": {
-    "mtime": 1780316632.481629,
-    "ast_hash": "890274532a17ccc5bf3905275d0df7f7",
+    "mtime": 1780417063.552524,
+    "ast_hash": "2325d80e9e2b06015c6f6990265ea1c1",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0003-authentication-users-production.md": {
     "mtime": 1779983505.1245732,
     "ast_hash": "2441fff4a8e1a83dae9f072eab28b9eb",
-    "semantic_hash": ""
-  },
-  "/home/dim/AllAboard/apps/web/e2e/mentor-notifications.spec.ts": {
-    "mtime": 1780068463.0452607,
-    "ast_hash": "475b827d4e583e8d07c29bd8f4d2979e",
-    "semantic_hash": ""
-  },
-  "/home/dim/AllAboard/apps/web/components/features/mentor-nav-link.tsx": {
-    "mtime": 1780068463.0452607,
-    "ast_hash": "77bb56ffbd974976770a236ae86efb0b",
-    "semantic_hash": ""
-  },
-  "/home/dim/AllAboard/Docs/tasks/82-mentor-notifications/README.md": {
-    "mtime": 1780068463.0452607,
-    "ast_hash": "15aca123d09fa102e487ee89b45d8ba6",
-    "semantic_hash": ""
-  },
-  "/home/dim/AllAboard/apps/api/drizzle/0003_user_certifications.sql": {
-    "mtime": 1780304924.4685628,
-    "ast_hash": "8a9fbbf6137042e685124109fc9969a7",
-    "semantic_hash": ""
-  },
-  "/home/dim/AllAboard/Docs/tasks/83-response-filtering/README.md": {
-    "mtime": 1780304924.4685628,
-    "ast_hash": "2defced98abedf5e8d1e04216b94eb23",
     "semantic_hash": ""
   }
 }
