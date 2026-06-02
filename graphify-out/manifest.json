@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/help-request-form.tsx": {
-    "mtime": 1779983505.1285732,
-    "ast_hash": "ae040774ff0af7107470c76310f8accb",
+    "mtime": 1780417030.8593087,
+    "ast_hash": "7d5648cdbbe0279f36b0176fbee82955",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/api-server.ts": {
@@ -620,8 +620,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/types/src/index.ts": {
-    "mtime": 1780317706.7433548,
-    "ast_hash": "2c70fa3346cc1ed2717515f332641b61",
+    "mtime": 1780417055.2964823,
+    "ast_hash": "5b6e4cff4921b58f4fb370fd366718ac",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/config-eslint/node.mjs": {
@@ -785,8 +785,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/37-agent-indexer/README.md": {
-    "mtime": 1780317706.7389548,
-    "ast_hash": "8ce6f32dca61de9b7e86426c5871c669",
+    "mtime": 1780417063.9393456,
+    "ast_hash": "ea69a6dc9a3b9b9af066ababc8688c77",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/_template/README.md": {
@@ -845,13 +845,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/README.md": {
-    "mtime": 1780317706.6905549,
-    "ast_hash": "d332f300825bb451a35e4e530a0885b6",
+    "mtime": 1780417006.6986969,
+    "ast_hash": "3b156f105bce69098fba42036cb7e4c9",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0004-agent-indexer-architecture.md": {
-    "mtime": 1780317706.6905549,
-    "ast_hash": "890274532a17ccc5bf3905275d0df7f7",
+    "mtime": 1780417063.552524,
+    "ast_hash": "2325d80e9e2b06015c6f6990265ea1c1",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0003-authentication-users-production.md": {

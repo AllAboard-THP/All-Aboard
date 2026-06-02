@@ -34,6 +34,7 @@ export type CreateHelpRequestBody = {
 export type CreateHelpRequestResponse = {
   item: HelpRequest;
   hints?: {
+    /** Éligible à une redirection vers Rubberduck (service externe), pas l’agent in-app. */
     rubberduckEligible?: boolean;
   };
 };
@@ -98,28 +99,15 @@ export type MentorFeedResponse = {
   items: MentorFeedItem[];
 };
 
-/** Corps `POST /rubberduck/evaluate` (`apps/agent`, interne). */
-export type RubberduckEvaluateBody = {
+/** Corps `POST /routing/evaluate` (`apps/agent`, interne). */
+export type AgentRoutingEvaluateBody = {
   title: string;
   tags?: string[];
   authorId?: string;
 };
 
-/** Réponse `POST /rubberduck/evaluate`. */
-export type RubberduckEvaluateResponse = {
-  eligible: boolean;
+/** Réponse `POST /routing/evaluate` — #68 mappe `suggestRubberduckRedirect` → `hints.rubberduckEligible`. */
+export type AgentRoutingEvaluateResponse = {
+  suggestRubberduckRedirect: boolean;
   reason?: string;
-};
-
-/** Corps `POST /rubberduck/respond` (`apps/agent`, interne). */
-export type RubberduckRespondBody = {
-  helpRequestId: string;
-  title: string;
-  context?: string;
-};
-
-/** Réponse `POST /rubberduck/respond`. */
-export type RubberduckRespondResponse = {
-  message: string;
-  sessionId?: string;
 };

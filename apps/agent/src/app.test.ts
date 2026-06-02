@@ -1,8 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildApp } from "./app.js";
 
-const HELP_REQUEST_ID = "550e8400-e29b-41d4-a716-446655440000";
-
 describe("agent", () => {
   it("GET /health returns 200", async () => {
     const app = await buildApp();
@@ -12,77 +10,48 @@ describe("agent", () => {
     await app.close();
   });
 
-  it("POST /rubberduck/evaluate marks short titles eligible", async () => {
+  it("POST /routing/evaluate suggests Rubberduck redirect for short titles", async () => {
     const app = await buildApp();
     const res = await app.inject({
       method: "POST",
-      url: "/rubberduck/evaluate",
+      url: "/routing/evaluate",
       payload: { title: "fix react hook" },
     });
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.payload) as {
-      eligible: boolean;
+      suggestRubberduckRedirect: boolean;
       reason?: string;
     };
-    expect(body.eligible).toBe(true);
+    expect(body.suggestRubberduckRedirect).toBe(true);
     expect(body.reason).toContain("title_word_count");
     await app.close();
   });
 
-  it("POST /rubberduck/evaluate marks long titles ineligible", async () => {
+  it("POST /routing/evaluate does not suggest redirect for long titles", async () => {
     const app = await buildApp();
     const res = await app.inject({
       method: "POST",
-      url: "/rubberduck/evaluate",
+      url: "/routing/evaluate",
       payload: {
         title: "how do I structure a large monorepo with many packages",
       },
     });
     expect(res.statusCode).toBe(200);
-    const body = JSON.parse(res.payload) as { eligible: boolean; reason?: string };
-    expect(body.eligible).toBe(false);
+    const body = JSON.parse(res.payload) as {
+      suggestRubberduckRedirect: boolean;
+      reason?: string;
+    };
+    expect(body.suggestRubberduckRedirect).toBe(false);
     expect(body.reason).toBeUndefined();
     await app.close();
   });
 
-  it("POST /rubberduck/evaluate returns 400 for invalid body", async () => {
+  it("POST /routing/evaluate returns 400 for invalid body", async () => {
     const app = await buildApp();
     const res = await app.inject({
       method: "POST",
-      url: "/rubberduck/evaluate",
+      url: "/routing/evaluate",
       payload: { title: "" },
-    });
-    expect(res.statusCode).toBe(400);
-    expect(JSON.parse(res.payload)).toEqual({ error: "invalid_body" });
-    await app.close();
-  });
-
-  it("POST /rubberduck/respond returns stub message", async () => {
-    const app = await buildApp();
-    const res = await app.inject({
-      method: "POST",
-      url: "/rubberduck/respond",
-      payload: {
-        helpRequestId: HELP_REQUEST_ID,
-        title: "fix react hook",
-      },
-    });
-    expect(res.statusCode).toBe(200);
-    const body = JSON.parse(res.payload) as {
-      message: string;
-      sessionId?: string;
-    };
-    expect(body.message).toContain("stub");
-    expect(body.sessionId).toBe(`stub-${HELP_REQUEST_ID}`);
-    await app.close();
-  });
-
-  it("POST /rubberduck/respond returns 400 for invalid body", async () => {
-    const app = await buildApp();
-    const res = await app.inject({
-      method: "POST",
-      url: "/rubberduck/respond",
-      payload: { helpRequestId: "not-a-uuid", title: "x" },
     });
     expect(res.statusCode).toBe(400);
     expect(JSON.parse(res.payload)).toEqual({ error: "invalid_body" });
