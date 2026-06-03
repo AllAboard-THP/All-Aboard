@@ -4,7 +4,7 @@ Ce document decrit la configuration **effective** du projet All-Aboard sur Dokpl
 
 **Timeline produit / stack applicative** (ordre des phases, TanStack, auth) : [README documentation — canonique](README.md).
 
-**Mise a jour** : 2026-05-29 (staging : MVP Phase 2 + auth ADR 0003 — `DEV_SEED_PASSWORD`, pas de `MVP_LOGIN_PASSWORD` ; smoke complet 2026-05-29). **2026-05-20** : domaines `allaboard.fr` + API dediees ; Agent/Indexer **desactives** ; post-merge PR #9 Phase 1 — smoke feed OK. Detail smoke : [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) (journal) ; runbooks : [dev Phase 2](runbook-dokploy-dev-phase2.md), [staging Phase 2](runbook-dokploy-staging-phase2.md).
+**Mise a jour** : 2026-06-03 (#69 — CI build Agent + doc retrait Indexer legacy ; `apps/agent` scaffold merge #66). 2026-05-29 (staging : MVP Phase 2 + auth ADR 0003 — `DEV_SEED_PASSWORD`, pas de `MVP_LOGIN_PASSWORD` ; smoke complet 2026-05-29). **2026-05-20** : domaines `allaboard.fr` + API dediees ; Agent/Indexer **desactives** ; post-merge PR #9 Phase 1 — smoke feed OK. Detail smoke : [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) (journal) ; runbooks : [dev Phase 2](runbook-dokploy-dev-phase2.md), [staging Phase 2](runbook-dokploy-staging-phase2.md).
 
 **Secrets** : mots de passe base de donnees, cles API et tokens GitHub se configurent **uniquement** dans Dokploy. Ne jamais les commiter dans ce depot.
 
@@ -20,7 +20,7 @@ Ce document decrit la configuration **effective** du projet All-Aboard sur Dokpl
 
 Chaque environnement contient typiquement :
 
-- quatre **ressources application** : Web, API, Agent, Indexer (les deux derniers peuvent etre **desactives** tant que le code n’est pas pret — voir section Agent et Indexer) ;
+- quatre **ressources application** : Web, API, Agent, Indexer (Agent **pret au build** depuis #66 — toujours **desactive** en instance jusqu’a validation ops ; Indexer = **placeholder legacy** — ne pas reactiver, voir section Agent et Indexer) ;
 - une base **Postgres** managée par Dokploy.
 
 ---
@@ -33,16 +33,16 @@ Chaque environnement contient typiquement :
 | `buildPath` | `/` (racine du monorepo) |
 | `dockerContextPath` | `.` |
 | Sous-modules Git | desactives (`enableSubmodules: false`) |
-| Declenchement | **Web + API** : `push` sur la branche configuree, `autoDeploy: true`. **Agent + Indexer** (mai 2026) : `autoDeploy: false` — pas de deploiement sur push tant que les apps ne sont pas dans le repo. |
+| Declenchement | **Web + API** : `push` sur la branche configuree, `autoDeploy: true`. **Agent** : `autoDeploy: false` — deploiement manuel apres validation CI (#69). **Indexer (legacy)** : `autoDeploy: false` — **ne pas reactiver**. |
 
 Dockerfiles utilises (chemins relatifs a la racine du repo) :
 
-| Application | Dockerfile |
-|-------------|------------|
-| Web | `infra/docker/Dockerfile.web` |
-| API | `infra/docker/Dockerfile.api` |
-| Agent | `infra/docker/Dockerfile.agent` |
-| Indexer | `infra/docker/Dockerfile.indexer` |
+| Application | Dockerfile | Notes |
+|-------------|------------|-------|
+| Web | `infra/docker/Dockerfile.web` | — |
+| API | `infra/docker/Dockerfile.api` | — |
+| Agent | `infra/docker/Dockerfile.agent` | `apps/agent` — CI build + smoke `/health` (#69) |
+| Indexer | `infra/docker/Dockerfile.indexer` | **Legacy** — pas de `apps/indexer` ; ne pas build / reactiver |
 
 ---
 
@@ -56,7 +56,9 @@ Strategie **Web + API** : aligner la branche Dokploy sur la branche Git de relea
 | staging | `staging` | `staging` |
 | dev | `Dev` | `Dev` |
 
-**Agent** et **Indexer** : branches configurees sur `Dev` dans l’instance observee, y compris sous `production`. C’est coherent pour preparer le code, mais **desaligne** par rapport a Web/API en prod ; a ajuster quand les services `apps/agent` et `apps/indexer` seront stabilises (voir section Statut).
+**Agent** : branches configurees sur `Dev` dans l’instance observee, y compris sous `production`. A ajuster lors de la **reactivation** Agent : aligner sur Web/API (pas `Dev` en prod).
+
+**Indexer (legacy)** : ressource Dokploy historique — **ne pas reactiver** ; preferer suppression de l’application dans le projet Dokploy (voir section Agent et Indexer).
 
 ---
 
@@ -138,17 +140,42 @@ Procedure : [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md). Auth
 
 ---
 
-## Agent et Indexer (preparation)
+## Agent et Indexer
 
-Les applications Dokploy **Agent** et **Indexer** existent dans les trois environnements, avec les Dockerfiles prevus et des variables preparees (`PORT` 4100 / 4200, `DATABASE_URL`, placeholders `REDIS_URL`, Intuition, `INDEXER_*`, etc.).
+### Agent All-Aboard (`apps/agent`)
 
-**Statut operationnel (2026-05-12)** : tant que le depot ne contient pas `apps/agent` et `apps/indexer` exploitables par le build Docker, ces services sont **mis en pause** sur l’instance de reference :
+Le package [`apps/agent`](../apps/agent/README.md) est **present dans le monorepo** (scaffold #66) : `GET /health`, stub `POST /routing/evaluate`, image [`infra/docker/Dockerfile.agent`](../infra/docker/Dockerfile.agent).
 
-- `enabled: false` (application desactivee dans Dokploy) ;
-- `autoDeploy: false` (aucun deploiement automatique sur push Git) ;
-- conteneurs **arretes** (`application-stop`), pour eviter builds en echec repetes et bruit dans le tableau de bord.
+**Statut instance (2026-06-03)** : application Dokploy **Agent** toujours **desactivee** (`enabled: false`, `autoDeploy: false`, conteneur arrete) — gate CI #69 livre ; **production** reste en pause jusqu’a validation humaine explicite.
 
-**Pour reactiver** : implementer les apps dans le monorepo, verifier un build local / CI des images, puis dans Dokploy — pour chaque environnement — reactiver l’application (`enabled: true`), remettre `autoDeploy` si souhaite, aligner les **branches** avec Web/API (au lieu de `Dev` partout en prod), et lancer un deploiement manuel. Alternative : supprimer les ressources Agent/Indexer dans Dokploy si on prefere ne pas garder de placeholders.
+**CI (#69)** : job GitHub Actions `agent` (paths-filter `apps/agent/**`, `infra/docker/Dockerfile.agent`, …) — build Docker + smoke `GET /health` sur port **4100**. Detail : [Docs/tasks/69-agent-ci-dokploy/README.md](tasks/69-agent-ci-dokploy/README.md).
+
+**Procedure de reactivation Agent** (dev / staging — apres CI vert sur la branche cible) :
+
+1. Dokploy → environnement cible → application **Agent** → `enabled: true`.
+2. Branch Git : aligner sur **Web/API** de l’environnement (`Dev` / `staging` / `main` — pas `Dev` en production).
+3. Variables : `PORT=4100`, `NODE_ENV=production`, `APP_ENV`, `LOG_LEVEL` — grille [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md). Pas de domaine Traefik public — **service interne** uniquement.
+4. Cote **API** : definir `AGENT_URL` vers le nom DNS interne du service Agent (ex. `http://<service-agent>:4100`) une fois l’integration handoff #68 deployee.
+5. Lancer un **deploiement manuel** ; conserver `autoDeploy: false` tant que l’integration n’est pas validee end-to-end.
+6. Smoke reseau interne : `GET http://<service-agent>:4100/health` → `{ "status": "ok" }`.
+
+**Production** : ne pas reactiver tant qu’ops + produit n’ont pas valide le handoff agent (#68) et la charge attendue.
+
+### Indexer placeholder (legacy — ne pas reactiver)
+
+Les applications Dokploy **Indexer** existent encore dans les trois environnements (Dockerfile `infra/docker/Dockerfile.indexer`, variables `INDEXER_*`, port **4200**).
+
+**Decision architecture (ADR 0004)** : All-Aboard **n’implemente pas** `apps/indexer`. L’indexation graphe est assuree par l’**indexer reseau Intuition** (subnet + GraphQL) ; All-Aboard publie via le **bridge outbox** (#67) dans `apps/api`.
+
+| Element | Action |
+|---------|--------|
+| `infra/docker/Dockerfile.indexer` | Artefact bootstrap historique — **ne pas build** en CI ni Dokploy |
+| Service Dokploy « Indexer » | **Ne pas reactiver** (`enabled: false`) ; **recommande** : supprimer la ressource du projet |
+| Indexer Intuition | Infra externe — hors Dokploy All-Aboard |
+
+**Statut operationnel** : identique a mai 2026 — `enabled: false`, `autoDeploy: false`, conteneurs arretes. Le build echouerait faute de package `apps/indexer` ; laisser desactive ou supprimer evite le bruit dashboard.
+
+**Ne pas confondre** : « Indexer Dokploy All-Aboard » (legacy) ≠ « Indexer Intuition » (reseau blockchain documente dans [ADR 0004](adr/0004-agent-indexer-architecture.md)).
 
 ---
 
@@ -163,15 +190,15 @@ Les applications Dokploy **Agent** et **Indexer** existent dans les trois enviro
 
 | Environnement | Web | API | Agent | Indexer |
 |----------------|-----|-----|-------|---------|
-| production | deploye OK | deploye OK | **desactive** (pas d’auto-deploy, conteneur arrete) | **desactive** |
-| staging | deploye OK (MVP Phase 2, commit `d9ca975` ; Web redeploy manuel 2026-05-27 si build auto en erreur) | deploye OK (vars Phase 2 — 2026-05-25 ; PR #54) | **desactive** | **desactive** |
-| dev | deploye OK | deploye OK (Phase 2 : vars Postgres + JWT) | **desactive** | **desactive** |
+| production | deploye OK | deploye OK | **desactive** (CI #69 OK ; reactiver manuellement apres validation) | **legacy — ne pas reactiver** |
+| staging | deploye OK (MVP Phase 2, commit `d9ca975` ; Web redeploy manuel 2026-05-27 si build auto en erreur) | deploye OK (vars Phase 2 — 2026-05-25 ; PR #54) | **desactive** (pret build Agent) | **legacy — ne pas reactiver** |
+| dev | deploye OK | deploye OK (Phase 2 : vars Postgres + JWT) | **desactive** (pret build Agent) | **legacy — ne pas reactiver** |
 
 **Dev (2026-05-25)** : MVP parcours Bob validé — journal [plan opérationnel](plan-mise-en-place-web-api-donnees.md), [runbook dev](runbook-dokploy-dev-phase2.md).
 
 **Staging (2026-05-29)** : MVP Phase 2 + auth ADR 0003 (`DEV_SEED_PASSWORD`, comptes seed OK) — [runbook staging](runbook-dokploy-staging-phase2.md). Healthchecks : `GET …/health`, `GET …/feed` (UUID), BFF `/api/feed`, `POST …/auth/login` → 401 si invalides, 200 avec email seed si valides.
 
-Dernier etat connu Agent/Indexer : echec de build / runtime faute de packages `apps/agent` et `apps/indexer` dans le repo (services en pause).
+Dernier etat connu : **Agent** — code + CI Docker livres (#66, #69) ; instance Dokploy encore en pause. **Indexer** — placeholder legacy sans `apps/indexer` ; ne pas reactiver (ADR 0004).
 
 ---
 

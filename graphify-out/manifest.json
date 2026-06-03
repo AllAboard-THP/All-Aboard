@@ -160,7 +160,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/bff-phase2.test.ts": {
-    "mtime": 1780304924.4728742,
+    "mtime": 1780485983.359705,
     "ast_hash": "63be3483263c33d4b18b036e9f1fc177",
     "semantic_hash": ""
   },
@@ -215,7 +215,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/help-request-form.tsx": {
-    "mtime": 1780417030.8593087,
+    "mtime": 1780485983.359705,
     "ast_hash": "7d5648cdbbe0279f36b0176fbee82955",
     "semantic_hash": ""
   },
@@ -280,7 +280,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.ts": {
-    "mtime": 1780482235.7640643,
+    "mtime": 1780485983.359705,
     "ast_hash": "3e7ae7ce42a048a6886393e83e21f36e",
     "semantic_hash": ""
   },
@@ -300,7 +300,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.test.ts": {
-    "mtime": 1780482249.3881254,
+    "mtime": 1780485983.359705,
     "ast_hash": "7776f70521eef124e37c794092eb8494",
     "semantic_hash": ""
   },
@@ -330,7 +330,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/openapi.yaml": {
-    "mtime": 1780304924.4685628,
+    "mtime": 1780485983.359705,
     "ast_hash": "75f33e3e934d369ddaee583641286a8b",
     "semantic_hash": ""
   },
@@ -620,7 +620,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/types/src/index.ts": {
-    "mtime": 1780482233.0720873,
+    "mtime": 1780485983.3677049,
     "ast_hash": "4a5a18e7d95f229068cb3fe9c994208d",
     "semantic_hash": ""
   },
@@ -740,8 +740,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deploiement-dokploy-instance-allaboard.md": {
-    "mtime": 1780068463.0452607,
-    "ast_hash": "17b0f9d2031632cd895bc7e9f4c1d551",
+    "mtime": 1780486023.991697,
+    "ast_hash": "3006c993b3150527d69ccaeaa2bb76e6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/README.md": {
@@ -785,8 +785,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/37-agent-indexer/README.md": {
-    "mtime": 1780482261.6041625,
-    "ast_hash": "1fde88fc552765d7e07208f36c8dc8be",
+    "mtime": 1780486021.7956984,
+    "ast_hash": "83147e35d9b5983751c0e55ba1c41c19",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/_template/README.md": {
@@ -865,8 +865,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/publisher.test.ts": {
-    "mtime": 1780482245.1360643,
-    "ast_hash": "660078adc1c63032149cee8988e6d442",
+    "mtime": 1780484372.7279406,
+    "ast_hash": "131fbde5d6da5fc1c1fac3fec7a52989",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/publisher.ts": {
@@ -902,6 +902,11 @@
   "/home/dim/AllAboard/Docs/tasks/37-agent-indexer/intuition-graphql-spike.md": {
     "mtime": 1780482260.9721546,
     "ast_hash": "fd3533d6c9a3ac1ce1d58b01c35c12c2",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/tasks/69-agent-ci-dokploy/README.md": {
+    "mtime": 1780486008.6597064,
+    "ast_hash": "e35697c045906881a221ed8becbbb477",
     "semantic_hash": ""
   }
 }

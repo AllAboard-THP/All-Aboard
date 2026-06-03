@@ -36,6 +36,6 @@ Image Docker : [`infra/docker/Dockerfile.agent`](../../infra/docker/Dockerfile.a
 ## Suite backlog
 
 - [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68) — `apps/api` appelle `POST /routing/evaluate` et mappe `suggestRubberduckRedirect` → `hints.rubberduckEligible`
-- [#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) — CI + réactivation Dokploy
+- [#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) — CI + réactivation Dokploy — livré ([doc](../../Docs/tasks/69-agent-ci-dokploy/README.md))
 
 Doc epic : [Docs/tasks/37-agent-indexer/README.md](../../Docs/tasks/37-agent-indexer/README.md) · ADR [0004](../../Docs/adr/0004-agent-indexer-architecture.md).
