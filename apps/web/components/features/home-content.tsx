@@ -1,5 +1,5 @@
 import type { FeedResponse, HelpRequest } from "@allaboard/types";
-import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import {
   Alert,
@@ -16,20 +16,28 @@ import {
 } from "@allaboard/ui/components/card";
 
 import { FeedClientPreview } from "@/components/features/feed-client-preview";
+import { Link } from "@/i18n/navigation";
+import type { AppLocale } from "@/i18n/routing";
+import { formatDateTime } from "@/lib/format-datetime";
 
 type Props = {
   feed: FeedResponse | null;
   feedError: string | null;
 };
 
-function formatCreatedAt(iso: string): string {
-  return new Date(iso).toLocaleString("fr-FR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
+type FeedItemLabels = {
+  author: (authorId: string) => string;
+  tags: (tags: string) => string;
+  formatDate: (iso: string) => string;
+};
 
-function FeedItemCard({ item }: { item: HelpRequest }) {
+function FeedItemCard({
+  item,
+  labels,
+}: {
+  item: HelpRequest;
+  labels: FeedItemLabels;
+}) {
   const hasTags = Boolean(item.tags && item.tags.length > 0);
 
   return (
@@ -47,14 +55,14 @@ function FeedItemCard({ item }: { item: HelpRequest }) {
             </Link>
           </CardTitle>
           <CardDescription className="flex flex-wrap gap-x-3 gap-y-1">
-            <span>Auteur : {item.authorId}</span>
-            <span>{formatCreatedAt(item.createdAt)}</span>
+            <span>{labels.author(item.authorId)}</span>
+            <span>{labels.formatDate(item.createdAt)}</span>
           </CardDescription>
         </CardHeader>
         {hasTags ? (
           <CardContent className="px-4 pt-0">
             <p className="m-0 text-xs text-muted-foreground">
-              Tags : {item.tags!.join(", ")}
+              {labels.tags(item.tags!.join(", "))}
             </p>
           </CardContent>
         ) : null}
@@ -63,33 +71,42 @@ function FeedItemCard({ item }: { item: HelpRequest }) {
   );
 }
 
-export function HomeContent({ feed, feedError }: Props) {
+export async function HomeContent({ feed, feedError }: Props) {
+  const t = await getTranslations("feed");
+  const tNav = await getTranslations("nav");
+  const tCommon = await getTranslations("common");
+  const locale = (await getLocale()) as AppLocale;
   const hasItems = Boolean(feed && feed.items.length > 0);
+
+  const itemLabels: FeedItemLabels = {
+    author: (authorId) => tCommon("author", { authorId }),
+    tags: (tags) => tCommon("tags", { tags }),
+    formatDate: (iso) => formatDateTime(iso, locale),
+  };
 
   return (
     <div className="mx-auto w-full max-w-3xl p-6">
       <header className="mb-6">
         <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
-          All-Aboard
+          {tCommon("brand")}
         </p>
         <h1 className="mt-2 mb-2 text-3xl font-semibold text-foreground md:text-4xl">
-          Feed communautaire
+          {t("title")}
         </h1>
         <p className="m-0 max-w-prose text-base text-muted-foreground">
-          Parcourez les demandes d&apos;aide publiées par la communauté. Posez la
-          vôtre ou consultez une demande pour voir les réponses.
+          {t("description")}
         </p>
         <div className="mt-4">
           <Button asChild>
-            <Link href="/help/new">Nouvelle demande</Link>
+            <Link href="/help/new">{tNav("newRequest")}</Link>
           </Button>
         </div>
       </header>
 
-      <section aria-label="Feed des demandes d'aide">
+      <section aria-label={t("sectionAria")}>
         {feedError ? (
           <Alert variant="destructive" data-testid="feed-ssr-error">
-            <AlertTitle>Impossible de charger le feed</AlertTitle>
+            <AlertTitle>{t("loadErrorTitle")}</AlertTitle>
             <AlertDescription>{feedError}</AlertDescription>
           </Alert>
         ) : null}
@@ -97,16 +114,12 @@ export function HomeContent({ feed, feedError }: Props) {
         {!feedError && feed && feed.items.length === 0 ? (
           <Card data-testid="feed-empty">
             <CardHeader>
-              <CardTitle className="text-lg">
-                Aucune demande pour l&apos;instant
-              </CardTitle>
-              <CardDescription>
-                Soyez le premier à publier une demande d&apos;aide.
-              </CardDescription>
+              <CardTitle className="text-lg">{t("emptyTitle")}</CardTitle>
+              <CardDescription>{t("emptyDescription")}</CardDescription>
             </CardHeader>
             <CardContent>
               <Button variant="outline" asChild>
-                <Link href="/help/new">Publier une demande</Link>
+                <Link href="/help/new">{t("publishCta")}</Link>
               </Button>
             </CardContent>
           </Card>
@@ -118,7 +131,7 @@ export function HomeContent({ feed, feedError }: Props) {
             data-testid="feed-ssr-list"
           >
             {feed!.items.map((item) => (
-              <FeedItemCard key={item.id} item={item} />
+              <FeedItemCard key={item.id} item={item} labels={itemLabels} />
             ))}
           </ul>
         ) : null}
