@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "title": "All-Aboard"
+  },
+  "common": {
+    "brand": "All-Aboard",
+    "author": "Author: {authorId}",
+    "tags": "Tags: {tags}",
+    "unknownError": "Unknown error",
+    "updating": "Updating…",
+    "sending": "Sending…"
+  },
+  "nav": {
+    "ariaLabel": "Main navigation",
+    "feed": "Feed",
+    "newRequest": "New request",
+    "mentor": "Mentor",
+    "mentorUnreadAria": "{count, plural, one {# request with new replies} other {# requests with new replies}}"
+  },
+  "locale": {
+    "label": "Language",
+    "switchToFr": "Switch to French",
+    "switchToEn": "Switch to English",
+    "fr": "FR",
+    "en": "EN"
+  },
+  "feed": {
+    "title": "Community feed",
+    "description": "Browse help requests published by the community. Post your own or open a request to read replies.",
+    "sectionAria": "Help requests feed",
+    "loadErrorTitle": "Unable to load feed",
+    "emptyTitle": "No requests yet",
+    "emptyDescription": "Be the first to publish a help request.",
+    "publishCta": "Publish a request",
+    "backToFeed": "Back to feed",
+    "clientLoading": "Loading feed (client)…",
+    "clientError": "Client error: {message}",
+    "clientPreview": "useQuery: {count, plural, one {# entry} other {# entries}} — same source as SSR (BFF {bff}).",
+    "refresh": "Refresh",
+    "refreshAria": "Refresh feed"
+  },
+  "helpNew": {
+    "eyebrow": "New request",
+    "title": "Publish a help request",
+    "description": "MVP login (ADR 0001), then submit via BFF",
+    "backHome": "Back to home"
+  },
+  "helpForm": {
+    "email": "Email",
+    "password": "Password",
+    "title": "Request title",
+    "tags": "Tags (optional, comma-separated)",
+    "tagsPlaceholder": "mentor, rails",
+    "invalidCredentials": "Invalid credentials.",
+    "duplicate": "Duplicate detected (MOC).",
+    "viewExisting": "View existing request",
+    "rubberduckHandoff": "Rubberduck handoff: your request is published. Set RUBBERDUCK_URL to enable external redirect.",
+    "submit": "Sign in and publish"
+  },
+  "helpRequest": {
+    "eyebrow": "Help request",
+    "notFoundTitle": "Request not found",
+    "notFoundDescription": "No request matches identifier {id}.",
+    "loadErrorTitle": "Unable to load request",
+    "responsesSection": "Replies",
+    "responsesEmptyTitle": "No replies yet",
+    "responsesEmptyDescription": "Community and mentor replies will appear here.",
+    "replySection": "Reply",
+    "replyBody": "Your reply",
+    "replySubmit": "Sign in and reply",
+    "certFilter": "Filter replies by certifications",
+    "certHidden": "{count, plural, one {# reply hidden} other {# replies hidden}} (outside certifications or requester)."
+  },
+  "mentor": {
+    "loginRequiredTitle": "Sign-in required",
+    "loginRequiredDescription": "Sign in via <link></link> to access the mentor dashboard.",
+    "forbiddenTitle": "Mentors only",
+    "forbiddenDescription": "MVP mentor account: use identifier <alice>alice</alice> (or an id listed in <envVar>MVP_MENTOR_USER_IDS</envVar>).",
+    "eyebrow": "Mentor",
+    "title": "Requests to review",
+    "connectedAs": "Signed in as {userId} — mentor/domain tagged requests{unreadSuffix}.",
+    "unreadSuffix": " — {count} with new replies",
+    "emptyTitle": "No tagged requests",
+    "emptyDescription": "Requests with mentor or domain tags will appear here.",
+    "loadErrorTitle": "Unable to load requests",
+    "newResponseBadge": "New reply",
+    "noResponses": "No replies",
+    "responseCount": "{count, plural, one {# reply} other {# replies}}",
+    "lastResponse": " — last {date}"
+  }
+}

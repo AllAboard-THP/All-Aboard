@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "title": "All-Aboard"
+  },
+  "common": {
+    "brand": "All-Aboard",
+    "author": "Auteur : {authorId}",
+    "tags": "Tags : {tags}",
+    "unknownError": "Erreur inconnue",
+    "updating": "Mise à jour…",
+    "sending": "Envoi…"
+  },
+  "nav": {
+    "ariaLabel": "Navigation principale",
+    "feed": "Feed",
+    "newRequest": "Nouvelle demande",
+    "mentor": "Mentor",
+    "mentorUnreadAria": "{count, plural, one {# demande avec nouvelles réponses} other {# demandes avec nouvelles réponses}}"
+  },
+  "locale": {
+    "label": "Langue",
+    "switchToFr": "Passer en français",
+    "switchToEn": "Switch to English",
+    "fr": "FR",
+    "en": "EN"
+  },
+  "feed": {
+    "title": "Feed communautaire",
+    "description": "Parcourez les demandes d'aide publiées par la communauté. Posez la vôtre ou consultez une demande pour voir les réponses.",
+    "sectionAria": "Feed des demandes d'aide",
+    "loadErrorTitle": "Impossible de charger le feed",
+    "emptyTitle": "Aucune demande pour l'instant",
+    "emptyDescription": "Soyez le premier à publier une demande d'aide.",
+    "publishCta": "Publier une demande",
+    "backToFeed": "Retour au feed",
+    "clientLoading": "Chargement du feed (client)…",
+    "clientError": "Erreur client : {message}",
+    "clientPreview": "useQuery : {count, plural, one {# entrée} other {# entrées}} — même source que le SSR (BFF {bff}).",
+    "refresh": "Rafraîchir",
+    "refreshAria": "Rafraîchir le feed"
+  },
+  "helpNew": {
+    "eyebrow": "Nouvelle demande",
+    "title": "Publier une demande d'aide",
+    "description": "Connexion MVP (ADR 0001), puis envoi vers l'API via le BFF",
+    "backHome": "Retour accueil"
+  },
+  "helpForm": {
+    "email": "Email",
+    "password": "Mot de passe",
+    "title": "Titre de la demande",
+    "tags": "Tags (optionnel, séparés par virgule)",
+    "tagsPlaceholder": "mentor, rails",
+    "invalidCredentials": "Identifiants invalides.",
+    "duplicate": "Doublon détecté (MOC).",
+    "viewExisting": "Voir la demande existante",
+    "rubberduckHandoff": "Handoff Rubberduck : votre demande est publiée. Configurez RUBBERDUCK_URL pour activer la redirection externe.",
+    "submit": "Connexion et publier"
+  },
+  "helpRequest": {
+    "eyebrow": "Demande d'aide",
+    "notFoundTitle": "Demande introuvable",
+    "notFoundDescription": "Aucune demande ne correspond à l'identifiant {id}.",
+    "loadErrorTitle": "Impossible de charger la demande",
+    "responsesSection": "Réponses",
+    "responsesEmptyTitle": "Aucune réponse pour l'instant",
+    "responsesEmptyDescription": "Les réponses de la communauté et des mentors apparaîtront ici.",
+    "replySection": "Répondre",
+    "replyBody": "Votre réponse",
+    "replySubmit": "Connexion et répondre",
+    "certFilter": "Filtrer les réponses par certifications",
+    "certHidden": "{count, plural, one {# réponse masquée} other {# réponses masquées}} (hors certifications ou demandeur)."
+  },
+  "mentor": {
+    "loginRequiredTitle": "Connexion requise",
+    "loginRequiredDescription": "Connectez-vous via <link></link> pour accéder au dashboard mentor.",
+    "forbiddenTitle": "Accès réservé aux mentors",
+    "forbiddenDescription": "Compte MVP mentor : utilisez l'identifiant <alice>alice</alice> (ou un id listé dans <envVar>MVP_MENTOR_USER_IDS</envVar>).",
+    "eyebrow": "Mentor",
+    "title": "Demandes à traiter",
+    "connectedAs": "Connecté en tant que {userId} — demandes taguées mentor/domaine{unreadSuffix}.",
+    "unreadSuffix": " — {count} avec nouvelles réponses",
+    "emptyTitle": "Aucune demande taguée",
+    "emptyDescription": "Les demandes avec des tags mentor ou domaine apparaîtront ici.",
+    "loadErrorTitle": "Impossible de charger les demandes",
+    "newResponseBadge": "Nouvelle réponse",
+    "noResponses": "Aucune réponse",
+    "responseCount": "{count, plural, one {# réponse} other {# réponses}}",
+    "lastResponse": " — dernière {date}"
+  }
+}

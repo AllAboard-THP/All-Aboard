@@ -6,6 +6,8 @@ import type {
   CreateResponseResponse,
   HelpRequestDetailResponse,
 } from "@allaboard/types";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 import { Button } from "@allaboard/ui/components/button";
 import {
@@ -18,7 +20,6 @@ import {
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
 import { Textarea } from "@allaboard/ui/components/textarea";
-import { useEffect, useState } from "react";
 
 type Props = {
   requestId: string;
@@ -60,8 +61,8 @@ async function loginAndRespond(input: {
     body: JSON.stringify({ email: input.email, password: input.password }),
   });
   if (!loginRes.ok) {
-    const t = await loginRes.text();
-    throw new Error(loginRes.status === 401 ? "Identifiants invalides." : t);
+    const text = await loginRes.text();
+    throw new Error(loginRes.status === 401 ? "invalid_credentials" : text);
   }
 
   const createRes = await fetch(
@@ -81,6 +82,9 @@ async function loginAndRespond(input: {
 }
 
 export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
+  const t = useTranslations("helpRequest");
+  const tForm = useTranslations("helpForm");
+  const tCommon = useTranslations("common");
   const queryClient = useQueryClient();
   const [email, setEmail] = useState("alice@dev.local");
   const [password, setPassword] = useState("");
@@ -130,7 +134,10 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
     mutation.mutate({ email, password, body, requestId });
   }
 
-  const errorMessage = mutation.error?.message ?? null;
+  const errorMessage =
+    mutation.error?.message === "invalid_credentials"
+      ? tForm("invalidCredentials")
+      : (mutation.error?.message ?? null);
 
   return (
     <>
@@ -147,15 +154,14 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
               data-testid="mentor-cert-filter-toggle"
               className="size-4 rounded border-input"
             />
-            Filtrer les réponses par certifications
+            {t("certFilter")}
           </label>
           {filterByCertifications && hiddenCount > 0 ? (
             <p
               className="m-0 text-sm text-muted-foreground"
               data-testid="mentor-cert-filter-hidden-count"
             >
-              {hiddenCount} réponse{hiddenCount > 1 ? "s" : ""} masquée
-              {hiddenCount > 1 ? "s" : ""} (hors certifications ou demandeur).
+              {t("certHidden", { count: hiddenCount })}
             </p>
           ) : null}
         </div>
@@ -166,20 +172,22 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
           className="mb-3 text-sm text-muted-foreground"
           data-testid="help-request-refetching"
         >
-          Mise à jour…
+          {tCommon("updating")}
         </p>
       ) : null}
 
-      <section aria-label="Réponses" className="mb-6">
-        <h2 className="mb-3 text-lg font-semibold text-foreground">Réponses</h2>
+      <section aria-label={t("responsesSection")} className="mb-6">
+        <h2 className="mb-3 text-lg font-semibold text-foreground">
+          {t("responsesSection")}
+        </h2>
         {responses.length === 0 ? (
           <Card data-testid="responses-empty">
             <CardHeader>
               <CardTitle className="text-base">
-                Aucune réponse pour l&apos;instant
+                {t("responsesEmptyTitle")}
               </CardTitle>
               <CardDescription>
-                Les réponses de la communauté et des mentors apparaîtront ici.
+                {t("responsesEmptyDescription")}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -204,14 +212,14 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
         )}
       </section>
 
-      <section aria-label="Répondre" className="mb-6">
+      <section aria-label={t("replySection")} className="mb-6">
         <h2 className="mb-3 text-lg font-semibold text-foreground">
-          Répondre
+          {t("replySection")}
         </h2>
         <Card data-testid="response-form">
           <CardContent className="grid gap-4 pt-6">
             <div className="grid gap-2">
-              <Label htmlFor="response-email">Email</Label>
+              <Label htmlFor="response-email">{tForm("email")}</Label>
               <Input
                 id="response-email"
                 type="email"
@@ -221,7 +229,7 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="response-password">Mot de passe</Label>
+              <Label htmlFor="response-password">{tForm("password")}</Label>
               <Input
                 id="response-password"
                 type="password"
@@ -231,7 +239,7 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="response-body">Votre réponse</Label>
+              <Label htmlFor="response-body">{t("replyBody")}</Label>
               <Textarea
                 id="response-body"
                 value={body}
@@ -247,7 +255,7 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
               disabled={mutation.isPending || !body.trim() || !password}
               onClick={() => submit()}
             >
-              {mutation.isPending ? "Envoi…" : "Connexion et répondre"}
+              {mutation.isPending ? tCommon("sending") : t("replySubmit")}
             </Button>
           </CardContent>
         </Card>

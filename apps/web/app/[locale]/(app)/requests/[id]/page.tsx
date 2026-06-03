@@ -4,7 +4,7 @@ import { HelpRequestDetailContent } from "@/components/features/help-request-det
 export const dynamic = "force-dynamic";
 
 type PageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
 };
 
 export default async function HelpRequestDetailPage({ params }: PageProps) {

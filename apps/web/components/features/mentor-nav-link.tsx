@@ -1,17 +1,20 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { Badge } from "@allaboard/ui/components/badge";
 import { Button } from "@allaboard/ui/components/button";
 import { cn } from "@allaboard/ui/lib/utils";
 
+import { Link } from "@/i18n/navigation";
+
 type MentorNavLinkProps = {
   active: boolean;
 };
 
 export function MentorNavLink({ active }: MentorNavLinkProps) {
+  const t = useTranslations("nav");
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
@@ -40,12 +43,12 @@ export function MentorNavLink({ active }: MentorNavLinkProps) {
     >
       <Link href="/mentor" aria-current={active ? "page" : undefined}>
         <span className="inline-flex items-center gap-1.5">
-          Mentor
+          {t("mentor")}
           {unreadCount > 0 ? (
             <Badge
               variant="destructive"
               data-testid="mentor-notification-badge"
-              aria-label={`${unreadCount} demande${unreadCount > 1 ? "s" : ""} avec nouvelles réponses`}
+              aria-label={t("mentorUnreadAria", { count: unreadCount })}
             >
               {unreadCount}
             </Badge>
