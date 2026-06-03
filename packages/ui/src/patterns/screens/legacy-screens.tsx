@@ -12,6 +12,7 @@ import {
 import { Checkbox } from "../../components/checkbox";
 import { Input } from "../../components/input";
 import { Label } from "../../components/label";
+import { cn } from "@allaboard/ui/lib/utils";
 import {
   useLegacyAdminUsers,
   useLegacyConversations,
@@ -67,6 +68,8 @@ import {
   ProfileHeaderCard,
   ProfileStatGrid,
 } from "../legacy-profile-patterns";
+import { LandingConceptBackground } from "../landing-concept-background";
+import { LANDING_EDGE_PADDING_CLASS } from "../landing-layout";
 import { LandingPageShell } from "../landing-page-shell";
 import {
   Eyebrow,
@@ -90,14 +93,19 @@ export function LandingLoginScreen() {
   return (
     <LandingPageShell labels={labels}>
       <div className="relative flex flex-1 flex-col overflow-x-hidden">
-        <div className="auth-shell-backdrop" aria-hidden />
-        <div className="landing-grid absolute inset-0" aria-hidden />
-        <div className="auth-grid relative mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
+        <LandingConceptBackground />
+        <div
+          className={cn(
+            "auth-grid relative flex flex-1 items-center justify-center py-8 sm:py-10",
+            LANDING_EDGE_PADDING_CLASS,
+          )}
+        >
+          <div className="grid w-full items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
             <div>
               <Eyebrow>{labels.landing.eyebrow}</Eyebrow>
               <GradientHeading
                 lead={labels.landing.headingLead}
+                line2Prefix={labels.landing.headingLine2Prefix}
                 accent={labels.landing.headingAccent}
               />
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
@@ -114,51 +122,57 @@ export function LandingLoginScreen() {
               </div>
             </div>
 
-            <Card className="hero-panel glass rounded-[2rem] border-white/10 p-8 shadow-none">
-              <CardHeader className="px-0 pb-0 text-center">
-                <CardTitle className="text-2xl">{labels.auth.loginTitle}</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-4 px-0">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="legacy-email">{labels.auth.email}</Label>
-                  <Input
-                    id="legacy-email"
-                    type="email"
-                    className="rounded-xl border-white/10 bg-white/5"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="legacy-password">{labels.auth.password}</Label>
-                  <Input
-                    id="legacy-password"
-                    type="password"
-                    className="rounded-xl border-white/10 bg-white/5"
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox id="legacy-remember" />
-                  <Label htmlFor="legacy-remember">{labels.auth.rememberMe}</Label>
-                </div>
-              </CardContent>
-              <CardFooter className="flex-col gap-4 px-0">
-                <Button
-                  className="w-full rounded-2xl"
-                  onClick={() => legacyDemoToast(labels.auth.submit)}
-                >
-                  {labels.auth.submit}
-                </Button>
-                <p className="text-center text-sm text-muted-foreground">
-                  {labels.auth.noAccount}{" "}
-                  <button
-                    type="button"
-                    className="text-primary hover:underline"
-                    onClick={() => legacyDemoToast(labels.auth.signUp)}
+            <div className="flex justify-center lg:justify-end xl:justify-center">
+              <Card className="hero-panel glass flex aspect-square w-full max-w-[min(100%,26rem)] flex-col justify-between rounded-[2rem] border-white/10 p-6 shadow-none sm:p-7">
+                <CardHeader className="shrink-0 px-0 pb-0 text-center">
+                  <CardTitle className="text-xl sm:text-2xl">
+                    {labels.auth.loginTitle}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex min-h-0 flex-1 flex-col justify-center gap-3 px-0">
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="legacy-email">{labels.auth.email}</Label>
+                    <Input
+                      id="legacy-email"
+                      type="email"
+                      className="rounded-xl border-white/10 bg-white/5"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="legacy-password">{labels.auth.password}</Label>
+                    <Input
+                      id="legacy-password"
+                      type="password"
+                      className="rounded-xl border-white/10 bg-white/5"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox id="legacy-remember" />
+                    <Label htmlFor="legacy-remember" className="text-sm">
+                      {labels.auth.rememberMe}
+                    </Label>
+                  </div>
+                </CardContent>
+                <CardFooter className="shrink-0 flex-col gap-3 px-0 pt-0">
+                  <Button
+                    className="w-full rounded-2xl"
+                    onClick={() => legacyDemoToast(labels.auth.submit)}
                   >
-                    {labels.auth.signUp}
-                  </button>
-                </p>
-              </CardFooter>
-            </Card>
+                    {labels.auth.submit}
+                  </Button>
+                  <p className="text-center text-xs text-muted-foreground sm:text-sm">
+                    {labels.auth.noAccount}{" "}
+                    <button
+                      type="button"
+                      className="text-primary hover:underline"
+                      onClick={() => legacyDemoToast(labels.auth.signUp)}
+                    >
+                      {labels.auth.signUp}
+                    </button>
+                  </p>
+                </CardFooter>
+              </Card>
+            </div>
           </div>
         </div>
       </div>

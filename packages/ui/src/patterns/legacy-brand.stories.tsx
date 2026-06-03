@@ -39,6 +39,7 @@ function GradientHeadingStory() {
   return (
     <GradientHeading
       lead={labels.landing.headingLead}
+      line2Prefix={labels.landing.headingLine2Prefix}
       accent={labels.landing.headingAccent}
     />
   );

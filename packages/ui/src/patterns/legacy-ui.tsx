@@ -98,21 +98,27 @@ export function Eyebrow({
 
 export function GradientHeading({
   lead,
+  line2Prefix,
   accent,
   className,
 }: {
   lead: string;
+  line2Prefix: string;
   accent: string;
   className?: string;
 }) {
   return (
     <h1
       className={cn(
-        "text-5xl leading-tight font-extrabold md:text-6xl",
+        "text-[clamp(1.65rem,4.5vw,3.75rem)] leading-[1.1] font-extrabold tracking-tight",
         className,
       )}
     >
-      {lead} <span className="gradient-text">{accent}</span>.
+      <span className="block text-pretty whitespace-nowrap">{lead}</span>
+      <span className="block text-pretty whitespace-nowrap">
+        {line2Prefix}
+        <span className="gradient-text">{accent}</span>.
+      </span>
     </h1>
   );
 }
@@ -326,10 +332,15 @@ const LEGAL_LINK_HREFS: Record<LegacyLegalLinkKey, string> = {
 export function AppFooter({
   labels = legacyLabelsFr,
   className,
+  edgeToEdge = false,
+  edgePaddingClassName,
   onLegalLinkClick,
 }: {
   labels?: LegacyLabels;
   className?: string;
+  /** Full-width landing layout (no max-w-7xl container). */
+  edgeToEdge?: boolean;
+  edgePaddingClassName?: string;
   onLegalLinkClick?: (key: LegacyLegalLinkKey) => void;
 }) {
   const year = new Date().getFullYear();
@@ -341,7 +352,14 @@ export function AppFooter({
 
   return (
     <footer className={cn("mt-12 border-t border-white/5 py-8", className)}>
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:px-6 md:flex-row lg:px-8">
+      <div
+        className={cn(
+          "flex flex-col items-center justify-between gap-4 md:flex-row",
+          edgeToEdge
+            ? cn("w-full", edgePaddingClassName)
+            : "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8",
+        )}
+      >
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <AllAboardLogoMark className="size-5" title={labels.brandName} />
           <span className="gradient-text font-semibold">{labels.brandName}</span>

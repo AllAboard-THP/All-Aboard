@@ -310,8 +310,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/tsconfig.json": {
-    "mtime": 1779799623.6618152,
-    "ast_hash": "44f8b70f769ed748d5dae1c653e75fc9",
+    "mtime": 1780490960.9222388,
+    "ast_hash": "f7c49a3127d63408bb2931448565148b",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/eslint.config.js": {
@@ -850,13 +850,13 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/i18n/legacy-labels.ts": {
-    "mtime": 1780062738.8844059,
-    "ast_hash": "8ff04e1221e6f66d86613388328f529f",
+    "mtime": 1780490713.831004,
+    "ast_hash": "abeb259ed4d8175d1d791952b90f5fb2",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/legacy-ui.tsx": {
-    "mtime": 1780145858.6845424,
-    "ast_hash": "a7c708b64314d9a33eeb8aab79d41e77",
+    "mtime": 1780490714.5510018,
+    "ast_hash": "261ffdd42844abf212f6bd2e3df62f78",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/subject-patterns.stories.tsx": {
@@ -870,8 +870,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/legacy-brand.stories.tsx": {
-    "mtime": 1780066376.8913882,
-    "ast_hash": "6ed3b4e3b229c0431a5774eaad2d1482",
+    "mtime": 1780490715.454999,
+    "ast_hash": "4280b086254930cd31f611706ac5efca",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/fixtures/legacy-subjects.ts": {
@@ -950,8 +950,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/screens/legacy-screens.tsx": {
-    "mtime": 1780146736.4279974,
-    "ast_hash": "9fbdd4784d35e786bb6cc4d2d20dabfb",
+    "mtime": 1780490843.482607,
+    "ast_hash": "a245a8b1e04ace704f036c2037776978",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/profile-patterns.stories.tsx": {
@@ -1115,8 +1115,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/components/allaboard-logo-mark.tsx": {
-    "mtime": 1780066363.3959017,
-    "ast_hash": "6f735a9ed738de29fefed749d0caf381",
+    "mtime": 1780494460.7836585,
+    "ast_hash": "1762fd16ff34c1dc40bea46e5d12432e",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/components/allaboard-logo-mark.stories.tsx": {
@@ -1145,33 +1145,73 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-page-shell.tsx": {
-    "mtime": 1780146283.1543336,
-    "ast_hash": "d9b63f70ccee800b90e41ca8bd25d2b4",
+    "mtime": 1780489949.0693743,
+    "ast_hash": "f8919163ba4f41b0010e9da5984c4f1b",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-public-header.tsx": {
-    "mtime": 1780145855.9645643,
-    "ast_hash": "bae13d748d9f4a7dcd3a041082db3ca4",
+    "mtime": 1780489947.765378,
+    "ast_hash": "a84c4ae0d3e60563452e8914729f9638",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/branding/README.md": {
-    "mtime": 1780187546.344694,
-    "ast_hash": "33d7495ccbc7605fcfc40490851c1442",
-    "semantic_hash": ""
-  },
-  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-2.png": {
-    "mtime": 1780187478.725394,
-    "ast_hash": "324bbcd9d4febdad42f50d490d7d3f06",
+    "mtime": 1780498503.112158,
+    "ast_hash": "f414078d327dce7dbf5cd5cb5f9e8d39",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-1.png": {
-    "mtime": 1780187542.2927375,
-    "ast_hash": "324bbcd9d4febdad42f50d490d7d3f06",
+    "mtime": 1780488032.2318602,
+    "ast_hash": "7d1bfdcd7c9b8d75d4547cb26cc2c8cd",
     "semantic_hash": ""
   },
-  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-2-photo.png": {
-    "mtime": 1780182801.5213969,
-    "ast_hash": "d0af397dbf8cbbf7f780fc704a343c38",
+  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-2.png": {
+    "mtime": 1780223946.9661646,
+    "ast_hash": "d2cc7e67439aab0e9b332b4047224969",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/logo-mark.png": {
+    "mtime": 1780494073.5328264,
+    "ast_hash": "d3024fd6d903a4f35ba93381feac09ae",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-layout.ts": {
+    "mtime": 1780489946.4053817,
+    "ast_hash": "e4a562ab45cf5bad88c58fe1ce27af92",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-concept-background.tsx": {
+    "mtime": 1780498502.2121649,
+    "ast_hash": "324dd2d6cd1ebd96c1911070e8e8293e",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/types/static-brand-assets.d.ts": {
+    "mtime": 1780493635.866147,
+    "ast_hash": "ec4bd8eb4fe5a4ea9198be50e7cae0b5",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/concept-2-hero.png": {
+    "mtime": 1780498429.4446578,
+    "ast_hash": "5484aa39864f2b8158f78039cc6e4766",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/logo-mark.png": {
+    "mtime": 1780494073.5328264,
+    "ast_hash": "d3024fd6d903a4f35ba93381feac09ae",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/logo-mark.svg": {
+    "mtime": 1780494462.4916534,
+    "ast_hash": "65c3601a8bc62d749ade28e8c8325b22",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/logo-mark.svg": {
+    "mtime": 1780494462.4916534,
+    "ast_hash": "65c3601a8bc62d749ade28e8c8325b22",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-2-branding-light-proposal.png": {
+    "mtime": 1780498429.4446578,
+    "ast_hash": "5484aa39864f2b8158f78039cc6e4766",
     "semantic_hash": ""
   }
 }

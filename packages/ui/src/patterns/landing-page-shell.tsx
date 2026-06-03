@@ -7,6 +7,7 @@ import {
   type LegacyLabels,
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
+import { LANDING_EDGE_PADDING_CLASS } from "./landing-layout";
 import { AppFooter, type LegacyLegalLinkKey } from "./legacy-ui";
 import {
   LandingPublicHeader,
@@ -47,6 +48,8 @@ export function LandingPageShell({
       <main className="relative flex flex-1 flex-col pt-16">{children}</main>
       <AppFooter
         labels={labels}
+        edgeToEdge
+        edgePaddingClassName={LANDING_EDGE_PADDING_CLASS}
         className={cn("mt-auto shrink-0", footerClassName)}
         onLegalLinkClick={onLegalLinkClick}
       />

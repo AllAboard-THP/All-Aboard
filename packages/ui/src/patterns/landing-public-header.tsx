@@ -6,6 +6,7 @@ import {
   type LegacyLabels,
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
+import { LANDING_EDGE_PADDING_CLASS } from "./landing-layout";
 import { BrandLogo } from "./legacy-ui";
 import { legacyDemoToast } from "./legacy-story-feedback";
 
@@ -38,10 +39,15 @@ export function LandingPublicHeader({
         className,
       )}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div
+        className={cn(
+          "flex h-16 items-center justify-between",
+          LANDING_EDGE_PADDING_CLASS,
+        )}
+      >
         <button
           type="button"
-          className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="-ml-1 shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onClick={handleLogo}
           aria-label={labels.brandName}
         >
@@ -50,7 +56,7 @@ export function LandingPublicHeader({
 
         <nav
           aria-label="Authentication"
-          className="flex items-center gap-2 sm:gap-3"
+          className="ml-auto flex shrink-0 items-center gap-2 sm:gap-4"
         >
           <Button
             type="button"

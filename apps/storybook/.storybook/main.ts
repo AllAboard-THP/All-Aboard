@@ -17,7 +17,8 @@ const config: StorybookConfig = {
   ],
   framework: "@storybook/react-vite",
   async viteFinal(config) {
-    const uiSrc = path.resolve(__dirname, "../../../packages/ui/src");
+    const repoRoot = path.resolve(__dirname, "../../..");
+    const uiSrc = path.join(repoRoot, "packages/ui/src");
     return mergeConfig(config, {
       resolve: {
         alias: {
@@ -26,6 +27,13 @@ const config: StorybookConfig = {
             "styles/globals.css",
           ),
           "@allaboard/ui": uiSrc,
+        },
+        preserveSymlinks: true,
+      },
+      assetsInclude: ["**/*.png", "**/*.svg"],
+      server: {
+        fs: {
+          allow: [repoRoot],
         },
       },
     });

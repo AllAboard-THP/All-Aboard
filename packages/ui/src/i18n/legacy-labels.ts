@@ -19,7 +19,11 @@ export type LegacyLabels = {
   };
   landing: {
     eyebrow: string;
+    /** First headline line (plain). */
     headingLead: string;
+    /** Start of second line before the gradient span. */
+    headingLine2Prefix: string;
+    /** Gradient phrase on the second line (period added in UI). */
     headingAccent: string;
     description: string;
     pills: [string, string, string];
@@ -253,7 +257,8 @@ export const legacyLabelsFr: LegacyLabels = {
   },
   landing: {
     eyebrow: "Entraide étudiante en temps réel",
-    headingLead: "L'espace où les étudiants",
+    headingLead: "L'espace où les",
+    headingLine2Prefix: "étudiants ",
     headingAccent: "s'aident vraiment",
     description:
       "Publiez une requête, recevez des réponses ciblées, obtenez de l'aide de professionnels confirmés, échangez vos savoirs !",
@@ -500,7 +505,8 @@ export const legacyLabelsEn: LegacyLabels = {
   },
   landing: {
     eyebrow: "Real-time peer tutoring",
-    headingLead: "The space where students",
+    headingLead: "The space where",
+    headingLine2Prefix: "students ",
     headingAccent: "actually help each other",
     description:
       "Post a request, get targeted answers, learn from mentors, and share knowledge.",
