@@ -8,7 +8,7 @@ import { readFileSync } from "node:fs";
 import { parse as parseYaml } from "yaml";
 import { eq } from "drizzle-orm";
 import { buildApp } from "./app";
-import { defaultSeedUsers, seedUsers } from "./db/seed";
+import { defaultSeedUsers, defaultSeedSubjects, seedSubjects, seedUsers } from "./db/seed";
 import { outboxEvents } from "./db/schema";
 import { HELP_REQUEST_CREATED } from "./intuition/outbox";
 import { isOpenApiDocsEnabled } from "./openapi";
@@ -249,6 +249,7 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       if (specs.length > 0) {
         await seedUsers(db, specs);
       }
+      await seedSubjects(db, defaultSeedSubjects());
       app = await buildApp({ pool });
     });
 
@@ -257,11 +258,16 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       await pool.end();
     });
 
-    it("GET /feed returns 200 with items array", async () => {
+    it("GET /feed returns 200 with items array and pagination", async () => {
       const res = await app.inject({ method: "GET", url: "/feed" });
       expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload) as { items: unknown[] };
+      const body = JSON.parse(res.payload) as {
+        items: unknown[];
+        pagination: { page: number; limit: number; total: number };
+      };
       expect(Array.isArray(body.items)).toBe(true);
+      expect(body.pagination.page).toBe(1);
+      expect(typeof body.pagination.total).toBe("number");
     });
 
     it("GET /feed includes created item with tags", async () => {
@@ -903,6 +909,194 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       };
       const itemAfter = feedAfter.items.find((i) => i.id === created.item.id);
       expect(itemAfter?.hasUnreadForMentor).toBe(false);
+    });
+
+    it("POST /help-requests with title only remains backward compatible", async () => {
+      const title = `Compat title only ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      expect(res.statusCode).toBe(201);
+      const body = JSON.parse(res.payload) as { item: { title: string; body?: string } };
+      expect(body.item.title).toBe(title);
+      expect(body.item.body).toBeUndefined();
+    });
+
+    it("POST /help-requests accepts enriched body and subject", async () => {
+      const subjectsRes = await app.inject({ method: "GET", url: "/subjects" });
+      expect(subjectsRes.statusCode).toBe(200);
+      const subjects = JSON.parse(subjectsRes.payload) as {
+        items: Array<{ id: string; slug: string }>;
+      };
+      const react = subjects.items.find((s) => s.slug === "react");
+      expect(react).toBeDefined();
+
+      const title = `Enriched post ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          title,
+          body: "Détail du problème React hooks.",
+          codeSnippet: "useEffect(() => {}, [])",
+          codeLanguage: "javascript",
+          subjectId: react!.id,
+          urgent: true,
+          tags: ["react"],
+        },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: {
+          id: string;
+          body?: string;
+          subject?: { slug: string };
+          urgent?: boolean;
+        };
+      };
+      expect(created.item.body).toBe("Détail du problème React hooks.");
+      expect(created.item.subject?.slug).toBe("react");
+      expect(created.item.urgent).toBe(true);
+
+      const detailRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+      });
+      expect(detailRes.statusCode).toBe(200);
+      const detail = JSON.parse(detailRes.payload) as {
+        item: { body?: string; responsesCount?: number };
+      };
+      expect(detail.item.body).toBe("Détail du problème React hooks.");
+    });
+
+    it("GET /feed filters by subject slug", async () => {
+      const subjectsRes = await app.inject({ method: "GET", url: "/subjects" });
+      const subjects = JSON.parse(subjectsRes.payload) as {
+        items: Array<{ id: string; slug: string }>;
+      };
+      const rails = subjects.items.find((s) => s.slug === "rails");
+      expect(rails).toBeDefined();
+
+      const title = `Rails filter ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title, subjectId: rails!.id },
+      });
+
+      const feedRes = await app.inject({
+        method: "GET",
+        url: "/feed?subject=rails",
+      });
+      expect(feedRes.statusCode).toBe(200);
+      const feed = JSON.parse(feedRes.payload) as { items: Array<{ title: string }> };
+      expect(feed.items.some((i) => i.title === title)).toBe(true);
+
+      const otherFeed = await app.inject({
+        method: "GET",
+        url: "/feed?subject=javascript",
+      });
+      const other = JSON.parse(otherFeed.payload) as { items: Array<{ title: string }> };
+      expect(other.items.some((i) => i.title === title)).toBe(false);
+    });
+
+    it("GET /subjects returns seeded catalogue", async () => {
+      const res = await app.inject({ method: "GET", url: "/subjects" });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as { items: Array<{ slug: string }> };
+      expect(body.items.some((s) => s.slug === "react")).toBe(true);
+    });
+
+    it("POST /help-requests/:id/help-mentor sets flag visible in mentor feed", async () => {
+      const title = `Help mentor ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const helpRes = await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/help-mentor`,
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(helpRes.statusCode).toBe(200);
+      const updated = JSON.parse(helpRes.payload) as {
+        item: { mentorHelpRequested?: boolean };
+      };
+      expect(updated.item.mentorHelpRequested).toBe(true);
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const mentorFeed = await app.inject({
+        method: "GET",
+        url: "/mentor/feed",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      const feed = JSON.parse(mentorFeed.payload) as {
+        items: Array<{ title: string; mentorHelpRequested?: boolean }>;
+      };
+      expect(feed.items.some((i) => i.title === title)).toBe(true);
+    });
+
+    it("PATCH /help-requests/:id allows author to update body", async () => {
+      const title = `Patch author ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title, body: "Version initiale" },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const patchRes = await app.inject({
+        method: "PATCH",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { body: "Version corrigée" },
+      });
+      expect(patchRes.statusCode).toBe(200);
+      const patched = JSON.parse(patchRes.payload) as { item: { body?: string } };
+      expect(patched.item.body).toBe("Version corrigée");
+    });
+
+    it("PATCH /help-requests/:id returns 403 for non-author", async () => {
+      const title = `Patch forbidden ${Date.now()}`;
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const patchRes = await app.inject({
+        method: "PATCH",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+        payload: { body: "Tentative mentor" },
+      });
+      expect(patchRes.statusCode).toBe(403);
     });
   },
 );

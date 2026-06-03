@@ -36,6 +36,21 @@ describe("parseFeedResponse", () => {
     expect(parseFeedResponse(data)).toEqual(data);
   });
 
+  it("accepts pagination and widgets from enriched feed", () => {
+    const item = {
+      id: "1",
+      title: "Hello",
+      authorId: "u",
+      createdAt: "2020-01-01T00:00:00.000Z",
+    };
+    const data = {
+      items: [item],
+      pagination: { page: 1, limit: 100, total: 1 },
+      widgets: { unanswered: [item] },
+    };
+    expect(parseFeedResponse(data)).toEqual(data);
+  });
+
   it("rejects non-object", () => {
     expect(() => parseFeedResponse(null)).toThrow("expected object");
   });

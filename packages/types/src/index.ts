@@ -3,6 +3,21 @@ export type User = {
   name: string;
 };
 
+export type HelpRequestStatus = "open" | "resolved";
+
+export type SubjectSummary = {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string;
+  accentColor: string;
+};
+
+export type Subject = SubjectSummary & {
+  postsCount: number;
+  description?: string;
+};
+
 export type HelpRequest = {
   id: string;
   title: string;
@@ -10,11 +25,46 @@ export type HelpRequest = {
   createdAt: string;
   /** Tags mentor / domaine (MOC). Absent ou vide si non utilisé. */
   tags?: string[];
+  /** Corps de la demande (Rails post body). */
+  body?: string;
+  codeSnippet?: string;
+  codeLanguage?: string;
+  urgent?: boolean;
+  status?: HelpRequestStatus;
+  mentorHelpRequested?: boolean;
+  subjectId?: string;
+  subject?: SubjectSummary;
+  educationLevel?: string;
+  aiSummary?: string;
+  likesCount?: number;
+  responsesCount?: number;
+  bookmarksCount?: number;
+  updatedAt?: string;
+};
+
+export type FeedPagination = {
+  page: number;
+  limit: number;
+  total: number;
+};
+
+export type FeedWidgets = {
+  unanswered?: HelpRequest[];
 };
 
 /** JSON body of `GET /feed` from `apps/api`. */
 export type FeedResponse = {
   items: HelpRequest[];
+  pagination?: FeedPagination;
+  widgets?: FeedWidgets;
+};
+
+export type SubjectsResponse = {
+  items: Subject[];
+};
+
+export type SubjectDetailResponse = {
+  item: Subject;
 };
 
 export type Response = {
@@ -22,12 +72,34 @@ export type Response = {
   helpRequestId: string;
   body: string;
   authorId: string;
+  createdAt?: string;
+  codeSnippet?: string;
+  codeLanguage?: string;
 };
 
 /** Corps JSON pour `POST /help-requests` (auteur = sujet JWT, voir ADR 0001). */
 export type CreateHelpRequestBody = {
   title: string;
   tags?: string[];
+  body?: string;
+  codeSnippet?: string;
+  codeLanguage?: string;
+  subjectId?: string;
+  urgent?: boolean;
+  educationLevel?: string;
+};
+
+/** Corps JSON pour `PATCH /help-requests/:id`. */
+export type UpdateHelpRequestBody = {
+  title?: string;
+  body?: string;
+  codeSnippet?: string | null;
+  codeLanguage?: string;
+  tags?: string[];
+  subjectId?: string | null;
+  urgent?: boolean;
+  status?: HelpRequestStatus;
+  educationLevel?: string;
 };
 
 /** Réponse `201` création demande (+ indices stub MOC). */
@@ -37,6 +109,11 @@ export type CreateHelpRequestResponse = {
     /** Éligible handoff Rubberduck (externe) — source : agent `POST /routing/evaluate` (#68). */
     rubberduckEligible?: boolean;
   };
+};
+
+/** Réponse `200`/`201` mise à jour demande. */
+export type UpdateHelpRequestResponse = {
+  item: HelpRequest;
 };
 
 /** Métadonnées quand `GET /help-requests/:id?filterByCertifications=true` (mentor JWT). */
@@ -56,6 +133,8 @@ export type HelpRequestDetailResponse = {
 /** Corps JSON pour `POST /help-requests/:id/responses` (auteur = sujet JWT). */
 export type CreateResponseBody = {
   body: string;
+  codeSnippet?: string;
+  codeLanguage?: string;
 };
 
 /** Réponse `201` création réponse. */

@@ -3,21 +3,13 @@ import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
-import { registerOpenApiDocs } from "./openapi.js";
-import { desc, eq, inArray, sql } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import type {
   AuthMeResponse,
-  CreateHelpRequestResponse,
-  CreateResponseResponse,
-  HelpRequest,
-  HelpRequestDetailResponse,
   MentorFeedItem,
-  Response,
   UserRole,
 } from "@allaboard/types";
-import type { AppDatabase } from "./db/client.js";
-import { createDb, createPool } from "./db/client.js";
-import { helpRequests, responses, users } from "./db/schema.js";
+import type pg from "pg";
 import {
   authenticateWithDatabase,
   authenticateWithMvpFallback,
@@ -25,92 +17,30 @@ import {
   loginBodySchema,
   resolveLoginEmail,
 } from "./auth/login.js";
-import type pg from "pg";
-import { z } from "zod";
+import { createDb, createPool } from "./db/client.js";
+import type { AppDatabase } from "./db/client.js";
+import { helpRequests, responses, subjects } from "./db/schema.js";
 import {
   createAgentRoutingEvaluator,
   type EvaluateRoutingFn,
 } from "./agent/routing.js";
-import { enqueueHelpRequestCreated } from "./intuition/outbox.js";
-
-const createBodySchema = z.object({
-  title: z.string().min(1).max(500),
-  tags: z.array(z.string().max(64)).max(32).optional(),
-});
-
-const createResponseBodySchema = z.object({
-  body: z.string().min(1).max(10_000),
-});
+import {
+  getJwtUser,
+  jwtSecret,
+  roleFromJwtClaims,
+} from "./lib/auth-helpers.js";
+import { mentorFeedWhere } from "./lib/feed-query.js";
+import { rowToHelpRequest } from "./lib/mappers.js";
+import { registerOpenApiDocs } from "./openapi.js";
+import { registerFeedRoutes } from "./routes/feed.js";
+import { registerHelpRequestRoutes } from "./routes/help-requests.js";
+import { registerSubjectRoutes } from "./routes/subjects.js";
 
 export type BuildAppOptions = {
   pool?: pg.Pool | null;
   /** Injecté en tests (#68) ; défaut : client HTTP vers `AGENT_URL` + fallback. */
   evaluateRouting?: EvaluateRoutingFn;
 };
-
-function jwtSecret(): string {
-  const s = process.env.JWT_SECRET?.trim();
-  if (s && s.length >= 32) return s;
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("JWT_SECRET is required in production (min 32 characters)");
-  }
-  return "dev-only-jwt-secret-min-32-characters!!";
-}
-
-function normalizeTitle(title: string): string {
-  return title.trim().toLowerCase().replace(/\s+/g, " ");
-}
-
-function roleFromJwtClaims(
-  sub: string,
-  roleClaim: string | undefined,
-): UserRole {
-  if (roleClaim === "mentor" || roleClaim === "student") return roleClaim;
-  if (sub.endsWith("@dev.local")) {
-    return sub.startsWith("alice@") ? "mentor" : "student";
-  }
-  return "student";
-}
-
-function rowToHelpRequest(row: typeof helpRequests.$inferSelect): HelpRequest {
-  const tags = row.tags?.length ? row.tags : undefined;
-  return {
-    id: row.id,
-    title: row.title,
-    authorId: row.authorId,
-    createdAt: row.createdAt.toISOString(),
-    ...(tags ? { tags } : {}),
-  };
-}
-
-function rowToResponse(row: typeof responses.$inferSelect): Response {
-  return {
-    id: row.id,
-    helpRequestId: row.helpRequestId,
-    body: row.body,
-    authorId: row.authorId,
-  };
-}
-
-function normalizeTag(tag: string): string {
-  return tag.trim().toLowerCase();
-}
-
-function tagsOverlap(requestTags: string[], authorCerts: string[]): boolean {
-  if (requestTags.length === 0 || authorCerts.length === 0) return false;
-  const requestSet = new Set(requestTags.map(normalizeTag));
-  return authorCerts.some((c) => requestSet.has(normalizeTag(c)));
-}
-
-function responseVisibleUnderCertificationFilter(
-  responseAuthorId: string,
-  requestAuthorId: string,
-  requestTags: string[],
-  authorCerts: string[],
-): boolean {
-  if (responseAuthorId === requestAuthorId) return true;
-  return tagsOverlap(requestTags, authorCerts);
-}
 
 export async function buildApp(options?: BuildAppOptions) {
   const pool =
@@ -153,17 +83,9 @@ export async function buildApp(options?: BuildAppOptions) {
 
   app.get("/health", async () => ({ status: "ok" as const }));
 
-  app.get("/feed", async (_request, reply) => {
-    if (!db) {
-      return reply.code(503).send({ error: "database_unavailable" });
-    }
-    const rows = await db
-      .select()
-      .from(helpRequests)
-      .orderBy(desc(helpRequests.createdAt))
-      .limit(100);
-    return { items: rows.map(rowToHelpRequest) };
-  });
+  registerFeedRoutes(app, db);
+  registerSubjectRoutes(app, db);
+  registerHelpRequestRoutes(app, db, evaluateRouting);
 
   app.post("/auth/login", async (request, reply) => {
     const parsed = loginBodySchema.safeParse(request.body);
@@ -175,7 +97,10 @@ export async function buildApp(options?: BuildAppOptions) {
       return reply.code(400).send({ error: "invalid_body" });
     }
 
-    let auth: { userId: string; role: UserRole } | "invalid_credentials" | "login_not_configured";
+    let auth:
+      | { userId: string; role: UserRole }
+      | "invalid_credentials"
+      | "login_not_configured";
 
     if (db) {
       auth = await authenticateWithDatabase(db, email, parsed.data.password);
@@ -213,128 +138,9 @@ export async function buildApp(options?: BuildAppOptions) {
     "/auth/me",
     { preHandler: [app.authenticate] },
     async (request): Promise<AuthMeResponse> => {
-      const user = request.user as { sub: string; role?: UserRole };
+      const user = getJwtUser(request);
       const role = roleFromJwtClaims(user.sub, user.role);
       return { userId: user.sub, role };
-    },
-  );
-
-  app.get("/help-requests/:id", async (request, reply) => {
-    if (!db) {
-      return reply.code(503).send({ error: "database_unavailable" });
-    }
-    const query = request.query as { filterByCertifications?: string };
-    const filterByCertifications = query.filterByCertifications === "true";
-
-    if (filterByCertifications) {
-      try {
-        await request.jwtVerify();
-      } catch {
-        return reply.code(401).send({ error: "unauthorized" });
-      }
-      const user = request.user as { sub: string; role?: UserRole };
-      const role = roleFromJwtClaims(user.sub, user.role);
-      if (role !== "mentor") {
-        return reply.code(403).send({ error: "forbidden" });
-      }
-    }
-
-    const { id } = request.params as { id: string };
-    const rows = await db
-      .select()
-      .from(helpRequests)
-      .where(eq(helpRequests.id, id))
-      .limit(1);
-    const row = rows[0];
-    if (!row) {
-      return reply.code(404).send({ error: "not_found" });
-    }
-    const responseRows = await db
-      .select()
-      .from(responses)
-      .where(eq(responses.helpRequestId, id))
-      .orderBy(responses.createdAt);
-
-    let visibleRows = responseRows;
-    if (filterByCertifications) {
-      const authorEmails = [
-        ...new Set(responseRows.map((r) => r.authorId)),
-      ];
-      const certByEmail = new Map<string, string[]>();
-      if (authorEmails.length > 0) {
-        const userRows = await db
-          .select({
-            email: users.email,
-            certificationTags: users.certificationTags,
-          })
-          .from(users)
-          .where(inArray(users.email, authorEmails));
-        for (const u of userRows) {
-          certByEmail.set(u.email, u.certificationTags ?? []);
-        }
-      }
-      const requestTags = row.tags ?? [];
-      visibleRows = responseRows.filter((r) =>
-        responseVisibleUnderCertificationFilter(
-          r.authorId,
-          row.authorId,
-          requestTags,
-          certByEmail.get(r.authorId) ?? [],
-        ),
-      );
-    }
-
-    const body: HelpRequestDetailResponse = {
-      item: rowToHelpRequest(row),
-      responses: visibleRows.map(rowToResponse),
-      ...(filterByCertifications
-        ? {
-            certificationFilter: {
-              applied: true as const,
-              totalCount: responseRows.length,
-              visibleCount: visibleRows.length,
-            },
-          }
-        : {}),
-    };
-    return body;
-  });
-
-  app.post(
-    "/help-requests/:id/responses",
-    { preHandler: [app.authenticate] },
-    async (request, reply): Promise<CreateResponseResponse | void> => {
-      if (!db) {
-        return reply.code(503).send({ error: "database_unavailable" });
-      }
-      const { id } = request.params as { id: string };
-      const parsed = createResponseBodySchema.safeParse(request.body);
-      if (!parsed.success) {
-        return reply.code(400).send({ error: "invalid_body" });
-      }
-      const helpRows = await db
-        .select({ id: helpRequests.id })
-        .from(helpRequests)
-        .where(eq(helpRequests.id, id))
-        .limit(1);
-      if (helpRows.length === 0) {
-        return reply.code(404).send({ error: "not_found" });
-      }
-      const user = request.user as { sub: string };
-      const inserted = await db
-        .insert(responses)
-        .values({
-          helpRequestId: id,
-          body: parsed.data.body.trim(),
-          authorId: user.sub,
-        })
-        .returning();
-      const row = inserted[0];
-      if (!row) {
-        return reply.code(500).send({ error: "insert_failed" });
-      }
-      void reply.code(201);
-      return { item: rowToResponse(row) };
     },
   );
 
@@ -345,7 +151,7 @@ export async function buildApp(options?: BuildAppOptions) {
       if (!db) {
         return reply.code(503).send({ error: "database_unavailable" });
       }
-      const user = request.user as { sub: string; role?: UserRole };
+      const user = getJwtUser(request);
       const role = roleFromJwtClaims(user.sub, user.role);
       if (role !== "mentor") {
         return reply.code(403).send({ error: "forbidden" });
@@ -353,13 +159,17 @@ export async function buildApp(options?: BuildAppOptions) {
       const mentorId = user.sub;
 
       const rows = await db
-        .select()
+        .select({
+          helpRequest: helpRequests,
+          subject: subjects,
+        })
         .from(helpRequests)
-        .where(sql`cardinality(${helpRequests.tags}) > 0`)
+        .leftJoin(subjects, eq(helpRequests.subjectId, subjects.id))
+        .where(mentorFeedWhere)
         .orderBy(desc(helpRequests.createdAt))
         .limit(100);
 
-      const ids = rows.map((row) => row.id);
+      const ids = rows.map((row) => row.helpRequest.id);
       const responsesByRequest = new Map<
         string,
         Array<typeof responses.$inferSelect>
@@ -378,9 +188,9 @@ export async function buildApp(options?: BuildAppOptions) {
         }
       }
 
-      const items: MentorFeedItem[] = rows.map((row) => {
-        const base = rowToHelpRequest(row);
-        const requestResponses = responsesByRequest.get(row.id) ?? [];
+      const items: MentorFeedItem[] = rows.map(({ helpRequest, subject }) => {
+        const base = rowToHelpRequest(helpRequest, subject);
+        const requestResponses = responsesByRequest.get(helpRequest.id) ?? [];
         const responseCount = requestResponses.length;
         let lastResponseAt: string | null = null;
         let hasUnreadForMentor = false;
@@ -398,64 +208,6 @@ export async function buildApp(options?: BuildAppOptions) {
       });
 
       return { items };
-    },
-  );
-
-  app.post(
-    "/help-requests",
-    { preHandler: [app.authenticate] },
-    async (request, reply): Promise<CreateHelpRequestResponse | void> => {
-      if (!db) {
-        return reply.code(503).send({ error: "database_unavailable" });
-      }
-      const parsed = createBodySchema.safeParse(request.body);
-      if (!parsed.success) {
-        return reply.code(400).send({ error: "invalid_body" });
-      }
-      const user = request.user as { sub: string };
-      const norm = normalizeTitle(parsed.data.title);
-      const dup = await db
-        .select({ id: helpRequests.id })
-        .from(helpRequests)
-        .where(
-          sql`regexp_replace(lower(trim(${helpRequests.title})), '[[:space:]]+', ' ', 'g') = ${norm}`,
-        )
-        .limit(1);
-      if (dup.length > 0) {
-        return reply
-          .code(409)
-          .send({ error: "duplicate", existingId: dup[0].id });
-      }
-      const tags = parsed.data.tags ?? [];
-      const inserted = await db
-        .insert(helpRequests)
-        .values({
-          title: parsed.data.title.trim(),
-          authorId: user.sub,
-          tags,
-        })
-        .returning();
-      const row = inserted[0];
-      if (!row) {
-        return reply.code(500).send({ error: "insert_failed" });
-      }
-      await enqueueHelpRequestCreated(db, {
-        id: row.id,
-        title: row.title,
-        authorId: row.authorId,
-        tags: row.tags?.length ? row.tags : undefined,
-      });
-      const item = rowToHelpRequest(row);
-      const routing = await evaluateRouting({
-        title: parsed.data.title.trim(),
-        ...(tags.length ? { tags } : {}),
-        authorId: user.sub,
-      });
-      const hints = routing.suggestRubberduckRedirect
-        ? { rubberduckEligible: true as const }
-        : undefined;
-      void reply.code(201);
-      return hints ? { item, hints } : { item };
     },
   );
 

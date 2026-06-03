@@ -53,7 +53,41 @@ export function parseFeedResponse(data: unknown): FeedResponse {
   if (!o.items.every(isHelpRequest)) {
     throw new Error("Invalid feed: item shape");
   }
-  return { items: o.items };
+  const result: FeedResponse = { items: o.items };
+  if (o.pagination !== undefined) {
+    if (typeof o.pagination !== "object" || o.pagination === null) {
+      throw new Error("Invalid feed: pagination shape");
+    }
+    const p = o.pagination as Record<string, unknown>;
+    if (
+      typeof p.page !== "number" ||
+      typeof p.limit !== "number" ||
+      typeof p.total !== "number"
+    ) {
+      throw new Error("Invalid feed: pagination shape");
+    }
+    result.pagination = {
+      page: p.page,
+      limit: p.limit,
+      total: p.total,
+    };
+  }
+  if (o.widgets !== undefined) {
+    if (typeof o.widgets !== "object" || o.widgets === null) {
+      throw new Error("Invalid feed: widgets shape");
+    }
+    const w = o.widgets as Record<string, unknown>;
+    if (w.unanswered !== undefined) {
+      if (
+        !Array.isArray(w.unanswered) ||
+        !w.unanswered.every(isHelpRequest)
+      ) {
+        throw new Error("Invalid feed: widgets.unanswered shape");
+      }
+      result.widgets = { unanswered: w.unanswered };
+    }
+  }
+  return result;
 }
 
 export function parseHelpRequestDetailResponse(
