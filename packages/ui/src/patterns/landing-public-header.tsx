@@ -9,6 +9,7 @@ import { cn } from "@allaboard/ui/lib/utils";
 import {
   LANDING_EDGE_PADDING_CLASS,
   LANDING_GLASS_CHROME_CLASS,
+  LANDING_HEADER_TAGLINE_CLASS,
 } from "./landing-layout";
 import { BrandLogo } from "./legacy-ui";
 import { legacyDemoToast } from "./legacy-story-feedback";
@@ -45,22 +46,30 @@ export function LandingPublicHeader({
     >
       <div
         className={cn(
-          "flex h-16 items-center justify-between",
+          "flex min-h-[4.25rem] items-center justify-between gap-4 py-2 sm:min-h-[4.5rem]",
           LANDING_EDGE_PADDING_CLASS,
         )}
       >
         <button
           type="button"
-          className="-ml-1 shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="-ml-1 shrink-0 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onClick={handleLogo}
           aria-label={labels.brandName}
         >
-          <BrandLogo labels={labels} />
+          <BrandLogo
+            labels={labels}
+            className="items-start"
+            tagline={
+              <span className={LANDING_HEADER_TAGLINE_CLASS}>
+                {labels.landing.eyebrow}
+              </span>
+            }
+          />
         </button>
 
         <nav
           aria-label="Authentication"
-          className="ml-auto flex shrink-0 items-center gap-2 sm:gap-4"
+          className="ml-auto flex shrink-0 items-center gap-2 self-center sm:gap-4"
         >
           <Button
             type="button"

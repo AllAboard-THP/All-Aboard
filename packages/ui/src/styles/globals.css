@@ -214,6 +214,35 @@
     border-color: rgb(255 255 255 / 0.08);
   }
 
+  /** Metallic chrome on hero copy — no panel, text only. */
+  .landing-chrome-text {
+    background: linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f1f5f9 36%,
+      #cbd5e1 46%,
+      #f8fafc 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    text-shadow: 0 0 22px rgb(226 232 240 / 0.22);
+  }
+
+  .landing-chrome-text--eyebrow {
+    background: linear-gradient(
+      180deg,
+      #f8fafc 0%,
+      #e0e7ff 42%,
+      #c7d2fe 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
   .focus-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }

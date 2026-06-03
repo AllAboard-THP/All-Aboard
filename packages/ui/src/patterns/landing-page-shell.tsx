@@ -11,6 +11,7 @@ import { LandingConceptBackground } from "./landing-concept-background";
 import {
   LANDING_EDGE_PADDING_CLASS,
   LANDING_GLASS_CHROME_CLASS,
+  LANDING_HEADER_OFFSET_CLASS,
 } from "./landing-layout";
 import { AppFooter, type LegacyLegalLinkKey } from "./legacy-ui";
 import {
@@ -55,7 +56,14 @@ export function LandingPageShell({
         onSignUpClick={onSignUpClick}
         onLogoClick={onLogoClick}
       />
-      <main className="relative z-10 flex flex-1 flex-col pt-16">{children}</main>
+      <main
+        className={cn(
+          "relative z-10 flex flex-1 flex-col",
+          LANDING_HEADER_OFFSET_CLASS,
+        )}
+      >
+        {children}
+      </main>
       <AppFooter
         labels={labels}
         edgeToEdge

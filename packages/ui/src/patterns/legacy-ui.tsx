@@ -58,21 +58,33 @@ export function BrandLogo({
   className,
   markClassName,
   showWordmark = true,
+  tagline,
 }: {
   labels?: LegacyLabels;
   className?: string;
   markClassName?: string;
   showWordmark?: boolean;
+  /** Renders below the wordmark (e.g. landing header tagline). */
+  tagline?: ReactNode;
 }) {
+  const wordmark = showWordmark ? (
+    <span className="gradient-text text-xl font-bold">{labels.brandName}</span>
+  ) : null;
+
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <AllAboardLogoMark
         className={markClassName ?? "size-10"}
         title={labels.brandName}
       />
-      {showWordmark ? (
-        <span className="gradient-text text-xl font-bold">{labels.brandName}</span>
-      ) : null}
+      {tagline ? (
+        <div className="flex min-w-0 flex-col gap-0.5">
+          {wordmark}
+          {tagline}
+        </div>
+      ) : (
+        wordmark
+      )}
     </div>
   );
 }
@@ -80,14 +92,17 @@ export function BrandLogo({
 export function Eyebrow({
   children,
   className,
+  chromeText = false,
 }: {
   children: ReactNode;
   className?: string;
+  chromeText?: boolean;
 }) {
   return (
     <p
       className={cn(
-        "mb-4 text-xs tracking-[0.3em] text-primary uppercase",
+        "mb-4 text-xs tracking-[0.3em] uppercase",
+        chromeText ? "landing-chrome-text--eyebrow" : "text-primary",
         className,
       )}
     >
@@ -102,6 +117,7 @@ export function GradientHeading({
   accent,
   className,
   allowWrap = false,
+  chromeText = false,
 }: {
   lead: string;
   line2Prefix: string;
@@ -109,22 +125,25 @@ export function GradientHeading({
   className?: string;
   /** When true, lines wrap inside narrow columns (e.g. landing grid). */
   allowWrap?: boolean;
+  /** Metallic chrome on lead + line2; accent keeps brand gradient. */
+  chromeText?: boolean;
 }) {
   const lineClass = cn(
     "block text-pretty",
     allowWrap ? "text-balance" : "whitespace-nowrap",
   );
+  const chromeLine = chromeText ? "landing-chrome-text" : undefined;
 
   return (
     <h1
       className={cn(
-        "text-[clamp(1.65rem,4.5vw,3.75rem)] leading-[1.1] font-extrabold tracking-tight",
+        "text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.12] font-bold tracking-tight text-foreground",
         className,
       )}
     >
-      <span className={lineClass}>{lead}</span>
+      <span className={cn(lineClass, chromeLine)}>{lead}</span>
       <span className={lineClass}>
-        {line2Prefix}
+        <span className={chromeLine}>{line2Prefix}</span>
         <span className="gradient-text">{accent}</span>.
       </span>
     </h1>
@@ -153,11 +172,19 @@ export function FeaturePill({
   return (
     <span
       className={cn(
-        "subject-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-gray-200",
+        "subject-chip group inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-gray-200",
+        "transition-[transform,background-color,border-color,box-shadow] duration-200 ease-out",
+        "hover:scale-105 hover:border-white/30 hover:bg-white/12 hover:shadow-[0_0_1.25rem_rgb(99_102_241/0.45)]",
+        "motion-reduce:transition-none motion-reduce:hover:scale-100",
         className,
       )}
     >
-      <Icon className={cn("size-4", iconClass)} />
+      <Icon
+        className={cn(
+          "size-4 transition-[filter,transform] duration-200 group-hover:scale-110 group-hover:brightness-125",
+          iconClass,
+        )}
+      />
       {label}
     </span>
   );

@@ -13,7 +13,7 @@ export function LandingConceptBackground({ className }: { className?: string }) 
         decoding="async"
         fetchPriority="low"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-background/20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/45 to-background/15" />
       <div className="absolute inset-0 bg-background/15" />
     </div>
   );
