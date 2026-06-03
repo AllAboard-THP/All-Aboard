@@ -22,7 +22,7 @@ Cadrer le backlog long terme **`apps/agent` (agent All-Aboard) + handoff Rubberd
 | [#66](https://github.com/AllAboard-THP/All-Aboard/issues/66) | Scaffold `apps/agent` (healthcheck, stubs agent + handoff) | Livré — [`apps/agent`](../../../apps/agent/README.md) |
 | [#67](https://github.com/AllAboard-THP/All-Aboard/issues/67) | Bridge Intuition (publisher outbox + GraphQL) | Livré — [README](../67-intuition-bridge/README.md), [spike GraphQL](./intuition-graphql-spike.md) |
 | [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68) | Intégration API — handoff Rubberduck via agent | Triage — dépend #66 |
-| [#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) | CI/Dokploy Agent + retrait placeholder Indexer | Triage — dépend #66 |
+| [#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) | CI/Dokploy Agent + retrait placeholder Indexer | Livré — [README](../69-agent-ci-dokploy/README.md), job CI `agent` |
 
 ## Décision architecture (2026-05-27)
 
@@ -39,7 +39,7 @@ Cadrer le backlog long terme **`apps/agent` (agent All-Aboard) + handoff Rubberd
 
 - **Stub handoff Rubberduck** : `POST /help-requests` renvoie `hints.rubberduckEligible` si titre ≤ 6 mots ([`apps/api/src/app.ts`](../../../apps/api/src/app.ts)).
 - **UI** : message stub dans [`help-request-form.tsx`](../../../apps/web/components/features/help-request-form.tsx).
-- **`apps/agent`** : scaffold livré (#66) ; service Dokploy Agent **désactivé** jusqu’à #69.
+- **`apps/agent`** : scaffold livré (#66) ; CI Docker + smoke `/health` (#69) ; service Dokploy Agent **désactivé** jusqu’à validation ops.
 - **Intuition** : aucune intégration code ; index doc dans [`intuition-documentation-index.md`](../../intuition-documentation-index.md).
 
 ## Critères de clôture cadrage (#37 — partial)

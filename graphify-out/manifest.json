@@ -160,7 +160,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/bff-phase2.test.ts": {
-    "mtime": 1780485339.7438018,
+    "mtime": 1780486382.9756453,
     "ast_hash": "9736d9faa418fb68571dd94a5e81e248",
     "semantic_hash": ""
   },
@@ -215,7 +215,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/help-request-form.tsx": {
-    "mtime": 1780485332.6638026,
+    "mtime": 1780486382.9756453,
     "ast_hash": "83e66c56912531041cf2e51c2bf7e4f3",
     "semantic_hash": ""
   },
@@ -280,7 +280,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.ts": {
-    "mtime": 1780485325.6838033,
+    "mtime": 1780486382.9756453,
     "ast_hash": "04f7b2ef8f8199ec6dfddc76f559daf5",
     "semantic_hash": ""
   },
@@ -300,7 +300,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.test.ts": {
-    "mtime": 1780485347.043801,
+    "mtime": 1780486382.9756453,
     "ast_hash": "ef40f6a4671071842984a104a4855b70",
     "semantic_hash": ""
   },
@@ -330,7 +330,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/openapi.yaml": {
-    "mtime": 1780485339.9838018,
+    "mtime": 1780486382.9716454,
     "ast_hash": "5920894669e53a6b5864e0b567761721",
     "semantic_hash": ""
   },
@@ -620,7 +620,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/types/src/index.ts": {
-    "mtime": 1780485344.9558012,
+    "mtime": 1780486382.9836454,
     "ast_hash": "3bc9cdecd721d20271cdfda02a443f75",
     "semantic_hash": ""
   },
@@ -740,8 +740,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deploiement-dokploy-instance-allaboard.md": {
-    "mtime": 1780068463.0452607,
-    "ast_hash": "17b0f9d2031632cd895bc7e9f4c1d551",
+    "mtime": 1780486023.991697,
+    "ast_hash": "3006c993b3150527d69ccaeaa2bb76e6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/README.md": {
@@ -785,8 +785,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/37-agent-indexer/README.md": {
-    "mtime": 1780482261.6041625,
-    "ast_hash": "1fde88fc552765d7e07208f36c8dc8be",
+    "mtime": 1780486021.7956984,
+    "ast_hash": "83147e35d9b5983751c0e55ba1c41c19",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/_template/README.md": {
@@ -905,33 +905,38 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/api/rubberduck/redirect/route.ts": {
-    "mtime": 1780485329.427803,
+    "mtime": 1780486382.9756453,
     "ast_hash": "bc9fa8e4988748100c1d1a3e0fd17db8",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/rubberduck-redirect.test.ts": {
-    "mtime": 1780485336.1558022,
+    "mtime": 1780486382.9756453,
     "ast_hash": "5a5a842b96e595445a89f11f2f8fad54",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/rubberduck-redirect.ts": {
-    "mtime": 1780485330.159803,
+    "mtime": 1780486382.9756453,
     "ast_hash": "5d518cb22b3f0a27cc60c3068a8190b8",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/agent/routing.ts": {
-    "mtime": 1780485321.3078039,
+    "mtime": 1780486382.9756453,
     "ast_hash": "972c6305f44c131b88657bbfb7802ec6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/agent/routing.test.ts": {
-    "mtime": 1780485323.7158036,
+    "mtime": 1780486382.9756453,
     "ast_hash": "2d82b96ff12464ae8a6077e5062ca067",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/68-agent-handoff/README.md": {
-    "mtime": 1780485342.0558016,
+    "mtime": 1780486382.9716454,
     "ast_hash": "7f308f2e8763d712b499719f707121f4",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/tasks/69-agent-ci-dokploy/README.md": {
+    "mtime": 1780486008.6597064,
+    "ast_hash": "e35697c045906881a221ed8becbbb477",
     "semantic_hash": ""
   }
 }
