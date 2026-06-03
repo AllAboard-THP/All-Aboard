@@ -6,8 +6,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFileSync } from "node:fs";
 import { parse as parseYaml } from "yaml";
+import { eq } from "drizzle-orm";
 import { buildApp } from "./app";
 import { defaultSeedUsers, seedUsers } from "./db/seed";
+import { outboxEvents } from "./db/schema";
+import { HELP_REQUEST_CREATED } from "./intuition/outbox";
 import { isOpenApiDocsEnabled } from "./openapi";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -368,6 +371,36 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       };
       expect(body.item.title).toBe(title);
       expect(body.item.authorId).toBe("bob");
+    });
+
+    it("POST /help-requests enqueues help_request.created outbox event", async () => {
+      const title = `Outbox on create ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob" });
+      const res = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title, tags: ["typescript"] },
+      });
+      expect(res.statusCode).toBe(201);
+      const body = JSON.parse(res.payload) as { item: { id: string } };
+      const db = drizzle(pool);
+      const rows = await db
+        .select()
+        .from(outboxEvents)
+        .where(eq(outboxEvents.aggregateId, body.item.id));
+      expect(rows).toHaveLength(1);
+      expect(rows[0]?.eventType).toBe(HELP_REQUEST_CREATED);
+      const payload = rows[0]?.payload as {
+        id: string;
+        title: string;
+        authorId: string;
+        tags?: string[];
+      };
+      expect(payload.id).toBe(body.item.id);
+      expect(payload.title).toBe(title);
+      expect(payload.authorId).toBe("bob");
+      expect(payload.tags).toEqual(["typescript"]);
     });
 
     it("POST /help-requests returns 409 for duplicate title", async () => {

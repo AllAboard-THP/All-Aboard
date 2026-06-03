@@ -20,7 +20,7 @@ Cadrer le backlog long terme **`apps/agent` (agent All-Aboard) + handoff Rubberd
 | Issue | Titre | Statut |
 |-------|-------|--------|
 | [#66](https://github.com/AllAboard-THP/All-Aboard/issues/66) | Scaffold `apps/agent` (healthcheck, stubs agent + handoff) | Livré — [`apps/agent`](../../../apps/agent/README.md) |
-| [#67](https://github.com/AllAboard-THP/All-Aboard/issues/67) | Bridge Intuition (publisher outbox + GraphQL) | Triage |
+| [#67](https://github.com/AllAboard-THP/All-Aboard/issues/67) | Bridge Intuition (publisher outbox + GraphQL) | Livré — [README](../67-intuition-bridge/README.md), [spike GraphQL](./intuition-graphql-spike.md) |
 | [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68) | Intégration API — handoff Rubberduck via agent | Triage — dépend #66 |
 | [#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) | CI/Dokploy Agent + retrait placeholder Indexer | Triage — dépend #66 |
 

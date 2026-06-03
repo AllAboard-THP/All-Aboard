@@ -270,8 +270,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/meta/_journal.json": {
-    "mtime": 1780304924.4685628,
-    "ast_hash": "e83d5c03b47bc0cc7ebe64f3bb15533e",
+    "mtime": 1780482222.1321511,
+    "ast_hash": "ef7a8aae0361382d0db54c9819f63a20",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/migrate.ts": {
@@ -280,8 +280,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.ts": {
-    "mtime": 1780304924.4685628,
-    "ast_hash": "48206c6eef8995103474f84a82023bda",
+    "mtime": 1780482235.7640643,
+    "ast_hash": "3e7ae7ce42a048a6886393e83e21f36e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/fastify-augmentation.ts": {
@@ -300,18 +300,18 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.test.ts": {
-    "mtime": 1780304924.4685628,
-    "ast_hash": "e74ec04476adde17be90e2d4b32daeb9",
+    "mtime": 1780482249.3881254,
+    "ast_hash": "7776f70521eef124e37c794092eb8494",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/index.ts": {
-    "mtime": 1779983505.1285732,
-    "ast_hash": "1b4fe355535557247da2231c31c9d8d7",
+    "mtime": 1780482237.1360621,
+    "ast_hash": "a96d1222f6b230bbd6abf9aaa038b651",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/schema.ts": {
-    "mtime": 1780304924.4685628,
-    "ast_hash": "fe1a5f15740d525427af2e4a8f296c84",
+    "mtime": 1780482223.6161788,
+    "ast_hash": "41bfeed5436125aab15751994c7baec5",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/seed.ts": {
@@ -620,8 +620,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/types/src/index.ts": {
-    "mtime": 1780417055.2964823,
-    "ast_hash": "5b6e4cff4921b58f4fb370fd366718ac",
+    "mtime": 1780482233.0720873,
+    "ast_hash": "4a5a18e7d95f229068cb3fe9c994208d",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/config-eslint/node.mjs": {
@@ -705,8 +705,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/matrice-deploiement-dokploy-coolify.md": {
-    "mtime": 1779797451.2230604,
-    "ast_hash": "88fb66f18661fec6f800054cc498e9fb",
+    "mtime": 1780482265.4841812,
+    "ast_hash": "b0c6edea35281fa7dbbed973b9253a38",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/runbook-dokploy-staging-phase2.md": {
@@ -785,8 +785,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/37-agent-indexer/README.md": {
-    "mtime": 1780417063.9393456,
-    "ast_hash": "ea69a6dc9a3b9b9af066ababc8688c77",
+    "mtime": 1780482261.6041625,
+    "ast_hash": "1fde88fc552765d7e07208f36c8dc8be",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/_template/README.md": {
@@ -857,6 +857,51 @@
   "/home/dim/AllAboard/Docs/adr/0003-authentication-users-production.md": {
     "mtime": 1779983505.1245732,
     "ast_hash": "2441fff4a8e1a83dae9f072eab28b9eb",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/drizzle/0004_outbox_intuition.sql": {
+    "mtime": 1780482221.6161342,
+    "ast_hash": "c5b3d8c395ab9ddcb4f3f775f8f34666",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/intuition/publisher.test.ts": {
+    "mtime": 1780482245.1360643,
+    "ast_hash": "660078adc1c63032149cee8988e6d442",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/intuition/publisher.ts": {
+    "mtime": 1780482231.7040982,
+    "ast_hash": "bd2df477cdd77f75421e9f6dc7ef2a93",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/intuition/config.ts": {
+    "mtime": 1780482225.968152,
+    "ast_hash": "e8df8baf40824521e84d65c82ce3944b",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/intuition/config.test.ts": {
+    "mtime": 1780482266.560173,
+    "ast_hash": "dbb6caf859936131a74a8a846893298a",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/intuition/index.ts": {
+    "mtime": 1780482232.0560954,
+    "ast_hash": "5aa718b17d9c852d41b93eaf8776f2c6",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/intuition/outbox.ts": {
+    "mtime": 1780482226.904141,
+    "ast_hash": "78a97ad633ed141c0e399966795b4997",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/tasks/67-intuition-bridge/README.md": {
+    "mtime": 1780482254.1161644,
+    "ast_hash": "75cbaeee4db9294deb0b9fbf1ad0fe89",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/tasks/37-agent-indexer/intuition-graphql-spike.md": {
+    "mtime": 1780482260.9721546,
+    "ast_hash": "fd3533d6c9a3ac1ce1d58b01c35c12c2",
     "semantic_hash": ""
   }
 }

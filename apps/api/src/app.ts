@@ -27,6 +27,7 @@ import {
 } from "./auth/login.js";
 import type pg from "pg";
 import { z } from "zod";
+import { enqueueHelpRequestCreated } from "./intuition/outbox.js";
 
 const createBodySchema = z.object({
   title: z.string().min(1).max(500),
@@ -434,6 +435,12 @@ export async function buildApp(options?: BuildAppOptions) {
       if (!row) {
         return reply.code(500).send({ error: "insert_failed" });
       }
+      await enqueueHelpRequestCreated(db, {
+        id: row.id,
+        title: row.title,
+        authorId: row.authorId,
+        tags: row.tags?.length ? row.tags : undefined,
+      });
       const item = rowToHelpRequest(row);
       const hints =
         wordCount(parsed.data.title) <= 6

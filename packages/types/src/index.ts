@@ -111,3 +111,22 @@ export type AgentRoutingEvaluateResponse = {
   suggestRubberduckRedirect: boolean;
   reason?: string;
 };
+
+/** Payload outbox `help_request.created` (bridge Intuition #67). */
+export type HelpRequestCreatedOutboxPayload = {
+  id: string;
+  title: string;
+  authorId: string;
+  tags?: string[];
+};
+
+/** Événements outbox Postgres — évolution Phase 4 (ADR 0004). */
+export type OutboxEvent =
+  | {
+      type: "help_request.created";
+      payload: HelpRequestCreatedOutboxPayload;
+    }
+  | {
+      type: "help_request.rubberduck_handoff";
+      payload: { id: string; title: string };
+    };
