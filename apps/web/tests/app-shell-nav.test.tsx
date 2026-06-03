@@ -6,7 +6,7 @@ import {
   AppShellNav,
 } from "@/components/features/app-shell-nav";
 
-const usePathname = vi.fn(() => "/");
+const usePathname = vi.fn(() => "/feed");
 
 vi.mock("next/navigation", () => ({
   usePathname: () => usePathname(),
@@ -36,7 +36,7 @@ function getPrimaryNav() {
 
 describe("AppShellNav", () => {
   beforeEach(() => {
-    usePathname.mockReturnValue("/");
+    usePathname.mockReturnValue("/feed");
   });
 
   it("renders three navigation links", () => {
@@ -47,10 +47,11 @@ describe("AppShellNav", () => {
     }
   });
 
-  it("marks Feed as current page on /", () => {
+  it("marks Feed as current page on /feed", () => {
     render(<AppShellNav />);
     const nav = getPrimaryNav();
     const home = nav.getByRole("link", { name: "Feed" });
+    expect(home.getAttribute("href")).toBe("/feed");
     expect(home.getAttribute("aria-current")).toBe("page");
     expect(nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute("aria-current")).toBeNull();
   });
