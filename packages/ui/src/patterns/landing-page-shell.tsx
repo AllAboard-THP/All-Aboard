@@ -7,7 +7,11 @@ import {
   type LegacyLabels,
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
-import { LANDING_EDGE_PADDING_CLASS } from "./landing-layout";
+import { LandingConceptBackground } from "./landing-concept-background";
+import {
+  LANDING_EDGE_PADDING_CLASS,
+  LANDING_GLASS_CHROME_CLASS,
+} from "./landing-layout";
 import { AppFooter, type LegacyLegalLinkKey } from "./legacy-ui";
 import {
   LandingPublicHeader,
@@ -37,7 +41,13 @@ export function LandingPageShell({
   onLegalLinkClick,
 }: LandingPageShellProps) {
   return (
-    <div className={cn("flex min-h-[100dvh] flex-col bg-background text-foreground", className)}>
+    <div
+      className={cn(
+        "relative flex min-h-[100dvh] flex-col overflow-x-hidden text-foreground",
+        className,
+      )}
+    >
+      <LandingConceptBackground className="fixed inset-0 z-0" />
       <LandingPublicHeader
         labels={labels}
         activeAction={activeAction}
@@ -45,12 +55,16 @@ export function LandingPageShell({
         onSignUpClick={onSignUpClick}
         onLogoClick={onLogoClick}
       />
-      <main className="relative flex flex-1 flex-col pt-16">{children}</main>
+      <main className="relative z-10 flex flex-1 flex-col pt-16">{children}</main>
       <AppFooter
         labels={labels}
         edgeToEdge
         edgePaddingClassName={LANDING_EDGE_PADDING_CLASS}
-        className={cn("mt-auto shrink-0", footerClassName)}
+        className={cn(
+          "relative z-10 mt-auto shrink-0 border-t py-6 sm:py-8",
+          LANDING_GLASS_CHROME_CLASS,
+          footerClassName,
+        )}
         onLegalLinkClick={onLegalLinkClick}
       />
     </div>

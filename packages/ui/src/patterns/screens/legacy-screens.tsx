@@ -68,7 +68,6 @@ import {
   ProfileHeaderCard,
   ProfileStatGrid,
 } from "../legacy-profile-patterns";
-import { LandingConceptBackground } from "../landing-concept-background";
 import { LANDING_EDGE_PADDING_CLASS } from "../landing-layout";
 import { LandingPageShell } from "../landing-page-shell";
 import {
@@ -92,14 +91,12 @@ export function LandingLoginScreen() {
 
   return (
     <LandingPageShell labels={labels}>
-      <div className="relative flex flex-1 flex-col overflow-x-hidden">
-        <LandingConceptBackground />
-        <div
-          className={cn(
-            "auth-grid relative flex flex-1 items-center justify-center py-8 sm:py-10",
-            LANDING_EDGE_PADDING_CLASS,
-          )}
-        >
+      <div
+        className={cn(
+          "auth-grid relative flex flex-1 items-center justify-center py-8 sm:py-10",
+          LANDING_EDGE_PADDING_CLASS,
+        )}
+      >
           <div className="grid w-full items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
             <div>
               <Eyebrow>{labels.landing.eyebrow}</Eyebrow>
@@ -123,19 +120,19 @@ export function LandingLoginScreen() {
             </div>
 
             <div className="flex justify-center lg:justify-end xl:justify-center">
-              <Card className="hero-panel glass flex aspect-square w-full max-w-[min(100%,26rem)] flex-col justify-between rounded-[2rem] border-white/10 p-6 shadow-none sm:p-7">
+              <Card className="hero-panel glass flex aspect-square w-full max-w-[min(100%,32rem)] flex-col justify-between rounded-[2rem] border-white/10 p-6 shadow-none sm:p-8">
                 <CardHeader className="shrink-0 px-0 pb-0 text-center">
                   <CardTitle className="text-xl sm:text-2xl">
                     {labels.auth.loginTitle}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="flex min-h-0 flex-1 flex-col justify-center gap-3 px-0">
+                <CardContent className="flex min-h-0 flex-1 flex-col justify-center gap-3.5 px-0">
                   <div className="flex flex-col gap-1.5">
                     <Label htmlFor="legacy-email">{labels.auth.email}</Label>
                     <Input
                       id="legacy-email"
                       type="email"
-                      className="rounded-xl border-white/10 bg-white/5"
+                      className="h-10 rounded-xl border-white/10 bg-white/5 sm:h-11"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -143,7 +140,7 @@ export function LandingLoginScreen() {
                     <Input
                       id="legacy-password"
                       type="password"
-                      className="rounded-xl border-white/10 bg-white/5"
+                      className="h-10 rounded-xl border-white/10 bg-white/5 sm:h-11"
                     />
                   </div>
                   <div className="flex items-center gap-2">
@@ -155,7 +152,7 @@ export function LandingLoginScreen() {
                 </CardContent>
                 <CardFooter className="shrink-0 flex-col gap-3 px-0 pt-0">
                   <Button
-                    className="w-full rounded-2xl"
+                    className="h-10 w-full rounded-2xl sm:h-11"
                     onClick={() => legacyDemoToast(labels.auth.submit)}
                   >
                     {labels.auth.submit}
@@ -175,7 +172,6 @@ export function LandingLoginScreen() {
             </div>
           </div>
         </div>
-      </div>
     </LandingPageShell>
   );
 }

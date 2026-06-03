@@ -78,6 +78,6 @@ When regenerating or editing concept visuals (AI or manual):
 - **Language:** Illustrations are locale-neutral; user-facing copy remains French in product UI.
 - **Status:** **concept-1** = canonical marina hero (Mediterranean, A-frame sign). **concept-2** = **validated** Seine sport hero (2026-05-31). Series files Vendée Globe and Seine night remain exploratory.
 
-**Storybook (landing body):** `Screens/LandingLogin` uses [concept-2-branding-light-proposal.png](assets/concept-2-branding-light-proposal.png) via `packages/ui/src/assets/concept-2-hero.png` symlink. Canonical reference scene remains [concept-2.png](assets/concept-2.png).
+**Storybook (landing body):** `Screens/LandingLogin` uses [concept-2-bicolor-sail-proposal.png](assets/concept-2-bicolor-sail-proposal.png) via `packages/ui/src/assets/concept-2-bicolor-sail.png` symlink. Bi-color sail only (#052775 / #dd3465), no other in-image branding. Canonical reference scene remains [concept-2.png](assets/concept-2.png).
 
 When promoting a concept to production, document the decision here or in an ADR and add optimized exports (SVG, WebP, favicon) under the appropriate app or design-system path.

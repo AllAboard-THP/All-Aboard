@@ -950,8 +950,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/screens/legacy-screens.tsx": {
-    "mtime": 1780490843.482607,
-    "ast_hash": "a245a8b1e04ace704f036c2037776978",
+    "mtime": 1780500124.4891334,
+    "ast_hash": "deec1e16c1ea738cfc7dc2a26be66ef2",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/profile-patterns.stories.tsx": {
@@ -1145,18 +1145,18 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-page-shell.tsx": {
-    "mtime": 1780489949.0693743,
-    "ast_hash": "f8919163ba4f41b0010e9da5984c4f1b",
+    "mtime": 1780500122.8891463,
+    "ast_hash": "56c1e4a13edf468c500ee23f2b8fa664",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-public-header.tsx": {
-    "mtime": 1780489947.765378,
-    "ast_hash": "a84c4ae0d3e60563452e8914729f9638",
+    "mtime": 1780500123.3531425,
+    "ast_hash": "655925774a35d550a2bbc09b657a1f12",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/branding/README.md": {
-    "mtime": 1780498503.112158,
-    "ast_hash": "f414078d327dce7dbf5cd5cb5f9e8d39",
+    "mtime": 1780498998.8327825,
+    "ast_hash": "c3a24ba28639d93a2e8c95200d1fff55",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-1.png": {
@@ -1175,13 +1175,13 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-layout.ts": {
-    "mtime": 1780489946.4053817,
-    "ast_hash": "e4a562ab45cf5bad88c58fe1ce27af92",
+    "mtime": 1780500121.705156,
+    "ast_hash": "da69be28499504da1558b7dbb7ef3a1c",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-concept-background.tsx": {
-    "mtime": 1780498502.2121649,
-    "ast_hash": "324dd2d6cd1ebd96c1911070e8e8293e",
+    "mtime": 1780498998.8327825,
+    "ast_hash": "0c06c6ed77040fbc1f197f4619ff0b48",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/types/static-brand-assets.d.ts": {
@@ -1212,6 +1212,21 @@
   "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-2-branding-light-proposal.png": {
     "mtime": 1780498429.4446578,
     "ast_hash": "5484aa39864f2b8158f78039cc6e4766",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/concept-2-branding-light-proposal.png": {
+    "mtime": 1780498429.4446578,
+    "ast_hash": "5484aa39864f2b8158f78039cc6e4766",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/concept-2-bicolor-sail.png": {
+    "mtime": 1780499390.1661365,
+    "ast_hash": "92bff8afbd13d0be4bbe195af670fbff",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-2-bicolor-sail-proposal.png": {
+    "mtime": 1780499390.1661365,
+    "ast_hash": "92bff8afbd13d0be4bbe195af670fbff",
     "semantic_hash": ""
   }
 }

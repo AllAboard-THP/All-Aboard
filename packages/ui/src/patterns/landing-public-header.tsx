@@ -6,7 +6,10 @@ import {
   type LegacyLabels,
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
-import { LANDING_EDGE_PADDING_CLASS } from "./landing-layout";
+import {
+  LANDING_EDGE_PADDING_CLASS,
+  LANDING_GLASS_CHROME_CLASS,
+} from "./landing-layout";
 import { BrandLogo } from "./legacy-ui";
 import { legacyDemoToast } from "./legacy-story-feedback";
 
@@ -35,7 +38,8 @@ export function LandingPublicHeader({
   return (
     <header
       className={cn(
-        "glass fixed top-0 z-50 w-full border-b border-white/10",
+        "fixed top-0 z-50 w-full border-b",
+        LANDING_GLASS_CHROME_CLASS,
         className,
       )}
     >
