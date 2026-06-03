@@ -14,7 +14,8 @@
     "./i18n/storybook-locale": "./src/i18n/storybook-locale.tsx",
     "./i18n/*": "./src/i18n/*",
     "./lib/*": "./src/lib/*.ts",
-    "./hooks/*": "./src/hooks/*.ts"
+    "./hooks/*": "./src/hooks/*.ts",
+    "./patterns/screens/legacy-screens": "./src/patterns/screens/legacy-screens.tsx"
   },
   "scripts": {
     "lint": "eslint .",

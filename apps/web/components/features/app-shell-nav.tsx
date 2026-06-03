@@ -7,7 +7,7 @@ import { Button } from "@allaboard/ui/components/button";
 import { cn } from "@allaboard/ui/lib/utils";
 
 export const APP_SHELL_NAV = [
-  { href: "/", label: "Feed" },
+  { href: "/feed", label: "Feed" },
   { href: "/help/new", label: "Nouvelle demande" },
   { href: "/mentor", label: "Mentor" },
 ] as const;
@@ -16,8 +16,8 @@ function isNavActive(pathname: string | null, href: string): boolean {
   if (!pathname) {
     return false;
   }
-  if (href === "/") {
-    return pathname === "/";
+  if (href === "/feed") {
+    return pathname === "/feed";
   }
   if (href.startsWith("/requests")) {
     return pathname.startsWith("/requests");

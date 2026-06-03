@@ -30,7 +30,7 @@ export default function NewHelpRequestPage() {
           <HelpRequestForm />
           <p className="mt-5">
             <Link
-              href="/"
+              href="/feed"
               className="text-sm font-semibold text-primary hover:underline"
             >
               Retour accueil

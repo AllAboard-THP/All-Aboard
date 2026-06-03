@@ -230,6 +230,14 @@
     text-shadow: 0 0 22px rgb(226 232 240 / 0.22);
   }
 
+  /** Hero subtitle — readable on photo background (not muted-foreground). */
+  .landing-hero-description {
+    color: rgb(248 250 252);
+    text-shadow:
+      0 1px 2px rgb(0 0 0 / 0.55),
+      0 0 20px rgb(15 23 42 / 0.35);
+  }
+
   .landing-chrome-text--eyebrow {
     background: linear-gradient(
       180deg,

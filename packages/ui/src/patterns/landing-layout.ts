@@ -35,7 +35,7 @@ export const LANDING_HERO_HEADING_CLASS =
   "text-[clamp(2rem,5vw,4rem)] leading-[1.08]";
 
 export const LANDING_HERO_DESCRIPTION_CLASS =
-  "text-lg leading-relaxed text-muted-foreground sm:text-xl";
+  "landing-hero-description text-lg leading-relaxed sm:text-xl";
 
 /** Login card — zoom + glow on hover. */
 export const LANDING_LOGIN_CARD_CLASS =

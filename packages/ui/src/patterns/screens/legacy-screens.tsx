@@ -112,6 +112,7 @@ export function LandingLoginScreen() {
           <div className={LANDING_HERO_COPY_CLASS}>
             <GradientHeading
               allowWrap
+              chromeText
               className={LANDING_HERO_HEADING_CLASS}
               lead={labels.landing.headingLead}
               line2Prefix={labels.landing.headingLine2Prefix}

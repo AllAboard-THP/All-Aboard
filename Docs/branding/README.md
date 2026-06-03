@@ -1,6 +1,6 @@
 # Branding — visual concepts
 
-**Last updated:** 2026-06-03 (logo mark assets reduced to originals only)
+**Last updated:** 2026-06-03 (landing hero: open-space student lounge)
 
 Exploratory hero / marketing illustrations for All-Aboard. Not yet tied to production assets (`packages/ui`, Storybook, or `apps/web`).
 
@@ -33,6 +33,7 @@ Storybook: **Patterns/Legacy Brand** (`legacy-brand.stories.tsx`).
 |----|------|-------|-------|
 | **concept-1** | [concept-1.png](assets/concept-1.png) | Students at a marina dock, sailboat in background | **Canonical marina hero** — six students on pier; A-frame sign with FR copy; All-Aboard logos on tops and hull; indigo → pink sails; Mediterranean town |
 | **concept-2** | [concept-2.png](assets/concept-2.png) | Paris Seine — student nautical sports | **Validated hero (2026-05-31)** — illustrated style; mirrored composition; six students cross-legged on quay; full FR copy on main sail (readable); kayaks/paddle/dinghies dispersed; no freestanding sign |
+| **concept-open-space-landing** | [concept-open-space-landing.png](assets/concept-open-space-landing.png) | Student open space — bay window, yacht on sea | **Landing hero (2026-06-03)** — yacht in left window bay (readable branding, no mirror); `object-[32%_34%]` in `LandingConceptBackground` |
 ---
 
 ## Series — concept-1 variants
@@ -78,6 +79,6 @@ When regenerating or editing concept visuals (AI or manual):
 - **Language:** Illustrations are locale-neutral; user-facing copy remains French in product UI.
 - **Status:** **concept-1** = canonical marina hero (Mediterranean, A-frame sign). **concept-2** = **validated** Seine sport hero (2026-05-31). Series files Vendée Globe and Seine night remain exploratory.
 
-**Storybook (landing body):** `Screens/LandingLogin` uses [concept-2-bicolor-sail-proposal.png](assets/concept-2-bicolor-sail-proposal.png) via `packages/ui/src/assets/concept-2-bicolor-sail.png` symlink. Bi-color sail only (#052775 / #dd3465), no other in-image branding. Canonical reference scene remains [concept-2.png](assets/concept-2.png).
+**Storybook / landing (body):** `Screens/LandingLogin` and `apps/web` route `/` use [concept-open-space-landing.png](assets/concept-open-space-landing.png) via `packages/ui/src/assets/concept-open-space-landing.png` symlink (`LandingConceptBackground`, `object-[34%_36%]`). Previous Seine hero: [concept-2-bicolor-sail-proposal.png](assets/concept-2-bicolor-sail-proposal.png). Canonical marina / Seine reference scenes: [concept-1.png](assets/concept-1.png), [concept-2.png](assets/concept-2.png).
 
 When promoting a concept to production, document the decision here or in an ADR and add optimized exports (SVG, WebP, favicon) under the appropriate app or design-system path.

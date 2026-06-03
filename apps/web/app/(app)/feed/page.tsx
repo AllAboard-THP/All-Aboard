@@ -3,7 +3,7 @@ import { HomeContent } from "@/components/features/home-content";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
+export default async function FeedPage() {
   const result = await fetchFeed();
   return (
     <HomeContent

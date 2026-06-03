@@ -61,7 +61,7 @@ export default async function MentorDashboardPage() {
         </Alert>
         <div className="mt-4">
           <Button variant="outline" asChild>
-            <Link href="/">Retour au feed</Link>
+            <Link href="/feed">Retour au feed</Link>
           </Button>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default async function MentorDashboardPage() {
 
       <div className="mt-6">
         <Button variant="outline" asChild>
-          <Link href="/">Retour au feed</Link>
+          <Link href="/feed">Retour au feed</Link>
         </Button>
       </div>
     </div>

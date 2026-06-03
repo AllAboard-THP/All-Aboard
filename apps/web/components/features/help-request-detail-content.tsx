@@ -50,7 +50,7 @@ export function HelpRequestDetailContent({
           </CardHeader>
           <CardContent>
             <Button variant="outline" asChild>
-              <Link href="/">Retour au feed</Link>
+              <Link href="/feed">Retour au feed</Link>
             </Button>
           </CardContent>
         </Card>
@@ -67,7 +67,7 @@ export function HelpRequestDetailContent({
         </Alert>
         <div className="mt-4">
           <Button variant="outline" asChild>
-            <Link href="/">Retour au feed</Link>
+            <Link href="/feed">Retour au feed</Link>
           </Button>
         </div>
       </div>
@@ -100,7 +100,7 @@ export function HelpRequestDetailContent({
 
       <div className="mt-6">
         <Button variant="outline" asChild>
-          <Link href="/">Retour au feed</Link>
+          <Link href="/feed">Retour au feed</Link>
         </Button>
       </div>
     </div>
