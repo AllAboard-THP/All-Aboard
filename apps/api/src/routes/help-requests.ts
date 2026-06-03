@@ -211,7 +211,11 @@ export function registerHelpRequestRoutes(
         tags: row.tags?.length ? row.tags : undefined,
       });
 
-      const item = rowToHelpRequest(row);
+      const loaded = await loadHelpRequestRow(db, row.id);
+      const item = rowToHelpRequest(
+        loaded!.helpRequest,
+        loaded!.subject,
+      );
       const routing = await evaluateRouting({
         title: parsed.data.title.trim(),
         ...(tags.length ? { tags } : {}),
