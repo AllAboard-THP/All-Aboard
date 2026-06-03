@@ -457,6 +457,92 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       expect(body.hints).toBeUndefined();
     });
 
+    it("POST /help-requests maps agent routing to rubberduck hint", async () => {
+      const agentApp = await buildApp({
+        pool,
+        evaluateRouting: async () => ({
+          suggestRubberduckRedirect: true,
+          reason: "agent_mock",
+        }),
+      });
+      const token = agentApp.jwt.sign({ sub: "bob" });
+      const title = `Agent routed long title ${Date.now()} with many words`;
+      const res = await agentApp.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      expect(res.statusCode).toBe(201);
+      const body = JSON.parse(res.payload) as {
+        hints?: { rubberduckEligible?: boolean };
+      };
+      expect(body.hints?.rubberduckEligible).toBe(true);
+      await agentApp.close();
+    });
+
+    it("POST /help-requests omits rubberduck hint when agent declines redirect", async () => {
+      const agentApp = await buildApp({
+        pool,
+        evaluateRouting: async () => ({
+          suggestRubberduckRedirect: false,
+          reason: "agent_mock",
+        }),
+      });
+      const token = agentApp.jwt.sign({ sub: "bob" });
+      const title = `Short ${Date.now()}`;
+      const res = await agentApp.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      expect(res.statusCode).toBe(201);
+      const body = JSON.parse(res.payload) as {
+        hints?: { rubberduckEligible?: boolean };
+      };
+      expect(body.hints).toBeUndefined();
+      await agentApp.close();
+    });
+
+    it("POST /help-requests delegates routing to live agent when AGENT_URL is set", async () => {
+      const { buildApp: buildAgentApp } = await import(
+        "../../agent/src/app.js"
+      );
+      const liveAgent = await buildAgentApp();
+      await liveAgent.listen({ port: 0, host: "127.0.0.1" });
+      const address = liveAgent.server.address();
+      if (!address || typeof address === "string") {
+        throw new Error("agent listen address unavailable");
+      }
+      const prevAgentUrl = process.env.AGENT_URL;
+      process.env.AGENT_URL = `http://127.0.0.1:${address.port}`;
+      const apiWithAgent = await buildApp({ pool });
+      try {
+        const token = apiWithAgent.jwt.sign({ sub: "bob" });
+        const title = `Short ${Date.now()}`;
+        const res = await apiWithAgent.inject({
+          method: "POST",
+          url: "/help-requests",
+          headers: { authorization: `Bearer ${token}` },
+          payload: { title },
+        });
+        expect(res.statusCode).toBe(201);
+        const body = JSON.parse(res.payload) as {
+          hints?: { rubberduckEligible?: boolean };
+        };
+        expect(body.hints?.rubberduckEligible).toBe(true);
+      } finally {
+        if (prevAgentUrl === undefined) {
+          delete process.env.AGENT_URL;
+        } else {
+          process.env.AGENT_URL = prevAgentUrl;
+        }
+        await apiWithAgent.close();
+        await liveAgent.close();
+      }
+    });
+
     it("GET /help-requests/:id returns 404 for unknown id", async () => {
       const res = await app.inject({
         method: "GET",

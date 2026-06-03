@@ -27,6 +27,10 @@ import {
 } from "./auth/login.js";
 import type pg from "pg";
 import { z } from "zod";
+import {
+  createAgentRoutingEvaluator,
+  type EvaluateRoutingFn,
+} from "./agent/routing.js";
 import { enqueueHelpRequestCreated } from "./intuition/outbox.js";
 
 const createBodySchema = z.object({
@@ -40,6 +44,8 @@ const createResponseBodySchema = z.object({
 
 export type BuildAppOptions = {
   pool?: pg.Pool | null;
+  /** Injecté en tests (#68) ; défaut : client HTTP vers `AGENT_URL` + fallback. */
+  evaluateRouting?: EvaluateRoutingFn;
 };
 
 function jwtSecret(): string {
@@ -53,10 +59,6 @@ function jwtSecret(): string {
 
 function normalizeTitle(title: string): string {
   return title.trim().toLowerCase().replace(/\s+/g, " ");
-}
-
-function wordCount(title: string): number {
-  return title.trim().split(/\s+/).filter(Boolean).length;
 }
 
 function roleFromJwtClaims(
@@ -114,6 +116,8 @@ export async function buildApp(options?: BuildAppOptions) {
   const pool =
     options?.pool !== undefined ? options.pool : createPool();
   const db: AppDatabase | null = pool ? createDb(pool) : null;
+  const evaluateRouting =
+    options?.evaluateRouting ?? createAgentRoutingEvaluator();
 
   const app = Fastify({ logger: false });
 
@@ -442,10 +446,14 @@ export async function buildApp(options?: BuildAppOptions) {
         tags: row.tags?.length ? row.tags : undefined,
       });
       const item = rowToHelpRequest(row);
-      const hints =
-        wordCount(parsed.data.title) <= 6
-          ? { rubberduckEligible: true as const }
-          : undefined;
+      const routing = await evaluateRouting({
+        title: parsed.data.title.trim(),
+        ...(tags.length ? { tags } : {}),
+        authorId: user.sub,
+      });
+      const hints = routing.suggestRubberduckRedirect
+        ? { rubberduckEligible: true as const }
+        : undefined;
       void reply.code(201);
       return hints ? { item, hints } : { item };
     },
