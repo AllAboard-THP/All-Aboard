@@ -101,12 +101,20 @@ export function GradientHeading({
   line2Prefix,
   accent,
   className,
+  allowWrap = false,
 }: {
   lead: string;
   line2Prefix: string;
   accent: string;
   className?: string;
+  /** When true, lines wrap inside narrow columns (e.g. landing grid). */
+  allowWrap?: boolean;
 }) {
+  const lineClass = cn(
+    "block text-pretty",
+    allowWrap ? "text-balance" : "whitespace-nowrap",
+  );
+
   return (
     <h1
       className={cn(
@@ -114,8 +122,8 @@ export function GradientHeading({
         className,
       )}
     >
-      <span className="block text-pretty whitespace-nowrap">{lead}</span>
-      <span className="block text-pretty whitespace-nowrap">
+      <span className={lineClass}>{lead}</span>
+      <span className={lineClass}>
         {line2Prefix}
         <span className="gradient-text">{accent}</span>.
       </span>

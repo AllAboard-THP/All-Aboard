@@ -207,6 +207,13 @@
     border: 1px solid rgb(255 255 255 / 0.08);
   }
 
+  /** Landing header/footer — lighter than .glass + .hero-panel (login card unchanged). */
+  .landing-chrome {
+    background: rgb(15 23 42 / 0.38);
+    backdrop-filter: blur(8px);
+    border-color: rgb(255 255 255 / 0.08);
+  }
+
   .focus-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }

@@ -68,7 +68,11 @@ import {
   ProfileHeaderCard,
   ProfileStatGrid,
 } from "../legacy-profile-patterns";
-import { LANDING_EDGE_PADDING_CLASS } from "../landing-layout";
+import {
+  LANDING_HERO_CONTAINER_CLASS,
+  LANDING_HERO_GRID_CLASS,
+  LANDING_HERO_PADDING_CLASS,
+} from "../landing-layout";
 import { LandingPageShell } from "../landing-page-shell";
 import {
   Eyebrow,
@@ -94,18 +98,19 @@ export function LandingLoginScreen() {
       <div
         className={cn(
           "auth-grid relative flex flex-1 items-center justify-center py-8 sm:py-10",
-          LANDING_EDGE_PADDING_CLASS,
+          LANDING_HERO_PADDING_CLASS,
         )}
       >
-          <div className="grid w-full items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
-            <div>
+        <div className={cn(LANDING_HERO_CONTAINER_CLASS, LANDING_HERO_GRID_CLASS)}>
+            <div className="min-w-0">
               <Eyebrow>{labels.landing.eyebrow}</Eyebrow>
               <GradientHeading
+                allowWrap
                 lead={labels.landing.headingLead}
                 line2Prefix={labels.landing.headingLine2Prefix}
                 accent={labels.landing.headingAccent}
               />
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+              <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
                 {labels.landing.description}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -119,8 +124,8 @@ export function LandingLoginScreen() {
               </div>
             </div>
 
-            <div className="flex justify-center lg:justify-end xl:justify-center">
-              <Card className="hero-panel glass flex aspect-square w-full max-w-[min(100%,32rem)] flex-col justify-between rounded-[2rem] border-white/10 p-6 shadow-none sm:p-8">
+            <div className="flex min-w-0 justify-center">
+              <Card className="hero-panel glass flex aspect-square w-full max-w-[min(100%,32rem)] shrink-0 flex-col justify-between rounded-[2rem] border-white/10 p-6 shadow-none sm:p-8">
                 <CardHeader className="shrink-0 px-0 pb-0 text-center">
                   <CardTitle className="text-xl sm:text-2xl">
                     {labels.auth.loginTitle}
