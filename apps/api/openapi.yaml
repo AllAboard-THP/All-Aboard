@@ -4,7 +4,7 @@ info:
   description: |
     Contrat HTTP Phase 2 MVP (feed, auth JWT, demandes d'aide, mentor feed).
     Source de vérité types : `packages/types`. Doc opérationnelle : `Docs/plan-mise-en-place-web-api-donnees.md`.
-  version: 0.2.0
+  version: 0.3.0
   contact:
     name: All-Aboard THP
     url: https://github.com/AllAboard-THP/All-Aboard
@@ -26,6 +26,8 @@ tags:
     description: Demandes d'aide
   - name: mentor
     description: Fil mentor (tags)
+  - name: subjects
+    description: Catalogue matières (explore)
 
 paths:
   /health:
@@ -45,7 +47,41 @@ paths:
     get:
       operationId: getFeed
       tags: [feed]
-      summary: Liste des demandes d'aide (public)
+      summary: Liste des demandes d'aide (public, filtrable)
+      parameters:
+        - name: subject
+          in: query
+          schema:
+            type: string
+          description: Slug matière (ex. react)
+        - name: tag
+          in: query
+          schema:
+            type: string
+          description: Filtre tag (normalisé lowercase)
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Recherche titre/corps (ILIKE)
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 100
+        - name: include
+          in: query
+          schema:
+            type: string
+          description: "Valeur widgets pour la sidebar unanswered"
       responses:
         "200":
           description: Feed paginé (max 100, tri createdAt desc)
@@ -68,6 +104,56 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
               example:
                 error: database_unavailable
+
+  /subjects:
+    get:
+      operationId: getSubjects
+      tags: [subjects]
+      summary: Catalogue matières (explore)
+      responses:
+        "200":
+          description: Liste triée par posts_count desc
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubjectsResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /subjects/{slug}:
+    get:
+      operationId: getSubjectBySlug
+      tags: [subjects]
+      summary: Détail matière par slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Matière trouvée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubjectDetailResponse"
+        "404":
+          description: Slug inconnu
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /auth/login:
     post:
@@ -239,6 +325,96 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: patchHelpRequestById
+      tags: [help-requests]
+      summary: Modifier une demande (auteur JWT)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateHelpRequestBody"
+      responses:
+        "200":
+          description: Demande mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateHelpRequestResponse"
+        "400":
+          description: Corps invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Non auteur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Demande absente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /help-requests/{id}/help-mentor:
+    post:
+      operationId: postHelpRequestHelpMentor
+      tags: [help-requests]
+      summary: Demander l'aide d'un mentor (auteur JWT)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Flag mentor_help_requested activé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateHelpRequestResponse"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Non auteur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Demande absente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /help-requests/{id}/responses:
     post:
@@ -370,6 +546,84 @@ components:
           type: array
           items:
             type: string
+        body:
+          type: string
+        codeSnippet:
+          type: string
+        codeLanguage:
+          type: string
+        urgent:
+          type: boolean
+        status:
+          type: string
+          enum: [open, resolved]
+        mentorHelpRequested:
+          type: boolean
+        subjectId:
+          type: string
+          format: uuid
+        subject:
+          $ref: "#/components/schemas/SubjectSummary"
+        educationLevel:
+          type: string
+        aiSummary:
+          type: string
+        likesCount:
+          type: integer
+          minimum: 0
+        responsesCount:
+          type: integer
+          minimum: 0
+        bookmarksCount:
+          type: integer
+          minimum: 0
+        updatedAt:
+          type: string
+          format: date-time
+
+    SubjectSummary:
+      type: object
+      required: [id, name, slug, icon, accentColor]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        icon:
+          type: string
+        accentColor:
+          type: string
+
+    Subject:
+      allOf:
+        - $ref: "#/components/schemas/SubjectSummary"
+        - type: object
+          required: [postsCount]
+          properties:
+            postsCount:
+              type: integer
+              minimum: 0
+            description:
+              type: string
+
+    SubjectsResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Subject"
+
+    SubjectDetailResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/Subject"
 
     Response:
       type: object
@@ -385,6 +639,13 @@ components:
           type: string
         authorId:
           type: string
+        createdAt:
+          type: string
+          format: date-time
+        codeSnippet:
+          type: string
+        codeLanguage:
+          type: string
 
     FeedResponse:
       type: object
@@ -394,6 +655,26 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/HelpRequest"
+        pagination:
+          type: object
+          required: [page, limit, total]
+          properties:
+            page:
+              type: integer
+              minimum: 1
+            limit:
+              type: integer
+              minimum: 1
+            total:
+              type: integer
+              minimum: 0
+        widgets:
+          type: object
+          properties:
+            unanswered:
+              type: array
+              items:
+                $ref: "#/components/schemas/HelpRequest"
 
     MentorFeedResponse:
       type: object
@@ -458,6 +739,67 @@ components:
           items:
             type: string
             maxLength: 64
+        body:
+          type: string
+          maxLength: 50000
+        codeSnippet:
+          type: string
+          maxLength: 50000
+        codeLanguage:
+          type: string
+          maxLength: 64
+        subjectId:
+          type: string
+          format: uuid
+        urgent:
+          type: boolean
+        educationLevel:
+          type: string
+          maxLength: 64
+
+    UpdateHelpRequestBody:
+      type: object
+      minProperties: 1
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 500
+        body:
+          type: string
+          maxLength: 50000
+        codeSnippet:
+          type: string
+          maxLength: 50000
+          nullable: true
+        codeLanguage:
+          type: string
+          maxLength: 64
+        tags:
+          type: array
+          maxItems: 32
+          items:
+            type: string
+            maxLength: 64
+        subjectId:
+          type: string
+          format: uuid
+          nullable: true
+        urgent:
+          type: boolean
+        status:
+          type: string
+          enum: [open, resolved]
+        educationLevel:
+          type: string
+          maxLength: 64
+
+    UpdateHelpRequestResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/HelpRequest"
 
     CreateHelpRequestResponse:
       type: object

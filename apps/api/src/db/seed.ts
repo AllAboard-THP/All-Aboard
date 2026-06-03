@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { hashPassword } from "../auth/password.js";
 import type { AppDatabase } from "./client.js";
-import { users } from "./schema.js";
+import { subjects, users } from "./schema.js";
 
 export type SeedUserSpec = {
   email: string;
@@ -9,6 +9,55 @@ export type SeedUserSpec = {
   password: string;
   certificationTags?: string[];
 };
+
+export type SeedSubjectSpec = {
+  name: string;
+  slug: string;
+  icon: string;
+  accentColor: string;
+  description?: string;
+};
+
+/** Catalogue subjects aligné thp-final / explore. */
+export function defaultSeedSubjects(): SeedSubjectSpec[] {
+  return [
+    {
+      name: "JavaScript",
+      slug: "javascript",
+      icon: "js",
+      accentColor: "#f7df1e",
+      description: "Langage du web côté client et Node.js",
+    },
+    {
+      name: "Ruby",
+      slug: "ruby",
+      icon: "gem",
+      accentColor: "#cc342d",
+      description: "Langage orienté objet, base de Rails",
+    },
+    {
+      name: "Rails",
+      slug: "rails",
+      icon: "train",
+      accentColor: "#d30001",
+      description: "Framework web Ruby",
+    },
+    {
+      name: "React",
+      slug: "react",
+      icon: "atom",
+      accentColor: "#61dafb",
+      description: "Bibliothèque UI composants",
+    },
+    {
+      name: "HTML & CSS",
+      slug: "html-css",
+      icon: "code",
+      accentColor: "#e34c26",
+      description: "Structure et style des pages web",
+    },
+  ];
+}
 
 /** Comptes dev/CI documentés — mots de passe via env, jamais en repo. */
 export function defaultSeedUsers(): SeedUserSpec[] {
@@ -26,6 +75,39 @@ export function defaultSeedUsers(): SeedUserSpec[] {
       certificationTags: ["react", "typescript", "rails"],
     },
   ];
+}
+
+export async function seedSubjects(
+  db: AppDatabase,
+  specs: SeedSubjectSpec[],
+): Promise<void> {
+  for (const spec of specs) {
+    const existing = await db
+      .select({ id: subjects.id })
+      .from(subjects)
+      .where(eq(subjects.slug, spec.slug))
+      .limit(1);
+    if (existing.length > 0) {
+      await db
+        .update(subjects)
+        .set({
+          name: spec.name,
+          icon: spec.icon,
+          accentColor: spec.accentColor,
+          description: spec.description,
+          updatedAt: new Date(),
+        })
+        .where(eq(subjects.slug, spec.slug));
+    } else {
+      await db.insert(subjects).values({
+        name: spec.name,
+        slug: spec.slug,
+        icon: spec.icon,
+        accentColor: spec.accentColor,
+        description: spec.description,
+      });
+    }
+  }
 }
 
 export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise<void> {
@@ -55,6 +137,11 @@ export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise
 
 export async function runSeedIfConfigured(db: AppDatabase | null): Promise<void> {
   if (!db) return;
+
+  const subjectSpecs = defaultSeedSubjects();
+  await seedSubjects(db, subjectSpecs);
+  console.log(`api: seeded ${subjectSpecs.length} subject(s)`);
+
   const specs = defaultSeedUsers();
   if (specs.length === 0) {
     console.warn(
