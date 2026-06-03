@@ -420,4 +420,34 @@ describe("BFF Phase 2", () => {
       expect(body.items[0]?.hasUnreadForMentor).toBe(true);
     });
   });
+
+  describe("GET /api/rubberduck/redirect", () => {
+    it("returns configured Rubberduck URL", async () => {
+      const prev = process.env.RUBBERDUCK_URL;
+      process.env.RUBBERDUCK_URL = "https://rubberduck.example/help";
+      const { GET } = await import("@/app/api/rubberduck/redirect/route");
+      const res = await GET();
+      expect(res.status).toBe(200);
+      const body = (await res.json()) as { url: string | null };
+      expect(body.url).toBe("https://rubberduck.example/help");
+      if (prev === undefined) {
+        delete process.env.RUBBERDUCK_URL;
+      } else {
+        process.env.RUBBERDUCK_URL = prev;
+      }
+    });
+
+    it("returns null when Rubberduck URL is unset", async () => {
+      const prev = process.env.RUBBERDUCK_URL;
+      delete process.env.RUBBERDUCK_URL;
+      const { GET } = await import("@/app/api/rubberduck/redirect/route");
+      const res = await GET();
+      expect(res.status).toBe(200);
+      const body = (await res.json()) as { url: string | null };
+      expect(body.url).toBeNull();
+      if (prev !== undefined) {
+        process.env.RUBBERDUCK_URL = prev;
+      }
+    });
+  });
 });

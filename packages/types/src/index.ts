@@ -34,7 +34,7 @@ export type CreateHelpRequestBody = {
 export type CreateHelpRequestResponse = {
   item: HelpRequest;
   hints?: {
-    /** Éligible à une redirection vers Rubberduck (service externe), pas l’agent in-app. */
+    /** Éligible handoff Rubberduck (externe) — source : agent `POST /routing/evaluate` (#68). */
     rubberduckEligible?: boolean;
   };
 };
