@@ -54,6 +54,8 @@ describe.skipIf(!process.env.DATABASE_URL)(
         .where(eq(outboxEvents.aggregateId, row.id));
       expect(rows).toHaveLength(1);
       expect(rows[0]?.eventType).toBe(HELP_REQUEST_CREATED);
+
+      await processPendingOutboxEvents(db);
     });
 
     it("processPendingOutboxEvents publishes once even if polled twice", async () => {
@@ -76,9 +78,13 @@ describe.skipIf(!process.env.DATABASE_URL)(
       });
 
       const first = await processPendingOutboxEvents(db, { log });
-      const stubLogs = logs.filter((l) => l.message === "intuition_publish_stub");
-      expect(first.processed).toBe(1);
+      const stubLogs = logs.filter(
+        (l) =>
+          l.message === "intuition_publish_stub" &&
+          l.meta?.helpRequestId === row.id,
+      );
       expect(stubLogs).toHaveLength(1);
+      expect(first.processed).toBeGreaterThanOrEqual(1);
 
       const [afterFirst] = await db
         .select()
@@ -89,7 +95,11 @@ describe.skipIf(!process.env.DATABASE_URL)(
       const second = await processPendingOutboxEvents(db, { log });
       expect(second.processed).toBe(0);
       expect(
-        logs.filter((l) => l.message === "intuition_publish_stub"),
+        logs.filter(
+          (l) =>
+            l.message === "intuition_publish_stub" &&
+            l.meta?.helpRequestId === row.id,
+        ),
       ).toHaveLength(1);
     });
 
