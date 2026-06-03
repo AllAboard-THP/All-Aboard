@@ -4,7 +4,7 @@ info:
   description: |
     Contrat HTTP Phase 2 MVP (feed, auth JWT, demandes d'aide, mentor feed).
     Source de vérité types : `packages/types`. Doc opérationnelle : `Docs/plan-mise-en-place-web-api-donnees.md`.
-  version: 0.3.0
+  version: 0.4.0
   contact:
     name: All-Aboard THP
     url: https://github.com/AllAboard-THP/All-Aboard
@@ -28,6 +28,10 @@ tags:
     description: Fil mentor (tags)
   - name: subjects
     description: Catalogue matières (explore)
+  - name: me
+    description: Listes utilisateur (JWT)
+  - name: social
+    description: Likes et bookmarks
 
 paths:
   /health:
@@ -470,6 +474,214 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /help-requests/{id}/responses/{responseId}:
+    patch:
+      operationId: patchHelpRequestResponse
+      tags: [help-requests]
+      summary: Modifier une réponse (auteur JWT)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateResponseBody"
+      responses:
+        "200":
+          description: Réponse mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateResponseResponse"
+        "400":
+          description: Corps invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Non auteur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Réponse absente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteHelpRequestResponse
+      tags: [help-requests]
+      summary: Supprimer une réponse (auteur JWT)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Réponse supprimée
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Non auteur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Réponse absente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /help-requests/{id}/likes:
+    post:
+      operationId: toggleHelpRequestLike
+      tags: [social]
+      summary: Toggle like sur une demande (JWT)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: État like après toggle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ToggleLikeResponse"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Demande absente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /help-requests/{id}/bookmarks:
+    post:
+      operationId: toggleHelpRequestBookmark
+      tags: [social]
+      summary: Toggle bookmark sur une demande (JWT)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: État bookmark après toggle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ToggleBookmarkResponse"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Demande absente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /me/help-requests:
+    get:
+      operationId: getMyHelpRequests
+      tags: [me]
+      summary: Mes demandes d'aide (JWT)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Liste des demandes de l'utilisateur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MyHelpRequestsResponse"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /me/bookmarks:
+    get:
+      operationId: getMyBookmarks
+      tags: [me]
+      summary: Mes bookmarks (JWT)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Demandes bookmarkées
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MyHelpRequestsResponse"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /mentor/feed:
     get:
       operationId: getMentorFeed
@@ -832,6 +1044,62 @@ components:
       properties:
         item:
           $ref: "#/components/schemas/Response"
+
+    UpdateResponseBody:
+      type: object
+      minProperties: 1
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 10000
+        codeSnippet:
+          type: string
+          maxLength: 50000
+          nullable: true
+        codeLanguage:
+          type: string
+          maxLength: 64
+
+    UpdateResponseResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/Response"
+
+    ToggleLikeResponse:
+      type: object
+      required: [liked, likesCount]
+      properties:
+        liked:
+          type: boolean
+        likesCount:
+          type: integer
+          minimum: 0
+        item:
+          $ref: "#/components/schemas/HelpRequest"
+
+    ToggleBookmarkResponse:
+      type: object
+      required: [bookmarked, bookmarksCount]
+      properties:
+        bookmarked:
+          type: boolean
+        bookmarksCount:
+          type: integer
+          minimum: 0
+        item:
+          $ref: "#/components/schemas/HelpRequest"
+
+    MyHelpRequestsResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelpRequest"
 
     LoginBody:
       type: object

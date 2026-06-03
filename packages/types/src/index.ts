@@ -142,6 +142,37 @@ export type CreateResponseResponse = {
   item: Response;
 };
 
+/** Corps JSON pour `PATCH /help-requests/:id/responses/:responseId`. */
+export type UpdateResponseBody = {
+  body?: string;
+  codeSnippet?: string | null;
+  codeLanguage?: string;
+};
+
+/** Réponse `200` mise à jour réponse. */
+export type UpdateResponseResponse = {
+  item: Response;
+};
+
+/** Réponse toggle like (Rails posts#likes). */
+export type ToggleLikeResponse = {
+  liked: boolean;
+  likesCount: number;
+  item?: HelpRequest;
+};
+
+/** Réponse toggle bookmark. */
+export type ToggleBookmarkResponse = {
+  bookmarked: boolean;
+  bookmarksCount: number;
+  item?: HelpRequest;
+};
+
+/** Listes scopées utilisateur (`GET /me/help-requests`, `GET /me/bookmarks`). */
+export type MyHelpRequestsResponse = {
+  items: HelpRequest[];
+};
+
 /** Rôles MVP (claim JWT — ADR 0001 extension). */
 export type UserRole = "student" | "mentor";
 

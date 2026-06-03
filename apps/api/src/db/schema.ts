@@ -109,3 +109,43 @@ export const responses = pgTable("responses", {
     .notNull()
     .defaultNow(),
 });
+
+export const likes = pgTable(
+  "likes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id").notNull(),
+    helpRequestId: uuid("help_request_id")
+      .notNull()
+      .references(() => helpRequests.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("likes_user_help_request_unique").on(
+      table.userId,
+      table.helpRequestId,
+    ),
+  ],
+);
+
+export const bookmarks = pgTable(
+  "bookmarks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id").notNull(),
+    helpRequestId: uuid("help_request_id")
+      .notNull()
+      .references(() => helpRequests.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("bookmarks_user_help_request_unique").on(
+      table.userId,
+      table.helpRequestId,
+    ),
+  ],
+);

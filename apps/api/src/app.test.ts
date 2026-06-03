@@ -1098,6 +1098,145 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       });
       expect(patchRes.statusCode).toBe(403);
     });
+
+    it("POST /help-requests/:id/likes toggles like and updates count", async () => {
+      const title = `Like toggle ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const likeRes = await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/likes`,
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(likeRes.statusCode).toBe(200);
+      const liked = JSON.parse(likeRes.payload) as {
+        liked: boolean;
+        likesCount: number;
+      };
+      expect(liked.liked).toBe(true);
+      expect(liked.likesCount).toBe(1);
+
+      const unlikeRes = await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/likes`,
+        headers: { authorization: `Bearer ${token}` },
+      });
+      const unliked = JSON.parse(unlikeRes.payload) as {
+        liked: boolean;
+        likesCount: number;
+      };
+      expect(unliked.liked).toBe(false);
+      expect(unliked.likesCount).toBe(0);
+    });
+
+    it("POST /help-requests/:id/bookmarks toggles bookmark", async () => {
+      const title = `Bookmark toggle ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const bookmarkRes = await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/bookmarks`,
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(bookmarkRes.statusCode).toBe(200);
+      const body = JSON.parse(bookmarkRes.payload) as { bookmarked: boolean };
+      expect(body.bookmarked).toBe(true);
+
+      const listRes = await app.inject({
+        method: "GET",
+        url: "/me/bookmarks",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(listRes.statusCode).toBe(200);
+      const list = JSON.parse(listRes.payload) as {
+        items: Array<{ title: string }>;
+      };
+      expect(list.items.some((i) => i.title === title)).toBe(true);
+    });
+
+    it("GET /me/help-requests returns author posts only", async () => {
+      const title = `My posts ${Date.now()}`;
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title },
+      });
+
+      const res = await app.inject({
+        method: "GET",
+        url: "/me/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as { items: Array<{ title: string }> };
+      expect(body.items.some((i) => i.title === title)).toBe(true);
+    });
+
+    it("PATCH and DELETE /help-requests/:id/responses/:responseId work for author", async () => {
+      const title = `Response crud ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const responseRes = await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/responses`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { body: "Première version" },
+      });
+      const response = JSON.parse(responseRes.payload) as {
+        item: { id: string };
+      };
+
+      const patchRes = await app.inject({
+        method: "PATCH",
+        url: `/help-requests/${created.item.id}/responses/${response.item.id}`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { body: "Version corrigée" },
+      });
+      expect(patchRes.statusCode).toBe(200);
+      const patched = JSON.parse(patchRes.payload) as { item: { body: string } };
+      expect(patched.item.body).toBe("Version corrigée");
+
+      const deleteRes = await app.inject({
+        method: "DELETE",
+        url: `/help-requests/${created.item.id}/responses/${response.item.id}`,
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(deleteRes.statusCode).toBe(204);
+
+      const detailRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+      });
+      const detail = JSON.parse(detailRes.payload) as {
+        item: { responsesCount?: number };
+        responses?: unknown[];
+      };
+      expect(detail.responses?.length ?? 0).toBe(0);
+      expect(detail.item.responsesCount ?? 0).toBe(0);
+    });
   },
 );
 

@@ -34,6 +34,8 @@ import { rowToHelpRequest } from "./lib/mappers.js";
 import { registerOpenApiDocs } from "./openapi.js";
 import { registerFeedRoutes } from "./routes/feed.js";
 import { registerHelpRequestRoutes } from "./routes/help-requests.js";
+import { registerMeRoutes } from "./routes/me.js";
+import { registerSocialRoutes } from "./routes/social.js";
 import { registerSubjectRoutes } from "./routes/subjects.js";
 
 export type BuildAppOptions = {
@@ -86,6 +88,8 @@ export async function buildApp(options?: BuildAppOptions) {
   registerFeedRoutes(app, db);
   registerSubjectRoutes(app, db);
   registerHelpRequestRoutes(app, db, evaluateRouting);
+  registerSocialRoutes(app, db);
+  registerMeRoutes(app, db);
 
   app.post("/auth/login", async (request, reply) => {
     const parsed = loginBodySchema.safeParse(request.body);

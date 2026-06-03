@@ -33,6 +33,16 @@ export const createResponseBodySchema = z.object({
   codeLanguage: z.string().max(64).optional(),
 });
 
+export const updateResponseBodySchema = z
+  .object({
+    body: z.string().min(1).max(10_000).optional(),
+    codeSnippet: z.string().max(50_000).nullable().optional(),
+    codeLanguage: z.string().max(64).optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "at_least_one_field",
+  });
+
 export type FeedQueryParams = {
   page: number;
   limit: number;

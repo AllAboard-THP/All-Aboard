@@ -5,6 +5,7 @@ import type {
   CreateResponseResponse,
   HelpRequestDetailResponse,
   UpdateHelpRequestResponse,
+  UpdateResponseResponse,
 } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import { helpRequests, responses, subjects, users } from "../db/schema.js";
@@ -16,25 +17,14 @@ import {
   responseVisibleUnderCertificationFilter,
   roleFromJwtClaims,
 } from "../lib/auth-helpers.js";
+import { loadHelpRequestRow } from "../lib/help-request-query.js";
 import { rowToHelpRequest, rowToResponse } from "../lib/mappers.js";
 import {
   createHelpRequestBodySchema,
   createResponseBodySchema,
   updateHelpRequestBodySchema,
+  updateResponseBodySchema,
 } from "../lib/schemas.js";
-
-async function loadHelpRequestRow(db: AppDatabase, id: string) {
-  const rows = await db
-    .select({
-      helpRequest: helpRequests,
-      subject: subjects,
-    })
-    .from(helpRequests)
-    .leftJoin(subjects, eq(helpRequests.subjectId, subjects.id))
-    .where(eq(helpRequests.id, id))
-    .limit(1);
-  return rows[0];
-}
 
 async function adjustSubjectPostsCount(
   db: AppDatabase,
@@ -404,6 +394,94 @@ export function registerHelpRequestRoutes(
 
       void reply.code(201);
       return { item: rowToResponse(row) };
+    },
+  );
+
+  app.patch(
+    "/help-requests/:id/responses/:responseId",
+    { preHandler: [app.authenticate] },
+    async (request, reply): Promise<UpdateResponseResponse | void> => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      const { id, responseId } = request.params as {
+        id: string;
+        responseId: string;
+      };
+      const parsed = updateResponseBodySchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.code(400).send({ error: "invalid_body" });
+      }
+      const rows = await db
+        .select()
+        .from(responses)
+        .where(eq(responses.id, responseId))
+        .limit(1);
+      const row = rows[0];
+      if (!row || row.helpRequestId !== id) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+      const user = getJwtUser(request);
+      if (row.authorId !== user.sub) {
+        return reply.code(403).send({ error: "forbidden" });
+      }
+      const updated = await db
+        .update(responses)
+        .set({
+          ...(parsed.data.body !== undefined
+            ? { body: parsed.data.body.trim() }
+            : {}),
+          ...(parsed.data.codeSnippet !== undefined
+            ? { codeSnippet: parsed.data.codeSnippet }
+            : {}),
+          ...(parsed.data.codeLanguage !== undefined
+            ? { codeLanguage: parsed.data.codeLanguage }
+            : {}),
+        })
+        .where(eq(responses.id, responseId))
+        .returning();
+      const updatedRow = updated[0];
+      if (!updatedRow) {
+        return reply.code(500).send({ error: "update_failed" });
+      }
+      return { item: rowToResponse(updatedRow) };
+    },
+  );
+
+  app.delete(
+    "/help-requests/:id/responses/:responseId",
+    { preHandler: [app.authenticate] },
+    async (request, reply) => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      const { id, responseId } = request.params as {
+        id: string;
+        responseId: string;
+      };
+      const rows = await db
+        .select()
+        .from(responses)
+        .where(eq(responses.id, responseId))
+        .limit(1);
+      const row = rows[0];
+      if (!row || row.helpRequestId !== id) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+      const user = getJwtUser(request);
+      if (row.authorId !== user.sub) {
+        return reply.code(403).send({ error: "forbidden" });
+      }
+      await db.delete(responses).where(eq(responses.id, responseId));
+      await db
+        .update(helpRequests)
+        .set({
+          responsesCount: sql`GREATEST(0, ${helpRequests.responsesCount} - 1)`,
+          updatedAt: new Date(),
+        })
+        .where(eq(helpRequests.id, id));
+      void reply.code(204);
+      return;
     },
   );
 }
