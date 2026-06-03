@@ -8,6 +8,10 @@ import { useState } from "react";
 import { Button } from "@allaboard/ui/components/button";
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
+import {
+  buildRubberduckRedirectUrl,
+  fetchRubberduckRedirectUrl,
+} from "@/lib/rubberduck-redirect";
 
 type CreateResult = {
   item: { id: string };
@@ -66,22 +70,37 @@ export function HelpRequestForm() {
   const [title, setTitle] = useState("");
   const [tagsRaw, setTagsRaw] = useState("");
   const [duplicateId, setDuplicateId] = useState<string | null>(null);
-  const [rubberduckHint, setRubberduckHint] = useState(false);
+  const [rubberduckMessage, setRubberduckMessage] = useState<string | null>(
+    null,
+  );
 
   const mutation = useMutation({
     mutationFn: loginAndCreate,
     onSuccess: async (data) => {
       setDuplicateId(null);
-      setRubberduckHint(Boolean(data.hints?.rubberduckEligible));
+      setRubberduckMessage(null);
       await queryClient.invalidateQueries({ queryKey: ["feed"] });
       if (data.hints?.rubberduckEligible) {
+        const baseUrl = await fetchRubberduckRedirectUrl();
+        if (baseUrl) {
+          window.location.assign(
+            buildRubberduckRedirectUrl(baseUrl, {
+              requestId: data.item.id,
+              title: title.trim(),
+            }),
+          );
+          return;
+        }
+        setRubberduckMessage(
+          "Handoff Rubberduck : votre demande est publiée. Configurez RUBBERDUCK_URL pour activer la redirection externe.",
+        );
         setTitle("");
         return;
       }
       router.push(`/requests/${data.item.id}`);
     },
     onError: (err: Error & { existingId?: string }) => {
-      setRubberduckHint(false);
+      setRubberduckMessage(null);
       if (err.message === "duplicate" && err.existingId) {
         setDuplicateId(err.existingId);
       } else {
@@ -92,7 +111,7 @@ export function HelpRequestForm() {
 
   function submit() {
     setDuplicateId(null);
-    setRubberduckHint(false);
+    setRubberduckMessage(null);
     const tags = tagsRaw
       .split(",")
       .map((s) => s.trim())
@@ -158,10 +177,12 @@ export function HelpRequestForm() {
           </Link>
         </p>
       ) : null}
-      {rubberduckHint ? (
-        <p className="m-0 text-sm text-primary">
-          Handoff Rubberduck (stub, service externe) : titre court — redirection
-          possible (Phase 4). Publiez une nouvelle demande ou consultez le feed.
+      {rubberduckMessage ? (
+        <p
+          className="m-0 text-sm text-primary"
+          data-testid="rubberduck-handoff"
+        >
+          {rubberduckMessage}
         </p>
       ) : null}
       <Button

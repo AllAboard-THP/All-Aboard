@@ -467,6 +467,9 @@ components:
           $ref: "#/components/schemas/HelpRequest"
         hints:
           type: object
+          description: >
+            Présent si l'agent All-Aboard (`POST /routing/evaluate`, via `AGENT_URL`)
+            suggère un handoff Rubberduck (service externe).
           properties:
             rubberduckEligible:
               type: boolean
