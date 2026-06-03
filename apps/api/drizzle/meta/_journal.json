@@ -29,6 +29,13 @@
       "when": 1747497600000,
       "tag": "0003_user_certifications",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1747584000000,
+      "tag": "0004_outbox_intuition",
+      "breakpoints": true
     }
   ]
 }

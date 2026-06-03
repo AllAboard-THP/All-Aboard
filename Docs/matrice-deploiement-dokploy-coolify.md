@@ -74,12 +74,16 @@ Ces variables concernent **Phase 2** (auth sur l’API) ; voir [ADR 0001](adr/00
 
 ### Variables blockchain/indexation
 
-| Variable | Web | API | Agent | Indexer | Obligatoire |
+| Variable | Web | API | Agent | Indexer (legacy) | Obligatoire |
 |---|:---:|:---:|:---:|:---:|:---:|
-| `INTUITION_RPC_URL` |  | x | x | x | Oui |
-| `INTUITION_API_KEY` |  | x | x | x | Selon provider |
-| `INDEXER_START_BLOCK` |  |  |  | x | Oui |
-| `INDEXER_CONFIRMATIONS` |  |  |  | x | Recommande |
+| `INTUITION_RPC_URL` |  | x |  |  | SDK publish (post-stub #67) |
+| `INTUITION_API_KEY` |  | x |  |  | Selon provider |
+| `INTUITION_GRAPHQL_URL` |  | x |  |  | Lecture graphe (spike #67) |
+| `INTUITION_NETWORK_ID` |  | x |  |  | Testnet / mainnet |
+| `INTUITION_PUBLISHER_ENABLED` |  | x |  |  | Défaut `true` ; `false` pour désactiver poll |
+| `INTUITION_PUBLISHER_POLL_MS` |  | x |  |  | Défaut `5000` |
+| `INDEXER_START_BLOCK` |  |  |  | x | **Legacy** — ne pas réactiver |
+| `INDEXER_CONFIRMATIONS` |  |  |  | x | **Legacy** |
 
 ## Configuration Dokploy (par service)
 
