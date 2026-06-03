@@ -177,7 +177,7 @@ Aligné sur [matrice](../matrice-deploiement-dokploy-coolify.md) et [instance](.
 | [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68) | Intégration API — handoff Rubberduck via agent | Heuristique API → Agent handoff ; BFF agent in-app ; redirect Rubberduck côté web | #66 |
 | [#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) | CI/Dokploy Agent + nettoyage placeholder Indexer | Build image Agent ; doc retrait Indexer Dokploy | #66 |
 
-L’epic **#37 reste ouverte** (Project : Triage/Todo) jusqu’à priorisation post-staging ; aucune de ces tâches ne bloque le MVP Phase 2.
+L’epic **#37 est fermée** (2026-06-03) — implémentation MVP #66–#69 merge sur `Dev` (PRs #93–#96). Évolutions post-MVP : SDK Intuition testnet, réactivation Dokploy Agent après validation ops.
 
 ## Conséquences
 

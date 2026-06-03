@@ -9,7 +9,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9cd3af40`
+- Built from commit: `5ef6e7b4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -194,7 +194,7 @@ Nodes (10): code:graphql (# Lecture par identifiant métier mappé (pseudo-champ
 
 ### Community 14 - "Community 14"
 Cohesion: 0.20
-Nodes (9): Critères de clôture cadrage (#37 — partial), Doc canonique (lecture), Décision architecture (2026-05-27), Décision architecture (2026-06-02), Livrables (cadrage), Objectif, Sous-tâches, Tâche #37 — Phase 4 Agent All-Aboard & Intuition (+1 more)
+Nodes (9): Critères de clôture (#37), Doc canonique (lecture), Décision architecture (2026-05-27), Décision architecture (2026-06-02), Livrables (cadrage), Objectif, Sous-tâches, Tâche #37 — Phase 4 Agent All-Aboard & Intuition (+1 more)
 
 ### Community 15 - "Community 15"
 Cohesion: 0.20
@@ -313,8 +313,8 @@ Cohesion: 0.12
 Nodes (14): createPool(), buildApp(), BuildAppOptions, createBodySchema, createResponseBodySchema, jwtSecret(), responseVisibleUnderCertificationFilter(), tagsOverlap() (+6 more)
 
 ### Community 47 - "Community 47"
-Cohesion: 0.19
-Nodes (17): outboxEvents, IntuitionConfig, loadIntuitionConfig(), config, enqueueHelpRequestCreated(), HELP_REQUEST_CREATED, IntuitionPublisherHandle, IntuitionPublisherLog (+9 more)
+Cohesion: 0.18
+Nodes (18): helpRequests, outboxEvents, IntuitionConfig, loadIntuitionConfig(), config, enqueueHelpRequestCreated(), HELP_REQUEST_CREATED, IntuitionPublisherHandle (+10 more)
 
 ### Community 48 - "Community 48"
 Cohesion: 0.17
@@ -369,12 +369,12 @@ Cohesion: 0.14
 Nodes (13): 1. Postgres (env dev), 2. Variables service **API** (dev), 3. Variables service **Web** (dev), 4. Smoke automatisé, 5. Smoke navigateur (parcours Bob), 6. Journal et pilotage, code:text (postgresql://<USER>:<PASSWORD>@<HOST_INTERNE>:5432/<DATABASE), code:bash (pnpm smoke:dev) (+5 more)
 
 ### Community 61 - "Community 61"
-Cohesion: 0.16
-Nodes (12): authenticateWithDatabase(), authenticateWithMvpFallback(), isMvpPasswordFallbackEnabled(), LEGACY_USER_EMAIL, LoginBody, loginBodySchema, LoginSuccess, resolveLoginEmail() (+4 more)
-
-### Community 62 - "Community 62"
 Cohesion: 0.15
 Nodes (12): 0. Promotion code (`staging` Git), 1. Postgres (env staging), 2. Variables service **API** (staging), 3. Variables service **Web** (staging), 4. Smoke automatisé, 5. Smoke navigateur (parcours Bob), 6. Journal et pilotage, code:text (postgresql://<USER>:<PASSWORD>@<HOST_INTERNE_POSTGRES_STAGIN) (+4 more)
+
+### Community 62 - "Community 62"
+Cohesion: 0.18
+Nodes (11): authenticateWithDatabase(), authenticateWithMvpFallback(), isMvpPasswordFallbackEnabled(), LEGACY_USER_EMAIL, LoginBody, loginBodySchema, LoginSuccess, resolveLoginEmail() (+3 more)
 
 ### Community 63 - "Community 63"
 Cohesion: 0.21

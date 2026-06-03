@@ -1,6 +1,6 @@
 # Issue #68 — API→Agent handoff Rubberduck
 
-**Statut** : livré sur branche `feat/68-agent-handoff`.
+**Statut** : livré — merge [PR #95](https://github.com/AllAboard-THP/All-Aboard/pull/95) sur `Dev` (2026-06-03).
 
 ## Objectif
 
