@@ -30,9 +30,9 @@ test.describe("i18n — locale routing", () => {
 
   test("English help/new page", async ({ page }) => {
     await page.goto("/en/help/new");
-    await expect(
-      page.getByText("Publish a help request"),
-    ).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText("Publish a help request")).toBeVisible({
+      timeout: 30_000,
+    });
     await expect(page.getByLabel("Request title")).toBeVisible();
   });
 });

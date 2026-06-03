@@ -15,6 +15,11 @@ export default defineConfig({
   use: {
     baseURL: webUrl,
     trace: "on-first-retry",
+    // Default FR: next-intl negotiates from Accept-Language; Playwright Chromium defaults to en-US.
+    locale: "fr-FR",
+    extraHTTPHeaders: {
+      "Accept-Language": "fr-FR,fr;q=0.9",
+    },
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: process.env.PLAYWRIGHT_SKIP_WEBSERVER
