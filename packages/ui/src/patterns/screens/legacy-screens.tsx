@@ -76,9 +76,8 @@ import {
   LANDING_HERO_GRID_CLASS,
   LANDING_HERO_PADDING_CLASS,
   LANDING_HERO_SECTION_CLASS,
+  LANDING_GLASS_INPUT_CLASS,
   LANDING_LOGIN_CARD_CLASS,
-  LANDING_LOGIN_INNER_HIGHLIGHT_CLASS,
-  LANDING_LOGIN_INPUT_HIGHLIGHT_CLASS,
 } from "../landing-layout";
 import { LandingPageShell } from "../landing-page-shell";
 import {
@@ -135,59 +134,35 @@ export function LandingLoginScreen() {
           <div className="flex min-w-0 items-center justify-center lg:justify-end">
             <Card
               className={cn(
-                "hero-panel glass flex aspect-square w-full max-w-[min(100%,32rem)] shrink-0 flex-col justify-between rounded-[2rem] border-white/10 p-6 shadow-none sm:max-h-[min(34rem,calc(100dvh-14rem))] sm:p-8",
+                "flex aspect-square w-full max-w-[min(100%,32rem)] shrink-0 flex-col justify-between rounded-[2rem] border-white/10 p-6 shadow-none sm:max-h-[min(34rem,calc(100dvh-14rem))] sm:p-8",
                 LANDING_LOGIN_CARD_CLASS,
               )}
             >
               <CardHeader className="shrink-0 px-0 pb-0 text-center">
-                <CardTitle
-                  className={cn(
-                    "text-xl sm:text-2xl",
-                    LANDING_LOGIN_INNER_HIGHLIGHT_CLASS,
-                  )}
-                >
+                <CardTitle className="text-xl sm:text-2xl">
                   {labels.auth.loginTitle}
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex min-h-0 flex-1 flex-col justify-center gap-3.5 px-0">
                 <div className="flex flex-col gap-1.5">
-                  <Label
-                    htmlFor="legacy-email"
-                    className={LANDING_LOGIN_INNER_HIGHLIGHT_CLASS}
-                  >
-                    {labels.auth.email}
-                  </Label>
+                  <Label htmlFor="legacy-email">{labels.auth.email}</Label>
                   <Input
                     id="legacy-email"
                     type="email"
-                    className={cn(
-                      "h-10 rounded-xl border-white/10 bg-white/5 sm:h-11",
-                      LANDING_LOGIN_INPUT_HIGHLIGHT_CLASS,
-                    )}
+                    className={LANDING_GLASS_INPUT_CLASS}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label
-                    htmlFor="legacy-password"
-                    className={LANDING_LOGIN_INNER_HIGHLIGHT_CLASS}
-                  >
+                  <Label htmlFor="legacy-password">
                     {labels.auth.password}
                   </Label>
                   <Input
                     id="legacy-password"
                     type="password"
-                    className={cn(
-                      "h-10 rounded-xl border-white/10 bg-white/5 sm:h-11",
-                      LANDING_LOGIN_INPUT_HIGHLIGHT_CLASS,
-                    )}
+                    className={LANDING_GLASS_INPUT_CLASS}
                   />
                 </div>
-                <div
-                  className={cn(
-                    "flex items-center gap-2 rounded-lg",
-                    LANDING_LOGIN_INNER_HIGHLIGHT_CLASS,
-                  )}
-                >
+                <div className="flex items-center gap-2 rounded-lg">
                   <Checkbox id="legacy-remember" />
                   <Label htmlFor="legacy-remember" className="text-sm">
                     {labels.auth.rememberMe}
@@ -196,28 +171,16 @@ export function LandingLoginScreen() {
               </CardContent>
               <CardFooter className="shrink-0 flex-col gap-3 px-0 pt-0">
                 <Button
-                  className={cn(
-                    "h-10 w-full rounded-2xl sm:h-11",
-                    LANDING_LOGIN_INNER_HIGHLIGHT_CLASS,
-                    "hover:shadow-[0_0_1rem_rgb(99_102_241/0.5)]",
-                  )}
+                  className="h-10 w-full rounded-2xl sm:h-11"
                   onClick={() => legacyDemoToast(labels.auth.submit)}
                 >
                   {labels.auth.submit}
                 </Button>
-                <p
-                  className={cn(
-                    "text-center text-xs text-muted-foreground sm:text-sm",
-                    LANDING_LOGIN_INNER_HIGHLIGHT_CLASS,
-                  )}
-                >
+                <p className="text-center text-xs text-muted-foreground sm:text-sm">
                   {labels.auth.noAccount}{" "}
                   <button
                     type="button"
-                    className={cn(
-                      "text-primary hover:underline",
-                      LANDING_LOGIN_INNER_HIGHLIGHT_CLASS,
-                    )}
+                    className="text-primary hover:underline"
                     onClick={() => legacyDemoToast(labels.auth.signUp)}
                   >
                     {labels.auth.signUp}

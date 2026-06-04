@@ -5,8 +5,35 @@ export const LANDING_EDGE_PADDING_CLASS =
 /** Lighter glass for landing header/footer — see .landing-chrome in globals.css. */
 export const LANDING_GLASS_CHROME_CLASS = "landing-chrome border-white/10";
 
-/** Offset below fixed landing header (logo + tagline). */
+/** Landing header/footer — brightness highlight on hover only. */
+export const LANDING_CHROME_HOVER_HIGHLIGHT_CLASS =
+  "transition-[filter] duration-200 ease-out hover:brightness-110 motion-reduce:transition-none";
+
+/** Fixed app header shell (landing + in-app pages). */
+export const APP_CHROME_HEADER_CLASS = `fixed top-0 z-50 w-full border-b ${LANDING_GLASS_CHROME_CLASS} ${LANDING_CHROME_HOVER_HIGHLIGHT_CLASS}`;
+
+/** App footer chrome (landing + in-app pages). */
+export const APP_CHROME_FOOTER_CLASS = `${LANDING_GLASS_CHROME_CLASS} ${LANDING_CHROME_HOVER_HIGHLIGHT_CLASS}`;
+
+/** Header inner row — same alignment as `LandingPublicHeader`. */
+export const APP_CHROME_HEADER_ROW_CLASS =
+  `flex min-h-[4.25rem] w-full items-center justify-between gap-4 py-2 sm:min-h-[4.5rem] ${LANDING_EDGE_PADDING_CLASS}`;
+
+/** Footer inner row — same alignment as landing shell footer. */
+export const APP_CHROME_FOOTER_ROW_CLASS =
+  `flex w-full flex-col items-center justify-between gap-4 md:flex-row ${LANDING_EDGE_PADDING_CLASS}`;
+
+/** Offset below fixed header (logo + tagline). */
 export const LANDING_HEADER_OFFSET_CLASS = "pt-[4.75rem] sm:pt-20";
+
+/** Main landmark below fixed header (edge padding + optional inner max width). */
+export const APP_CHROME_MAIN_CLASS = `flex-1 w-full ${LANDING_HEADER_OFFSET_CLASS} ${LANDING_EDGE_PADDING_CLASS}`;
+
+export const APP_CHROME_MAIN_INNER_CLASS = "mx-auto w-full max-w-7xl";
+
+/** Shell footer spacing aligned with landing. */
+export const APP_CHROME_FOOTER_SHELL_CLASS =
+  "mt-auto shrink-0 border-t border-white/5 py-6 sm:py-8";
 
 /** Tagline under wordmark — same stack as UI, no chrome / no eyebrow caps. */
 export const LANDING_HEADER_TAGLINE_CLASS =
@@ -31,19 +58,18 @@ export const LANDING_HERO_GRID_CLASS =
 export const LANDING_HERO_COPY_CLASS =
   "flex min-w-0 flex-col gap-5 sm:gap-6 lg:max-w-2xl";
 
+/** Hero title + subtitle — see `.landing-hero-hover-zoom` in globals.css. */
+export const LANDING_HERO_HOVER_ZOOM_CLASS = "landing-hero-hover-zoom";
+
 export const LANDING_HERO_HEADING_CLASS =
-  "text-[clamp(2rem,5vw,4rem)] leading-[1.08]";
+  `text-[clamp(2rem,5vw,4rem)] leading-[1.08] ${LANDING_HERO_HOVER_ZOOM_CLASS}`;
 
 export const LANDING_HERO_DESCRIPTION_CLASS =
-  "landing-hero-description text-lg leading-relaxed sm:text-xl";
+  `landing-hero-description text-lg leading-relaxed sm:text-xl ${LANDING_HERO_HOVER_ZOOM_CLASS}`;
 
-/** Login card — zoom + glow on hover. */
-export const LANDING_LOGIN_CARD_CLASS =
-  "origin-center transition-[transform,box-shadow,border-color] duration-200 ease-out hover:scale-[1.02] hover:border-white/25 hover:shadow-[0_0_1.5rem_rgb(99_102_241/0.45)] motion-reduce:transition-none motion-reduce:hover:scale-100";
+/** Login card — `.landing-login-card` in globals.css (lighter glass, −4% saturation, subtle hover zoom). */
+export const LANDING_LOGIN_CARD_CLASS = "landing-login-card motion-reduce:transition-none";
 
-/** Inner login controls — highlight only, no scale. */
-export const LANDING_LOGIN_INNER_HIGHLIGHT_CLASS =
-  "transition-[filter,background-color,border-color,box-shadow,color] duration-200 ease-out hover:brightness-110";
-
-export const LANDING_LOGIN_INPUT_HIGHLIGHT_CLASS =
-  "transition-[background-color,border-color,box-shadow] duration-200 ease-out hover:border-white/30 hover:bg-white/10 hover:shadow-[0_0_0.75rem_rgb(99_102_241/0.35)] focus-visible:border-white/30 focus-visible:bg-white/10";
+/** Glass pill fields — `.landing-glass-input` in globals.css (minimal white highlight on hover/focus). */
+export const LANDING_GLASS_INPUT_CLASS =
+  "landing-glass-input h-10 rounded-xl sm:h-11 focus-visible:ring-0";

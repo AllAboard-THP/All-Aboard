@@ -3,11 +3,18 @@
 import type { Decorator } from "@storybook/react";
 import type { ReactNode } from "react";
 
+import { cn } from "@allaboard/ui/lib/utils";
 import { useLegacyLabels } from "../i18n/storybook-locale";
 import {
   MobileBottomNav,
   type MobileNavLink,
 } from "./legacy-mobile-patterns";
+import {
+  APP_CHROME_FOOTER_CLASS,
+  APP_CHROME_FOOTER_SHELL_CLASS,
+  APP_CHROME_MAIN_CLASS,
+  APP_CHROME_MAIN_INNER_CLASS,
+} from "./landing-layout";
 import {
   AppFooter,
   AppNavBar,
@@ -50,27 +57,30 @@ export function AppChrome({
 
   return (
     <div className="flex min-h-[100dvh] flex-col">
-      {showNav ? (
-        <AppNavBar
-          activeLink={activeLink}
-          messageCount={messageCount}
-          userMenuOpen={userMenuOpen}
-          isAdmin={isAdmin}
-          isMentor={isMentor}
-          userInitials={userInitials}
+      <AppNavBar
+        activeLink={activeLink}
+        messageCount={messageCount}
+        userMenuOpen={userMenuOpen}
+        isAdmin={isAdmin}
+        isMentor={isMentor}
+        userInitials={userInitials}
+        labels={labels}
+        showMainNav={showNav}
+        showUserMenu={showNav}
+      />
+      <main className={cnMainClass(mobileChrome)}>
+        <div className={APP_CHROME_MAIN_INNER_CLASS}>{children}</div>
+      </main>
+      {showFooter ? (
+        <AppFooter
           labels={labels}
+          className={cn(
+            APP_CHROME_FOOTER_SHELL_CLASS,
+            APP_CHROME_FOOTER_CLASS,
+            mobileChrome ? "pb-20 md:pb-0" : undefined,
+          )}
         />
       ) : null}
-      <main
-        className={
-          showNav
-            ? cnMainClass(mobileChrome)
-            : "flex-1"
-        }
-      >
-        {children}
-      </main>
-      {showFooter ? <AppFooter labels={labels} className={mobileChrome ? "pb-20 md:pb-0" : undefined} /> : null}
       {mobileChrome ? (
         <MobileBottomNav
           activeLink={resolveMobileNavLink(activeLink)}
@@ -85,11 +95,9 @@ export function AppChrome({
 }
 
 function cnMainClass(mobileChrome: boolean) {
-  const base =
-    "mx-auto w-full max-w-7xl flex-1 px-4 pt-24 sm:px-6 lg:px-8";
   return mobileChrome
-    ? `${base} pb-24 md:pb-8`
-    : `${base} pb-8`;
+    ? cn(APP_CHROME_MAIN_CLASS, "pb-24 md:pb-8")
+    : cn(APP_CHROME_MAIN_CLASS, "pb-8");
 }
 
 function AppChromeStoryWrapper({

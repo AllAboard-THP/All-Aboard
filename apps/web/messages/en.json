@@ -4,6 +4,7 @@
   },
   "common": {
     "brand": "All-Aboard",
+    "tagline": "Real-time peer tutoring",
     "author": "Author: {authorId}",
     "tags": "Tags: {tags}",
     "unknownError": "Unknown error",

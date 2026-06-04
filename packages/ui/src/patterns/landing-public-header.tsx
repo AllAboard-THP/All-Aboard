@@ -7,8 +7,8 @@ import {
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
 import {
-  LANDING_EDGE_PADDING_CLASS,
-  LANDING_GLASS_CHROME_CLASS,
+  APP_CHROME_HEADER_CLASS,
+  APP_CHROME_HEADER_ROW_CLASS,
   LANDING_HEADER_TAGLINE_CLASS,
 } from "./landing-layout";
 import { BrandLogo } from "./legacy-ui";
@@ -37,19 +37,8 @@ export function LandingPublicHeader({
   const handleLogo = onLogoClick ?? (() => legacyDemoToast(labels.brandName));
 
   return (
-    <header
-      className={cn(
-        "fixed top-0 z-50 w-full border-b",
-        LANDING_GLASS_CHROME_CLASS,
-        className,
-      )}
-    >
-      <div
-        className={cn(
-          "flex min-h-[4.25rem] items-center justify-between gap-4 py-2 sm:min-h-[4.5rem]",
-          LANDING_EDGE_PADDING_CLASS,
-        )}
-      >
+    <header className={cn(APP_CHROME_HEADER_CLASS, className)}>
+      <div className={APP_CHROME_HEADER_ROW_CLASS}>
         <button
           type="button"
           className="-ml-1 shrink-0 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

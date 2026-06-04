@@ -4,6 +4,7 @@
   },
   "common": {
     "brand": "All-Aboard",
+    "tagline": "Entraide étudiante en temps réel",
     "author": "Auteur : {authorId}",
     "tags": "Tags : {tags}",
     "unknownError": "Erreur inconnue",

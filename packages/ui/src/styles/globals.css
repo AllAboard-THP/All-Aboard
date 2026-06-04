@@ -123,6 +123,7 @@
   .subject-chip {
     border: 1px solid rgb(255 255 255 / 0.1);
     background: rgb(255 255 255 / 0.04);
+    box-shadow: none;
   }
 
   .safe-bottom {
@@ -207,7 +208,37 @@
     border: 1px solid rgb(255 255 255 / 0.08);
   }
 
-  /** Landing header/footer — lighter than .glass + .hero-panel (login card unchanged). */
+  /** Landing login card — lighter glass than .hero-panel + .glass; −4% saturation. */
+  .landing-login-card {
+    background:
+      linear-gradient(160deg, rgb(99 102 241 / 0.09), rgb(15 23 42 / 0.08)),
+      rgb(30 41 59 / 0.46);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgb(255 255 255 / 0.08);
+    filter: saturate(96%);
+    transform: scale(1);
+    transform-origin: center;
+    transition:
+      filter 200ms ease-out,
+      transform 200ms ease-out;
+  }
+
+  .landing-login-card:hover {
+    filter: saturate(96%) brightness(1.1);
+    transform: scale(1.008);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .landing-login-card {
+      transition: none;
+    }
+
+    .landing-login-card:hover {
+      transform: scale(1);
+    }
+  }
+
+  /** Landing header/footer — lighter than .glass + .hero-panel. */
   .landing-chrome {
     background: rgb(15 23 42 / 0.38);
     backdrop-filter: blur(8px);
@@ -228,6 +259,49 @@
     -webkit-text-fill-color: transparent;
     color: transparent;
     text-shadow: 0 0 22px rgb(226 232 240 / 0.22);
+  }
+
+  /** Glass pill inputs (landing login, etc.) — minimal white highlight on hover/focus. */
+  .landing-glass-input {
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: rgb(255 255 255 / 0.05);
+    box-shadow: none;
+    transition:
+      border-color 200ms ease-out,
+      background-color 200ms ease-out,
+      box-shadow 200ms ease-out;
+  }
+
+  .landing-glass-input:hover {
+    border-color: rgb(255 255 255 / 0.16);
+  }
+
+  .landing-glass-input:focus-visible {
+    border-color: rgb(255 255 255 / 0.28);
+    background: rgb(255 255 255 / 0.07);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.14);
+    outline: none;
+  }
+
+  /** Landing hero copy — subtle hover zoom, no outer glow. */
+  .landing-hero-hover-zoom {
+    transform: scale(1);
+    transform-origin: left center;
+    transition: transform 200ms ease-out;
+  }
+
+  .landing-hero-hover-zoom:hover {
+    transform: scale(1.008);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .landing-hero-hover-zoom {
+      transition: none;
+    }
+
+    .landing-hero-hover-zoom:hover {
+      transform: scale(1);
+    }
   }
 
   /** Hero subtitle — readable on photo background (not muted-foreground). */

@@ -37,6 +37,13 @@ import {
   type LegacyNavLink,
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
+
+import {
+  APP_CHROME_HEADER_CLASS,
+  APP_CHROME_HEADER_ROW_CLASS,
+  LANDING_EDGE_PADDING_CLASS,
+  LANDING_HEADER_TAGLINE_CLASS,
+} from "./landing-layout";
 import {
   legacySubjects,
   type LegacySubject,
@@ -172,9 +179,9 @@ export function FeaturePill({
   return (
     <span
       className={cn(
-        "subject-chip group inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-gray-200",
-        "transition-[transform,background-color,border-color,box-shadow] duration-200 ease-out",
-        "hover:scale-105 hover:border-white/30 hover:bg-white/12 hover:shadow-[0_0_1.25rem_rgb(99_102_241/0.45)]",
+        "subject-chip group inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-gray-200 shadow-none",
+        "transition-[transform,background-color,border-color] duration-200 ease-out",
+        "hover:scale-105 hover:border-white/30 hover:bg-white/12",
         "motion-reduce:transition-none motion-reduce:hover:scale-100",
         className,
       )}
@@ -367,13 +374,13 @@ const LEGAL_LINK_HREFS: Record<LegacyLegalLinkKey, string> = {
 export function AppFooter({
   labels = legacyLabelsFr,
   className,
-  edgeToEdge = false,
-  edgePaddingClassName,
+  edgeToEdge = true,
+  edgePaddingClassName = LANDING_EDGE_PADDING_CLASS,
   onLegalLinkClick,
 }: {
   labels?: LegacyLabels;
   className?: string;
-  /** Full-width landing layout (no max-w-7xl container). */
+  /** Full-width row with landing edge padding (default, matches landing shell). */
   edgeToEdge?: boolean;
   edgePaddingClassName?: string;
   onLegalLinkClick?: (key: LegacyLegalLinkKey) => void;
@@ -386,14 +393,16 @@ export function AppFooter({
   ];
 
   return (
-    <footer className={cn("mt-12 border-t border-white/5 py-8", className)}>
+    <footer className={cn("border-t border-white/5", className)}>
       <div
-        className={cn(
-          "flex flex-col items-center justify-between gap-4 md:flex-row",
+        className={
           edgeToEdge
-            ? cn("w-full", edgePaddingClassName)
-            : "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8",
-        )}
+            ? cn(
+                "flex w-full flex-col items-center justify-between gap-4 md:flex-row",
+                edgePaddingClassName,
+              )
+            : "mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:px-6 md:flex-row lg:px-8"
+        }
       >
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <AllAboardLogoMark className="size-5" title={labels.brandName} />
@@ -434,6 +443,8 @@ export function AppNavBar({
   isAdmin = true,
   isMentor = false,
   userMenuOpen = false,
+  showMainNav = true,
+  showUserMenu = true,
   labels = legacyLabelsFr,
   className,
 }: {
@@ -445,6 +456,9 @@ export function AppNavBar({
   isAdmin?: boolean;
   isMentor?: boolean;
   userMenuOpen?: boolean;
+  /** Main nav links (feed, explore, …). Brand block stays visible when false. */
+  showMainNav?: boolean;
+  showUserMenu?: boolean;
   labels?: LegacyLabels;
   className?: string;
 }) {
@@ -455,51 +469,67 @@ export function AppNavBar({
   }, [activeLink]);
 
   return (
-    <nav
-      className={cn(
-        "glass fixed top-0 z-50 w-full border-b border-white/10",
-        className,
-      )}
-    >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <BrandLogo labels={labels} />
-        <div className="hidden items-center gap-6 md:flex">
-          {(Object.keys(navIcons) as LegacyNavLink[]).map((link) => {
-            const Icon = navIcons[link];
-            const active = currentLink === link;
-
-            return (
-              <button
-                key={link}
-                type="button"
-                className={cn(
-                  "relative flex items-center gap-2 text-sm font-medium transition-colors",
-                  active ? "text-primary" : "text-muted-foreground hover:text-foreground",
-                )}
-                onClick={() => setCurrentLink(link)}
-              >
-                <Icon className="size-4" />
-                {labels.nav[link]}
-                {link === "messages" && messageCount > 0 ? (
-                  <span className="absolute -top-2 -right-3 flex size-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] text-accent-foreground">
-                    {messageCount}
-                  </span>
-                ) : null}
-              </button>
-            );
-          })}
-        </div>
-        <UserMenu
-          userName={userName}
-          userEmail={userEmail}
-          userInitials={userInitials}
-          isAdmin={isAdmin}
-          isMentor={isMentor}
-          defaultOpen={userMenuOpen}
+    <header className={cn(APP_CHROME_HEADER_CLASS, className)}>
+      <div className={APP_CHROME_HEADER_ROW_CLASS}>
+        <BrandLogo
           labels={labels}
+          className="min-w-0 shrink-0 items-start"
+          tagline={
+            <span className={LANDING_HEADER_TAGLINE_CLASS}>
+              {labels.landing.eyebrow}
+            </span>
+          }
         />
+        {showMainNav || showUserMenu ? (
+          <div className="ml-auto flex shrink-0 items-center gap-2 self-center sm:gap-4">
+            {showMainNav ? (
+              <nav
+                aria-label="Main"
+                className="hidden items-center gap-6 md:flex"
+              >
+                {(Object.keys(navIcons) as LegacyNavLink[]).map((link) => {
+                  const Icon = navIcons[link];
+                  const active = currentLink === link;
+
+                  return (
+                    <button
+                      key={link}
+                      type="button"
+                      className={cn(
+                        "relative flex items-center gap-2 text-sm font-medium transition-colors",
+                        active
+                          ? "text-primary"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                      onClick={() => setCurrentLink(link)}
+                    >
+                      <Icon className="size-4" />
+                      {labels.nav[link]}
+                      {link === "messages" && messageCount > 0 ? (
+                        <span className="absolute -top-2 -right-3 flex size-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] text-accent-foreground">
+                          {messageCount}
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </nav>
+            ) : null}
+            {showUserMenu ? (
+              <UserMenu
+                userName={userName}
+                userEmail={userEmail}
+                userInitials={userInitials}
+                isAdmin={isAdmin}
+                isMentor={isMentor}
+                defaultOpen={userMenuOpen}
+                labels={labels}
+              />
+            ) : null}
+          </div>
+        ) : null}
       </div>
-    </nav>
+    </header>
   );
 }
 

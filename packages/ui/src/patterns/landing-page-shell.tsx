@@ -9,8 +9,8 @@ import {
 import { cn } from "@allaboard/ui/lib/utils";
 import { LandingConceptBackground } from "./landing-concept-background";
 import {
-  LANDING_EDGE_PADDING_CLASS,
-  LANDING_GLASS_CHROME_CLASS,
+  APP_CHROME_FOOTER_CLASS,
+  APP_CHROME_FOOTER_SHELL_CLASS,
   LANDING_HEADER_OFFSET_CLASS,
 } from "./landing-layout";
 import { AppFooter, type LegacyLegalLinkKey } from "./legacy-ui";
@@ -66,11 +66,10 @@ export function LandingPageShell({
       </main>
       <AppFooter
         labels={labels}
-        edgeToEdge
-        edgePaddingClassName={LANDING_EDGE_PADDING_CLASS}
         className={cn(
-          "relative z-10 mt-auto shrink-0 border-t py-6 sm:py-8",
-          LANDING_GLASS_CHROME_CLASS,
+          "relative z-10",
+          APP_CHROME_FOOTER_SHELL_CLASS,
+          APP_CHROME_FOOTER_CLASS,
           footerClassName,
         )}
         onLegalLinkClick={onLegalLinkClick}
