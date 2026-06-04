@@ -10,7 +10,11 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-export const userRoleEnum = pgEnum("user_role", ["student", "mentor"]);
+export const userRoleEnum = pgEnum("user_role", [
+  "student",
+  "mentor",
+  "admin",
+]);
 
 export const helpRequestStatusEnum = pgEnum("help_request_status", [
   "open",
@@ -22,9 +26,20 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   role: userRoleEnum("role").notNull(),
+  fullName: text("full_name"),
+  headline: text("headline"),
+  bio: text("bio"),
+  avatarUrl: text("avatar_url"),
+  educationLevel: text("education_level"),
+  cguAcceptedAt: timestamp("cgu_accepted_at", { withTimezone: true }),
+  notifyOnComment: boolean("notify_on_comment").notNull().default(true),
+  notifyOnMessage: boolean("notify_on_message").notNull().default(true),
   /** Tags domaine / stack pour filtrage réponses mentor (MOC étape 8). */
   certificationTags: text("certification_tags").array().notNull().default([]),
   createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
 });
@@ -44,6 +59,28 @@ export const subjects = pgTable("subjects", {
     .notNull()
     .defaultNow(),
 });
+
+export const mentorSubjects = pgTable(
+  "mentor_subjects",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    subjectId: uuid("subject_id")
+      .notNull()
+      .references(() => subjects.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("mentor_subjects_user_subject_unique").on(
+      table.userId,
+      table.subjectId,
+    ),
+  ],
+);
 
 export const helpRequests = pgTable("help_requests", {
   id: uuid("id").primaryKey().defaultRandom(),

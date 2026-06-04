@@ -174,7 +174,45 @@ export type MyHelpRequestsResponse = {
 };
 
 /** Rôles MVP (claim JWT — ADR 0001 extension). */
-export type UserRole = "student" | "mentor";
+export type UserRole = "student" | "mentor" | "admin";
+
+/** Profil utilisateur (privé — `GET /auth/me`, `PATCH /users/me`). */
+export type UserProfile = {
+  id: string;
+  email: string;
+  role: UserRole;
+  displayName: string;
+  fullName?: string;
+  headline?: string;
+  bio?: string;
+  avatarUrl?: string;
+  educationLevel?: string;
+  cguAcceptedAt?: string;
+  notifyOnComment?: boolean;
+  notifyOnMessage?: boolean;
+  certificationTags?: string[];
+  competenceSubjects?: SubjectSummary[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Profil public (`GET /users/:id`). */
+export type UserPublicProfile = {
+  id: string;
+  role: UserRole;
+  displayName: string;
+  headline?: string;
+  bio?: string;
+  avatarUrl?: string;
+  educationLevel?: string;
+  competenceSubjects?: SubjectSummary[];
+  stats: {
+    postsCount: number;
+    responsesCount: number;
+  };
+};
+
+export type UserStats = UserPublicProfile["stats"];
 
 /** Corps JSON pour `POST /auth/login` (email préféré ; `userId` legacy dev). */
 export type LoginBody = {
@@ -191,10 +229,78 @@ export type LoginResponse = {
   role: UserRole;
 };
 
+/** Corps JSON pour `POST /auth/register`. */
+export type RegisterBody = {
+  email: string;
+  password: string;
+  passwordConfirmation?: string;
+  fullName: string;
+  educationLevel?: string;
+  headline?: string;
+  acceptCgu: true;
+};
+
+/** Réponse `201` / `200` de `POST /auth/register`. */
+export type RegisterResponse = {
+  ok: true;
+  userId: string;
+  role: UserRole;
+};
+
+/** Réponse `POST /auth/logout`. */
+export type LogoutResponse = {
+  ok: true;
+};
+
 /** Réponse `GET /auth/me`. */
 export type AuthMeResponse = {
   userId: string;
   role: UserRole;
+  displayName?: string;
+  fullName?: string;
+  headline?: string;
+  bio?: string;
+  avatarUrl?: string;
+  educationLevel?: string;
+  cguAcceptedAt?: string;
+  notifyOnComment?: boolean;
+  notifyOnMessage?: boolean;
+  certificationTags?: string[];
+  competenceSubjects?: SubjectSummary[];
+};
+
+/** Corps JSON pour `PATCH /users/me`. */
+export type UpdateUserMeBody = {
+  fullName?: string;
+  headline?: string | null;
+  bio?: string | null;
+  avatarUrl?: string | null;
+  educationLevel?: string | null;
+  notifyOnComment?: boolean;
+  notifyOnMessage?: boolean;
+  subjectIds?: string[];
+  certificationTags?: string[];
+};
+
+/** Réponse `PATCH /users/me`. */
+export type UpdateUserMeResponse = {
+  item: UserProfile;
+};
+
+/** Réponse `POST /legal/accept`. */
+export type AcceptLegalResponse = {
+  ok: true;
+  cguAcceptedAt: string;
+};
+
+export type PublicUserTab = "posts" | "responses";
+
+/** Réponse `GET /users/:id` (onglet posts ou responses). */
+export type PublicUserResponse = {
+  profile: UserPublicProfile;
+  tab: PublicUserTab;
+  items: HelpRequest[] | Response[];
+  pagination: FeedPagination;
 };
 
 /** Item enrichi de `GET /mentor/feed` — demande taguée + signalisation réponses. */

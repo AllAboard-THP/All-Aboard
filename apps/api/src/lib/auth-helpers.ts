@@ -17,7 +17,13 @@ export function roleFromJwtClaims(
   sub: string,
   roleClaim: string | undefined,
 ): UserRole {
-  if (roleClaim === "mentor" || roleClaim === "student") return roleClaim;
+  if (
+    roleClaim === "mentor" ||
+    roleClaim === "student" ||
+    roleClaim === "admin"
+  ) {
+    return roleClaim;
+  }
   if (sub.endsWith("@dev.local")) {
     return sub.startsWith("alice@") ? "mentor" : "student";
   }
