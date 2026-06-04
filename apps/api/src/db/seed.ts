@@ -7,6 +7,7 @@ export type SeedUserSpec = {
   email: string;
   role: "student" | "mentor";
   password: string;
+  fullName?: string;
   certificationTags?: string[];
 };
 
@@ -67,11 +68,17 @@ export function defaultSeedUsers(): SeedUserSpec[] {
     "";
   if (!password) return [];
   return [
-    { email: "bob@dev.local", role: "student", password },
+    {
+      email: "bob@dev.local",
+      role: "student",
+      password,
+      fullName: "Bob Dev",
+    },
     {
       email: "alice@dev.local",
       role: "mentor",
       password,
+      fullName: "Alice Mentor",
       certificationTags: ["react", "typescript", "rails"],
     },
   ];
@@ -119,10 +126,17 @@ export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise
       .where(eq(users.email, spec.email))
       .limit(1);
     const certificationTags = spec.certificationTags ?? [];
+    const fullName = spec.fullName?.trim() || null;
     if (existing.length > 0) {
       await db
         .update(users)
-        .set({ passwordHash, role: spec.role, certificationTags })
+        .set({
+          passwordHash,
+          role: spec.role,
+          certificationTags,
+          fullName,
+          updatedAt: new Date(),
+        })
         .where(eq(users.email, spec.email));
     } else {
       await db.insert(users).values({
@@ -130,6 +144,7 @@ export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise
         passwordHash,
         role: spec.role,
         certificationTags,
+        fullName,
       });
     }
   }

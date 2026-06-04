@@ -168,10 +168,37 @@ export function parseAuthMeResponse(data: unknown): AuthMeResponse {
   if (typeof o.userId !== "string") {
     throw new Error("Invalid auth/me: userId");
   }
-  if (o.role !== "student" && o.role !== "mentor") {
+  if (o.role !== "student" && o.role !== "mentor" && o.role !== "admin") {
     throw new Error("Invalid auth/me: role");
   }
-  return { userId: o.userId, role: o.role };
+  const result: AuthMeResponse = { userId: o.userId, role: o.role };
+  if (typeof o.displayName === "string") result.displayName = o.displayName;
+  if (typeof o.fullName === "string") result.fullName = o.fullName;
+  if (typeof o.headline === "string") result.headline = o.headline;
+  if (typeof o.bio === "string") result.bio = o.bio;
+  if (typeof o.avatarUrl === "string") result.avatarUrl = o.avatarUrl;
+  if (typeof o.educationLevel === "string") {
+    result.educationLevel = o.educationLevel;
+  }
+  if (typeof o.cguAcceptedAt === "string") {
+    result.cguAcceptedAt = o.cguAcceptedAt;
+  }
+  if (typeof o.notifyOnComment === "boolean") {
+    result.notifyOnComment = o.notifyOnComment;
+  }
+  if (typeof o.notifyOnMessage === "boolean") {
+    result.notifyOnMessage = o.notifyOnMessage;
+  }
+  if (
+    Array.isArray(o.certificationTags) &&
+    o.certificationTags.every((t) => typeof t === "string")
+  ) {
+    result.certificationTags = o.certificationTags;
+  }
+  if (Array.isArray(o.competenceSubjects)) {
+    result.competenceSubjects = o.competenceSubjects as AuthMeResponse["competenceSubjects"];
+  }
+  return result;
 }
 
 export type FetchFeedResult =

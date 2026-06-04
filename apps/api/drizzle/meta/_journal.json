@@ -50,6 +50,13 @@
       "when": 1747756800000,
       "tag": "0006_api_rails_phase2_social",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1747843200000,
+      "tag": "0007_api_rails_phase3_users_auth",
+      "breakpoints": true
     }
   ]
 }

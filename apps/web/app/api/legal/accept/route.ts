@@ -5,14 +5,14 @@ import {
   relayJsonResponse,
 } from "@/lib/bff-relay";
 
-export async function GET() {
+export async function POST() {
   const token = await getAccessToken();
   if (!token) {
     return missingTokenResponse();
   }
-  const res = await fetch(`${getApiBaseUrl()}/auth/me`, {
+  const res = await fetch(`${getApiBaseUrl()}/legal/accept`, {
+    method: "POST",
     headers: { authorization: `Bearer ${token}` },
-    cache: "no-store",
   });
   return relayJsonResponse(res);
 }

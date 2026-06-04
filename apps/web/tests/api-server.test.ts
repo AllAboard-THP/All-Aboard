@@ -111,6 +111,22 @@ describe("parseAuthMeResponse", () => {
       role: "mentor",
     });
   });
+
+  it("passes through enriched profile fields", () => {
+    expect(
+      parseAuthMeResponse({
+        userId: "bob@dev.local",
+        role: "student",
+        displayName: "Bob Dev",
+        cguAcceptedAt: "2026-06-04T12:00:00.000Z",
+      }),
+    ).toEqual({
+      userId: "bob@dev.local",
+      role: "student",
+      displayName: "Bob Dev",
+      cguAcceptedAt: "2026-06-04T12:00:00.000Z",
+    });
+  });
 });
 
 describe("parseMentorFeedResponse", () => {

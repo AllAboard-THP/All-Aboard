@@ -9,7 +9,7 @@ import { parse as parseYaml } from "yaml";
 import { eq } from "drizzle-orm";
 import { buildApp } from "./app";
 import { defaultSeedUsers, defaultSeedSubjects, seedSubjects, seedUsers } from "./db/seed";
-import { outboxEvents } from "./db/schema";
+import { outboxEvents, users } from "./db/schema";
 import { HELP_REQUEST_CREATED } from "./intuition/outbox";
 import { isOpenApiDocsEnabled } from "./openapi";
 
@@ -237,11 +237,12 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
   "api with database",
   () => {
     let pool: pg.Pool;
+    let db: ReturnType<typeof drizzle>;
     let app: Awaited<ReturnType<typeof buildApp>>;
 
     beforeAll(async () => {
       pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-      const db = drizzle(pool);
+      db = drizzle(pool);
       await migrate(db, {
         migrationsFolder: path.join(__dirname, "../drizzle"),
       });
@@ -785,8 +786,14 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         headers: { authorization: `Bearer ${token}` },
       });
       expect(meRes.statusCode).toBe(200);
-      const me = JSON.parse(meRes.payload) as { userId: string; role: string };
-      expect(me).toEqual({ userId: "alice@dev.local", role: "mentor" });
+      const me = JSON.parse(meRes.payload) as {
+        userId: string;
+        role: string;
+        displayName?: string;
+      };
+      expect(me.userId).toBe("alice@dev.local");
+      expect(me.role).toBe("mentor");
+      expect(me.displayName).toBe("Alice Mentor");
     });
 
     it("GET /mentor/feed returns 401 without token", async () => {
@@ -1236,6 +1243,151 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       };
       expect(detail.responses?.length ?? 0).toBe(0);
       expect(detail.item.responsesCount ?? 0).toBe(0);
+    });
+
+    it("POST /auth/register creates user and returns JWT", async () => {
+      const email = `newuser-${Date.now()}@dev.local`;
+      const res = await app.inject({
+        method: "POST",
+        url: "/auth/register",
+        payload: {
+          email,
+          password: "secure-pass-1",
+          fullName: "Nouveau Membre",
+          acceptCgu: true,
+        },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as {
+        ok: boolean;
+        userId: string;
+        role: string;
+      };
+      expect(body).toEqual({
+        ok: true,
+        userId: email,
+        role: "student",
+      });
+      const setCookie = res.headers["set-cookie"];
+      const cookieStr = Array.isArray(setCookie)
+        ? setCookie.join("; ")
+        : String(setCookie ?? "");
+      expect(cookieStr).toContain("access_token=");
+    });
+
+    it("POST /auth/register returns 409 for duplicate email", async () => {
+      const res = await app.inject({
+        method: "POST",
+        url: "/auth/register",
+        payload: {
+          email: "bob@dev.local",
+          password: "secure-pass-2",
+          fullName: "Bob Duplicate",
+          acceptCgu: true,
+        },
+      });
+      expect(res.statusCode).toBe(409);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("email_taken");
+    });
+
+    it("POST /auth/logout clears access_token cookie", async () => {
+      const loginRes = await app.inject({
+        method: "POST",
+        url: "/auth/login",
+        payload: { email: "bob@dev.local", password: seedPassword },
+      });
+      expect(loginRes.statusCode).toBe(200);
+      const logoutRes = await app.inject({
+        method: "POST",
+        url: "/auth/logout",
+      });
+      expect(logoutRes.statusCode).toBe(200);
+      const setCookie = logoutRes.headers["set-cookie"];
+      const cookieStr = Array.isArray(setCookie)
+        ? setCookie.join("; ")
+        : String(setCookie ?? "");
+      expect(cookieStr.toLowerCase()).toMatch(/access_token=;/);
+    });
+
+    it("PATCH /users/me updates profile fields", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "PATCH",
+        url: "/users/me",
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          bio: "Étudiant THP",
+          headline: "Apprend Rails",
+        },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as {
+        item: { bio?: string; headline?: string; email: string };
+      };
+      expect(body.item.bio).toBe("Étudiant THP");
+      expect(body.item.headline).toBe("Apprend Rails");
+      expect(body.item.email).toBe("bob@dev.local");
+    });
+
+    it("POST /legal/accept sets cguAcceptedAt", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "POST",
+        url: "/legal/accept",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as {
+        ok: boolean;
+        cguAcceptedAt: string;
+      };
+      expect(body.ok).toBe(true);
+      expect(body.cguAcceptedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+
+      const meRes = await app.inject({
+        method: "GET",
+        url: "/auth/me",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      const me = JSON.parse(meRes.payload) as { cguAcceptedAt?: string };
+      expect(me.cguAcceptedAt).toBe(body.cguAcceptedAt);
+    });
+
+    it("GET /users/:id returns public profile and paginated posts", async () => {
+      const bobRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "bob@dev.local"))
+        .limit(1);
+      const bobId = bobRows[0]?.id;
+      expect(bobId).toBeDefined();
+
+      const title = `Public profile ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/users/${bobId}?tab=posts&limit=10`,
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as {
+        profile: { displayName: string; stats: { postsCount: number } };
+        tab: string;
+        items: Array<{ title: string }>;
+        pagination: { total: number };
+      };
+      expect(body.tab).toBe("posts");
+      expect(body.profile.displayName).toBe("Bob Dev");
+      expect(body.profile.stats.postsCount).toBeGreaterThanOrEqual(1);
+      expect(body.items.some((i) => i.title === title)).toBe(true);
+      expect(body.pagination.total).toBeGreaterThanOrEqual(1);
     });
   },
 );

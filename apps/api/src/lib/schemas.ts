@@ -53,6 +53,49 @@ export type FeedQueryParams = {
   includeWidgets: boolean;
 };
 
+export const updateUserMeBodySchema = z
+  .object({
+    fullName: z.string().min(1).max(200).optional(),
+    headline: z.string().max(200).nullable().optional(),
+    bio: z.string().max(5000).nullable().optional(),
+    avatarUrl: z.string().url().max(2000).nullable().optional(),
+    educationLevel: z.string().max(64).nullable().optional(),
+    notifyOnComment: z.boolean().optional(),
+    notifyOnMessage: z.boolean().optional(),
+    subjectIds: z.array(z.string().uuid()).max(32).optional(),
+    certificationTags: z.array(z.string().max(64)).max(32).optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "at_least_one_field",
+  });
+
+export type PublicUserTab = "posts" | "responses";
+
+export type PublicUserQueryParams = {
+  tab: PublicUserTab;
+  page: number;
+  limit: number;
+  offset: number;
+};
+
+export function parsePublicUserQuery(
+  query: Record<string, unknown>,
+): PublicUserQueryParams {
+  const tabRaw = String(query.tab ?? "posts").toLowerCase();
+  const tab: PublicUserTab = tabRaw === "responses" ? "responses" : "posts";
+  const page = Math.max(1, Number.parseInt(String(query.page ?? "1"), 10) || 1);
+  const limit = Math.min(
+    50,
+    Math.max(1, Number.parseInt(String(query.limit ?? "20"), 10) || 20),
+  );
+  return {
+    tab,
+    page,
+    limit,
+    offset: (page - 1) * limit,
+  };
+}
+
 export function parseFeedQuery(query: Record<string, unknown>): FeedQueryParams {
   const page = Math.max(1, Number.parseInt(String(query.page ?? "1"), 10) || 1);
   const limit = Math.min(

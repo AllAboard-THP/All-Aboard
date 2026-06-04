@@ -4,19 +4,8 @@ import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
 import { desc, eq, inArray } from "drizzle-orm";
-import type {
-  AuthMeResponse,
-  MentorFeedItem,
-  UserRole,
-} from "@allaboard/types";
+import type { MentorFeedItem } from "@allaboard/types";
 import type pg from "pg";
-import {
-  authenticateWithDatabase,
-  authenticateWithMvpFallback,
-  isMvpPasswordFallbackEnabled,
-  loginBodySchema,
-  resolveLoginEmail,
-} from "./auth/login.js";
 import { createDb, createPool } from "./db/client.js";
 import type { AppDatabase } from "./db/client.js";
 import { helpRequests, responses, subjects } from "./db/schema.js";
@@ -32,11 +21,14 @@ import {
 import { mentorFeedWhere } from "./lib/feed-query.js";
 import { rowToHelpRequest } from "./lib/mappers.js";
 import { registerOpenApiDocs } from "./openapi.js";
+import { registerAuthRoutes } from "./routes/auth.js";
 import { registerFeedRoutes } from "./routes/feed.js";
 import { registerHelpRequestRoutes } from "./routes/help-requests.js";
+import { registerLegalRoutes } from "./routes/legal.js";
 import { registerMeRoutes } from "./routes/me.js";
 import { registerSocialRoutes } from "./routes/social.js";
 import { registerSubjectRoutes } from "./routes/subjects.js";
+import { registerUserRoutes } from "./routes/users.js";
 
 export type BuildAppOptions = {
   pool?: pg.Pool | null;
@@ -90,63 +82,9 @@ export async function buildApp(options?: BuildAppOptions) {
   registerHelpRequestRoutes(app, db, evaluateRouting);
   registerSocialRoutes(app, db);
   registerMeRoutes(app, db);
-
-  app.post("/auth/login", async (request, reply) => {
-    const parsed = loginBodySchema.safeParse(request.body);
-    if (!parsed.success) {
-      return reply.code(400).send({ error: "invalid_body" });
-    }
-    const email = resolveLoginEmail(parsed.data);
-    if (!email) {
-      return reply.code(400).send({ error: "invalid_body" });
-    }
-
-    let auth:
-      | { userId: string; role: UserRole }
-      | "invalid_credentials"
-      | "login_not_configured";
-
-    if (db) {
-      auth = await authenticateWithDatabase(db, email, parsed.data.password);
-      if (auth === "invalid_credentials" && isMvpPasswordFallbackEnabled()) {
-        auth = authenticateWithMvpFallback(parsed.data);
-      }
-    } else if (isMvpPasswordFallbackEnabled()) {
-      auth = authenticateWithMvpFallback(parsed.data);
-    } else {
-      return reply.code(503).send({ error: "login_not_configured" });
-    }
-
-    if (auth === "login_not_configured") {
-      return reply.code(503).send({ error: "login_not_configured" });
-    }
-    if (auth === "invalid_credentials") {
-      return reply.code(401).send({ error: "invalid_credentials" });
-    }
-
-    const token = await reply.jwtSign({
-      sub: auth.userId,
-      role: auth.role,
-    });
-    void reply.setCookie("access_token", token, {
-      path: "/",
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24,
-    });
-    return { ok: true as const, userId: auth.userId, role: auth.role };
-  });
-
-  app.get(
-    "/auth/me",
-    { preHandler: [app.authenticate] },
-    async (request): Promise<AuthMeResponse> => {
-      const user = getJwtUser(request);
-      const role = roleFromJwtClaims(user.sub, user.role);
-      return { userId: user.sub, role };
-    },
-  );
+  registerAuthRoutes(app, db);
+  registerUserRoutes(app, db);
+  registerLegalRoutes(app, db);
 
   app.get(
     "/mentor/feed",

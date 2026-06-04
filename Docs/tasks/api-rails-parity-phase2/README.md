@@ -14,4 +14,4 @@ Extension social alignée `apps/thp-final` : likes, bookmarks, listes utilisateu
 
 ## Suite (phase 3)
 
-Auth register/logout, profil `GET/PATCH /users/me`, CGU — voir plan parité Rails.
+Auth register/logout, profil `GET/PATCH /users/me`, CGU — **Phase 3** : [api-rails-parity-phase3/README.md](../api-rails-parity-phase3/README.md).
