@@ -57,6 +57,20 @@
       "when": 1747843200000,
       "tag": "0007_api_rails_phase3_users_auth",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1747929600000,
+      "tag": "0008_api_rails_phase4_resources",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1748016000000,
+      "tag": "0009_api_rails_phase5_conversations",
+      "breakpoints": true
     }
   ]
 }

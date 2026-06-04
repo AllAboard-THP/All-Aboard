@@ -8,8 +8,14 @@ import { readFileSync } from "node:fs";
 import { parse as parseYaml } from "yaml";
 import { eq } from "drizzle-orm";
 import { buildApp } from "./app";
-import { defaultSeedUsers, defaultSeedSubjects, seedSubjects, seedUsers } from "./db/seed";
-import { outboxEvents, users } from "./db/schema";
+import {
+  defaultSeedUsers,
+  defaultSeedSubjects,
+  seedMentorSubjectsForAlice,
+  seedSubjects,
+  seedUsers,
+} from "./db/seed";
+import { outboxEvents, subjects, users } from "./db/schema";
 import { HELP_REQUEST_CREATED } from "./intuition/outbox";
 import { isOpenApiDocsEnabled } from "./openapi";
 
@@ -251,6 +257,7 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         await seedUsers(db, specs);
       }
       await seedSubjects(db, defaultSeedSubjects());
+      await seedMentorSubjectsForAlice(db);
       app = await buildApp({ pool });
     });
 
@@ -1388,6 +1395,307 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       expect(body.profile.stats.postsCount).toBeGreaterThanOrEqual(1);
       expect(body.items.some((i) => i.title === title)).toBe(true);
       expect(body.pagination.total).toBeGreaterThanOrEqual(1);
+    });
+
+    it("POST /resources as student creates pending resource hidden from public index", async () => {
+      const reactRows = await db
+        .select({ id: subjects.id })
+        .from(subjects)
+        .where(eq(subjects.slug, "react"))
+        .limit(1);
+      const subjectId = reactRows[0]?.id;
+      expect(subjectId).toBeDefined();
+
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const title = `Pending resource ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/resources",
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          title,
+          body: "Contenu en attente de validation.",
+          subjectId,
+          tags: ["react"],
+        },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: { id: string; status: string };
+      };
+      expect(created.item.status).toBe("pending");
+
+      const listRes = await app.inject({ method: "GET", url: "/resources" });
+      const list = JSON.parse(listRes.payload) as {
+        items: Array<{ id: string; title: string }>;
+      };
+      expect(list.items.some((i) => i.id === created.item.id)).toBe(false);
+    });
+
+    it("POST /resources as mentor creates published resource visible in GET /resources", async () => {
+      const reactRows = await db
+        .select({ id: subjects.id })
+        .from(subjects)
+        .where(eq(subjects.slug, "react"))
+        .limit(1);
+      const subjectId = reactRows[0]?.id;
+      expect(subjectId).toBeDefined();
+
+      const token = app.jwt.sign({ sub: "alice@dev.local", role: "mentor" });
+      const title = `Published resource ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/resources",
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          title,
+          body: "Ressource mentor publiée directement.",
+          subjectId,
+        },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: { id: string; status: string };
+      };
+      expect(created.item.status).toBe("published");
+
+      const listRes = await app.inject({
+        method: "GET",
+        url: `/resources?q=${encodeURIComponent(title)}`,
+      });
+      const list = JSON.parse(listRes.payload) as {
+        items: Array<{ id: string; title: string }>;
+      };
+      expect(list.items.some((i) => i.id === created.item.id)).toBe(true);
+    });
+
+    it("POST /subject-requests creates pending request", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "POST",
+        url: "/subject-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          name: "Philosophie",
+          description: "Matière utile pour la culture générale.",
+        },
+      });
+      expect(res.statusCode).toBe(201);
+      const body = JSON.parse(res.payload) as {
+        item: { name: string; status: string };
+      };
+      expect(body.item.name).toBe("Philosophie");
+      expect(body.item.status).toBe("pending");
+    });
+
+    it("GET /mentor/dashboard and approve pending resource", async () => {
+      const reactRows = await db
+        .select({ id: subjects.id })
+        .from(subjects)
+        .where(eq(subjects.slug, "react"))
+        .limit(1);
+      const subjectId = reactRows[0]?.id;
+      expect(subjectId).toBeDefined();
+
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const title = `Approve me ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/resources",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: {
+          title,
+          body: "À approuver par Alice.",
+          subjectId,
+        },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const dashRes = await app.inject({
+        method: "GET",
+        url: "/mentor/dashboard",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(dashRes.statusCode).toBe(200);
+      const dash = JSON.parse(dashRes.payload) as {
+        stats: { pendingResourcesCount: number };
+        pendingResources: Array<{ id: string; title: string }>;
+      };
+      expect(dash.stats.pendingResourcesCount).toBeGreaterThanOrEqual(1);
+      expect(
+        dash.pendingResources.some((r) => r.id === created.item.id),
+      ).toBe(true);
+
+      const approveRes = await app.inject({
+        method: "POST",
+        url: `/mentor/resources/${created.item.id}/approve`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(approveRes.statusCode).toBe(200);
+      const approved = JSON.parse(approveRes.payload) as {
+        item: { status: string };
+      };
+      expect(approved.item.status).toBe("published");
+
+      const listRes = await app.inject({
+        method: "GET",
+        url: `/resources?q=${encodeURIComponent(title)}`,
+      });
+      const list = JSON.parse(listRes.payload) as {
+        items: Array<{ id: string }>;
+      };
+      expect(list.items.some((i) => i.id === created.item.id)).toBe(true);
+    });
+
+    it("GET /mentor/dashboard returns 403 for student", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "GET",
+        url: "/mentor/dashboard",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(res.statusCode).toBe(403);
+    });
+
+    it("POST /conversations creates direct thread and POST message returns chat JSON", async () => {
+      const bobRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "bob@dev.local"))
+        .limit(1);
+      const aliceRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "alice@dev.local"))
+        .limit(1);
+      const bobId = bobRows[0]?.id;
+      const aliceId = aliceRows[0]?.id;
+      expect(bobId).toBeDefined();
+      expect(aliceId).toBeDefined();
+
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createConvRes = await app.inject({
+        method: "POST",
+        url: "/conversations",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { recipientId: aliceId },
+      });
+      expect(createConvRes.statusCode).toBe(201);
+      const conv = JSON.parse(createConvRes.payload) as {
+        item: { id: string; otherParticipant: { id: string; displayName: string } };
+      };
+      expect(conv.item.otherParticipant.id).toBe(aliceId);
+
+      const msgRes = await app.inject({
+        method: "POST",
+        url: `/conversations/${conv.item.id}/messages`,
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { body: "Salut Alice !" },
+      });
+      expect(msgRes.statusCode).toBe(201);
+      const msg = JSON.parse(msgRes.payload) as {
+        item: {
+          body: string;
+          userId: string;
+          userName: string;
+          type: string;
+        };
+      };
+      expect(msg.item.body).toBe("Salut Alice !");
+      expect(msg.item.userId).toBe(bobId);
+      expect(msg.item.type).toBe("message");
+      expect(msg.item.userName.length).toBeGreaterThan(0);
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const inboxRes = await app.inject({
+        method: "GET",
+        url: "/conversations",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(inboxRes.statusCode).toBe(200);
+      const inbox = JSON.parse(inboxRes.payload) as {
+        items: Array<{ id: string; unreadCount: number; lastMessage?: { body: string } }>;
+      };
+      const thread = inbox.items.find((i) => i.id === conv.item.id);
+      expect(thread).toBeDefined();
+      expect(thread?.unreadCount).toBeGreaterThanOrEqual(1);
+      expect(thread?.lastMessage?.body).toBe("Salut Alice !");
+
+      const readRes = await app.inject({
+        method: "PATCH",
+        url: `/conversations/${conv.item.id}/read`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(readRes.statusCode).toBe(200);
+      const readBody = JSON.parse(readRes.payload) as { ok: boolean; lastReadAt: string };
+      expect(readBody.ok).toBe(true);
+      expect(readBody.lastReadAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+
+      const inboxAfterRead = await app.inject({
+        method: "GET",
+        url: "/conversations",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      const inbox2 = JSON.parse(inboxAfterRead.payload) as {
+        items: Array<{ id: string; unreadCount: number }>;
+      };
+      const threadAfter = inbox2.items.find((i) => i.id === conv.item.id);
+      expect(threadAfter?.unreadCount).toBe(0);
+
+      const historyRes = await app.inject({
+        method: "GET",
+        url: `/conversations/${conv.item.id}/messages`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(historyRes.statusCode).toBe(200);
+      const history = JSON.parse(historyRes.payload) as {
+        items: Array<{ body: string }>;
+        pagination: { total: number };
+      };
+      expect(history.pagination.total).toBeGreaterThanOrEqual(1);
+      expect(history.items.some((m) => m.body === "Salut Alice !")).toBe(true);
+    });
+
+    it("POST /conversations returns 200 when direct thread already exists", async () => {
+      const aliceRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "alice@dev.local"))
+        .limit(1);
+      const aliceId = aliceRows[0]?.id;
+      expect(aliceId).toBeDefined();
+
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      await app.inject({
+        method: "POST",
+        url: "/conversations",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { recipientId: aliceId },
+      });
+      const secondRes = await app.inject({
+        method: "POST",
+        url: "/conversations",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { recipientId: aliceId },
+      });
+      expect(secondRes.statusCode).toBe(200);
+    });
+
+    it("GET /conversations/:id/messages returns 403 when user is not a participant", async () => {
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "GET",
+        url: "/conversations/00000000-0000-4000-8000-000000000001/messages",
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      expect(res.statusCode).toBe(403);
     });
   },
 );

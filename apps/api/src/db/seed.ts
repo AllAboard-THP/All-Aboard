@@ -1,7 +1,7 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { hashPassword } from "../auth/password.js";
 import type { AppDatabase } from "./client.js";
-import { subjects, users } from "./schema.js";
+import { mentorSubjects, subjects, users } from "./schema.js";
 
 export type SeedUserSpec = {
   email: string;
@@ -150,6 +150,43 @@ export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise
   }
 }
 
+export async function seedMentorSubjectsForAlice(
+  db: AppDatabase,
+): Promise<void> {
+  const aliceRows = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, "alice@dev.local"))
+    .limit(1);
+  const aliceId = aliceRows[0]?.id;
+  if (!aliceId) return;
+
+  const reactRows = await db
+    .select({ id: subjects.id })
+    .from(subjects)
+    .where(eq(subjects.slug, "react"))
+    .limit(1);
+  const reactId = reactRows[0]?.id;
+  if (!reactId) return;
+
+  const existing = await db
+    .select({ id: mentorSubjects.id })
+    .from(mentorSubjects)
+    .where(
+      and(
+        eq(mentorSubjects.userId, aliceId),
+        eq(mentorSubjects.subjectId, reactId),
+      ),
+    )
+    .limit(1);
+  if (existing.length > 0) return;
+
+  await db.insert(mentorSubjects).values({
+    userId: aliceId,
+    subjectId: reactId,
+  });
+}
+
 export async function runSeedIfConfigured(db: AppDatabase | null): Promise<void> {
   if (!db) return;
 
@@ -166,4 +203,5 @@ export async function runSeedIfConfigured(db: AppDatabase | null): Promise<void>
   }
   await seedUsers(db, specs);
   console.log(`api: seeded ${specs.length} user(s)`);
+  await seedMentorSubjectsForAlice(db);
 }

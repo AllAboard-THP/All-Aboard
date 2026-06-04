@@ -4,7 +4,7 @@ info:
   description: |
     Contrat HTTP Phase 2 MVP (feed, auth JWT, demandes d'aide, mentor feed).
     Source de vérité types : `packages/types`. Doc opérationnelle : `Docs/plan-mise-en-place-web-api-donnees.md`.
-  version: 0.5.0
+  version: 0.7.0
   contact:
     name: All-Aboard THP
     url: https://github.com/AllAboard-THP/All-Aboard
@@ -36,6 +36,12 @@ tags:
     description: Profils utilisateur
   - name: legal
     description: CGU et acceptation légale
+  - name: resources
+    description: Ressources pédagogiques (workflow modération)
+  - name: subject-requests
+    description: Demandes de nouvelles matières
+  - name: conversations
+    description: Messagerie directe (inbox, messages, lecture)
 
 paths:
   /health:
@@ -904,6 +910,551 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /mentor/dashboard:
+    get:
+      operationId: getMentorDashboard
+      tags: [mentor]
+      summary: Tableau de bord mentor (stats, file modération, aide mentor)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Agrégat dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MentorDashboardResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Rôle mentor requis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /mentor/resources/{id}/approve:
+    post:
+      operationId: approveMentorResource
+      tags: [mentor]
+      summary: Approuver une ressource en attente (compétences mentor)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Ressource publiée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApproveResourceResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Rôle mentor requis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Ressource introuvable ou non modérable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /resources:
+    get:
+      operationId: listResources
+      tags: [resources]
+      summary: Ressources publiées (recherche optionnelle)
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 12
+      responses:
+        "200":
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourcesListResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createResource
+      tags: [resources]
+      summary: Créer une ressource (pending sauf mentor/admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateResourceBody"
+      responses:
+        "201":
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateResourceResponse"
+        "400":
+          description: Corps invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /resources/{id}:
+    get:
+      operationId: getResource
+      tags: [resources]
+      summary: Détail ressource (publiée ou accès propriétaire/mentor)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Détail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceDetailResponse"
+        "404":
+          description: Introuvable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateResource
+      tags: [resources]
+      summary: Modifier une ressource (propriétaire ou admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateResourceBody"
+      responses:
+        "200":
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateResourceResponse"
+        "400":
+          description: Corps invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Non autorisé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Introuvable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteResource
+      tags: [resources]
+      summary: Supprimer une ressource (propriétaire ou admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Supprimée
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Non autorisé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Introuvable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /subject-requests:
+    post:
+      operationId: createSubjectRequest
+      tags: [subject-requests]
+      summary: Proposer une nouvelle matière
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSubjectRequestBody"
+      responses:
+        "201":
+          description: Demande enregistrée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateSubjectRequestResponse"
+        "400":
+          description: Corps invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /conversations:
+    get:
+      operationId: listConversations
+      tags: [conversations]
+      summary: Boîte de réception (conversations récentes)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Liste inbox
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversationsListResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Utilisateur introuvable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createConversation
+      tags: [conversations]
+      summary: Démarrer ou rouvrir une conversation directe
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateConversationBody"
+      responses:
+        "200":
+          description: Conversation existante
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateConversationResponse"
+        "201":
+          description: Conversation créée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateConversationResponse"
+        "400":
+          description: Corps invalide ou auto-message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Destinataire ou demande d'aide introuvable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /conversations/{id}/messages:
+    get:
+      operationId: listConversationMessages
+      tags: [conversations]
+      summary: Historique paginé des messages
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        "200":
+          description: Messages (ordre chronologique)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessagesListResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Non participant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createConversationMessage
+      tags: [conversations]
+      summary: Envoyer un message
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMessageBody"
+      responses:
+        "201":
+          description: Message créé (format chat JSON)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateMessageResponse"
+        "400":
+          description: Corps invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Non participant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /conversations/{id}/read:
+    patch:
+      operationId: markConversationRead
+      tags: [conversations]
+      summary: Marquer la conversation comme lue
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Horodatage de lecture mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarkConversationReadResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Non participant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1097,6 +1648,188 @@ components:
               nullable: true
             hasUnreadForMentor:
               type: boolean
+
+    ResourceStatus:
+      type: string
+      enum: [pending, published, rejected]
+
+    Resource:
+      type: object
+      required: [id, title, body, authorId, status, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        body:
+          type: string
+        authorId:
+          type: string
+        status:
+          $ref: "#/components/schemas/ResourceStatus"
+        subjectId:
+          type: string
+          format: uuid
+        subject:
+          $ref: "#/components/schemas/SubjectSummary"
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ResourcesListResponse:
+      type: object
+      required: [items, pagination]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Resource"
+        pagination:
+          $ref: "#/components/schemas/FeedPagination"
+
+    ResourceDetailResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/Resource"
+
+    CreateResourceBody:
+      type: object
+      required: [title, body, subjectId]
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        subjectId:
+          type: string
+          format: uuid
+        tags:
+          type: array
+          items:
+            type: string
+
+    UpdateResourceBody:
+      type: object
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        subjectId:
+          type: string
+          format: uuid
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+
+    CreateResourceResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/Resource"
+
+    UpdateResourceResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/Resource"
+
+    ApproveResourceResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/Resource"
+
+    SubjectRequestStatus:
+      type: string
+      enum: [pending, approved, rejected]
+
+    SubjectRequest:
+      type: object
+      required: [id, name, status, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: "#/components/schemas/SubjectRequestStatus"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateSubjectRequestBody:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 60
+        description:
+          type: string
+          maxLength: 500
+
+    CreateSubjectRequestResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/SubjectRequest"
+
+    MentorDashboardStats:
+      type: object
+      required: [myResourcesCount, pendingResourcesCount, helpMentorQueueCount]
+      properties:
+        myResourcesCount:
+          type: integer
+          minimum: 0
+        pendingResourcesCount:
+          type: integer
+          minimum: 0
+        helpMentorQueueCount:
+          type: integer
+          minimum: 0
+
+    MentorDashboardResponse:
+      type: object
+      required: [stats, myResources, pendingResources, helpMentorQueue]
+      properties:
+        stats:
+          $ref: "#/components/schemas/MentorDashboardStats"
+        myResources:
+          type: array
+          items:
+            $ref: "#/components/schemas/Resource"
+        pendingResources:
+          type: array
+          items:
+            $ref: "#/components/schemas/Resource"
+        helpMentorQueue:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelpRequest"
 
     HelpRequestDetailResponse:
       type: object
@@ -1550,6 +2283,146 @@ components:
           type: boolean
           const: true
         cguAcceptedAt:
+          type: string
+          format: date-time
+
+    ConversationParticipantSummary:
+      type: object
+      required: [id, displayName]
+      properties:
+        id:
+          type: string
+          format: uuid
+        displayName:
+          type: string
+        avatarUrl:
+          type: string
+
+    ChatMessage:
+      type: object
+      required: [id, body, userId, userName, createdAt, type]
+      properties:
+        id:
+          type: string
+          format: uuid
+        body:
+          type: string
+        userId:
+          type: string
+          format: uuid
+        userName:
+          type: string
+        avatarUrl:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        type:
+          type: string
+          const: message
+
+    ConversationInboxItem:
+      type: object
+      required: [id, updatedAt, otherParticipant, unreadCount]
+      properties:
+        id:
+          type: string
+          format: uuid
+        topic:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+        otherParticipant:
+          $ref: "#/components/schemas/ConversationParticipantSummary"
+        lastMessage:
+          $ref: "#/components/schemas/ChatMessage"
+        unreadCount:
+          type: integer
+          minimum: 0
+
+    ConversationsListResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConversationInboxItem"
+
+    CreateConversationBody:
+      type: object
+      required: [recipientId]
+      properties:
+        recipientId:
+          type: string
+          format: uuid
+        helpRequestId:
+          type: string
+          format: uuid
+
+    CreateConversationResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          type: object
+          required: [id, updatedAt, otherParticipant]
+          properties:
+            id:
+              type: string
+              format: uuid
+            topic:
+              type: string
+            updatedAt:
+              type: string
+              format: date-time
+            otherParticipant:
+              $ref: "#/components/schemas/ConversationParticipantSummary"
+
+    MessagesListResponse:
+      type: object
+      required: [items, pagination]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChatMessage"
+        pagination:
+          type: object
+          required: [page, limit, total]
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+
+    CreateMessageBody:
+      type: object
+      required: [body]
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 10000
+
+    CreateMessageResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/ChatMessage"
+
+    MarkConversationReadResponse:
+      type: object
+      required: [ok, lastReadAt]
+      properties:
+        ok:
+          type: boolean
+          const: true
+        lastReadAt:
           type: string
           format: date-time
 
