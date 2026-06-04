@@ -1709,7 +1709,7 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         method: "POST",
         url: "/help-requests",
         headers: { authorization: `Bearer ${bobToken}` },
-        payload: { title, body: "this is fucking bad" },
+        payload: { title, body: "what the fuck is going on" },
       });
       expect(createRes.statusCode).toBe(201);
       const created = JSON.parse(createRes.payload) as {
