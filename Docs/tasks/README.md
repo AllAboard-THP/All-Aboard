@@ -65,6 +65,12 @@ Modèle vierge : [_template/README.md](_template/README.md).
 | [49-openapi/](49-openapi/) | [#49 OpenAPI](https://github.com/AllAboard-THP/All-Aboard/issues/49) — ✅ livré (spike + spec MVP) |
 | [37-agent-indexer/](37-agent-indexer/) | [#37 Phase 4 Agent/Intuition](https://github.com/AllAboard-THP/All-Aboard/issues/37) — ADR 0004 (indexer Intuition + bridge #67) |
 | [78-phase2b-responses/](78-phase2b-responses/) | [#78 Phase 2b Réponses MOC](https://github.com/AllAboard-THP/All-Aboard/issues/78) — thread API/BFF/UI (#79–#81) |
+| [api-rails-parity-phase1/](api-rails-parity-phase1/) | Parité Rails **Phase 1** — feed/subjects/help-requests enrichis (API livré) |
+| [api-rails-parity-phase2/](api-rails-parity-phase2/) | Parité Rails **Phase 2** — likes, bookmarks, `/me/*`, CRUD réponses (API livré) |
+| [api-rails-parity-phase3/](api-rails-parity-phase3/) | Parité Rails **Phase 3** — auth register, profils, CGU |
+| [api-rails-parity-phase4/](api-rails-parity-phase4/) | Parité Rails **Phase 4** — resources, subject requests, mentor dashboard |
+| [api-rails-parity-phase5/](api-rails-parity-phase5/) | Parité Rails **Phase 5** — messagerie |
+| [api-rails-parity-phase6/](api-rails-parity-phase6/) | Parité Rails **Phase 6** — admin & modération |
 
 *(Ajouter une ligne ici à la création d’un nouveau dossier — une ligne par PR, conflits rares.)*
 

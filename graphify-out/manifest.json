@@ -275,8 +275,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.test.ts": {
-    "mtime": 1780579685.7593923,
-    "ast_hash": "bfbbf202552555884eda7578f15f98a7",
+    "mtime": 1780580186.2326105,
+    "ast_hash": "1f9f620e546485400496b199dee64b44",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/index.ts": {
@@ -660,13 +660,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/README.md": {
-    "mtime": 1780487626.4234502,
-    "ast_hash": "21e3fb617fbe3b43b00ec15fb8c40aa3",
+    "mtime": 1780580720.1240225,
+    "ast_hash": "d8cafc12435e39e670f46d5e92407f16",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/map-of-content.md": {
-    "mtime": 1779797451.2230604,
-    "ast_hash": "e81dd4aff0007fed4a94a18d73b91664",
+    "mtime": 1780580717.7920365,
+    "ast_hash": "fe1e863f062bdc40d565b425d37568b0",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/dataflow-architecture.md": {
@@ -700,8 +700,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/moc-parcours-utilisateur.md": {
-    "mtime": 1780487626.4234502,
-    "ast_hash": "51841b341889f527457b57b78c4287f1",
+    "mtime": 1780580704.9217525,
+    "ast_hash": "8f603c19cf473c527d92b32740ee50d4",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/staging-checklist.md": {
@@ -710,8 +710,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/plan-mise-en-place-web-api-donnees.md": {
-    "mtime": 1780487626.4234502,
-    "ast_hash": "95b4b577b581e918c3db55651e1bd596",
+    "mtime": 1780580714.5062726,
+    "ast_hash": "d76aac666230233d9489e5886c445ef0",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deploiement-dokploy-instance-allaboard.md": {
@@ -720,8 +720,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/README.md": {
-    "mtime": 1780487622.6474514,
-    "ast_hash": "756ee54ac592a5b1baca9bb26a6a2b81",
+    "mtime": 1780580719.2701168,
+    "ast_hash": "6bdb85bcde1f1ad17b877b52ca343f27",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/25-app-shell-navigation/README.md": {
@@ -1040,8 +1040,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/api-rails-parity-phase1/README.md": {
-    "mtime": 1780501574.5413234,
-    "ast_hash": "8970fcf972ab903ab675ea238a73301e",
+    "mtime": 1780580701.3998997,
+    "ast_hash": "36d957f74dc88a2673952a377a6bd01b",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0005-i18n-web-next-intl.md": {
@@ -1070,8 +1070,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/api-rails-parity-phase2/README.md": {
-    "mtime": 1780576229.709077,
-    "ast_hash": "28fc660d79e91380109d75e84b5f337a",
+    "mtime": 1780580704.0494711,
+    "ast_hash": "faf7c60d788e2e9e5705a6fe7f8d81ca",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0007_api_rails_phase3_users_auth.sql": {
