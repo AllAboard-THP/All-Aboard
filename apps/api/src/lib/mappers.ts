@@ -1,4 +1,5 @@
 import type {
+  DenylistPattern,
   HelpRequest,
   Resource,
   ResourceStatus,
@@ -9,6 +10,7 @@ import type {
   SubjectSummary,
 } from "@allaboard/types";
 import type {
+  denylistPatterns,
   helpRequests,
   resources,
   responses,
@@ -69,8 +71,22 @@ export function rowToHelpRequest(
   if (row.updatedAt.getTime() !== row.createdAt.getTime()) {
     item.updatedAt = row.updatedAt.toISOString();
   }
+  if (row.flaggedForModeration) item.flaggedForModeration = true;
 
   return item;
+}
+
+type DenylistPatternRow = typeof denylistPatterns.$inferSelect;
+
+export function rowToDenylistPattern(row: DenylistPatternRow): DenylistPattern {
+  return {
+    id: row.id,
+    label: row.label,
+    pattern: row.pattern,
+    active: row.active,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
 }
 
 type ResourceRow = typeof resources.$inferSelect;
@@ -119,5 +135,6 @@ export function rowToResponse(row: ResponseRow): Response {
   };
   if (row.codeSnippet) item.codeSnippet = row.codeSnippet;
   if (row.codeLanguage) item.codeLanguage = row.codeLanguage;
+  if (row.flaggedForModeration) item.flaggedForModeration = true;
   return item;
 }

@@ -55,3 +55,7 @@ export type JwtUser = { sub: string; role?: UserRole };
 export function getJwtUser(request: { user: unknown }): JwtUser {
   return request.user as JwtUser;
 }
+
+export function isAdminRole(role: UserRole): boolean {
+  return role === "admin";
+}

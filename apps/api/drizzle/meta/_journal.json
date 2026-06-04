@@ -71,6 +71,13 @@
       "when": 1748016000000,
       "tag": "0009_api_rails_phase5_conversations",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1748102400000,
+      "tag": "0010_api_rails_phase6_admin",
+      "breakpoints": true
     }
   ]
 }
