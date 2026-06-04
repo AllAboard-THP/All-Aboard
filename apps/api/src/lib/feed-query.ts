@@ -12,8 +12,11 @@ import type { AppDatabase } from "../db/client.js";
 import { helpRequests, subjects } from "../db/schema.js";
 import type { FeedQueryParams } from "./schemas.js";
 
+/** Contenu masqué du fil public tant que la modération n'a pas approuvé (Rails feed). */
+export const feedPublicVisibility = eq(helpRequests.flaggedForModeration, false);
+
 export function buildFeedConditions(params: FeedQueryParams): SQL | undefined {
-  const conditions: SQL[] = [];
+  const conditions: SQL[] = [feedPublicVisibility];
 
   if (params.tag) {
     conditions.push(
@@ -34,7 +37,6 @@ export function buildFeedConditions(params: FeedQueryParams): SQL | undefined {
     );
   }
 
-  if (conditions.length === 0) return undefined;
   return and(...conditions);
 }
 
@@ -59,10 +61,7 @@ export async function countFeedItems(
   const subjectCond = subjectId
     ? eq(helpRequests.subjectId, subjectId)
     : undefined;
-  const where =
-    conditions && subjectCond
-      ? and(conditions, subjectCond)
-      : (conditions ?? subjectCond);
+  const where = subjectCond ? and(conditions, subjectCond) : conditions;
 
   const query = db.select({ value: count() }).from(helpRequests);
   const rows = where ? await query.where(where) : await query;
@@ -78,10 +77,7 @@ export async function fetchFeedRows(
   const subjectCond = subjectId
     ? eq(helpRequests.subjectId, subjectId)
     : undefined;
-  const where =
-    conditions && subjectCond
-      ? and(conditions, subjectCond)
-      : (conditions ?? subjectCond);
+  const where = subjectCond ? and(conditions, subjectCond) : conditions;
 
   const base = db
     .select({
@@ -107,6 +103,7 @@ export async function fetchUnansweredRows(db: AppDatabase, limit = 5) {
     .leftJoin(subjects, eq(helpRequests.subjectId, subjects.id))
     .where(
       and(
+        feedPublicVisibility,
         eq(helpRequests.status, "open"),
         eq(helpRequests.responsesCount, 0),
       ),

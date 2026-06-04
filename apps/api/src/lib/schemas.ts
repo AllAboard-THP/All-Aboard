@@ -101,6 +101,20 @@ export const createSubjectRequestBodySchema = z.object({
   description: z.string().max(500).optional(),
 });
 
+export const createDenylistPatternBodySchema = z.object({
+  label: z.string().min(1).max(120),
+  pattern: z.string().min(1).max(500),
+  active: z.boolean().optional(),
+});
+
+export const promoteAdminBodySchema = z.object({
+  admin: z.boolean(),
+});
+
+export const adminSubjectRequestPatchSchema = z.object({
+  status: z.enum(["pending", "approved", "rejected"]),
+});
+
 export const createConversationBodySchema = z.object({
   recipientId: z.string().uuid(),
   helpRequestId: z.string().uuid().optional(),

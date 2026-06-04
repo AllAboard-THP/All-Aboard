@@ -5,7 +5,7 @@ import { mentorSubjects, subjects, users } from "./schema.js";
 
 export type SeedUserSpec = {
   email: string;
-  role: "student" | "mentor";
+  role: "student" | "mentor" | "admin";
   password: string;
   fullName?: string;
   certificationTags?: string[];
@@ -80,6 +80,12 @@ export function defaultSeedUsers(): SeedUserSpec[] {
       password,
       fullName: "Alice Mentor",
       certificationTags: ["react", "typescript", "rails"],
+    },
+    {
+      email: "admin@dev.local",
+      role: "admin",
+      password,
+      fullName: "Admin Dev",
     },
   ];
 }

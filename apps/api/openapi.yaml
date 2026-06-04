@@ -4,7 +4,7 @@ info:
   description: |
     Contrat HTTP Phase 2 MVP (feed, auth JWT, demandes d'aide, mentor feed).
     Source de vérité types : `packages/types`. Doc opérationnelle : `Docs/plan-mise-en-place-web-api-donnees.md`.
-  version: 0.7.0
+  version: 0.8.0
   contact:
     name: All-Aboard THP
     url: https://github.com/AllAboard-THP/All-Aboard
@@ -42,6 +42,8 @@ tags:
     description: Demandes de nouvelles matières
   - name: conversations
     description: Messagerie directe (inbox, messages, lecture)
+  - name: admin
+    description: Modération, denylist, rôles, validations (JWT admin)
 
 paths:
   /health:
@@ -1455,6 +1457,424 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /admin/dashboard:
+    get:
+      operationId: getAdminDashboard
+      tags: [admin]
+      summary: Tableau de bord admin (compteurs)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Stats et activité récente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminDashboardResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/moderation:
+    get:
+      operationId: getAdminModeration
+      tags: [admin]
+      summary: Contenu en attente de modération
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Demandes et réponses flaggés
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminModerationResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/moderation/help-requests/{id}/approve:
+    post:
+      operationId: approveFlaggedHelpRequest
+      tags: [admin]
+      summary: Approuver une demande flaggée
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Demande déflaggée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateHelpRequestResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/moderation/help-requests/{id}/reject:
+    post:
+      operationId: rejectFlaggedHelpRequest
+      tags: [admin]
+      summary: Rejeter (supprimer) une demande flaggée
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Demande supprimée
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/moderation/responses/{id}/approve:
+    post:
+      operationId: approveFlaggedResponse
+      tags: [admin]
+      summary: Approuver une réponse flaggée
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Réponse déflaggée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateResponseResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/moderation/responses/{id}/reject:
+    post:
+      operationId: rejectFlaggedResponse
+      tags: [admin]
+      summary: Rejeter (supprimer) une réponse flaggée
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Réponse supprimée
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/denylist-patterns:
+    get:
+      operationId: listDenylistPatterns
+      tags: [admin]
+      summary: Liste des patterns regex de modération
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Patterns
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminDenylistPatternsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    post:
+      operationId: createDenylistPattern
+      tags: [admin]
+      summary: Ajouter un pattern denylist
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDenylistPatternBody"
+      responses:
+        "201":
+          description: Pattern créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateDenylistPatternResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/denylist-patterns/{id}:
+    patch:
+      operationId: updateDenylistPattern
+      tags: [admin]
+      summary: Activer ou désactiver un pattern
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [active]
+              properties:
+                active:
+                  type: boolean
+      responses:
+        "200":
+          description: Pattern mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateDenylistPatternResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    delete:
+      operationId: deleteDenylistPattern
+      tags: [admin]
+      summary: Supprimer un pattern
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Pattern supprimé
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/users:
+    get:
+      operationId: listAdminUsers
+      tags: [admin]
+      summary: Liste des utilisateurs (rôles)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Utilisateurs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUsersResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/users/{id}/promote-admin:
+    post:
+      operationId: promoteAdminUser
+      tags: [admin]
+      summary: Promouvoir ou rétrograder un administrateur
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PromoteAdminBody"
+      responses:
+        "200":
+          description: Rôle mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUserItemResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/users/{id}/promote-mentor:
+    post:
+      operationId: promoteMentorUser
+      tags: [admin]
+      summary: Bascule le rôle mentor (student ↔ mentor)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Rôle mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUserItemResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/subject-requests:
+    get:
+      operationId: listAdminSubjectRequests
+      tags: [admin]
+      summary: Files des demandes de matières
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Groupes par statut
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSubjectRequestsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/subject-requests/{id}:
+    patch:
+      operationId: updateAdminSubjectRequest
+      tags: [admin]
+      summary: Valider ou rejeter une demande de matière
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAdminSubjectRequestBody"
+      responses:
+        "200":
+          description: Demande mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateAdminSubjectRequestResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1462,6 +1882,38 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT émis par POST /auth/login (claim sub = userId)
+
+  responses:
+    Unauthorized:
+      description: JWT absent ou invalide
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Forbidden:
+      description: Rôle admin requis
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Ressource introuvable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    BadRequest:
+      description: Corps ou paramètres invalides
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ServiceUnavailable:
+      description: Base indisponible
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
 
   schemas:
     HealthResponse:
@@ -1528,6 +1980,8 @@ components:
         updatedAt:
           type: string
           format: date-time
+        flaggedForModeration:
+          type: boolean
 
     SubjectSummary:
       type: object
@@ -1594,6 +2048,8 @@ components:
           type: string
         codeLanguage:
           type: string
+        flaggedForModeration:
+          type: boolean
 
     FeedResponse:
       type: object
@@ -2425,6 +2881,192 @@ components:
         lastReadAt:
           type: string
           format: date-time
+
+    DenylistPattern:
+      type: object
+      required: [id, label, pattern, active, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        label:
+          type: string
+        pattern:
+          type: string
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    AdminDashboardResponse:
+      type: object
+      required: [stats, recentHelpRequests]
+      properties:
+        stats:
+          type: object
+          required:
+            - totalUsers
+            - totalHelpRequests
+            - flaggedCount
+            - pendingSubjectRequests
+            - pendingResources
+          properties:
+            totalUsers:
+              type: integer
+            totalHelpRequests:
+              type: integer
+            flaggedCount:
+              type: integer
+            pendingSubjectRequests:
+              type: integer
+            pendingResources:
+              type: integer
+        recentHelpRequests:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelpRequest"
+
+    AdminModerationResponse:
+      type: object
+      required: [flaggedHelpRequests, flaggedResponses]
+      properties:
+        flaggedHelpRequests:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelpRequest"
+        flaggedResponses:
+          type: array
+          items:
+            type: object
+            required: [item]
+            properties:
+              item:
+                $ref: "#/components/schemas/Response"
+              helpRequest:
+                $ref: "#/components/schemas/HelpRequest"
+
+    AdminDenylistPatternsResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/DenylistPattern"
+
+    CreateDenylistPatternBody:
+      type: object
+      required: [label, pattern]
+      properties:
+        label:
+          type: string
+        pattern:
+          type: string
+        active:
+          type: boolean
+
+    CreateDenylistPatternResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/DenylistPattern"
+
+    UpdateDenylistPatternResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/DenylistPattern"
+
+    AdminUserSummary:
+      type: object
+      required: [id, email, role, displayName, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        role:
+          $ref: "#/components/schemas/UserRole"
+        displayName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    AdminUsersResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminUserSummary"
+
+    PromoteAdminBody:
+      type: object
+      required: [admin]
+      properties:
+        admin:
+          type: boolean
+
+    AdminUserItemResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/AdminUserSummary"
+
+    AdminSubjectRequestItem:
+      allOf:
+        - $ref: "#/components/schemas/SubjectRequest"
+        - type: object
+          required: [authorId]
+          properties:
+            authorId:
+              type: string
+              format: uuid
+            authorEmail:
+              type: string
+            authorDisplayName:
+              type: string
+
+    AdminSubjectRequestsResponse:
+      type: object
+      required: [pending, approved, rejected]
+      properties:
+        pending:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminSubjectRequestItem"
+        approved:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminSubjectRequestItem"
+        rejected:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminSubjectRequestItem"
+
+    UpdateAdminSubjectRequestBody:
+      type: object
+      required: [status]
+      properties:
+        status:
+          $ref: "#/components/schemas/SubjectRequestStatus"
+
+    UpdateAdminSubjectRequestResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/AdminSubjectRequestItem"
 
     ErrorResponse:
       type: object
