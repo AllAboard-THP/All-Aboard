@@ -315,6 +315,153 @@ export type MentorFeedResponse = {
   items: MentorFeedItem[];
 };
 
+export type ResourceStatus = "pending" | "published" | "rejected";
+
+export type Resource = {
+  id: string;
+  title: string;
+  body: string;
+  authorId: string;
+  status: ResourceStatus;
+  subjectId?: string;
+  subject?: SubjectSummary;
+  tags?: string[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ResourcesListResponse = {
+  items: Resource[];
+  pagination: FeedPagination;
+};
+
+export type ResourceDetailResponse = {
+  item: Resource;
+};
+
+export type CreateResourceBody = {
+  title: string;
+  body: string;
+  subjectId: string;
+  tags?: string[];
+};
+
+export type UpdateResourceBody = {
+  title?: string;
+  body?: string;
+  subjectId?: string | null;
+  tags?: string[];
+};
+
+export type CreateResourceResponse = {
+  item: Resource;
+};
+
+export type UpdateResourceResponse = {
+  item: Resource;
+};
+
+export type SubjectRequestStatus = "pending" | "approved" | "rejected";
+
+export type SubjectRequest = {
+  id: string;
+  name: string;
+  description?: string;
+  status: SubjectRequestStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateSubjectRequestBody = {
+  name: string;
+  description?: string;
+};
+
+export type CreateSubjectRequestResponse = {
+  item: SubjectRequest;
+};
+
+export type MentorDashboardStats = {
+  myResourcesCount: number;
+  pendingResourcesCount: number;
+  helpMentorQueueCount: number;
+};
+
+export type MentorDashboardResponse = {
+  stats: MentorDashboardStats;
+  myResources: Resource[];
+  pendingResources: Resource[];
+  helpMentorQueue: HelpRequest[];
+};
+
+export type ApproveResourceResponse = {
+  item: Resource;
+};
+
+export type ConversationParticipantSummary = {
+  id: string;
+  displayName: string;
+  avatarUrl?: string;
+};
+
+/** Message temps réel / REST — aligné Rails `Message#as_chat_json`. */
+export type ChatMessage = {
+  id: string;
+  body: string;
+  userId: string;
+  userName: string;
+  avatarUrl?: string;
+  createdAt: string;
+  type: "message";
+};
+
+export type ConversationInboxItem = {
+  id: string;
+  topic?: string;
+  updatedAt: string;
+  otherParticipant: ConversationParticipantSummary;
+  lastMessage?: ChatMessage;
+  unreadCount: number;
+};
+
+export type ConversationSummary = {
+  id: string;
+  topic?: string;
+  updatedAt: string;
+  otherParticipant: ConversationParticipantSummary;
+};
+
+export type ConversationsListResponse = {
+  items: ConversationInboxItem[];
+};
+
+export type CreateConversationBody = {
+  recipientId: string;
+  helpRequestId?: string;
+};
+
+export type CreateConversationResponse = {
+  item: ConversationSummary;
+};
+
+export type MessagesListResponse = {
+  items: ChatMessage[];
+  pagination: FeedPagination;
+};
+
+export type CreateMessageBody = {
+  body: string;
+};
+
+export type CreateMessageResponse = {
+  item: ChatMessage;
+};
+
+export type MarkConversationReadResponse = {
+  ok: true;
+  lastReadAt: string;
+};
+
 /** Corps `POST /routing/evaluate` (`apps/agent`, interne). */
 export type AgentRoutingEvaluateBody = {
   title: string;

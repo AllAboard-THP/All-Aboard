@@ -3,30 +3,25 @@ import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
-import { desc, eq, inArray } from "drizzle-orm";
-import type { MentorFeedItem } from "@allaboard/types";
 import type pg from "pg";
 import { createDb, createPool } from "./db/client.js";
 import type { AppDatabase } from "./db/client.js";
-import { helpRequests, responses, subjects } from "./db/schema.js";
 import {
   createAgentRoutingEvaluator,
   type EvaluateRoutingFn,
 } from "./agent/routing.js";
-import {
-  getJwtUser,
-  jwtSecret,
-  roleFromJwtClaims,
-} from "./lib/auth-helpers.js";
-import { mentorFeedWhere } from "./lib/feed-query.js";
-import { rowToHelpRequest } from "./lib/mappers.js";
+import { jwtSecret } from "./lib/auth-helpers.js";
 import { registerOpenApiDocs } from "./openapi.js";
 import { registerAuthRoutes } from "./routes/auth.js";
 import { registerFeedRoutes } from "./routes/feed.js";
 import { registerHelpRequestRoutes } from "./routes/help-requests.js";
 import { registerLegalRoutes } from "./routes/legal.js";
 import { registerMeRoutes } from "./routes/me.js";
+import { registerConversationRoutes } from "./routes/conversations.js";
+import { registerMentorRoutes } from "./routes/mentor.js";
+import { registerResourceRoutes } from "./routes/resources.js";
 import { registerSocialRoutes } from "./routes/social.js";
+import { registerSubjectRequestRoutes } from "./routes/subject-requests.js";
 import { registerSubjectRoutes } from "./routes/subjects.js";
 import { registerUserRoutes } from "./routes/users.js";
 
@@ -85,73 +80,10 @@ export async function buildApp(options?: BuildAppOptions) {
   registerAuthRoutes(app, db);
   registerUserRoutes(app, db);
   registerLegalRoutes(app, db);
-
-  app.get(
-    "/mentor/feed",
-    { preHandler: [app.authenticate] },
-    async (request, reply) => {
-      if (!db) {
-        return reply.code(503).send({ error: "database_unavailable" });
-      }
-      const user = getJwtUser(request);
-      const role = roleFromJwtClaims(user.sub, user.role);
-      if (role !== "mentor") {
-        return reply.code(403).send({ error: "forbidden" });
-      }
-      const mentorId = user.sub;
-
-      const rows = await db
-        .select({
-          helpRequest: helpRequests,
-          subject: subjects,
-        })
-        .from(helpRequests)
-        .leftJoin(subjects, eq(helpRequests.subjectId, subjects.id))
-        .where(mentorFeedWhere)
-        .orderBy(desc(helpRequests.createdAt))
-        .limit(100);
-
-      const ids = rows.map((row) => row.helpRequest.id);
-      const responsesByRequest = new Map<
-        string,
-        Array<typeof responses.$inferSelect>
-      >();
-
-      if (ids.length > 0) {
-        const responseRows = await db
-          .select()
-          .from(responses)
-          .where(inArray(responses.helpRequestId, ids))
-          .orderBy(responses.createdAt);
-        for (const row of responseRows) {
-          const list = responsesByRequest.get(row.helpRequestId) ?? [];
-          list.push(row);
-          responsesByRequest.set(row.helpRequestId, list);
-        }
-      }
-
-      const items: MentorFeedItem[] = rows.map(({ helpRequest, subject }) => {
-        const base = rowToHelpRequest(helpRequest, subject);
-        const requestResponses = responsesByRequest.get(helpRequest.id) ?? [];
-        const responseCount = requestResponses.length;
-        let lastResponseAt: string | null = null;
-        let hasUnreadForMentor = false;
-        if (responseCount > 0) {
-          const last = requestResponses[responseCount - 1]!;
-          lastResponseAt = last.createdAt.toISOString();
-          hasUnreadForMentor = last.authorId !== mentorId;
-        }
-        return {
-          ...base,
-          responseCount,
-          lastResponseAt,
-          hasUnreadForMentor,
-        };
-      });
-
-      return { items };
-    },
-  );
+  registerResourceRoutes(app, db);
+  registerSubjectRequestRoutes(app, db);
+  registerMentorRoutes(app, db);
+  registerConversationRoutes(app, db);
 
   return app;
 }

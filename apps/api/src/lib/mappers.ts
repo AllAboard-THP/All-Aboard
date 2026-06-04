@@ -1,10 +1,20 @@
 import type {
   HelpRequest,
+  Resource,
+  ResourceStatus,
   Response,
   Subject,
+  SubjectRequest,
+  SubjectRequestStatus,
   SubjectSummary,
 } from "@allaboard/types";
-import type { helpRequests, responses, subjects } from "../db/schema.js";
+import type {
+  helpRequests,
+  resources,
+  responses,
+  subjectRequests,
+  subjects,
+} from "../db/schema.js";
 
 type HelpRequestRow = typeof helpRequests.$inferSelect;
 type ResponseRow = typeof responses.$inferSelect;
@@ -60,6 +70,42 @@ export function rowToHelpRequest(
     item.updatedAt = row.updatedAt.toISOString();
   }
 
+  return item;
+}
+
+type ResourceRow = typeof resources.$inferSelect;
+type SubjectRequestRow = typeof subjectRequests.$inferSelect;
+
+export function rowToResource(
+  row: ResourceRow,
+  subject?: SubjectRow | null,
+  authorEmail?: string,
+  tags: string[] = [],
+): Resource {
+  const item: Resource = {
+    id: row.id,
+    title: row.title,
+    body: row.body,
+    authorId: authorEmail ?? row.userId,
+    status: row.status as ResourceStatus,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+  if (row.subjectId) item.subjectId = row.subjectId;
+  if (subject) item.subject = rowToSubjectSummary(subject);
+  if (tags.length > 0) item.tags = tags;
+  return item;
+}
+
+export function rowToSubjectRequest(row: SubjectRequestRow): SubjectRequest {
+  const item: SubjectRequest = {
+    id: row.id,
+    name: row.name,
+    status: row.status as SubjectRequestStatus,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+  if (row.description?.trim()) item.description = row.description.trim();
   return item;
 }
 
