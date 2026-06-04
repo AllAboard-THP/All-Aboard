@@ -16,6 +16,6 @@ test.describe("parcours feed MVP", () => {
     await page.getByRole("link", { name: "Nouvelle demande" }).first().click();
     await expect(page).toHaveURL(/\/help\/new/);
     await page.getByRole("link", { name: "Feed" }).click();
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL(/\/feed\/?$/);
   });
 });

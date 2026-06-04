@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 
 import { HomeContent } from "@/components/features/home-content";
+import { renderWithI18n } from "./i18n-test-utils";
 
-vi.mock("next/link", () => ({
-  default: ({
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({
     children,
     href,
     ...props
@@ -16,6 +17,33 @@ vi.mock("next/link", () => ({
       {children}
     </a>
   ),
+}));
+
+vi.mock("next-intl/server", () => ({
+  getTranslations: async (
+    namespace?: string | { namespace?: string },
+  ) => {
+    const fr = (await import("../messages/fr.json")).default as Record<
+      string,
+      Record<string, string>
+    >;
+    const ns =
+      typeof namespace === "string" ? namespace
+      : namespace && typeof namespace === "object" && "namespace" in namespace ?
+        namespace.namespace ?? "feed"
+      : "feed";
+    const table = fr[ns] ?? fr.feed;
+    return (key: string, values?: Record<string, string | number>) => {
+      let text = table[key] ?? key;
+      if (values) {
+        for (const [k, v] of Object.entries(values)) {
+          text = text.replace(`{${k}}`, String(v));
+        }
+      }
+      return text;
+    };
+  },
+  getLocale: async () => "fr",
 }));
 
 vi.mock("@/components/features/feed-client-preview", () => ({
@@ -46,16 +74,23 @@ const sampleFeed = {
   ],
 };
 
+async function renderHome(
+  props: Parameters<typeof HomeContent>[0],
+) {
+  const ui = await HomeContent(props);
+  return renderWithI18n(ui);
+}
+
 describe("HomeContent", () => {
-  it("renders community feed hero instead of construction page", () => {
-    render(<HomeContent feed={sampleFeed} feedError={null} />);
+  it("renders community feed hero instead of construction page", async () => {
+    await renderHome({ feed: sampleFeed, feedError: null });
 
     expect(screen.getByRole("heading", { level: 1, name: /Feed communautaire/i })).toBeTruthy();
     expect(screen.queryByText(/Site en construction/i)).toBeNull();
   });
 
-  it("renders feed items with links to request detail pages", () => {
-    render(<HomeContent feed={sampleFeed} feedError={null} />);
+  it("renders feed items with links to request detail pages", async () => {
+    await renderHome({ feed: sampleFeed, feedError: null });
 
     const list = screen.getByTestId("feed-ssr-list");
     const links = within(list).getAllByRole("link");
@@ -66,17 +101,15 @@ describe("HomeContent", () => {
     expect(links[1]?.getAttribute("href")).toBe("/requests/req-2");
   });
 
-  it("shows item metadata including author, date and tags", () => {
-    render(<HomeContent feed={sampleFeed} feedError={null} />);
+  it("shows item metadata including author, date and tags", async () => {
+    await renderHome({ feed: sampleFeed, feedError: null });
 
     expect(screen.getByText(/Auteur : bob/i)).toBeTruthy();
     expect(screen.getByText(/Tags : javascript, async/i)).toBeTruthy();
   });
 
-  it("shows destructive alert when feed SSR fails", () => {
-    render(
-      <HomeContent feed={null} feedError="API indisponible (503)" />,
-    );
+  it("shows destructive alert when feed SSR fails", async () => {
+    await renderHome({ feed: null, feedError: "API indisponible (503)" });
 
     const alert = screen.getByTestId("feed-ssr-error");
     expect(alert.getAttribute("role")).toBe("alert");
@@ -85,8 +118,8 @@ describe("HomeContent", () => {
     expect(screen.queryByTestId("feed-ssr-list")).toBeNull();
   });
 
-  it("shows empty state with link to create a request", () => {
-    render(<HomeContent feed={{ items: [] }} feedError={null} />);
+  it("shows empty state with link to create a request", async () => {
+    await renderHome({ feed: { items: [] }, feedError: null });
 
     expect(screen.getByTestId("feed-empty")).toBeTruthy();
     expect(screen.getByText(/Aucune demande pour l'instant/i)).toBeTruthy();
@@ -95,15 +128,15 @@ describe("HomeContent", () => {
     expect(createLink.getAttribute("href")).toBe("/help/new");
   });
 
-  it("keeps Nouvelle demande CTA in the hero", () => {
-    render(<HomeContent feed={sampleFeed} feedError={null} />);
+  it("keeps Nouvelle demande CTA in the hero", async () => {
+    await renderHome({ feed: sampleFeed, feedError: null });
 
     const cta = screen.getByRole("link", { name: /Nouvelle demande/i });
     expect(cta.getAttribute("href")).toBe("/help/new");
   });
 
-  it("includes client feed preview for refresh", () => {
-    render(<HomeContent feed={sampleFeed} feedError={null} />);
+  it("includes client feed preview for refresh", async () => {
+    await renderHome({ feed: sampleFeed, feedError: null });
 
     expect(screen.getByTestId("feed-client-preview")).toBeTruthy();
   });

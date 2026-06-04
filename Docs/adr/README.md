@@ -12,3 +12,4 @@ Index :
 | [0002](0002-design-system-monorepo.md) | Design system monorepo (`packages/ui` + `apps/storybook`) | Accepté — 2026-05-20 (Epic [#24](https://github.com/AllAboard-THP/All-Aboard/issues/24)) |
 | [0003](0003-authentication-users-production.md) | Authentification produit (users réels, hash argon2) | Accepté — 2026-05-28 |
 | [0004](0004-agent-indexer-architecture.md) | Agent Rubberduck & Intuition (Phase 4) — bridge publish, indexer réseau Intuition | Proposé — 2026-05-27 ([#37](https://github.com/AllAboard-THP/All-Aboard/issues/37)) |
+| [0005](0005-i18n-web-next-intl.md) | i18n web FR/EN (next-intl) | Accepté — 2026-05-28 ([#75](https://github.com/AllAboard-THP/All-Aboard/issues/75)) |

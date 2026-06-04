@@ -3,6 +3,7 @@ import type {
   FeedResponse,
   HelpRequest,
   HelpRequestDetailResponse,
+  MentorFeedItem,
   MentorFeedResponse,
   Response,
 } from "@allaboard/types";
@@ -52,7 +53,41 @@ export function parseFeedResponse(data: unknown): FeedResponse {
   if (!o.items.every(isHelpRequest)) {
     throw new Error("Invalid feed: item shape");
   }
-  return { items: o.items };
+  const result: FeedResponse = { items: o.items };
+  if (o.pagination !== undefined) {
+    if (typeof o.pagination !== "object" || o.pagination === null) {
+      throw new Error("Invalid feed: pagination shape");
+    }
+    const p = o.pagination as Record<string, unknown>;
+    if (
+      typeof p.page !== "number" ||
+      typeof p.limit !== "number" ||
+      typeof p.total !== "number"
+    ) {
+      throw new Error("Invalid feed: pagination shape");
+    }
+    result.pagination = {
+      page: p.page,
+      limit: p.limit,
+      total: p.total,
+    };
+  }
+  if (o.widgets !== undefined) {
+    if (typeof o.widgets !== "object" || o.widgets === null) {
+      throw new Error("Invalid feed: widgets shape");
+    }
+    const w = o.widgets as Record<string, unknown>;
+    if (w.unanswered !== undefined) {
+      if (
+        !Array.isArray(w.unanswered) ||
+        !w.unanswered.every(isHelpRequest)
+      ) {
+        throw new Error("Invalid feed: widgets.unanswered shape");
+      }
+      result.widgets = { unanswered: w.unanswered };
+    }
+  }
+  return result;
 }
 
 export function parseHelpRequestDetailResponse(
@@ -73,14 +108,56 @@ export function parseHelpRequestDetailResponse(
       throw new Error("Invalid detail: response shape");
     }
   }
+  let certificationFilter: HelpRequestDetailResponse["certificationFilter"];
+  if (o.certificationFilter !== undefined) {
+    if (typeof o.certificationFilter !== "object" || o.certificationFilter === null) {
+      throw new Error("Invalid detail: certificationFilter shape");
+    }
+    const cf = o.certificationFilter as Record<string, unknown>;
+    if (
+      cf.applied !== true ||
+      typeof cf.totalCount !== "number" ||
+      typeof cf.visibleCount !== "number"
+    ) {
+      throw new Error("Invalid detail: certificationFilter shape");
+    }
+    certificationFilter = {
+      applied: true,
+      totalCount: cf.totalCount,
+      visibleCount: cf.visibleCount,
+    };
+  }
   return {
     item: o.item,
     ...(Array.isArray(o.responses) ? { responses: o.responses } : {}),
+    ...(certificationFilter ? { certificationFilter } : {}),
   };
 }
 
+function isMentorFeedItem(value: unknown): value is MentorFeedItem {
+  if (!isHelpRequest(value)) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.responseCount === "number" &&
+    Number.isInteger(o.responseCount) &&
+    o.responseCount >= 0 &&
+    (o.lastResponseAt === null || typeof o.lastResponseAt === "string") &&
+    typeof o.hasUnreadForMentor === "boolean"
+  );
+}
+
 export function parseMentorFeedResponse(data: unknown): MentorFeedResponse {
-  return parseFeedResponse(data);
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid mentor feed: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!Array.isArray(o.items)) {
+    throw new Error("Invalid mentor feed: items must be an array");
+  }
+  if (!o.items.every(isMentorFeedItem)) {
+    throw new Error("Invalid mentor feed: item shape");
+  }
+  return { items: o.items };
 }
 
 export function parseAuthMeResponse(data: unknown): AuthMeResponse {
@@ -91,10 +168,37 @@ export function parseAuthMeResponse(data: unknown): AuthMeResponse {
   if (typeof o.userId !== "string") {
     throw new Error("Invalid auth/me: userId");
   }
-  if (o.role !== "student" && o.role !== "mentor") {
+  if (o.role !== "student" && o.role !== "mentor" && o.role !== "admin") {
     throw new Error("Invalid auth/me: role");
   }
-  return { userId: o.userId, role: o.role };
+  const result: AuthMeResponse = { userId: o.userId, role: o.role };
+  if (typeof o.displayName === "string") result.displayName = o.displayName;
+  if (typeof o.fullName === "string") result.fullName = o.fullName;
+  if (typeof o.headline === "string") result.headline = o.headline;
+  if (typeof o.bio === "string") result.bio = o.bio;
+  if (typeof o.avatarUrl === "string") result.avatarUrl = o.avatarUrl;
+  if (typeof o.educationLevel === "string") {
+    result.educationLevel = o.educationLevel;
+  }
+  if (typeof o.cguAcceptedAt === "string") {
+    result.cguAcceptedAt = o.cguAcceptedAt;
+  }
+  if (typeof o.notifyOnComment === "boolean") {
+    result.notifyOnComment = o.notifyOnComment;
+  }
+  if (typeof o.notifyOnMessage === "boolean") {
+    result.notifyOnMessage = o.notifyOnMessage;
+  }
+  if (
+    Array.isArray(o.certificationTags) &&
+    o.certificationTags.every((t) => typeof t === "string")
+  ) {
+    result.certificationTags = o.certificationTags;
+  }
+  if (Array.isArray(o.competenceSubjects)) {
+    result.competenceSubjects = o.competenceSubjects as AuthMeResponse["competenceSubjects"];
+  }
+  return result;
 }
 
 export type FetchFeedResult =
@@ -194,12 +298,21 @@ export async function fetchHelpRequest(
   }
 }
 
-export async function fetchMentorFeed(): Promise<FetchMentorFeedResult> {
+export async function fetchMentorFeed(
+  accessToken: string,
+): Promise<FetchMentorFeedResult> {
   const url = `${getApiBaseUrl()}/mentor/feed`;
   try {
     const { ok, status, json } = await fetchJson(url, {
-      next: { revalidate: 60 },
+      headers: { authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
     });
+    if (status === 401) {
+      return { ok: false, error: "unauthorized" };
+    }
+    if (status === 403) {
+      return { ok: false, error: "forbidden" };
+    }
     if (!ok) {
       return { ok: false, error: `Mentor feed HTTP ${status}` };
     }

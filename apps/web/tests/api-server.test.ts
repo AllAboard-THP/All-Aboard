@@ -3,6 +3,7 @@ import {
   parseAuthMeResponse,
   parseFeedResponse,
   parseHelpRequestDetailResponse,
+  parseMentorFeedResponse,
 } from "@/lib/api-server";
 
 describe("parseFeedResponse", () => {
@@ -31,6 +32,21 @@ describe("parseFeedResponse", () => {
           tags: ["rails"],
         },
       ],
+    };
+    expect(parseFeedResponse(data)).toEqual(data);
+  });
+
+  it("accepts pagination and widgets from enriched feed", () => {
+    const item = {
+      id: "1",
+      title: "Hello",
+      authorId: "u",
+      createdAt: "2020-01-01T00:00:00.000Z",
+    };
+    const data = {
+      items: [item],
+      pagination: { page: 1, limit: 100, total: 1 },
+      widgets: { unanswered: [item] },
     };
     expect(parseFeedResponse(data)).toEqual(data);
   });
@@ -64,6 +80,25 @@ describe("parseHelpRequestDetailResponse", () => {
     expect(parseHelpRequestDetailResponse(data)).toEqual(data);
   });
 
+  it("accepts certificationFilter metadata", () => {
+    const data = {
+      item: {
+        id: "1",
+        title: "Hello",
+        authorId: "bob@dev.local",
+        createdAt: "2020-01-01T00:00:00.000Z",
+        tags: ["react"],
+      },
+      responses: [],
+      certificationFilter: {
+        applied: true,
+        totalCount: 2,
+        visibleCount: 1,
+      },
+    };
+    expect(parseHelpRequestDetailResponse(data)).toEqual(data);
+  });
+
   it("rejects missing item", () => {
     expect(() => parseHelpRequestDetailResponse({})).toThrow("item shape");
   });
@@ -75,5 +110,73 @@ describe("parseAuthMeResponse", () => {
       userId: "alice",
       role: "mentor",
     });
+  });
+
+  it("passes through enriched profile fields", () => {
+    expect(
+      parseAuthMeResponse({
+        userId: "bob@dev.local",
+        role: "student",
+        displayName: "Bob Dev",
+        cguAcceptedAt: "2026-06-04T12:00:00.000Z",
+      }),
+    ).toEqual({
+      userId: "bob@dev.local",
+      role: "student",
+      displayName: "Bob Dev",
+      cguAcceptedAt: "2026-06-04T12:00:00.000Z",
+    });
+  });
+});
+
+describe("parseMentorFeedResponse", () => {
+  it("accepts enriched mentor feed items", () => {
+    const data = {
+      items: [
+        {
+          id: "1",
+          title: "Help",
+          authorId: "bob@dev.local",
+          createdAt: "2020-01-01T00:00:00.000Z",
+          tags: ["mentor"],
+          responseCount: 2,
+          lastResponseAt: "2020-01-02T00:00:00.000Z",
+          hasUnreadForMentor: true,
+        },
+      ],
+    };
+    expect(parseMentorFeedResponse(data)).toEqual(data);
+  });
+
+  it("accepts null lastResponseAt", () => {
+    const data = {
+      items: [
+        {
+          id: "1",
+          title: "Help",
+          authorId: "bob@dev.local",
+          createdAt: "2020-01-01T00:00:00.000Z",
+          responseCount: 0,
+          lastResponseAt: null,
+          hasUnreadForMentor: false,
+        },
+      ],
+    };
+    expect(parseMentorFeedResponse(data)).toEqual(data);
+  });
+
+  it("rejects missing notification fields", () => {
+    expect(() =>
+      parseMentorFeedResponse({
+        items: [
+          {
+            id: "1",
+            title: "Help",
+            authorId: "u",
+            createdAt: "2020-01-01T00:00:00.000Z",
+          },
+        ],
+      }),
+    ).toThrow("item shape");
   });
 });

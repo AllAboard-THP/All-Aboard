@@ -1,13 +1,17 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@allaboard/ui/components/button";
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
+import {
+  buildRubberduckRedirectUrl,
+  fetchRubberduckRedirectUrl,
+} from "@/lib/rubberduck-redirect";
+import { Link, useRouter } from "@/i18n/navigation";
 
 type CreateResult = {
   item: { id: string };
@@ -32,7 +36,7 @@ async function loginAndCreate(input: {
   });
   if (!loginRes.ok) {
     const t = await loginRes.text();
-    throw new Error(loginRes.status === 401 ? "Identifiants invalides." : t);
+    throw new Error(loginRes.status === 401 ? "invalid_credentials" : t);
   }
 
   const createRes = await fetch("/api/help-requests", {
@@ -61,27 +65,42 @@ async function loginAndCreate(input: {
 export function HelpRequestForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const t = useTranslations("helpForm");
+  const tCommon = useTranslations("common");
   const [email, setEmail] = useState("bob@dev.local");
   const [password, setPassword] = useState("");
   const [title, setTitle] = useState("");
   const [tagsRaw, setTagsRaw] = useState("");
   const [duplicateId, setDuplicateId] = useState<string | null>(null);
-  const [rubberduckHint, setRubberduckHint] = useState(false);
+  const [rubberduckMessage, setRubberduckMessage] = useState<string | null>(
+    null,
+  );
 
   const mutation = useMutation({
     mutationFn: loginAndCreate,
     onSuccess: async (data) => {
       setDuplicateId(null);
-      setRubberduckHint(Boolean(data.hints?.rubberduckEligible));
+      setRubberduckMessage(null);
       await queryClient.invalidateQueries({ queryKey: ["feed"] });
       if (data.hints?.rubberduckEligible) {
+        const baseUrl = await fetchRubberduckRedirectUrl();
+        if (baseUrl) {
+          window.location.assign(
+            buildRubberduckRedirectUrl(baseUrl, {
+              requestId: data.item.id,
+              title: title.trim(),
+            }),
+          );
+          return;
+        }
+        setRubberduckMessage(t("rubberduckHandoff"));
         setTitle("");
         return;
       }
       router.push(`/requests/${data.item.id}`);
     },
     onError: (err: Error & { existingId?: string }) => {
-      setRubberduckHint(false);
+      setRubberduckMessage(null);
       if (err.message === "duplicate" && err.existingId) {
         setDuplicateId(err.existingId);
       } else {
@@ -92,7 +111,7 @@ export function HelpRequestForm() {
 
   function submit() {
     setDuplicateId(null);
-    setRubberduckHint(false);
+    setRubberduckMessage(null);
     const tags = tagsRaw
       .split(",")
       .map((s) => s.trim())
@@ -102,13 +121,15 @@ export function HelpRequestForm() {
 
   const errorMessage =
     mutation.error && mutation.error.message !== "duplicate"
-      ? mutation.error.message
+      ? mutation.error.message === "invalid_credentials"
+        ? t("invalidCredentials")
+        : mutation.error.message
       : null;
 
   return (
     <div className="mt-5 grid gap-4">
       <div className="grid gap-2">
-        <Label htmlFor="help-email">Email</Label>
+        <Label htmlFor="help-email">{t("email")}</Label>
         <Input
           id="help-email"
           type="email"
@@ -118,7 +139,7 @@ export function HelpRequestForm() {
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="help-password">Mot de passe</Label>
+        <Label htmlFor="help-password">{t("password")}</Label>
         <Input
           id="help-password"
           type="password"
@@ -128,7 +149,7 @@ export function HelpRequestForm() {
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="help-title">Titre de la demande</Label>
+        <Label htmlFor="help-title">{t("title")}</Label>
         <Input
           id="help-title"
           value={title}
@@ -136,12 +157,12 @@ export function HelpRequestForm() {
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="help-tags">Tags (optionnel, séparés par virgule)</Label>
+        <Label htmlFor="help-tags">{t("tags")}</Label>
         <Input
           id="help-tags"
           value={tagsRaw}
           onChange={(e) => setTagsRaw(e.target.value)}
-          placeholder="mentor, rails"
+          placeholder={t("tagsPlaceholder")}
         />
       </div>
       {errorMessage ? (
@@ -149,19 +170,21 @@ export function HelpRequestForm() {
       ) : null}
       {duplicateId ? (
         <p className="m-0 text-sm text-destructive">
-          Doublon détecté (MOC).{" "}
+          {t("duplicate")}{" "}
           <Link
             href={`/requests/${duplicateId}`}
             className="font-medium text-primary underline"
           >
-            Voir la demande existante
+            {t("viewExisting")}
           </Link>
         </p>
       ) : null}
-      {rubberduckHint ? (
-        <p className="m-0 text-sm text-primary">
-          Rubberduck (stub) : titre court — piste IA possible (Phase 4). Publiez
-          une nouvelle demande ou consultez le feed.
+      {rubberduckMessage ? (
+        <p
+          className="m-0 text-sm text-primary"
+          data-testid="rubberduck-handoff"
+        >
+          {rubberduckMessage}
         </p>
       ) : null}
       <Button
@@ -170,7 +193,7 @@ export function HelpRequestForm() {
         onClick={() => submit()}
         className="mt-1 w-full"
       >
-        {mutation.isPending ? "Envoi…" : "Connexion et publier"}
+        {mutation.isPending ? tCommon("sending") : t("submit")}
       </Button>
     </div>
   );
