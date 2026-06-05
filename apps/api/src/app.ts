@@ -12,6 +12,7 @@ import {
 } from "./agent/routing.js";
 import { jwtSecret } from "./lib/auth-helpers.js";
 import { registerOpenApiDocs } from "./openapi.js";
+import { registerAdminRoutes } from "./routes/admin.js";
 import { registerAuthRoutes } from "./routes/auth.js";
 import { registerFeedRoutes } from "./routes/feed.js";
 import { registerHelpRequestRoutes } from "./routes/help-requests.js";
@@ -84,6 +85,7 @@ export async function buildApp(options?: BuildAppOptions) {
   registerSubjectRequestRoutes(app, db);
   registerMentorRoutes(app, db);
   registerConversationRoutes(app, db);
+  registerAdminRoutes(app, db);
 
   return app;
 }

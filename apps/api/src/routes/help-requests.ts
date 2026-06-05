@@ -13,10 +13,15 @@ import type { EvaluateRoutingFn } from "../agent/routing.js";
 import { enqueueHelpRequestCreated } from "../intuition/outbox.js";
 import {
   getJwtUser,
+  isAdminRole,
   normalizeTitle,
   responseVisibleUnderCertificationFilter,
   roleFromJwtClaims,
 } from "../lib/auth-helpers.js";
+import {
+  contentShouldBeFlagged,
+  moderationContentFromFields,
+} from "../services/profanity.js";
 import { loadHelpRequestRow } from "../lib/help-request-query.js";
 import { rowToHelpRequest, rowToResponse } from "../lib/mappers.js";
 import {
@@ -86,13 +91,44 @@ export function registerHelpRequestRoutes(
         return reply.code(404).send({ error: "not_found" });
       }
 
+      let viewerEmail: string | undefined;
+      let viewerIsAdmin = false;
+      if (filterByCertifications) {
+        const jwtUser = getJwtUser(request);
+        viewerEmail = jwtUser.sub;
+        viewerIsAdmin = isAdminRole(
+          roleFromJwtClaims(jwtUser.sub, jwtUser.role),
+        );
+      } else {
+        try {
+          await request.jwtVerify();
+          const jwtUser = getJwtUser(request);
+          viewerEmail = jwtUser.sub;
+          viewerIsAdmin = isAdminRole(
+            roleFromJwtClaims(jwtUser.sub, jwtUser.role),
+          );
+        } catch {
+          /* public */
+        }
+      }
+
+      if (
+        loaded.helpRequest.flaggedForModeration &&
+        !viewerIsAdmin &&
+        loaded.helpRequest.authorId !== viewerEmail
+      ) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+
       const responseRows = await db
         .select()
         .from(responses)
         .where(eq(responses.helpRequestId, id))
         .orderBy(responses.createdAt);
 
-      let visibleRows = responseRows;
+      let visibleRows = viewerIsAdmin
+        ? responseRows
+        : responseRows.filter((r) => !r.flaggedForModeration);
       if (filterByCertifications) {
         const authorEmails = [...new Set(responseRows.map((r) => r.authorId))];
         const certByEmail = new Map<string, string[]>();
@@ -169,12 +205,22 @@ export function registerHelpRequestRoutes(
       }
 
       const tags = parsed.data.tags ?? [];
+      const title = parsed.data.title.trim();
+      const body = parsed.data.body?.trim() ?? "";
+      const flagged = await contentShouldBeFlagged(
+        db,
+        moderationContentFromFields([
+          title,
+          body,
+          parsed.data.codeSnippet,
+        ]),
+      );
       const now = new Date();
       const inserted = await db
         .insert(helpRequests)
         .values({
-          title: parsed.data.title.trim(),
-          body: parsed.data.body?.trim() ?? "",
+          title,
+          body,
           authorId: user.sub,
           tags,
           codeSnippet: parsed.data.codeSnippet,
@@ -182,6 +228,7 @@ export function registerHelpRequestRoutes(
           urgent: parsed.data.urgent ?? false,
           subjectId: parsed.data.subjectId,
           educationLevel: parsed.data.educationLevel,
+          flaggedForModeration: flagged,
           updatedAt: now,
         })
         .returning();
@@ -237,7 +284,9 @@ export function registerHelpRequestRoutes(
       if (!loaded) {
         return reply.code(404).send({ error: "not_found" });
       }
-      if (loaded.helpRequest.authorId !== user.sub) {
+      const role = roleFromJwtClaims(user.sub, user.role);
+      const isAuthor = loaded.helpRequest.authorId === user.sub;
+      if (!isAuthor && !isAdminRole(role)) {
         return reply.code(403).send({ error: "forbidden" });
       }
 
@@ -253,6 +302,23 @@ export function registerHelpRequestRoutes(
         parsed.data.subjectId === null
           ? null
           : (parsed.data.subjectId ?? oldSubjectId);
+
+      const nextTitle =
+        parsed.data.title !== undefined
+          ? parsed.data.title.trim()
+          : loaded.helpRequest.title;
+      const nextBody =
+        parsed.data.body !== undefined
+          ? parsed.data.body.trim()
+          : loaded.helpRequest.body;
+      const nextCodeSnippet =
+        parsed.data.codeSnippet !== undefined
+          ? parsed.data.codeSnippet
+          : loaded.helpRequest.codeSnippet;
+      const flagged = await contentShouldBeFlagged(
+        db,
+        moderationContentFromFields([nextTitle, nextBody, nextCodeSnippet]),
+      );
 
       const updated = await db
         .update(helpRequests)
@@ -282,6 +348,7 @@ export function registerHelpRequestRoutes(
           ...(parsed.data.subjectId !== undefined
             ? { subjectId: parsed.data.subjectId }
             : {}),
+          flaggedForModeration: flagged,
           updatedAt: new Date(),
         })
         .where(eq(helpRequests.id, id))
@@ -369,14 +436,20 @@ export function registerHelpRequestRoutes(
         return reply.code(404).send({ error: "not_found" });
       }
       const user = getJwtUser(request);
+      const body = parsed.data.body.trim();
+      const flagged = await contentShouldBeFlagged(
+        db,
+        moderationContentFromFields([body, parsed.data.codeSnippet]),
+      );
       const inserted = await db
         .insert(responses)
         .values({
           helpRequestId: id,
-          body: parsed.data.body.trim(),
+          body,
           authorId: user.sub,
           codeSnippet: parsed.data.codeSnippet,
           codeLanguage: parsed.data.codeLanguage,
+          flaggedForModeration: flagged,
         })
         .returning();
       const row = inserted[0];
@@ -425,6 +498,16 @@ export function registerHelpRequestRoutes(
       if (row.authorId !== user.sub) {
         return reply.code(403).send({ error: "forbidden" });
       }
+      const nextBody =
+        parsed.data.body !== undefined ? parsed.data.body.trim() : row.body;
+      const nextCodeSnippet =
+        parsed.data.codeSnippet !== undefined
+          ? parsed.data.codeSnippet
+          : row.codeSnippet;
+      const flagged = await contentShouldBeFlagged(
+        db,
+        moderationContentFromFields([nextBody, nextCodeSnippet]),
+      );
       const updated = await db
         .update(responses)
         .set({
@@ -437,6 +520,7 @@ export function registerHelpRequestRoutes(
           ...(parsed.data.codeLanguage !== undefined
             ? { codeLanguage: parsed.data.codeLanguage }
             : {}),
+          flaggedForModeration: flagged,
         })
         .where(eq(responses.id, responseId))
         .returning();

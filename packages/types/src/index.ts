@@ -40,6 +40,8 @@ export type HelpRequest = {
   responsesCount?: number;
   bookmarksCount?: number;
   updatedAt?: string;
+  /** Masqué du fil public tant que modération en attente. */
+  flaggedForModeration?: boolean;
 };
 
 export type FeedPagination = {
@@ -75,6 +77,7 @@ export type Response = {
   createdAt?: string;
   codeSnippet?: string;
   codeLanguage?: string;
+  flaggedForModeration?: boolean;
 };
 
 /** Corps JSON pour `POST /help-requests` (auteur = sujet JWT, voir ADR 0001). */
@@ -460,6 +463,92 @@ export type CreateMessageResponse = {
 export type MarkConversationReadResponse = {
   ok: true;
   lastReadAt: string;
+};
+
+export type DenylistPattern = {
+  id: string;
+  label: string;
+  pattern: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AdminDashboardStats = {
+  totalUsers: number;
+  totalHelpRequests: number;
+  flaggedCount: number;
+  pendingSubjectRequests: number;
+  pendingResources: number;
+};
+
+export type AdminDashboardResponse = {
+  stats: AdminDashboardStats;
+  recentHelpRequests: HelpRequest[];
+};
+
+export type AdminModerationFlaggedResponse = {
+  item: Response;
+  helpRequest?: HelpRequest;
+};
+
+export type AdminModerationResponse = {
+  flaggedHelpRequests: HelpRequest[];
+  flaggedResponses: AdminModerationFlaggedResponse[];
+};
+
+export type AdminDenylistPatternsResponse = {
+  items: DenylistPattern[];
+};
+
+export type CreateDenylistPatternBody = {
+  label: string;
+  pattern: string;
+  active?: boolean;
+};
+
+export type CreateDenylistPatternResponse = {
+  item: DenylistPattern;
+};
+
+export type UpdateDenylistPatternResponse = {
+  item: DenylistPattern;
+};
+
+export type AdminUserSummary = {
+  id: string;
+  email: string;
+  role: UserRole;
+  displayName: string;
+  createdAt: string;
+};
+
+export type AdminUsersResponse = {
+  items: AdminUserSummary[];
+};
+
+export type PromoteAdminBody = {
+  admin: boolean;
+};
+
+export type AdminSubjectRequestItem = SubjectRequest & {
+  authorId: string;
+  authorEmail?: string;
+  authorDisplayName?: string;
+};
+
+export type AdminSubjectRequestsResponse = {
+  pending: AdminSubjectRequestItem[];
+  approved: AdminSubjectRequestItem[];
+  rejected: AdminSubjectRequestItem[];
+};
+
+export type UpdateAdminSubjectRequestBody = {
+  status: SubjectRequestStatus;
+};
+
+export type UpdateAdminSubjectRequestResponse = {
+  item: AdminSubjectRequestItem;
 };
 
 /** Corps `POST /routing/evaluate` (`apps/agent`, interne). */

@@ -1697,6 +1697,119 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       });
       expect(res.statusCode).toBe(403);
     });
+
+    it("flags profane help-request and hides it from GET /feed until admin approves", async () => {
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const adminToken = app.jwt.sign({
+        sub: "admin@dev.local",
+        role: "admin",
+      });
+      const title = `Flagged post ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title, body: "what the fuck is going on" },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: { id: string; flaggedForModeration?: boolean };
+      };
+      expect(created.item.flaggedForModeration).toBe(true);
+
+      const feedRes = await app.inject({ method: "GET", url: "/feed" });
+      const feed = JSON.parse(feedRes.payload) as {
+        items: Array<{ id: string }>;
+      };
+      expect(feed.items.some((i) => i.id === created.item.id)).toBe(false);
+
+      const modRes = await app.inject({
+        method: "GET",
+        url: "/admin/moderation",
+        headers: { authorization: `Bearer ${adminToken}` },
+      });
+      expect(modRes.statusCode).toBe(200);
+      const mod = JSON.parse(modRes.payload) as {
+        flaggedHelpRequests: Array<{ id: string }>;
+      };
+      expect(
+        mod.flaggedHelpRequests.some((i) => i.id === created.item.id),
+      ).toBe(true);
+
+      const approveRes = await app.inject({
+        method: "POST",
+        url: `/admin/moderation/help-requests/${created.item.id}/approve`,
+        headers: { authorization: `Bearer ${adminToken}` },
+      });
+      expect(approveRes.statusCode).toBe(200);
+
+      const feedAfter = await app.inject({ method: "GET", url: "/feed" });
+      const feed2 = JSON.parse(feedAfter.payload) as {
+        items: Array<{ id: string }>;
+      };
+      expect(feed2.items.some((i) => i.id === created.item.id)).toBe(true);
+    });
+
+    it("GET /admin/dashboard returns 403 for student and 200 for admin", async () => {
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const forbidden = await app.inject({
+        method: "GET",
+        url: "/admin/dashboard",
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      expect(forbidden.statusCode).toBe(403);
+
+      const adminToken = app.jwt.sign({
+        sub: "admin@dev.local",
+        role: "admin",
+      });
+      const ok = await app.inject({
+        method: "GET",
+        url: "/admin/dashboard",
+        headers: { authorization: `Bearer ${adminToken}` },
+      });
+      expect(ok.statusCode).toBe(200);
+      const body = JSON.parse(ok.payload) as {
+        stats: { totalUsers: number; flaggedCount: number };
+      };
+      expect(body.stats.totalUsers).toBeGreaterThanOrEqual(3);
+      expect(typeof body.stats.flaggedCount).toBe("number");
+    });
+
+    it("POST /admin/denylist-patterns and PATCH subject-request status", async () => {
+      const adminToken = app.jwt.sign({
+        sub: "admin@dev.local",
+        role: "admin",
+      });
+      const patternRes = await app.inject({
+        method: "POST",
+        url: "/admin/denylist-patterns",
+        headers: { authorization: `Bearer ${adminToken}` },
+        payload: { label: "spam-test", pattern: "spammity", active: true },
+      });
+      expect(patternRes.statusCode).toBe(201);
+
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const srRes = await app.inject({
+        method: "POST",
+        url: "/subject-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { name: `Admin SR ${Date.now()}` },
+      });
+      const sr = JSON.parse(srRes.payload) as { item: { id: string } };
+
+      const patchRes = await app.inject({
+        method: "PATCH",
+        url: `/admin/subject-requests/${sr.item.id}`,
+        headers: { authorization: `Bearer ${adminToken}` },
+        payload: { status: "approved" },
+      });
+      expect(patchRes.statusCode).toBe(200);
+      const patched = JSON.parse(patchRes.payload) as {
+        item: { status: string };
+      };
+      expect(patched.item.status).toBe("approved");
+    });
   },
 );
 

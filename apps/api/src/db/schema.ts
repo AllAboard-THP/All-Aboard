@@ -101,6 +101,7 @@ export const helpRequests = pgTable("help_requests", {
   likesCount: integer("likes_count").notNull().default(0),
   responsesCount: integer("responses_count").notNull().default(0),
   bookmarksCount: integer("bookmarks_count").notNull().default(0),
+  flaggedForModeration: boolean("flagged_for_moderation").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -142,7 +143,21 @@ export const responses = pgTable("responses", {
   authorId: text("author_id").notNull(),
   codeSnippet: text("code_snippet"),
   codeLanguage: text("code_language"),
+  flaggedForModeration: boolean("flagged_for_moderation").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export const denylistPatterns = pgTable("denylist_patterns", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  label: text("label").notNull(),
+  pattern: text("pattern").notNull(),
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
 });

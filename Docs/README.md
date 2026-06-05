@@ -57,7 +57,7 @@ Référence **architecture et produit** du dépôt. Le **pilotage des tâches** 
 
 | Zone | État |
 |------|------|
-| `apps/api` | Fastify : `/health`, Postgres + Drizzle, `GET /feed`, `POST /auth/login`, `POST /help-requests` (JWT), stubs doublon / Rubberduck ; migrations au démarrage. |
+| `apps/api` | Fastify : socle MVP + **parité Rails P1–P2** (feed enrichi, `subjects`, PATCH demande, likes/bookmarks, `/me/*`, CRUD réponses) ; routes modulaires `src/routes/*` ; OpenAPI [`openapi.yaml`](../apps/api/openapi.yaml). |
 | `apps/web` | SSR feed ; BFF ; `/help/new` ; **AppShell** (`app/(app)/`, nav MOC) — [app-shell.md](design-system/app-shell.md) ; `@allaboard/ui` + features/blocks. |
 | `packages/ui` + `apps/storybook` | Design system + catalogue SB — [design-system/README.md](design-system/README.md). |
 | Auth | JWT (cookie `access_token` + relais BFF Bearer) — [ADR 0001](adr/0001-authentication-strategy.md), users hash — [ADR 0003](adr/0003-authentication-users-production.md). |
@@ -73,4 +73,4 @@ Référence **architecture et produit** du dépôt. Le **pilotage des tâches** 
 3. Décision archi **validée** : `Docs/adr/` (brouillon dans `tasks/`).
 4. Phase **terminée** : mettre à jour le tableau ci-dessus (date en tête de section si besoin).
 
-**Mise à jour** : 2026-05-29.
+**Mise à jour** : 2026-06-04.
