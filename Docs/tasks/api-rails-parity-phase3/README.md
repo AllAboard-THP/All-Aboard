@@ -1,7 +1,8 @@
-# API Rails parity — Phase 3 (auth & profils)
+# API parité Rails — Phase 3 (auth & profils)
 
-**Branche :** `feat/api-rails-parity-phase3`  
-**OpenAPI :** `0.5.0`
+**Branche** : `feat/api-rails-parity-phase3`  
+**OpenAPI** : `0.5.0` — [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml)  
+**Prérequis** : [Phase 2](../api-rails-parity-phase2/README.md)
 
 ## Objectif
 
@@ -24,13 +25,22 @@ Compléter l’auth et les profils utilisateur (parité blocs Rails : inscriptio
 | `POST /legal/accept` | JWT | Timestamp CGU |
 | `GET /users/:id` | public | Profil public + `?tab=posts\|responses` |
 
+## Modules code
+
+| Fichier | Rôle |
+|---------|------|
+| [`apps/api/src/routes/auth.ts`](../../../apps/api/src/routes/auth.ts) | Login, register, logout, me |
+| [`apps/api/src/routes/users.ts`](../../../apps/api/src/routes/users.ts) | PATCH profil, GET public |
+| [`apps/api/src/routes/legal.ts`](../../../apps/api/src/routes/legal.ts) | Acceptation CGU |
+| [`apps/api/src/services/user-profile.ts`](../../../apps/api/src/services/user-profile.ts) | Agrégation profil |
+
 ## Types
 
-`packages/types` : `UserProfile`, `RegisterBody`, `AuthMeResponse` enrichi, `PublicUserResponse`, etc.
+[`packages/types`](../../../packages/types/src/index.ts) : `UserProfile`, `RegisterBody`, `AuthMeResponse` enrichi, `PublicUserResponse`, etc.
 
 ## BFF web (`apps/web/app/api`)
 
-Proxies Next.js (même origine que le site) :
+Proxies Next.js (même origine) :
 
 | BFF | Fastify |
 |-----|---------|
@@ -40,7 +50,7 @@ Proxies Next.js (même origine que le site) :
 | `POST /api/legal/accept` | `POST /legal/accept` |
 | `GET /api/users/:id` | `GET /users/:id` |
 
-Helper partagé : `apps/web/lib/bff-relay.ts` (cookies + JSON).
+Helper : [`apps/web/lib/bff-relay.ts`](../../../apps/web/lib/bff-relay.ts).
 
 ## Vérification
 
@@ -49,3 +59,14 @@ pnpm --filter api test
 pnpm --filter web test
 pnpm verify
 ```
+
+## Suite
+
+**Phase 4** : [api-rails-parity-phase4](../api-rails-parity-phase4/README.md)  
+Hub : [api-rails-parity](../api-rails-parity/README.md)
+
+## Fichiers
+
+| Fichier | Rôle |
+|---------|------|
+| `README.md` | Ce fichier |

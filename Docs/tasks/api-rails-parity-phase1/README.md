@@ -69,4 +69,10 @@ pnpm verify
 ## Suite
 
 **Phase 2** (social) : [api-rails-parity-phase2/README.md](../api-rails-parity-phase2/README.md).  
-Hub phases 3–6 : voir [plan opérationnel](../../plan-mise-en-place-web-api-donnees.md#parité-rails-thp-final--phases-12-api) et dossiers `api-rails-parity-phase*`.
+Hub phases 1–7 : [api-rails-parity/README.md](../api-rails-parity/README.md) ; [plan opérationnel](../../plan-mise-en-place-web-api-donnees.md#parité-rails-thp-final--api).
+
+## Fichiers
+
+| Fichier | Rôle |
+|---------|------|
+| `README.md` | Ce fichier |

@@ -2,7 +2,7 @@
 
 Référence **canonique** pour le couplage `apps/web` ↔ `apps/api` : variables, contrat `GET /feed`, chemins code, journal de smoke, checklist Dokploy ciblée feed. La **timeline** des phases est dans [README.md](README.md) ; la **cartographie** des docs dans [map-of-content.md](map-of-content.md). Les **faits instance** (domaines, `API_URL` interne) : [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md).
 
-**Mise à jour** : 2026-06-04. **Décision** : **Option B** — socle TanStack dans la même livraison que le feed SSR ; home feed client + invalidation livrés (voir *Journal*). **Phase 2 (MVP dépôt)** : Postgres + `GET /feed` réel, `POST /help-requests`, JWT + BFF auth, stubs MOC (doublon, Rubberduck) — ADR [0001](adr/0001-authentication-strategy.md). **MVP parcours Bob (dev)** : livré sur `Dev` + Dokploy dev (PR #50–#52) ; validation housekeeping 2026-05-25 — voir [staging-checklist.md](staging-checklist.md). **Parité Rails API (phases 1–2)** : feed/subjects/social livrés côté Fastify — voir [§ Parité Rails](#parité-rails-thp-final--phases-12-api) et doc tâche [phase1](tasks/api-rails-parity-phase1/README.md) / [phase2](tasks/api-rails-parity-phase2/README.md).
+**Mise à jour** : 2026-06-04. **Décision** : **Option B** — socle TanStack dans la même livraison que le feed SSR ; home feed client + invalidation livrés (voir *Journal*). **Phase 2 (MVP dépôt)** : Postgres + `GET /feed` réel, `POST /help-requests`, JWT + BFF auth, stubs MOC (doublon, Rubberduck) — ADR [0001](adr/0001-authentication-strategy.md). **MVP parcours Bob (dev)** : livré sur `Dev` + Dokploy dev (PR #50–#52) ; validation housekeeping 2026-05-25 — voir [staging-checklist.md](staging-checklist.md). **Parité Rails API (phases 1–7)** : alignement progressif `apps/thp-final` → Fastify — hub [api-rails-parity](tasks/api-rails-parity/README.md), [§ Parité Rails](#parité-rails-thp-final--api) ; OpenAPI courant **0.10.0**.
 
 ---
 
@@ -40,6 +40,8 @@ SSR feed, socle Query, merge Dokploy dev, `useQuery` + `invalidateQueries` sur `
 | 2026-05-28 | Code **ADR 0003** | Table `users`, login `{ email, password }` (hash argon2), seed `bob@dev.local` / `alice@dev.local` via `DEV_SEED_PASSWORD` ; fallback `MVP_LOGIN_PASSWORD` dev/CI seulement ; smoke `SMOKE_LOGIN_EMAIL` + `SMOKE_LOGIN_PASSWORD`. Ops staging : retirer `MVP_LOGIN_PASSWORD` après seed Dokploy. |
 | 2026-05-29 | Dokploy **staging** (ops ADR 0003) | PR #63 + #74 mergées ; `MVP_LOGIN_PASSWORD` retiré ; seed users au boot ; smoke HTTPS complet (`bob@dev.local`, création, détail) ; parcours `/help/new` navigateur OK ; fix crash Swagger (`openapi.yaml` dans image Docker). |
 | 2026-06-04 | Code **API parité Rails P1–P2** | Migrations `0005` / `0006` ; `GET /feed` enrichi (filtres, pagination, widgets) ; `GET /subjects` ; PATCH demande + help-mentor ; likes/bookmarks + `/me/*` + CRUD réponses ; OpenAPI ≥ 0.3.0 ; doc [phase1](tasks/api-rails-parity-phase1/README.md), [phase2](tasks/api-rails-parity-phase2/README.md), [MOC](moc-parcours-utilisateur.md). Smoke `pnpm smoke:dev` inchangé (contrat minimal `items`). |
+| 2026-06-04 | Doc **API parité Rails complète** | Hub [api-rails-parity](tasks/api-rails-parity/README.md) ; phases 3–6 + lots A / 5b / 7 documentés ; index [tasks/README](tasks/README.md), [MOC](moc-parcours-utilisateur.md), [map-of-content](map-of-content.md). |
+| 2026-06-04 | Code **API parité lots A / 5b / 7** (PR #104) | Migration `0011` soft delete ; `DELETE /help-requests/:id` ; `POST /mentor/resources/:id/reject` ; WS `GET /conversations/:id/ws` ; `POST /help-requests/suggest-tags` ; outbox + worker `ai_summary` ; OpenAPI **0.10.0**. |
 
 ---
 
@@ -196,16 +198,33 @@ Le navigateur appelle le **Web** ; les Route Handlers relaient vers `API_URL` (s
 
 ---
 
-## Parité Rails (thp-final) — phases 1–2 API
+## Parité Rails (thp-final) — API (phases 1–7)
 
-Alignement progressif avec la maquette `apps/thp-final` (HTML/Turbo, **pas** Events). Phases 3–6 (auth profils, resources, chat, admin) : dossiers `Docs/tasks/api-rails-parity-phase*`.
+Alignement progressif avec la maquette `apps/thp-final` (HTML/Turbo, **pas** Events). **Hub** : [tasks/api-rails-parity/README.md](tasks/api-rails-parity/README.md). Scope API/agent/types — BFF web à relayer par écran.
 
-| Phase | Focus | Doc tâche |
-|-------|--------|-----------|
-| 1 | Feed enrichi, subjects, CRUD demande, help-mentor | [api-rails-parity-phase1](tasks/api-rails-parity-phase1/README.md) |
-| 2 | Likes, bookmarks, listes `/me`, CRUD réponses | [api-rails-parity-phase2](tasks/api-rails-parity-phase2/README.md) |
+### Phases principales
 
-**Migrations** : `apps/api/drizzle/0005_api_rails_phase1.sql`, `0006_api_rails_phase2_social.sql`. **Routes** : `apps/api/src/routes/{feed,subjects,help-requests,social,me}.ts`. **MOC produit** : [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) (notes Phase 1–2).
+| Phase | OpenAPI | Focus | Doc tâche |
+|-------|---------|--------|-----------|
+| 1 | ≥ 0.3.0 | Feed enrichi, subjects, CRUD demande, help-mentor | [phase1](tasks/api-rails-parity-phase1/README.md) |
+| 2 | ≥ 0.4.0 | Likes, bookmarks, `/me/*`, CRUD réponses | [phase2](tasks/api-rails-parity-phase2/README.md) |
+| 3 | ≥ 0.5.0 | Auth register, profils, CGU | [phase3](tasks/api-rails-parity-phase3/README.md) |
+| 4 | ≥ 0.6.0 | Resources, subject requests, mentor dashboard | [phase4](tasks/api-rails-parity-phase4/README.md) |
+| 5 | ≥ 0.7.0 | Messagerie REST | [phase5](tasks/api-rails-parity-phase5/README.md) |
+| 6 | ≥ 0.8.0 | Admin, modération, denylist | [phase6](tasks/api-rails-parity-phase6/README.md) |
+
+### Lots complémentaires (gaps)
+
+| Lot | OpenAPI | Focus | Doc tâche |
+|-----|---------|--------|-----------|
+| A | 0.8.1 | Soft delete post + reject resource mentor | [api-parity-delete-reject](tasks/api-parity-delete-reject/README.md) |
+| 5b | 0.9.0 | Chat WebSocket temps réel | [phase5b](tasks/api-rails-parity-phase5b/README.md) |
+| 7 | 0.10.0 | Suggest-tags + `ai_summary` (agent + outbox) | [phase7](tasks/api-rails-parity-phase7/README.md) |
+
+**Migrations parité** : `apps/api/drizzle/0005` … `0011_api_soft_delete_help_requests.sql`.  
+**Routes** : `apps/api/src/routes/{feed,subjects,help-requests,social,me,auth,users,legal,resources,subject-requests,mentor,conversations,conversations-ws,suggest-tags,admin}.ts` ; agent `apps/agent/src/{tag-suggest,summary-generate}.ts`.  
+**Env lots 5b/7** : `AGENT_URL`, `AI_SUMMARY_ENABLED` (API) ; `ANTHROPIC_API_KEY` optionnel (agent).  
+**MOC produit** : [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md).
 
 ---
 

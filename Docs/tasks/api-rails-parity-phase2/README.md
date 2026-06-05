@@ -55,4 +55,11 @@ pnpm verify
 
 ## Suite
 
-**Phase 3** (auth & profils) : [api-rails-parity-phase3/README.md](../api-rails-parity-phase3/README.md).
+**Phase 3** (auth & profils) : [api-rails-parity-phase3/README.md](../api-rails-parity-phase3/README.md).  
+Hub : [api-rails-parity/README.md](../api-rails-parity/README.md).
+
+## Fichiers
+
+| Fichier | Rôle |
+|---------|------|
+| `README.md` | Ce fichier |
