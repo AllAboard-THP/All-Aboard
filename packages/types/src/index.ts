@@ -42,6 +42,8 @@ export type HelpRequest = {
   updatedAt?: string;
   /** Masqué du fil public tant que modération en attente. */
   flaggedForModeration?: boolean;
+  /** Soft delete — visible pour l'auteur uniquement. */
+  deletedAt?: string;
 };
 
 export type FeedPagination = {
@@ -551,6 +553,36 @@ export type UpdateAdminSubjectRequestResponse = {
   item: AdminSubjectRequestItem;
 };
 
+export type SuggestTagsBody = {
+  title?: string;
+  body?: string;
+};
+
+export type SuggestTagsResponse = {
+  tags: string[];
+};
+
+/** Corps `POST /tags/suggest` (`apps/agent`, interne). */
+export type AgentTagsSuggestBody = {
+  title?: string;
+  body?: string;
+};
+
+export type AgentTagsSuggestResponse = {
+  tags: string[];
+};
+
+export type AgentSummaryGenerateBody = {
+  title: string;
+  body?: string;
+  codeSnippet?: string;
+  responses?: Array<{ authorName: string; body: string }>;
+};
+
+export type AgentSummaryGenerateResponse = {
+  summary: string;
+};
+
 /** Corps `POST /routing/evaluate` (`apps/agent`, interne). */
 export type AgentRoutingEvaluateBody = {
   title: string;
@@ -572,6 +604,10 @@ export type HelpRequestCreatedOutboxPayload = {
   tags?: string[];
 };
 
+export type HelpRequestSummaryRequestedOutboxPayload = {
+  id: string;
+};
+
 /** Événements outbox Postgres — évolution Phase 4 (ADR 0004). */
 export type OutboxEvent =
   | {
@@ -581,4 +617,8 @@ export type OutboxEvent =
   | {
       type: "help_request.rubberduck_handoff";
       payload: { id: string; title: string };
+    }
+  | {
+      type: "help_request.summary_requested";
+      payload: HelpRequestSummaryRequestedOutboxPayload;
     };

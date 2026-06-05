@@ -19,17 +19,21 @@ import { registerHelpRequestRoutes } from "./routes/help-requests.js";
 import { registerLegalRoutes } from "./routes/legal.js";
 import { registerMeRoutes } from "./routes/me.js";
 import { registerConversationRoutes } from "./routes/conversations.js";
+import { registerConversationWsRoutes } from "./routes/conversations-ws.js";
 import { registerMentorRoutes } from "./routes/mentor.js";
 import { registerResourceRoutes } from "./routes/resources.js";
 import { registerSocialRoutes } from "./routes/social.js";
 import { registerSubjectRequestRoutes } from "./routes/subject-requests.js";
 import { registerSubjectRoutes } from "./routes/subjects.js";
+import { registerSuggestTagsRoutes } from "./routes/suggest-tags.js";
 import { registerUserRoutes } from "./routes/users.js";
+import type { SuggestTagsFn } from "./agent/tag-suggestion.js";
 
 export type BuildAppOptions = {
   pool?: pg.Pool | null;
   /** Injecté en tests (#68) ; défaut : client HTTP vers `AGENT_URL` + fallback. */
   evaluateRouting?: EvaluateRoutingFn;
+  suggestTags?: SuggestTagsFn;
 };
 
 export async function buildApp(options?: BuildAppOptions) {
@@ -38,6 +42,7 @@ export async function buildApp(options?: BuildAppOptions) {
   const db: AppDatabase | null = pool ? createDb(pool) : null;
   const evaluateRouting =
     options?.evaluateRouting ?? createAgentRoutingEvaluator();
+  const suggestTags = options?.suggestTags;
 
   const app = Fastify({ logger: false });
 
@@ -76,6 +81,7 @@ export async function buildApp(options?: BuildAppOptions) {
   registerFeedRoutes(app, db);
   registerSubjectRoutes(app, db);
   registerHelpRequestRoutes(app, db, evaluateRouting);
+  registerSuggestTagsRoutes(app, db, suggestTags);
   registerSocialRoutes(app, db);
   registerMeRoutes(app, db);
   registerAuthRoutes(app, db);
@@ -85,6 +91,7 @@ export async function buildApp(options?: BuildAppOptions) {
   registerSubjectRequestRoutes(app, db);
   registerMentorRoutes(app, db);
   registerConversationRoutes(app, db);
+  await registerConversationWsRoutes(app, db);
   registerAdminRoutes(app, db);
 
   return app;

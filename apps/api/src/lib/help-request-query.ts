@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import type { HelpRequest } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import { bookmarks, helpRequests, subjects } from "../db/schema.js";
@@ -50,7 +50,9 @@ export async function fetchBookmarkedHelpRequests(
     .from(bookmarks)
     .innerJoin(helpRequests, eq(bookmarks.helpRequestId, helpRequests.id))
     .leftJoin(subjects, eq(helpRequests.subjectId, subjects.id))
-    .where(eq(bookmarks.userId, userId))
+    .where(
+      and(eq(bookmarks.userId, userId), isNull(helpRequests.deletedAt)),
+    )
     .orderBy(desc(bookmarks.createdAt))
     .limit(limit);
   return rows.map(({ helpRequest, subject }) =>
