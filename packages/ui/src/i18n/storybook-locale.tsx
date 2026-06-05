@@ -50,6 +50,8 @@ import {
 import {
   legacyFeedThreadComments,
   legacyFeedThreadCommentsEn,
+  legacyFeedThreadCommentsSecondary,
+  legacyFeedThreadCommentsSecondaryEn,
   type LegacyFeedComment,
 } from "../patterns/fixtures/legacy-feed-thread";
 import {
@@ -70,6 +72,8 @@ import {
 import {
   postCardFixtureEn,
   postCardFixtureFr,
+  postCardFixtureSecondaryEn,
+  postCardFixtureSecondaryFr,
   postCardLabelsEn,
   postCardLabelsFr,
   type PostCardFixture,
@@ -132,6 +136,15 @@ export function usePostCardFixture(): PostCardFixture {
   const locale = useStorybookLocale();
   return useMemo(
     () => (locale === "en" ? postCardFixtureEn : postCardFixtureFr),
+    [locale],
+  );
+}
+
+export function usePostCardSecondaryFixture(): PostCardFixture {
+  const locale = useStorybookLocale();
+  return useMemo(
+    () =>
+      locale === "en" ? postCardFixtureSecondaryEn : postCardFixtureSecondaryFr,
     [locale],
   );
 }
@@ -212,6 +225,17 @@ export function useLegacyFeedThreadComments(): LegacyFeedComment[] {
   return useMemo(
     () =>
       locale === "en" ? legacyFeedThreadCommentsEn : legacyFeedThreadComments,
+    [locale],
+  );
+}
+
+export function useLegacyFeedThreadCommentsSecondary(): LegacyFeedComment[] {
+  const locale = useStorybookLocale();
+  return useMemo(
+    () =>
+      locale === "en"
+        ? legacyFeedThreadCommentsSecondaryEn
+        : legacyFeedThreadCommentsSecondary,
     [locale],
   );
 }

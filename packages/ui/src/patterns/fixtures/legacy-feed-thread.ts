@@ -43,6 +43,40 @@ export const legacyFeedThreadComments: LegacyFeedComment[] = [
   },
 ];
 
+export const legacyFeedThreadCommentsSecondary: LegacyFeedComment[] = [
+  {
+    id: "1",
+    authorName: "Léa M.",
+    authorInitials: "LM",
+    timeAgo: "il y a 3 h",
+    body: "La closure « capture » count : chaque appel à inner() lit la même variable, même après le return de outer().",
+  },
+  {
+    id: "2",
+    authorName: "Hugo D.",
+    authorInitials: "HD",
+    timeAgo: "il y a 2 h",
+    body: "Teste avec const counter = outer(); puis counter() plusieurs fois — tu verras count s'incrémenter.",
+  },
+];
+
+export const legacyFeedThreadCommentsSecondaryEn: LegacyFeedComment[] = [
+  {
+    id: "1",
+    authorName: "Léa M.",
+    authorInitials: "LM",
+    timeAgo: "3 h ago",
+    body: "The closure \"captures\" count: each inner() call reads the same variable, even after outer returns.",
+  },
+  {
+    id: "2",
+    authorName: "Hugo D.",
+    authorInitials: "HD",
+    timeAgo: "2 h ago",
+    body: "Try const counter = outer(); then call counter() a few times — you'll see count increment.",
+  },
+];
+
 export const legacyFeedThreadCommentsEn: LegacyFeedComment[] = [
   {
     id: "1",

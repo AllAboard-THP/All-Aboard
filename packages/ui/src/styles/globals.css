@@ -208,8 +208,8 @@
     border: 1px solid rgb(255 255 255 / 0.08);
   }
 
-  /** Landing login card — lighter glass than .hero-panel + .glass; −4% saturation. */
-  .landing-login-card {
+  /** Shared landing/feed glass — lighter than .glass; −4% saturation; subtle hover like login card. */
+  .landing-glass-card {
     background:
       linear-gradient(160deg, rgb(99 102 241 / 0.09), rgb(15 23 42 / 0.08)),
       rgb(30 41 59 / 0.46);
@@ -223,18 +223,178 @@
       transform 200ms ease-out;
   }
 
-  .landing-login-card:hover {
+  .landing-glass-card:hover {
     filter: saturate(96%) brightness(1.1);
     transform: scale(1.008);
   }
 
+  /** Feed side rails — slightly darker glass for readable copy on illustrated stage. */
+  .feed-stage-glass-card {
+    background:
+      linear-gradient(160deg, rgb(99 102 241 / 0.08), rgb(15 23 42 / 0.14)),
+      rgb(15 23 42 / 0.54);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgb(255 255 255 / 0.07);
+    filter: saturate(98%);
+    transform: scale(1);
+    transform-origin: center;
+    transition:
+      filter 200ms ease-out,
+      transform 200ms ease-out;
+  }
+
+  .feed-stage-glass-card:hover {
+    filter: saturate(98%) brightness(1.05);
+    transform: scale(1.006);
+  }
+
+  /** Feed post cards — a touch darker than rails (code blocks, long copy). */
+  .feed-post-glass-card {
+    background:
+      linear-gradient(160deg, rgb(99 102 241 / 0.07), rgb(15 23 42 / 0.16)),
+      rgb(15 23 42 / 0.6);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgb(255 255 255 / 0.08);
+    filter: saturate(96%);
+    transform: scale(1);
+    transform-origin: center;
+    transition:
+      filter 200ms ease-out,
+      transform 200ms ease-out;
+  }
+
+  .feed-post-glass-card:hover {
+    filter: saturate(96%) brightness(1.05);
+    transform: scale(1.008);
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .landing-login-card {
+    .landing-glass-card {
       transition: none;
     }
 
-    .landing-login-card:hover {
+    .landing-glass-card:hover {
       transform: scale(1);
+    }
+
+    .feed-stage-glass-card {
+      transition: none;
+    }
+
+    .feed-stage-glass-card:hover {
+      transform: scale(1);
+    }
+
+    .feed-post-glass-card {
+      transition: none;
+    }
+
+    .feed-post-glass-card:hover {
+      transform: scale(1);
+    }
+  }
+
+  /** Unified feed post card — collapsible thread + reply footer. */
+  .feed-thread-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 200ms ease-out,
+      opacity 200ms ease-out;
+  }
+
+  .feed-thread-panel--open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .feed-thread-panel__inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .feed-thread-panel--open .feed-comment-item {
+    animation: feed-comment-in 220ms ease-out backwards;
+  }
+
+  .feed-thread-panel--open .feed-comment-item:nth-child(1) {
+    animation-delay: 0ms;
+  }
+
+  .feed-thread-panel--open .feed-comment-item:nth-child(2) {
+    animation-delay: 50ms;
+  }
+
+  .feed-thread-panel--open .feed-comment-item:nth-child(3) {
+    animation-delay: 100ms;
+  }
+
+  .feed-thread-panel--open .feed-comment-item:nth-child(4) {
+    animation-delay: 150ms;
+  }
+
+  .feed-thread-panel--open .feed-comment-item:nth-child(5) {
+    animation-delay: 200ms;
+  }
+
+  .feed-thread-panel--open .feed-comment-item:nth-child(n + 6) {
+    animation-delay: 250ms;
+  }
+
+  @keyframes feed-comment-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.35rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .feed-comment-item--new {
+    animation: feed-comment-new 280ms ease-out;
+  }
+
+  @keyframes feed-comment-new {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .feed-reply-footer {
+    animation: feed-reply-in 200ms ease-out;
+  }
+
+  @keyframes feed-reply-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.35rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .feed-thread-panel {
+      transition: none;
+    }
+
+    .feed-thread-panel--open .feed-comment-item,
+    .feed-comment-item--new,
+    .feed-reply-footer {
+      animation: none;
     }
   }
 
@@ -283,8 +443,9 @@
     outline: none;
   }
 
-  /** Landing hero copy — subtle hover zoom, no outer glow. */
+  /** Landing hero copy — subtle hover zoom, no outer glow; arrow cursor (not text I-beam). */
   .landing-hero-hover-zoom {
+    cursor: default;
     transform: scale(1);
     transform-origin: left center;
     transition: transform 200ms ease-out;

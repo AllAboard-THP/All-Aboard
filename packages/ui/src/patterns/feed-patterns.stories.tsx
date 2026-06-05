@@ -1,8 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { useLegacyLabels, usePostCardLabels } from "../i18n/storybook-locale";
+import {
+  useLegacyFeedThreadComments,
+  useLegacyLabels,
+  usePostCardFixture,
+  usePostCardLabels,
+} from "../i18n/storybook-locale";
 import {
   CommentCard,
+  FeedPostWithThread,
   FeedSearchCard,
   FeedSidebarContributions,
   FeedSidebarRecentEmpty,
@@ -60,6 +66,37 @@ function QuickReplyStory() {
     </div>
   );
 }
+
+function FeedPostThreadStory({ defaultThreadOpen = false }: { defaultThreadOpen?: boolean }) {
+  const labels = useLegacyLabels();
+  const postLabels = usePostCardLabels();
+  const fixture = usePostCardFixture();
+  const comments = useLegacyFeedThreadComments();
+
+  return (
+    <div className="w-full max-w-2xl">
+      <FeedPostWithThread
+        fixture={fixture}
+        postLabels={postLabels}
+        labels={labels}
+        initialComments={comments}
+        defaultThreadOpen={defaultThreadOpen}
+      />
+    </div>
+  );
+}
+
+export const FeedPostThreadClosed: Story = {
+  name: "FeedPostThread/Closed",
+  decorators: [withPatternStoryFrame()],
+  render: () => <FeedPostThreadStory />,
+};
+
+export const FeedPostThreadOpen: Story = {
+  name: "FeedPostThread/Open",
+  decorators: [withPatternStoryFrame()],
+  render: () => <FeedPostThreadStory defaultThreadOpen />,
+};
 
 export const CommentCardDefault: Story = {
   name: "CommentCard",

@@ -26,6 +26,8 @@ import {
   useLegacyResources,
   usePostCardFixture,
   usePostCardLabels,
+  usePostCardSecondaryFixture,
+  useLegacyFeedThreadCommentsSecondary,
 } from "../../i18n/storybook-locale";
 import {
   AdminModerationQueue,
@@ -92,6 +94,11 @@ import {
 } from "../legacy-resource-patterns";
 import { SubjectRequestModal } from "../legacy-modal-patterns";
 import { AppChrome } from "../pattern-app-chrome";
+import {
+  FEED_CENTER_COLUMN_CLASS,
+  FEED_SIDE_RAIL_COLUMN_CLASS,
+  FEED_THREE_COLUMN_GRID_CLASS,
+} from "../feed-concept-background";
 import { legacyDemoToast } from "../legacy-story-feedback";
 import { GraduationCap } from "lucide-react";
 
@@ -463,26 +470,31 @@ export function FeedThreeColumnScreen({ mobileChrome = false }: { mobileChrome?:
   const labels = useLegacyLabels();
   const postLabels = usePostCardLabels();
   const fixture = usePostCardFixture();
+  const secondaryFixture = usePostCardSecondaryFixture();
   const threadComments = useLegacyFeedThreadComments();
+  const secondaryThreadComments = useLegacyFeedThreadCommentsSecondary();
   const [recentlyViewed, setRecentlyViewed] = useState<LegacyRecentlyViewedPost[]>([]);
   const isEn = labels.nav.feed === "Home";
 
-  const markMainPostViewed = useCallback(() => {
-    setRecentlyViewed((current) => {
-      const entry: LegacyRecentlyViewedPost = {
-        id: "feed-main-post",
-        title: fixture.title,
-        subjectName: fixture.subjectName,
-        accentColor: "#EAB308",
-        timeAgo: isEn ? "just now" : "à l'instant",
-      };
+  const markPostViewed = useCallback(
+    (id: string, title: string, subjectName: string, accentColor: string) => {
+      setRecentlyViewed((current) => {
+        const entry: LegacyRecentlyViewedPost = {
+          id,
+          title,
+          subjectName,
+          accentColor,
+          timeAgo: isEn ? "just now" : "à l'instant",
+        };
 
-      return [
-        entry,
-        ...current.filter((item) => item.id !== entry.id),
-      ].slice(0, 4);
-    });
-  }, [fixture.subjectName, fixture.title, isEn]);
+        return [
+          entry,
+          ...current.filter((item) => item.id !== entry.id),
+        ].slice(0, 4);
+      });
+    },
+    [isEn],
+  );
 
   const handleRecentItemClick = (id: string) => {
     const item = recentlyViewed.find((entry) => entry.id === id);
@@ -517,33 +529,61 @@ export function FeedThreeColumnScreen({ mobileChrome = false }: { mobileChrome?:
   };
 
   return (
-    <AppChrome activeLink="feed" messageCount={2} mobileChrome={mobileChrome}>
-      <div className="grid grid-cols-1 items-start gap-6 pb-24 lg:grid-cols-12 lg:pb-8">
-        <div className="hidden space-y-6 lg:col-span-3 lg:block">
-          <FeedSidebarRecentViewed
-            items={recentlyViewed}
-            labels={labels}
-            onItemClick={handleRecentItemClick}
-          />
-          <FeedSidebarUnanswered
-            labels={labels}
-            onItemClick={handleUnansweredClick}
-          />
-        </div>
+    <AppChrome
+      activeLink="feed"
+      messageCount={2}
+      mobileChrome={mobileChrome}
+      mainInnerLayout="feed"
+    >
+      <div className="relative pb-24 lg:pb-8">
+        <div className={FEED_THREE_COLUMN_GRID_CLASS}>
+          <div className={FEED_SIDE_RAIL_COLUMN_CLASS}>
+            <FeedSidebarRecentViewed
+              items={recentlyViewed}
+              labels={labels}
+              onItemClick={handleRecentItemClick}
+            />
+            <FeedSidebarUnanswered
+              labels={labels}
+              onItemClick={handleUnansweredClick}
+            />
+          </div>
 
-        <div className="col-span-1 space-y-6 lg:col-span-6">
-          <FeedPostWithThread
-            fixture={fixture}
-            postLabels={postLabels}
-            labels={labels}
-            initialComments={threadComments}
-            onPostEngage={markMainPostViewed}
-          />
-        </div>
+          <div className={FEED_CENTER_COLUMN_CLASS}>
+            <FeedPostWithThread
+              fixture={fixture}
+              postLabels={postLabels}
+              labels={labels}
+              initialComments={threadComments}
+              onPostEngage={() =>
+                markPostViewed(
+                  "feed-main-post",
+                  fixture.title,
+                  fixture.subjectName,
+                  "#EAB308",
+                )
+              }
+            />
+            <FeedPostWithThread
+              fixture={secondaryFixture}
+              postLabels={postLabels}
+              labels={labels}
+              initialComments={secondaryThreadComments}
+              onPostEngage={() =>
+                markPostViewed(
+                  "feed-secondary-post",
+                  secondaryFixture.title,
+                  secondaryFixture.subjectName,
+                  "#EAB308",
+                )
+              }
+            />
+          </div>
 
-        <div className="hidden space-y-6 lg:col-span-3 lg:block">
-          <FeedSearchCard labels={labels} />
-          <FeedSidebarContributions labels={labels} />
+          <div className={FEED_SIDE_RAIL_COLUMN_CLASS}>
+            <FeedSearchCard labels={labels} />
+            <FeedSidebarContributions labels={labels} />
+          </div>
         </div>
       </div>
 

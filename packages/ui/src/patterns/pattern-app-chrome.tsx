@@ -9,9 +9,12 @@ import {
   MobileBottomNav,
   type MobileNavLink,
 } from "./legacy-mobile-patterns";
+import { FeedConceptBackground } from "./feed-concept-background";
 import {
   APP_CHROME_FOOTER_CLASS,
   APP_CHROME_FOOTER_SHELL_CLASS,
+  APP_CHROME_FEED_INNER_CLASS,
+  APP_CHROME_FEED_MAIN_CLASS,
   APP_CHROME_MAIN_CLASS,
   APP_CHROME_MAIN_INNER_CLASS,
 } from "./landing-layout";
@@ -40,8 +43,11 @@ export function AppChrome({
   mobileChrome = false,
   showMentorDot = false,
   userInitials = "AA",
+  mainInnerLayout = "contained",
 }: {
   children: ReactNode;
+  /** `feed` uses full-width inner track for tri-band background alignment. */
+  mainInnerLayout?: "contained" | "feed";
   activeLink?: LegacyNavLink;
   showNav?: boolean;
   showFooter?: boolean;
@@ -68,8 +74,17 @@ export function AppChrome({
         showMainNav={showNav}
         showUserMenu={showNav}
       />
-      <main className={cnMainClass(mobileChrome)}>
-        <div className={APP_CHROME_MAIN_INNER_CLASS}>{children}</div>
+      {mainInnerLayout === "feed" ? <FeedConceptBackground /> : null}
+      <main className={cnMainClass(mobileChrome, mainInnerLayout)}>
+        <div
+          className={
+            mainInnerLayout === "feed"
+              ? APP_CHROME_FEED_INNER_CLASS
+              : APP_CHROME_MAIN_INNER_CLASS
+          }
+        >
+          {children}
+        </div>
       </main>
       {showFooter ? (
         <AppFooter
@@ -94,10 +109,16 @@ export function AppChrome({
   );
 }
 
-function cnMainClass(mobileChrome: boolean) {
+function cnMainClass(
+  mobileChrome: boolean,
+  mainInnerLayout: "contained" | "feed",
+) {
+  const mainClass =
+    mainInnerLayout === "feed" ? APP_CHROME_FEED_MAIN_CLASS : APP_CHROME_MAIN_CLASS;
+
   return mobileChrome
-    ? cn(APP_CHROME_MAIN_CLASS, "pb-24 md:pb-8")
-    : cn(APP_CHROME_MAIN_CLASS, "pb-8");
+    ? cn(mainClass, "relative z-10 pb-24 md:pb-8")
+    : cn(mainClass, "relative z-10 pb-8");
 }
 
 function AppChromeStoryWrapper({

@@ -43,14 +43,9 @@ function LegacyPostCardStory(props: {
         icon: javascriptIcon,
       }}
       hashtags={fixture.hashtags}
-      urgent
-      code={{
-        language: "javascript",
-        snippet: `useEffect(() => {
-  fetchData();
-}, [data]); ${fixture.codeComment}`,
-      }}
-      likesCount={3}
+      urgent={fixture.urgent}
+      code={fixture.code}
+      likesCount={fixture.likesCount ?? 0}
       commentsCount={3}
       showActionsMenu
       canEdit
@@ -100,11 +95,14 @@ function CodeBlockStory() {
   return (
     <div className="w-full max-w-2xl">
       <PostCardCodeBlock
-        language="javascript"
+        language={fixture.code?.language ?? "javascript"}
         copyLabel={labels.copy}
-        snippet={`useEffect(() => {
+        snippet={
+          fixture.code?.snippet ??
+          `useEffect(() => {
   fetchData();
-}, [data]); ${fixture.codeComment}`}
+}, [data]);`
+        }
       />
     </div>
   );

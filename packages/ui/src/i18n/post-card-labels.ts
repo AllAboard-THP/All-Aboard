@@ -41,7 +41,9 @@ export type PostCardFixture = {
   body: string;
   subjectName: string;
   hashtags: string[];
-  codeComment: string;
+  code?: { language: string; snippet: string };
+  urgent?: boolean;
+  likesCount?: number;
 };
 
 export const postCardFixtureFr: PostCardFixture = {
@@ -53,7 +55,36 @@ export const postCardFixtureFr: PostCardFixture = {
   body: "Mon composant re-render en boucle à cause de useEffect. Je comprends pas pourquoi mon state se met à jour sans arrêt alors que je n'ai rien changé dans les dépendances.",
   subjectName: "JavaScript",
   hashtags: ["React", "Hooks", "useEffect"],
-  codeComment: "// data change à chaque render !",
+  urgent: true,
+  likesCount: 3,
+  code: {
+    language: "javascript",
+    snippet: `useEffect(() => {
+  fetchData();
+}, [data]); // data change à chaque render !`,
+  },
+};
+
+export const postCardFixtureSecondaryFr: PostCardFixture = {
+  authorName: "Théo N.",
+  authorInitials: "TN",
+  postedAt: "17/05/2026",
+  educationLevel: "Licence Info",
+  title: "Comprendre les closures en JavaScript",
+  body: "Je bloque sur le fait qu'une fonction « se souvienne » de variables définies ailleurs. Quelqu'un peut m'expliquer avec un exemple concret ?",
+  subjectName: "JavaScript",
+  hashtags: ["Fonctions", "Scope", "Closure"],
+  likesCount: 1,
+  code: {
+    language: "javascript",
+    snippet: `function outer() {
+  let count = 0;
+  return function inner() {
+    count++;
+    return count;
+  };
+}`,
+  },
 };
 
 export const postCardFixtureEn: PostCardFixture = {
@@ -65,5 +96,34 @@ export const postCardFixtureEn: PostCardFixture = {
   body: "My component re-renders in a loop because of useEffect. I don't understand why my state keeps updating even though I didn't change the dependencies.",
   subjectName: "JavaScript",
   hashtags: ["React", "Hooks", "useEffect"],
-  codeComment: "// data changes on every render!",
+  urgent: true,
+  likesCount: 3,
+  code: {
+    language: "javascript",
+    snippet: `useEffect(() => {
+  fetchData();
+}, [data]); // data changes on every render!`,
+  },
+};
+
+export const postCardFixtureSecondaryEn: PostCardFixture = {
+  authorName: "Théo N.",
+  authorInitials: "TN",
+  postedAt: "05/17/2026",
+  educationLevel: "CS undergrad",
+  title: "Understanding closures in JavaScript",
+  body: "I'm stuck on how a function can \"remember\" variables from elsewhere. Can someone explain with a concrete example?",
+  subjectName: "JavaScript",
+  hashtags: ["Functions", "Scope", "Closure"],
+  likesCount: 1,
+  code: {
+    language: "javascript",
+    snippet: `function outer() {
+  let count = 0;
+  return function inner() {
+    count++;
+    return count;
+  };
+}`,
+  },
 };

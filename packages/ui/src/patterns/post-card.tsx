@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import {
   Bookmark,
+  ChevronDown,
   Copy,
   Ellipsis,
   Heart,
@@ -25,6 +26,7 @@ import {
   type PostCardLabels,
 } from "../i18n/post-card-labels";
 import { cn } from "@allaboard/ui/lib/utils";
+import { LANDING_GLASS_CARD_CLASS } from "./landing-layout";
 import { legacyDemoToast } from "./legacy-story-feedback";
 
 export type { PostCardLabels } from "../i18n/post-card-labels";
@@ -61,8 +63,11 @@ export type PostCardProps = {
   canDelete?: boolean;
   showPrivateMessage?: boolean;
   labels?: PostCardLabels;
+  glassVariant?: "default" | "landing";
   className?: string;
   repliesExpanded?: boolean;
+  /** ID of the collapsible thread panel (for aria-controls). */
+  repliesPanelId?: string;
   onRepliesClick?: () => void;
   onTitleClick?: () => void;
   onHashtagClick?: (tag: string) => void;
@@ -165,7 +170,7 @@ export function PostCardActionsMenu({
   );
 }
 
-export function PostCard({
+export function PostCardBody({
   authorName,
   authorAvatarUrl,
   authorInitials,
@@ -188,11 +193,12 @@ export function PostCard({
   labels = postCardLabelsFr,
   className,
   repliesExpanded = false,
+  repliesPanelId,
   onRepliesClick,
   onTitleClick,
   onHashtagClick,
   onSubjectClick,
-}: PostCardProps) {
+}: Omit<PostCardProps, "glassVariant">) {
   const [isLiked, setIsLiked] = useState(liked);
   const [isBookmarked, setIsBookmarked] = useState(bookmarked);
   const [likes, setLikes] = useState(likesCount);
@@ -219,10 +225,7 @@ export function PostCard({
       .toUpperCase();
 
   return (
-    <article
-      className={cn("glass w-full max-w-2xl rounded-2xl text-left shadow-sm", className)}
-    >
-      <div className="p-6">
+    <div className={cn("p-6", className)}>
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <Avatar className="size-12 border-2 border-primary/30">
@@ -235,7 +238,7 @@ export function PostCard({
             </Avatar>
             <div className="flex flex-col gap-0.5">
               <span className="font-semibold text-foreground">{authorName}</span>
-              <span className="text-xs text-muted-foreground">
+              <span className="feed-post-meta text-xs text-muted-foreground">
                 {postedAt} • {educationLevel}
               </span>
             </div>
@@ -262,7 +265,9 @@ export function PostCard({
             title
           )}
         </h3>
-        <p className="mb-4 text-sm leading-relaxed text-muted-foreground">{body}</p>
+        <p className="feed-post-readable mb-4 text-sm leading-relaxed text-muted-foreground">
+          {body}
+        </p>
 
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {onSubjectClick ? (
@@ -310,7 +315,7 @@ export function PostCard({
           />
         ) : null}
 
-        <div className="flex items-center justify-between border-t border-white/10 pt-4">
+        <div className="flex items-center justify-between pt-4">
           <div className="flex items-center gap-4 sm:gap-6">
             <button
               type="button"
@@ -340,10 +345,19 @@ export function PostCard({
                     ? "text-primary"
                     : "text-muted-foreground hover:text-primary",
                 )}
+                aria-expanded={repliesExpanded}
+                aria-controls={repliesPanelId}
                 onClick={onRepliesClick}
               >
-                <MessageCircle className="size-5" />
+                <MessageCircle className="size-5 shrink-0" />
                 <span>{labels.replies(commentsCount)}</span>
+                <ChevronDown
+                  className={cn(
+                    "size-4 shrink-0 transition-transform duration-200",
+                    repliesExpanded && "rotate-180",
+                  )}
+                  aria-hidden
+                />
               </button>
             ) : (
               <span className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -376,7 +390,24 @@ export function PostCard({
             </button>
           ) : null}
         </div>
-      </div>
+    </div>
+  );
+}
+
+export function PostCard({
+  glassVariant = "default",
+  className,
+  ...bodyProps
+}: PostCardProps) {
+  return (
+    <article
+      className={cn(
+        glassVariant === "landing" ? LANDING_GLASS_CARD_CLASS : "glass",
+        "w-full max-w-2xl rounded-2xl text-left shadow-sm",
+        className,
+      )}
+    >
+      <PostCardBody {...bodyProps} />
     </article>
   );
 }

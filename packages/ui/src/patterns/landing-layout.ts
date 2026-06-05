@@ -23,13 +23,25 @@ export const APP_CHROME_HEADER_ROW_CLASS =
 export const APP_CHROME_FOOTER_ROW_CLASS =
   `flex w-full flex-col items-center justify-between gap-4 md:flex-row ${LANDING_EDGE_PADDING_CLASS}`;
 
-/** Offset below fixed header (logo + tagline). */
+/** Offset below fixed header (logo + tagline) — landing hero / shell. */
 export const LANDING_HEADER_OFFSET_CLASS = "pt-[4.75rem] sm:pt-20";
 
+/** In-app main — header clearance + extra gap before body cards (feed, resources, …). */
+export const APP_CHROME_MAIN_OFFSET_CLASS = "pt-[6rem] sm:pt-24";
+
 /** Main landmark below fixed header (edge padding + optional inner max width). */
-export const APP_CHROME_MAIN_CLASS = `flex-1 w-full ${LANDING_HEADER_OFFSET_CLASS} ${LANDING_EDGE_PADDING_CLASS}`;
+export const APP_CHROME_MAIN_CLASS = `flex-1 w-full ${APP_CHROME_MAIN_OFFSET_CLASS} ${LANDING_EDGE_PADDING_CLASS}`;
+
+/** Feed main — symmetric horizontal gutters (header/footer keep landing edge padding). */
+export const APP_CHROME_FEED_EDGE_PADDING_CLASS =
+  "w-full px-4 sm:px-6 lg:px-8 xl:px-12";
+
+export const APP_CHROME_FEED_MAIN_CLASS = `flex-1 w-full ${APP_CHROME_MAIN_OFFSET_CLASS} ${APP_CHROME_FEED_EDGE_PADDING_CLASS}`;
 
 export const APP_CHROME_MAIN_INNER_CLASS = "mx-auto w-full max-w-7xl";
+
+/** Feed three-column — full content width so rails align with tri-band background. */
+export const APP_CHROME_FEED_INNER_CLASS = "mx-auto w-full min-w-0 max-w-[100rem]";
 
 /** Shell footer spacing aligned with landing. */
 export const APP_CHROME_FOOTER_SHELL_CLASS =
@@ -67,9 +79,34 @@ export const LANDING_HERO_HEADING_CLASS =
 export const LANDING_HERO_DESCRIPTION_CLASS =
   `landing-hero-description text-lg leading-relaxed sm:text-xl ${LANDING_HERO_HOVER_ZOOM_CLASS}`;
 
-/** Login card — `.landing-login-card` in globals.css (lighter glass, −4% saturation, subtle hover zoom). */
-export const LANDING_LOGIN_CARD_CLASS = "landing-login-card motion-reduce:transition-none";
+/** Landing + feed glass cards — `.landing-glass-card` (glass, saturation, subtle hover zoom). */
+export const LANDING_GLASS_CARD_CLASS =
+  "landing-glass-card motion-reduce:transition-none";
+
+/** Feed side rails — darker glass for illustrated stage readability. */
+export const FEED_STAGE_GLASS_CARD_CLASS =
+  "feed-stage-glass-card motion-reduce:transition-none";
+
+/** Feed post cards — slightly darker than rails (code + thread). */
+export const FEED_POST_GLASS_CARD_CLASS =
+  "feed-post-glass-card motion-reduce:transition-none";
+
+/** Login card — same glass + hover as feed panels. */
+export const LANDING_LOGIN_CARD_CLASS = LANDING_GLASS_CARD_CLASS;
 
 /** Glass pill fields — `.landing-glass-input` in globals.css (minimal white highlight on hover/focus). */
 export const LANDING_GLASS_INPUT_CLASS =
   "landing-glass-input h-10 rounded-xl sm:h-11 focus-visible:ring-0";
+
+/** Collapsible feed thread inside unified post card — see globals.css `.feed-thread-panel`. */
+export const FEED_POST_THREAD_PANEL_CLASS = "feed-thread-panel";
+
+export const FEED_POST_THREAD_PANEL_OPEN_CLASS = "feed-thread-panel--open";
+
+export const FEED_POST_THREAD_INNER_CLASS = "feed-thread-panel__inner";
+
+export const FEED_COMMENT_ITEM_CLASS = "feed-comment-item";
+
+export const FEED_COMMENT_ITEM_NEW_CLASS = "feed-comment-item--new";
+
+export const FEED_REPLY_FOOTER_CLASS = "feed-reply-footer";

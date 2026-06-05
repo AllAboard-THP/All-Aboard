@@ -8,10 +8,23 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const monorepoRoot = path.join(__dirname, "../..");
 
+const brandingAssets = path.join(monorepoRoot, "Docs/branding/assets");
+
 const nextConfig: NextConfig = {
   transpilePackages: ["@allaboard/ui"],
   output: "standalone",
   outputFileTracingRoot: monorepoRoot,
+  turbopack: {
+    resolveAlias: {
+      "@allaboard/branding-assets": brandingAssets,
+    },
+  },
+  webpack: (config) => {
+    config.resolve ??= {};
+    config.resolve.alias ??= {};
+    config.resolve.alias["@allaboard/branding-assets"] = brandingAssets;
+    return config;
+  },
 };
 
 export default withNextIntl(nextConfig);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import {
   ArrowRight,
   ArrowUp,
@@ -22,7 +22,17 @@ import { cn } from "@allaboard/ui/lib/utils";
 import { legacySubjects } from "./fixtures/legacy-subjects";
 import type { LegacyFeedComment, LegacyRecentlyViewedPost } from "./fixtures/legacy-feed-thread";
 import type { PostCardFixture, PostCardLabels } from "../i18n/post-card-labels";
-import { PostCard, PostCardCodeBlock } from "./post-card";
+import { PostCardBody, PostCardCodeBlock } from "./post-card";
+import {
+  FEED_COMMENT_ITEM_CLASS,
+  FEED_COMMENT_ITEM_NEW_CLASS,
+  FEED_POST_THREAD_INNER_CLASS,
+  FEED_POST_THREAD_PANEL_CLASS,
+  FEED_POST_THREAD_PANEL_OPEN_CLASS,
+  FEED_REPLY_FOOTER_CLASS,
+  FEED_POST_GLASS_CARD_CLASS,
+  FEED_STAGE_GLASS_CARD_CLASS,
+} from "./landing-layout";
 import { legacyDemoToast } from "./legacy-story-feedback";
 
 export function CommentCard({
@@ -48,9 +58,11 @@ export function CommentCard({
       <div className="min-w-0 flex-1">
         <p className="text-sm">
           <span className="font-semibold">{authorName}</span>
-          <span className="ml-2 text-xs text-muted-foreground">{timeAgo}</span>
+          <span className="feed-post-meta ml-2 text-xs text-muted-foreground">
+          {timeAgo}
+        </span>
         </p>
-        <p className="mt-1 text-sm text-muted-foreground">{body}</p>
+        <p className="feed-post-readable mt-1 text-sm text-muted-foreground">{body}</p>
         {code ? (
           <PostCardCodeBlock
             language={code.language}
@@ -129,7 +141,13 @@ export function SidebarPanel({
   className?: string;
 }) {
   return (
-    <div className={cn("glass rounded-2xl p-6", className)}>
+    <div
+      className={cn(
+        FEED_STAGE_GLASS_CARD_CLASS,
+        "w-full min-w-0 rounded-2xl p-6",
+        className,
+      )}
+    >
       <div className="mb-4 flex items-center gap-2">
         <Icon className="size-4 text-primary" />
         <h3 className="font-semibold text-gray-300">{title}</h3>
@@ -357,6 +375,7 @@ export function FeedPostWithThread({
   labels,
   initialComments,
   subjectAccentColor = "#EAB308",
+  defaultThreadOpen = false,
   onPostEngage,
 }: {
   fixture: PostCardFixture;
@@ -364,10 +383,14 @@ export function FeedPostWithThread({
   labels: LegacyLabels;
   initialComments: LegacyFeedComment[];
   subjectAccentColor?: string;
+  /** Storybook / demo — start with thread and reply bar visible. */
+  defaultThreadOpen?: boolean;
   onPostEngage?: () => void;
 }) {
-  const [threadOpen, setThreadOpen] = useState(false);
+  const threadPanelId = useId();
+  const [threadOpen, setThreadOpen] = useState(defaultThreadOpen);
   const [comments, setComments] = useState(initialComments);
+  const [newCommentId, setNewCommentId] = useState<string | null>(null);
 
   useEffect(() => {
     setComments(initialComments);
@@ -385,23 +408,32 @@ export function FeedPostWithThread({
 
   const handleReply = (body: string) => {
     const isEn = labels.nav.feed === "Home";
-    setComments((current) => [
-      ...current,
-      {
-        id: `local-${current.length + 1}`,
-        authorName: isEn ? "You" : "Vous",
-        authorInitials: isEn ? "YO" : "VO",
-        timeAgo: isEn ? "just now" : "à l'instant",
-        body,
-      },
-    ]);
+    setComments((current) => {
+      const id = `local-${current.length + 1}`;
+      setNewCommentId(id);
+      return [
+        ...current,
+        {
+          id,
+          authorName: isEn ? "You" : "Vous",
+          authorInitials: isEn ? "YO" : "VO",
+          timeAgo: isEn ? "just now" : "à l'instant",
+          body,
+        },
+      ];
+    });
     setThreadOpen(true);
     onPostEngage?.();
   };
 
   return (
-    <div className="space-y-6">
-      <PostCard
+    <article
+      className={cn(
+        FEED_POST_GLASS_CARD_CLASS,
+        "w-full rounded-2xl text-left shadow-sm",
+      )}
+    >
+      <PostCardBody
         authorName={fixture.authorName}
         authorInitials={fixture.authorInitials}
         postedAt={fixture.postedAt}
@@ -414,18 +446,14 @@ export function FeedPostWithThread({
           icon: javascriptSubjectIcon,
         }}
         hashtags={fixture.hashtags}
-        urgent
-        code={{
-          language: "javascript",
-          snippet: `useEffect(() => {
-  fetchData();
-}, [data]); ${fixture.codeComment}`,
-        }}
-        likesCount={3}
+        urgent={fixture.urgent}
+        code={fixture.code}
+        likesCount={fixture.likesCount ?? 0}
         commentsCount={comments.length}
         showActionsMenu
         labels={postLabels}
         repliesExpanded={threadOpen}
+        repliesPanelId={threadPanelId}
         onRepliesClick={toggleThread}
         onTitleClick={() => {
           onPostEngage?.();
@@ -435,28 +463,58 @@ export function FeedPostWithThread({
         onSubjectClick={() => legacyDemoToast(fixture.subjectName)}
       />
 
-      {threadOpen ? (
-        <section className="glass space-y-5 rounded-2xl p-6">
+      <div
+        id={threadPanelId}
+        role="region"
+        aria-label={postLabels.replies(comments.length)}
+        aria-hidden={!threadOpen}
+        className={cn(
+          FEED_POST_THREAD_PANEL_CLASS,
+          threadOpen && FEED_POST_THREAD_PANEL_OPEN_CLASS,
+        )}
+      >
+        <div
+          className={cn(
+            FEED_POST_THREAD_INNER_CLASS,
+            "space-y-5 px-6 pb-0 pt-5",
+          )}
+        >
           {comments.map((comment) => (
-            <CommentCard
+            <div
               key={comment.id}
-              authorName={comment.authorName}
-              authorInitials={comment.authorInitials}
-              timeAgo={comment.timeAgo}
-              body={comment.body}
-              code={comment.code}
-            />
+              className={cn(
+                FEED_COMMENT_ITEM_CLASS,
+                comment.id === newCommentId && FEED_COMMENT_ITEM_NEW_CLASS,
+              )}
+            >
+              <CommentCard
+                authorName={comment.authorName}
+                authorInitials={comment.authorInitials}
+                timeAgo={comment.timeAgo}
+                body={comment.body}
+                code={comment.code}
+              />
+            </div>
           ))}
-        </section>
-      ) : null}
+        </div>
+      </div>
 
-      <QuickReply
-        placeholder={labels.feed.quickReplyPlaceholder}
-        submitLabel={labels.feed.quickReplySubmit}
-        userInitials="AA"
-        onSubmit={handleReply}
-      />
-    </div>
+      {threadOpen ? (
+        <footer
+          className={cn(
+            FEED_REPLY_FOOTER_CLASS,
+            "px-6 py-4",
+          )}
+        >
+          <QuickReply
+            placeholder={labels.feed.quickReplyPlaceholder}
+            submitLabel={labels.feed.quickReplySubmit}
+            userInitials="AA"
+            onSubmit={handleReply}
+          />
+        </footer>
+      ) : null}
+    </article>
   );
 }
 
@@ -489,6 +547,13 @@ export function FeedSidebarUnanswered({
       authorName: "Théo N.",
       authorInitials: "TN",
       timeAgo: "5 h",
+    },
+    {
+      id: "unanswered-3",
+      title: "Différence entre useMemo et useCallback ?",
+      authorName: "Léa M.",
+      authorInitials: "LM",
+      timeAgo: "8 h",
     },
   ];
 
@@ -592,15 +657,41 @@ export function FeedSidebarContributions({
 }) {
   const subject = legacySubjects[1];
 
+  const contributions = [
+    {
+      id: "contrib-1",
+      postTitle: "Problème avec React useEffect et boucle infinie",
+      commentBody: "Essaie de retirer data des deps ou de mémoriser fetchData.",
+      timeAgo: "1 h",
+    },
+    {
+      id: "contrib-2",
+      postTitle: "Comprendre les closures en JavaScript",
+      commentBody: "La closure garde la référence de count au moment de la création.",
+      timeAgo: "3 h",
+    },
+    {
+      id: "contrib-3",
+      postTitle: "Différence entre useMemo et useCallback ?",
+      commentBody: "useMemo mémorise une valeur, useCallback mémorise une fonction.",
+      timeAgo: "6 h",
+    },
+  ];
+
   return (
     <SidebarPanel title={labels.feed.contributionsTitle} icon={MessageCircle}>
-      <ContributionListItem
-        postTitle="Problème avec React useEffect et boucle infinie"
-        commentBody="Essaie de retirer data des deps ou de mémoriser fetchData."
-        subjectName={subject.name}
-        accentColor={subject.accentColor}
-        timeAgo="1 h"
-      />
+      <div className="flex flex-col gap-3">
+        {contributions.map((item) => (
+          <ContributionListItem
+            key={item.id}
+            postTitle={item.postTitle}
+            commentBody={item.commentBody}
+            subjectName={subject.name}
+            accentColor={subject.accentColor}
+            timeAgo={item.timeAgo}
+          />
+        ))}
+      </div>
     </SidebarPanel>
   );
 }
