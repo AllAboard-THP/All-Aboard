@@ -10,7 +10,10 @@ import type {
 import type { AppDatabase } from "../db/client.js";
 import { helpRequests, responses, subjects, users } from "../db/schema.js";
 import type { EvaluateRoutingFn } from "../agent/routing.js";
-import { enqueueHelpRequestCreated } from "../intuition/outbox.js";
+import {
+  enqueueHelpRequestCreated,
+  enqueueHelpRequestSummaryRequested,
+} from "../intuition/outbox.js";
 import {
   getJwtUser,
   isAdminRole,
@@ -114,6 +117,14 @@ export function registerHelpRequestRoutes(
 
       if (
         loaded.helpRequest.flaggedForModeration &&
+        !viewerIsAdmin &&
+        loaded.helpRequest.authorId !== viewerEmail
+      ) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+
+      if (
+        loaded.helpRequest.deletedAt &&
         !viewerIsAdmin &&
         loaded.helpRequest.authorId !== viewerEmail
       ) {
@@ -364,6 +375,14 @@ export function registerHelpRequestRoutes(
         await adjustSubjectPostsCount(db, newSubjectId, 1);
       }
 
+      if (
+        parsed.data.status === "resolved" &&
+        loaded.helpRequest.status !== "resolved" &&
+        !loaded.helpRequest.aiSummary?.trim()
+      ) {
+        await enqueueHelpRequestSummaryRequested(db, id);
+      }
+
       const reloaded = await loadHelpRequestRow(db, id);
       return {
         item: rowToHelpRequest(
@@ -529,6 +548,38 @@ export function registerHelpRequestRoutes(
         return reply.code(500).send({ error: "update_failed" });
       }
       return { item: rowToResponse(updatedRow) };
+    },
+  );
+
+  app.delete(
+    "/help-requests/:id",
+    { preHandler: [app.authenticate] },
+    async (request, reply) => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      const { id } = request.params as { id: string };
+      const user = getJwtUser(request);
+      const loaded = await loadHelpRequestRow(db, id);
+      if (!loaded || loaded.helpRequest.deletedAt) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+      const role = roleFromJwtClaims(user.sub, user.role);
+      const isAuthor = loaded.helpRequest.authorId === user.sub;
+      if (!isAuthor && !isAdminRole(role)) {
+        return reply.code(403).send({ error: "forbidden" });
+      }
+
+      const now = new Date();
+      await db
+        .update(helpRequests)
+        .set({ deletedAt: now, updatedAt: now })
+        .where(eq(helpRequests.id, id));
+
+      await adjustSubjectPostsCount(db, loaded.helpRequest.subjectId, -1);
+
+      void reply.code(204);
+      return;
     },
   );
 

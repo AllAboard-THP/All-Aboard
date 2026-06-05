@@ -46,6 +46,53 @@ describe("agent", () => {
     await app.close();
   });
 
+  it("POST /tags/suggest returns tags for title/body", async () => {
+    const app = await buildApp();
+    const res = await app.inject({
+      method: "POST",
+      url: "/tags/suggest",
+      payload: {
+        title: "React hooks useEffect",
+        body: "mon composant ne se met pas à jour",
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.payload) as { tags: string[] };
+    expect(body.tags.length).toBeGreaterThan(0);
+    expect(body.tags.length).toBeLessThanOrEqual(5);
+    await app.close();
+  });
+
+  it("POST /tags/suggest returns empty tags when input blank", async () => {
+    const app = await buildApp();
+    const res = await app.inject({
+      method: "POST",
+      url: "/tags/suggest",
+      payload: {},
+    });
+    expect(res.statusCode).toBe(200);
+    expect(JSON.parse(res.payload)).toEqual({ tags: [] });
+    await app.close();
+  });
+
+  it("POST /summary/generate returns stub summary", async () => {
+    const app = await buildApp();
+    const res = await app.inject({
+      method: "POST",
+      url: "/summary/generate",
+      payload: {
+        title: "Bug React",
+        body: "Le state ne change pas",
+        responses: [{ authorName: "Alice", body: "Utilise un callback." }],
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.payload) as { summary: string };
+    expect(body.summary).toContain("Problème");
+    expect(body.summary).toContain("Solution");
+    await app.close();
+  });
+
   it("POST /routing/evaluate returns 400 for invalid body", async () => {
     const app = await buildApp();
     const res = await app.inject({

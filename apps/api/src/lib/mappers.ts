@@ -72,6 +72,7 @@ export function rowToHelpRequest(
     item.updatedAt = row.updatedAt.toISOString();
   }
   if (row.flaggedForModeration) item.flaggedForModeration = true;
+  if (row.deletedAt) item.deletedAt = row.deletedAt.toISOString();
 
   return item;
 }

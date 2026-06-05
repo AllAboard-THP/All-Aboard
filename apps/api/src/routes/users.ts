@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import type { FastifyInstance } from "fastify";
 import type {
   PublicUserResponse,
@@ -140,7 +140,13 @@ export function registerUserRoutes(
         })
         .from(helpRequests)
         .leftJoin(subjects, eq(helpRequests.subjectId, subjects.id))
-        .where(eq(helpRequests.authorId, row.email))
+        .where(
+          and(
+            eq(helpRequests.authorId, row.email),
+            isNull(helpRequests.deletedAt),
+            eq(helpRequests.flaggedForModeration, false),
+          ),
+        )
         .orderBy(desc(helpRequests.createdAt))
         .limit(query.limit)
         .offset(query.offset);
