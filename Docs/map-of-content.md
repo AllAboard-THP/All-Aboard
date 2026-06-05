@@ -2,7 +2,7 @@
 
 **Objectif** : une **source canonique** par sujet ; pas de doublon avec le [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3).
 
-**Mise à jour** : 2026-06-04 (API parité Rails phases 1–2 documentées).
+**Mise à jour** : 2026-06-04 (API parité Rails phases 1–7 + lots A / 5b / 7 documentées).
 
 ---
 
@@ -43,8 +43,8 @@ Hors `Docs/` : [AGENTS.md](../AGENTS.md), [.github/PROJECT.md](../.github/PROJEC
 | Design system (`@allaboard/ui`, Storybook, frontières web) | [design-system/README.md](design-system/README.md) | [ADR 0002](adr/0002-design-system-monorepo.md), [AGENTS.md](../AGENTS.md), [tasks/24](tasks/24-design-system-monorepo/), [tasks/25](tasks/25-app-shell-navigation/) |
 | AppShell / navigation web | [design-system/app-shell.md](design-system/app-shell.md) | [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25), [moc-parcours](moc-parcours-utilisateur.md) |
 | Variables déploiement | [matrice](matrice-deploiement-dokploy-coolify.md) | [instance](deploiement-dokploy-instance-allaboard.md) |
-| Parcours produit | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | Notes API parité Rails P1–P2 |
-| API parité Rails (`thp-final` → Fastify, par phase) | [tasks/api-rails-parity-phase1/](tasks/api-rails-parity-phase1/README.md), [phase2](tasks/api-rails-parity-phase2/README.md), phases 3–6 | [plan opérationnel § Parité](plan-mise-en-place-web-api-donnees.md#parité-rails-thp-final--phases-12-api), `apps/thp-final` (référence UX) |
+| Parcours produit | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | Notes API parité Rails phases 1–7 |
+| API parité Rails (`thp-final` → Fastify) | Hub [tasks/api-rails-parity/](tasks/api-rails-parity/README.md) ; phases [1](tasks/api-rails-parity-phase1/README.md)–[7](tasks/api-rails-parity-phase7/README.md), [5b](tasks/api-rails-parity-phase5b/README.md), [lot A](tasks/api-parity-delete-reject/README.md) | [plan opérationnel § Parité](plan-mise-en-place-web-api-donnees.md#parité-rails-thp-final--api), `apps/thp-final` (référence UX) |
 | Vision long terme | [vision/README.md](vision/README.md) | — |
 
 ---
