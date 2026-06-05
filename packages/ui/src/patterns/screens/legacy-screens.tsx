@@ -96,7 +96,8 @@ import { SubjectRequestModal } from "../legacy-modal-patterns";
 import { AppChrome } from "../pattern-app-chrome";
 import {
   FEED_CENTER_COLUMN_CLASS,
-  FEED_SIDE_RAIL_COLUMN_CLASS,
+  FEED_LEFT_RAIL_COLUMN_CLASS,
+  FEED_RIGHT_RAIL_COLUMN_CLASS,
   FEED_THREE_COLUMN_GRID_CLASS,
 } from "../feed-concept-background";
 import { legacyDemoToast } from "../legacy-story-feedback";
@@ -537,7 +538,7 @@ export function FeedThreeColumnScreen({ mobileChrome = false }: { mobileChrome?:
     >
       <div className="relative pb-24 lg:pb-8">
         <div className={FEED_THREE_COLUMN_GRID_CLASS}>
-          <div className={FEED_SIDE_RAIL_COLUMN_CLASS}>
+          <div className={FEED_LEFT_RAIL_COLUMN_CLASS}>
             <FeedSidebarRecentViewed
               items={recentlyViewed}
               labels={labels}
@@ -580,7 +581,7 @@ export function FeedThreeColumnScreen({ mobileChrome = false }: { mobileChrome?:
             />
           </div>
 
-          <div className={FEED_SIDE_RAIL_COLUMN_CLASS}>
+          <div className={FEED_RIGHT_RAIL_COLUMN_CLASS}>
             <FeedSearchCard labels={labels} />
             <FeedSidebarContributions labels={labels} />
           </div>

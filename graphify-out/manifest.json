@@ -805,8 +805,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/legacy-feed-patterns.tsx": {
-    "mtime": 1780631301.8013833,
-    "ast_hash": "72bda308896eff09c9a6b82bd190ca2d",
+    "mtime": 1780631914.4231188,
+    "ast_hash": "d4041ea614fea4dbc89d2d967f3f57f4",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/modal-patterns.stories.tsx": {
@@ -915,8 +915,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/pattern-app-chrome.tsx": {
-    "mtime": 1780631157.9019117,
-    "ast_hash": "ca625ce560d943003b51735f8ab9f163",
+    "mtime": 1780631921.2630935,
+    "ast_hash": "7bfc474ac65836720ea2a23c6a272346",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/app-chrome.stories.tsx": {
@@ -950,8 +950,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-layout.ts": {
-    "mtime": 1780631301.0093863,
-    "ast_hash": "49458d9d74c9a8c5c6223a317153857d",
+    "mtime": 1780631893.9991944,
+    "ast_hash": "9e5f40b78a47e6ebd0e589604988bd9e",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/fixtures/legacy-mentor.ts": {
@@ -1005,8 +1005,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/screens/legacy-screens.tsx": {
-    "mtime": 1780630907.1068377,
-    "ast_hash": "1b3669ad9a4bfb818e93a20363de9ff0",
+    "mtime": 1780631914.6991177,
+    "ast_hash": "48faf4a7b835ddcbcb1ee33a083a8201",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/foundations/catalog.stories.tsx": {
@@ -1640,8 +1640,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/feed-concept-background.tsx": {
-    "mtime": 1780631298.3493962,
-    "ast_hash": "fa4c766b34526bc7793514030074286a",
+    "mtime": 1780631893.9471946,
+    "ast_hash": "bf64182093567714523aa09f3892639f",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-feed-three-column-morning-illustrated.png": {

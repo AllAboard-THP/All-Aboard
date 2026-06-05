@@ -39,14 +39,31 @@ export function FeedConceptBackground({ className }: { className?: string }) {
   );
 }
 
-/** Left/right rail — full-width stacked panels on stage background. */
+/** Left/right rail — centered in outer tri-band lanes (not flush to viewport). */
 export const FEED_SIDE_RAIL_COLUMN_CLASS =
-  "hidden min-w-0 flex-col gap-6 lg:col-span-3 lg:flex lg:w-full lg:gap-7";
+  "hidden min-w-0 flex-col gap-6 lg:flex lg:w-full lg:max-w-[21rem] lg:gap-7 xl:max-w-[23rem]";
 
-/** Center lane — posts fill lane width. */
+/** Left rail — sits in the left band, inset from the edge. */
+export const FEED_LEFT_RAIL_COLUMN_CLASS = cn(
+  FEED_SIDE_RAIL_COLUMN_CLASS,
+  "lg:justify-self-center lg:pl-2 xl:pl-4",
+);
+
+/** Right rail — sits in the right band, inset from the edge. */
+export const FEED_RIGHT_RAIL_COLUMN_CLASS = cn(
+  FEED_SIDE_RAIL_COLUMN_CLASS,
+  "lg:justify-self-center lg:pr-2 xl:pr-4",
+);
+
+/** Rail panel — natural height. */
+export const FEED_SIDE_RAIL_PANEL_CLASS = "flex w-full flex-col";
+
+/** Center lane — moderate width; balanced with side rails. */
 export const FEED_CENTER_COLUMN_CLASS =
-  "col-span-1 flex min-w-0 w-full flex-col items-stretch gap-6 lg:col-span-6 lg:gap-8";
+  "col-span-1 flex min-w-0 w-full max-w-3xl flex-col items-stretch gap-8 justify-self-center lg:max-w-[42rem] lg:gap-10 xl:gap-11";
 
-/** 12-col feed grid — balanced gutters (3 · 6 · 3). */
+/**
+ * Tri-band grid — outer `1fr` lanes + moderate gutters (between tight 3·6·3 and edge-flush).
+ */
 export const FEED_THREE_COLUMN_GRID_CLASS =
-  "relative z-10 grid w-full min-w-0 grid-cols-1 items-start gap-6 lg:grid-cols-12 lg:gap-x-7 lg:gap-y-6";
+  "relative z-10 grid w-full min-w-0 grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,42rem)_minmax(0,1fr)] lg:gap-x-9 lg:gap-y-6 xl:gap-x-12 2xl:gap-x-16";

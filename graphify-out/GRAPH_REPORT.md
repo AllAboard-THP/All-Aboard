@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 2345 nodes · 3915 edges · 176 communities (163 shown, 13 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 120 edges (avg confidence: 0.8)
+- 2345 nodes · 3921 edges · 172 communities (159 shown, 13 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 125 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e869a2d0`
+- Built from commit: `350de4e1`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -165,19 +165,15 @@
 - [[_COMMUNITY_Community 148|Community 148]]
 - [[_COMMUNITY_Community 149|Community 149]]
 - [[_COMMUNITY_Community 150|Community 150]]
-- [[_COMMUNITY_Community 151|Community 151]]
 - [[_COMMUNITY_Community 152|Community 152]]
 - [[_COMMUNITY_Community 153|Community 153]]
 - [[_COMMUNITY_Community 154|Community 154]]
-- [[_COMMUNITY_Community 156|Community 156]]
-- [[_COMMUNITY_Community 157|Community 157]]
-- [[_COMMUNITY_Community 158|Community 158]]
-- [[_COMMUNITY_Community 159|Community 159]]
-- [[_COMMUNITY_Community 164|Community 164]]
-- [[_COMMUNITY_Community 165|Community 165]]
+- [[_COMMUNITY_Community 155|Community 155]]
+- [[_COMMUNITY_Community 160|Community 160]]
+- [[_COMMUNITY_Community 161|Community 161]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `cn()` - 118 edges
+1. `cn()` - 123 edges
 2. `useLegacyLabels()` - 80 edges
 3. `useMvpPatternLabels()` - 34 edges
 4. `getApiBaseUrl()` - 29 edges
@@ -200,7 +196,7 @@
 - `usePathname` --calls--> `LocaleSwitcher()`  [INFERRED]
   tests/app-shell-nav.test.tsx → components/features/locale-switcher.tsx
 
-## Communities (176 total, 13 thin omitted)
+## Communities (172 total, 13 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.02
@@ -211,60 +207,60 @@ Cohesion: 0.07
 Nodes (51): POST(), GET(), GET(), RouteContext, GET(), GET(), RouteContext, FeedPage() (+43 more)
 
 ### Community 2 - "Community 2"
+Cohesion: 0.06
+Nodes (44): AdminUserRow, legacyAdminUsers, legacyAdminUsersEn, LegacyEvent, legacyEvents, legacyEventsEn, LegacyFeedComment, legacyFeedThreadComments (+36 more)
+
+### Community 3 - "Community 3"
 Cohesion: 0.04
 Nodes (53): address, adminToken, aliceToken, approved, authors, bobHeaders, bobToken, body (+45 more)
 
-### Community 3 - "Community 3"
+### Community 4 - "Community 4"
+Cohesion: 0.08
+Nodes (32): LegalPageContent, LegalSection, LegacySubject, legacySubjects, LegacyLabels, legacyLabelsEn, legacyLabelsFr, brandAssetUrl() (+24 more)
+
+### Community 5 - "Community 5"
+Cohesion: 0.09
+Nodes (37): useLegacyFeedThreadComments(), useLegacyFeedThreadCommentsSecondary(), usePostCardFixture(), usePostCardLabels(), usePostCardSecondaryFixture(), useStorybookLocale(), CommentCardDefault, CommentCardStory() (+29 more)
+
+### Community 6 - "Community 6"
+Cohesion: 0.08
+Nodes (29): DropdownMenu(), DropdownMenuCheckboxItem(), DropdownMenuContent(), DropdownMenuItem(), DropdownMenuLabel(), DropdownMenuRadioItem(), DropdownMenuSeparator(), DropdownMenuShortcut() (+21 more)
+
+### Community 7 - "Community 7"
 Cohesion: 0.05
 Nodes (39): AdminDashboard, AdminDashboardMobile, AdminModeration, AdminModerationMobile, AdminUsers, AdminUsersMobile, EventsList, EventsListMobile (+31 more)
 
-### Community 4 - "Community 4"
-Cohesion: 0.09
-Nodes (27): AdminUserRow, legacyAdminUsers, legacyAdminUsersEn, legacyMentorDashboard, legacyMentorDashboardEn, MentorDashboardFixture, MentorHelpPost, MentorPendingResource (+19 more)
-
-### Community 5 - "Community 5"
-Cohesion: 0.08
-Nodes (29): CardAction(), DropdownMenu(), DropdownMenuCheckboxItem(), DropdownMenuContent(), DropdownMenuItem(), DropdownMenuLabel(), DropdownMenuRadioItem(), DropdownMenuSeparator() (+21 more)
-
-### Community 6 - "Community 6"
+### Community 8 - "Community 8"
 Cohesion: 0.05
 Nodes (38): dependencies, @allaboard/types, argon2, drizzle-orm, fastify, @fastify/cookie, @fastify/cors, @fastify/jwt (+30 more)
 
-### Community 7 - "Community 7"
+### Community 9 - "Community 9"
 Cohesion: 0.10
 Nodes (28): denylistPatterns, getJwtUser(), isAdminRole(), JwtUser, normalizeTitle(), responseVisibleUnderCertificationFilter(), roleFromJwtClaims(), tagsOverlap() (+20 more)
 
-### Community 8 - "Community 8"
+### Community 10 - "Community 10"
 Cohesion: 0.05
 Nodes (36): dependencies, @allaboard/types, @allaboard/ui, next, next-intl, react, react-dom, @tanstack/react-query (+28 more)
 
-### Community 9 - "Community 9"
-Cohesion: 0.13
-Nodes (24): Card(), CardContent(), CardDescription(), CardFooter(), CardHeader(), CardTitle(), Default, FeedEmpty (+16 more)
-
-### Community 10 - "Community 10"
+### Community 11 - "Community 11"
 Cohesion: 0.06
 Nodes (33): Alignement `.env.example`, Avant PR (garde-fous), BFF Next (`apps/web` — same-origin), Checklist Dokploy (feed / Web–API), Chemins code, code:json ({ "items": [{ "id": "uuid", "title": "…", "authorId": "bob@d), code:bash (# Dev HTTPS (Dokploy)), Codes d’erreur communs (corps JSON) (+25 more)
 
-### Community 11 - "Community 11"
-Cohesion: 0.09
-Nodes (28): Select(), SelectContent(), SelectGroup(), SelectItem(), SelectLabel(), SelectScrollDownButton(), SelectScrollUpButton(), SelectSeparator() (+20 more)
-
 ### Community 12 - "Community 12"
-Cohesion: 0.06
-Nodes (30): Architecture minimale, ARCHIVE — Plan d'initialisation Turborepo (MVP All-Aboard), Checklist de suivi d'avancement, CI MVP, CI MVP, code:text (all-aboard/), Etape A - Initialiser le workspace, Etape A - Initialiser le workspace (+22 more)
+Cohesion: 0.12
+Nodes (23): Card(), CardAction(), CardContent(), CardDescription(), CardFooter(), CardHeader(), CardTitle(), Default (+15 more)
 
 ### Community 13 - "Community 13"
 Cohesion: 0.09
-Nodes (26): AllVariants, AllVariantsStory(), Error, ErrorStory(), Info, InfoStory(), Story, Success (+18 more)
+Nodes (31): useLegacyLabels(), useLegacyProfile(), AppFooterDefault, AppNavBarDefault, FooterStory(), LandingHeaderStory(), LandingPublicHeaderDefault, NavStory() (+23 more)
 
 ### Community 14 - "Community 14"
-Cohesion: 0.11
-Nodes (27): Alert(), AlertDescription(), AlertTitle(), alertVariants, AllVariants, AllVariantsStory(), ConnexionRequise, ConnexionRequiseStory() (+19 more)
+Cohesion: 0.10
+Nodes (28): Alert(), AlertDescription(), AlertTitle(), alertVariants, AllVariants, AllVariantsStory(), ConnexionRequise, ConnexionRequiseStory() (+20 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.09
-Nodes (29): useLegacyLabels(), useLegacyLegalContent(), QuickReplyStory(), BrandLogoDefault, BrandLogoStory(), EyebrowDefault, EyebrowStory(), FeaturePills (+21 more)
+Cohesion: 0.06
+Nodes (30): Architecture minimale, ARCHIVE — Plan d'initialisation Turborepo (MVP All-Aboard), Checklist de suivi d'avancement, CI MVP, CI MVP, code:text (all-aboard/), Etape A - Initialiser le workspace, Etape A - Initialiser le workspace (+22 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.09
@@ -283,144 +279,144 @@ Cohesion: 0.13
 Nodes (25): createAgentRoutingEvaluator(), CreateAgentRoutingEvaluatorOptions, evaluateRoutingFallback(), EvaluateRoutingFn, resolveAgentBaseUrl(), evaluate, fetchFn, result (+17 more)
 
 ### Community 20 - "Community 20"
-Cohesion: 0.08
-Nodes (22): LegacyNavLink, AppFooterDefault, AppNavBarDefault, FooterStory(), LandingHeaderStory(), LandingPublicHeaderDefault, NavStory(), StatCardRow (+14 more)
+Cohesion: 0.12
+Nodes (19): AllAboardLogoMark(), Button(), buttonVariants, button, Checkbox(), Dialog(), DialogContent(), DialogDescription() (+11 more)
 
 ### Community 21 - "Community 21"
-Cohesion: 0.11
-Nodes (23): CommentCardDefault, ContributionListItemDefault, FeedPostThreadClosed, FeedPostThreadOpen, FeedSearchCardDefault, QuickReplyDefault, ScrollToTopFabVisible, SidebarEmpty (+15 more)
+Cohesion: 0.10
+Nodes (24): EmptyStatePattern, EmptyStatePatternStory(), ErrorAlertPattern, FeedItemCardPattern, FeedItemCardPatternStory(), FormFieldPattern, FormFieldPatternStory(), ListingPatterns (+16 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.13
-Nodes (18): LegacyEvent, legacyEvents, legacyEventsEn, LegacyFeedComment, legacyFeedThreadComments, legacyFeedThreadCommentsEn, legacyFeedThreadCommentsSecondary, legacyFeedThreadCommentsSecondaryEn (+10 more)
-
-### Community 23 - "Community 23"
-Cohesion: 0.14
-Nodes (17): AllAboardLogoMark(), Checkbox(), Dialog(), DialogContent(), DialogDescription(), DialogFooter(), DialogHeader(), DialogOverlay() (+9 more)
-
-### Community 24 - "Community 24"
 Cohesion: 0.12
 Nodes (16): FeedClientPreview(), FeedItemLabels, HomeContent(), Props, mockFetch, renderWithClient(), alert, createLink (+8 more)
 
-### Community 25 - "Community 25"
+### Community 23 - "Community 23"
 Cohesion: 0.19
 Nodes (17): outboxEvents, IntuitionConfig, loadIntuitionConfig(), config, enqueueHelpRequestCreated(), HELP_REQUEST_CREATED, IntuitionPublisherHandle, IntuitionPublisherLog (+9 more)
 
-### Community 26 - "Community 26"
+### Community 24 - "Community 24"
 Cohesion: 0.09
 Nodes (21): Agent IA et pipeline asynchrone, Architecture monorepo recommandee (complete), Backend et data, Bonnes pratiques de structuration (2026++), Choix de stack recommandes (2026), code:text (all-aboard/), code:json ({), Contexte (+13 more)
 
-### Community 27 - "Community 27"
+### Community 25 - "Community 25"
 Cohesion: 0.10
 Nodes (18): Default, Disabled, Invalid, Story, WithLabel, textarea, Textarea(), DuplicateError (+10 more)
 
-### Community 28 - "Community 28"
-Cohesion: 0.13
-Nodes (17): LegacySubject, legacySubjects, LEGAL_LINK_HREFS, navIcons, pillIcons, ProposeSubjectCard(), SubjectCard(), SubjectCardGrid() (+9 more)
-
-### Community 29 - "Community 29"
+### Community 26 - "Community 26"
 Cohesion: 0.19
 Nodes (16): conversations, helpRequests, helpRequestStatusEnum, mentorSubjects, messages, resourceStatusEnum, responses, subjectRequestStatusEnum (+8 more)
 
-### Community 30 - "Community 30"
-Cohesion: 0.11
-Nodes (16): Skeleton(), EmptyStatePattern, EmptyStatePatternStory(), ErrorAlertPattern, ErrorAlertPatternStory(), FeedItemCardPattern, FeedItemCardPatternStory(), FormFieldPattern (+8 more)
-
-### Community 31 - "Community 31"
+### Community 27 - "Community 27"
 Cohesion: 0.11
 Nodes (19): devDependencies, @allaboard/config-eslint, @allaboard/config-typescript, eslint, typescript, exports, import, main (+11 more)
 
-### Community 32 - "Community 32"
+### Community 28 - "Community 28"
 Cohesion: 0.10
 Nodes (19): compilerOptions, composite, declaration, declarationMap, esModuleInterop, isolatedModules, lib, module (+11 more)
 
-### Community 33 - "Community 33"
-Cohesion: 0.11
-Nodes (16): MobileBottomNav(), MobileNavLink, CreatePostModal(), MobileBottomNavDefault, MobileBottomNavWithUnreadBadge, MobileNavStory(), Story, CguAcceptanceModalAccepted (+8 more)
-
-### Community 34 - "Community 34"
+### Community 29 - "Community 29"
 Cohesion: 0.15
 Nodes (16): Avatar(), AvatarBadge(), AvatarFallback(), AvatarGroup(), AvatarGroupCount(), AvatarImage(), Fallback, Sizes (+8 more)
 
-### Community 35 - "Community 35"
-Cohesion: 0.20
-Nodes (9): HelpRequestDetailContent(), Props, { Link, redirect, usePathname, useRouter, getPathname }, AppLocale, routing, formatDateTime(), localeToBcp47, MentorDashboardPage() (+1 more)
+### Community 30 - "Community 30"
+Cohesion: 0.11
+Nodes (17): MobileBottomNav(), MobileNavLink, CreatePostModal(), SubjectRequestModal(), MobileBottomNavDefault, MobileBottomNavWithUnreadBadge, MobileNavStory(), Story (+9 more)
 
-### Community 36 - "Community 36"
+### Community 31 - "Community 31"
 Cohesion: 0.18
 Nodes (14): authenticateWithDatabase(), authenticateWithMvpFallback(), isMvpPasswordFallbackEnabled(), LEGACY_USER_EMAIL, LoginBody, loginBodySchema, LoginSuccess, resolveLoginEmail() (+6 more)
 
-### Community 37 - "Community 37"
+### Community 32 - "Community 32"
 Cohesion: 0.20
 Nodes (10): AppDatabase, bookmarks, likes, subjects, fetchBookmarkedHelpRequests(), fetchHelpRequestsForAuthor(), helpRequestExists(), loadHelpRequestRow() (+2 more)
 
-### Community 38 - "Community 38"
+### Community 33 - "Community 33"
 Cohesion: 0.11
 Nodes (17): dependencies, eslint-config-next, @eslint/eslintrc, @eslint/js, typescript-eslint, exports, ./base, ./design-system-boundaries (+9 more)
 
-### Community 39 - "Community 39"
+### Community 34 - "Community 34"
+Cohesion: 0.19
+Nodes (15): Select(), SelectContent(), SelectGroup(), SelectItem(), SelectLabel(), SelectScrollDownButton(), SelectScrollUpButton(), SelectSeparator() (+7 more)
+
+### Community 35 - "Community 35"
 Cohesion: 0.11
 Nodes (18): devDependencies, @allaboard/config-eslint, @allaboard/config-typescript, eslint, jsdom, postcss, @storybook/react, tailwindcss (+10 more)
 
-### Community 40 - "Community 40"
+### Community 36 - "Community 36"
 Cohesion: 0.15
 Nodes (16): useLegacyResources(), PageHeaderWithIcon(), ResourceCard(), ResourceCardList(), ResourcesPageHeader(), SearchBar(), PageHeaderStory(), PageHeaderWithIcon (+8 more)
 
-### Community 41 - "Community 41"
+### Community 37 - "Community 37"
 Cohesion: 0.12
 Nodes (16): Checklist de readiness avant deploiement, Configuration Coolify (par service), Configuration Dokploy (par service), Convention globale, Healthchecks recommandes, Instance Dokploy de référence (All-Aboard), Mapping des tags images, Matrice de deploiement - Dokploy / Coolify (+8 more)
 
-### Community 42 - "Community 42"
+### Community 38 - "Community 38"
+Cohesion: 0.16
+Nodes (10): APP_SHELL_NAV, AppShellNav(), isNavActive(), LocaleSwitcher(), MentorNavLink(), MentorNavLinkProps, { Link, redirect, usePathname, useRouter, getPathname }, home (+2 more)
+
+### Community 39 - "Community 39"
 Cohesion: 0.12
 Nodes (16): aliases, components, hooks, lib, ui, utils, iconLibrary, rsc (+8 more)
 
-### Community 43 - "Community 43"
+### Community 40 - "Community 40"
 Cohesion: 0.12
 Nodes (15): 1. Rôle de `apps/agent` (agent All-Aboard), 2. Intuition — indexer réseau + bridge All-Aboard, 3. Files d’attente et communication inter-services, 4. Frontière avec l’API Fastify, 5. Déploiement Dokploy, 6. Découpage backlog (issues enfants #37), ADR 0004 — Architecture Agent All-Aboard & Intuition (Phase 4), Alternatives non retenues (+7 more)
 
-### Community 44 - "Community 44"
+### Community 41 - "Community 41"
 Cohesion: 0.12
 Nodes (15): Agent All-Aboard (`apps/agent`), Agent et Indexer, API (service Fastify), Appel Web vers API (`API_URL` — reseau interne), Branches Git par environnement (etat observe), Build Docker (commun a tous les services Node), code:text (http://<nom-interne-du-service-api>:4000), Deploiement Dokploy — instance All-Aboard (reference) (+7 more)
 
-### Community 45 - "Community 45"
+### Community 42 - "Community 42"
 Cohesion: 0.17
 Nodes (14): subjectRequests, DenylistPatternRow, HelpRequestRow, ResourceRow, ResponseRow, rowToDenylistPattern(), rowToHelpRequest(), rowToResource() (+6 more)
 
-### Community 46 - "Community 46"
-Cohesion: 0.15
-Nodes (14): useLegacyEvents(), EventCardDefault, EventCardListDefault, EventCardStory(), EventListStory(), EventsSectionStory(), EventsUpcomingSectionDefault, FilterPillBarDefault (+6 more)
+### Community 43 - "Community 43"
+Cohesion: 0.12
+Nodes (14): AlertCatalog, BadgeCatalog, ButtonCatalog, CardCatalog, InputCatalog, LabelCatalog, ListingComplet, ListingCompletStory() (+6 more)
 
-### Community 47 - "Community 47"
-Cohesion: 0.16
-Nodes (15): useLegacyProfile(), ProfileAboutCard(), ProfileActivityTabs(), ProfileHeaderCard(), ProfileStatGrid(), AboutStory(), ActivityTabsStory(), HeaderStory() (+7 more)
-
-### Community 48 - "Community 48"
+### Community 44 - "Community 44"
 Cohesion: 0.12
 Nodes (15): aliases, components, hooks, lib, ui, utils, iconLibrary, rsc (+7 more)
 
-### Community 49 - "Community 49"
+### Community 45 - "Community 45"
+Cohesion: 0.15
+Nodes (14): useLegacyEvents(), EventCardDefault, EventCardListDefault, EventCardStory(), EventListStory(), EventsSectionStory(), EventsUpcomingSectionDefault, FilterPillBarDefault (+6 more)
+
+### Community 46 - "Community 46"
 Cohesion: 0.12
 Nodes (16): mentor, connectedAs, emptyDescription, emptyTitle, eyebrow, forbiddenDescription, forbiddenTitle, lastResponse (+8 more)
 
-### Community 50 - "Community 50"
+### Community 47 - "Community 47"
 Cohesion: 0.12
 Nodes (16): mentor, connectedAs, emptyDescription, emptyTitle, eyebrow, forbiddenDescription, forbiddenTitle, lastResponse (+8 more)
 
-### Community 51 - "Community 51"
+### Community 48 - "Community 48"
 Cohesion: 0.13
 Nodes (14): code:bash (# Terminal 1 — API), code:bash (pnpm --filter api test), Critères de clôture #49, Doc canonique (lecture), Décision (spike), Implémentation livrée, Objectif, Options comparées (+6 more)
 
-### Community 52 - "Community 52"
+### Community 49 - "Community 49"
 Cohesion: 0.13
 Nodes (14): compilerOptions, esModuleInterop, isolatedModules, lib, module, moduleDetection, moduleResolution, noEmit (+6 more)
 
-### Community 53 - "Community 53"
+### Community 50 - "Community 50"
+Cohesion: 0.23
+Nodes (11): ProfileTabs, Story, Tabs(), TabsContent(), TabsList(), tabsListVariants, TabsTrigger(), LegacyProfile (+3 more)
+
+### Community 51 - "Community 51"
+Cohesion: 0.19
+Nodes (11): Sheet(), SheetContent(), SheetDescription(), SheetFooter(), SheetHeader(), SheetOverlay(), SheetTitle(), SheetTrigger() (+3 more)
+
+### Community 52 - "Community 52"
 Cohesion: 0.17
 Nodes (14): useLegacyConversations(), MessagesInboxLayout(), ConversationItemStory(), ConversationItemUnreadStory(), ConversationListDefault, ConversationListItemDefault, ConversationListItemWithUnreadBadge, ConversationListStory() (+6 more)
 
+### Community 53 - "Community 53"
+Cohesion: 0.17
+Nodes (10): LegacyNavLink, brandAssetUrl(), FeedConceptBackground(), AppFooter(), AppNavBar(), AppChrome(), cnMainClass(), mobileStoryParameters (+2 more)
+
 ### Community 54 - "Community 54"
-Cohesion: 0.19
-Nodes (11): Sheet(), SheetContent(), SheetDescription(), SheetFooter(), SheetHeader(), SheetOverlay(), SheetTitle(), SheetTrigger() (+3 more)
+Cohesion: 0.25
+Nodes (8): HelpRequestDetailContent(), Props, AppLocale, routing, formatDateTime(), localeToBcp47, MentorDashboardPage(), config
 
 ### Community 55 - "Community 55"
 Cohesion: 0.18
@@ -436,87 +432,87 @@ Nodes (12): defaultSeedSubjects(), defaultSeedUsers(), runSeedIfConfigured(), se
 
 ### Community 58 - "Community 58"
 Cohesion: 0.14
-Nodes (14): feed, backToFeed, clientError, clientLoading, clientPreview, description, emptyDescription, emptyTitle (+6 more)
+Nodes (13): BrandLogoDefault, BrandLogoStory(), EyebrowDefault, EyebrowStory(), FeaturePills, FeaturePillsStory(), GradientHeadingDefault, GradientHeadingStory() (+5 more)
 
 ### Community 59 - "Community 59"
 Cohesion: 0.14
 Nodes (14): feed, backToFeed, clientError, clientLoading, clientPreview, description, emptyDescription, emptyTitle (+6 more)
 
 ### Community 60 - "Community 60"
-Cohesion: 0.15
-Nodes (12): API parité Rails — Phase 1 (cœur feed/post), BFF web (`apps/web`), code:bash (pnpm --filter api test), Endpoints, Migration `0005_api_rails_phase1.sql`, Modules code, Objectif, Rétrocompatibilité (+4 more)
+Cohesion: 0.14
+Nodes (14): feed, backToFeed, clientError, clientLoading, clientPreview, description, emptyDescription, emptyTitle (+6 more)
 
 ### Community 61 - "Community 61"
 Cohesion: 0.15
-Nodes (12): 0. Promotion code (`staging` Git), 1. Postgres (env staging), 2. Variables service **API** (staging), 3. Variables service **Web** (staging), 4. Smoke automatisé, 5. Smoke navigateur (parcours Bob), 6. Journal et pilotage, code:text (postgresql://<USER>:<PASSWORD>@<HOST_INTERNE_POSTGRES_STAGIN) (+4 more)
+Nodes (12): API parité Rails — Phase 1 (cœur feed/post), BFF web (`apps/web`), code:bash (pnpm --filter api test), Endpoints, Migration `0005_api_rails_phase1.sql`, Modules code, Objectif, Rétrocompatibilité (+4 more)
 
 ### Community 62 - "Community 62"
 Cohesion: 0.15
-Nodes (12): AllVariants, Default, Destructive, Disabled, Ghost, Large, Link, Loading (+4 more)
+Nodes (12): 0. Promotion code (`staging` Git), 1. Postgres (env staging), 2. Variables service **API** (staging), 3. Variables service **Web** (staging), 4. Smoke automatisé, 5. Smoke navigateur (parcours Bob), 6. Journal et pilotage, code:text (postgresql://<USER>:<PASSWORD>@<HOST_INTERNE_POSTGRES_STAGIN) (+4 more)
 
 ### Community 63 - "Community 63"
+Cohesion: 0.18
+Nodes (10): AllVariants, AllVariantsStory(), Error, ErrorStory(), Info, InfoStory(), Story, Success (+2 more)
+
+### Community 64 - "Community 64"
+Cohesion: 0.15
+Nodes (12): AllVariants, Default, Destructive, Disabled, Ghost, Large, Link, Loading (+4 more)
+
+### Community 65 - "Community 65"
+Cohesion: 0.19
+Nodes (12): useLegacyLegalContent(), LegalPageLayout(), CguLayoutStory(), LegalPageLayoutCgu, LegalPageLayoutMentions, LegalPageLayoutPrivacy, MentionsLayoutStory(), PrivacyLayoutStory() (+4 more)
+
+### Community 66 - "Community 66"
 Cohesion: 0.19
 Nodes (12): useLegacyMentorDashboard(), MentorHelpPanel(), MentorStatsGrid(), MentorValidationPanel(), MentorHelpPanelDefault, MentorHelpStory(), MentorStatsGridDefault, MentorStatsStory() (+4 more)
 
-### Community 64 - "Community 64"
-Cohesion: 0.26
-Nodes (13): useLegacyFeedThreadComments(), useLegacyFeedThreadCommentsSecondary(), usePostCardFixture(), usePostCardLabels(), usePostCardSecondaryFixture(), useStorybookLocale(), CommentCardStory(), FeedPostThreadStory() (+5 more)
-
-### Community 65 - "Community 65"
-Cohesion: 0.18
-Nodes (10): getLegalPageContent(), legacyLegalCguEn, legacyLegalCguFr, legacyLegalMentionsEn, legacyLegalMentionsFr, legacyLegalPrivacyEn, legacyLegalPrivacyFr, LegalPageContent (+2 more)
-
-### Community 66 - "Community 66"
-Cohesion: 0.22
-Nodes (9): APP_SHELL_NAV, AppShellNav(), isNavActive(), LocaleSwitcher(), MentorNavLink(), MentorNavLinkProps, home, nav (+1 more)
-
 ### Community 67 - "Community 67"
 Cohesion: 0.15
-Nodes (13): helpRequest, certFilter, certHidden, eyebrow, loadErrorTitle, notFoundDescription, notFoundTitle, replyBody (+5 more)
+Nodes (11): ProposeSubjectCard(), SubjectCard(), SubjectCardGrid(), Card, Grid, ProposeSubject, ProposeSubjectStory(), Story (+3 more)
 
 ### Community 68 - "Community 68"
 Cohesion: 0.15
 Nodes (13): helpRequest, certFilter, certHidden, eyebrow, loadErrorTitle, notFoundDescription, notFoundTitle, replyBody (+5 more)
 
 ### Community 69 - "Community 69"
-Cohesion: 0.17
-Nodes (11): API parité Rails — Phase 2 (social), BFF web (`apps/web`), code:bash (env -u DATABASE_URL MVP_LOGIN_PASSWORD=dev pnpm --filter api), Endpoints, Migration `0006_api_rails_phase2_social.sql`, Modules code, Objectif, Rétrocompatibilité (+3 more)
+Cohesion: 0.15
+Nodes (13): helpRequest, certFilter, certHidden, eyebrow, loadErrorTitle, notFoundDescription, notFoundTitle, replyBody (+5 more)
 
 ### Community 70 - "Community 70"
 Cohesion: 0.17
-Nodes (11): Anti-patterns documentés, AppShell (#25), Architecture — design system monorepo, code:mermaid (flowchart TB), code:mermaid (flowchart TD), Responsabilités par couche, Règle de placement (arbre de décision), Storybook 10.4 (+3 more)
+Nodes (11): API parité Rails — Phase 2 (social), BFF web (`apps/web`), code:bash (env -u DATABASE_URL MVP_LOGIN_PASSWORD=dev pnpm --filter api), Endpoints, Migration `0006_api_rails_phase2_social.sql`, Modules code, Objectif, Rétrocompatibilité (+3 more)
 
 ### Community 71 - "Community 71"
 Cohesion: 0.17
-Nodes (11): 1. Ajouter une primitive shadcn, 2. Écrire une story Storybook, 3. Consommer un composant dans `apps/web`, 4. Modifier les tokens, 5. Scripts utiles (racine), 6. Avant une PR touchant UI / SB, 7. Skills agents (`.agents/skills/`), code:bash (cd apps/web) (+3 more)
+Nodes (11): Anti-patterns documentés, AppShell (#25), Architecture — design system monorepo, code:mermaid (flowchart TB), code:mermaid (flowchart TD), Responsabilités par couche, Règle de placement (arbre de décision), Storybook 10.4 (+3 more)
 
 ### Community 72 - "Community 72"
 Cohesion: 0.17
-Nodes (11): Arborescence code (rappel), code:text (packages/ui/          @allaboard/ui — tokens, primitives, st), code:bash (# Racine monorepo — Node 22+), code:bash (git remote set-url origin git@github.com:AllAboard-THP/All-A), Design system — documentation canonique, Démarrage rapide (nouveau contributeur), Liens externes, Navigation (Diátaxis) (+3 more)
+Nodes (11): 1. Ajouter une primitive shadcn, 2. Écrire une story Storybook, 3. Consommer un composant dans `apps/web`, 4. Modifier les tokens, 5. Scripts utiles (racine), 6. Avant une PR touchant UI / SB, 7. Skills agents (`.agents/skills/`), code:bash (cd apps/web) (+3 more)
 
 ### Community 73 - "Community 73"
 Cohesion: 0.17
-Nodes (11): CI GitHub Actions (`.github/workflows/ci.yml`), code:bash (pnpm setup:hooks   # une fois), code:bash (uv tool install graphifyy    # une fois — binaire graphify), code:bash (docker build -f infra/docker/Dockerfile.storybook -t allaboa), Dépannage, ESLint — frontières (`@allaboard/config-eslint`), Gates par type de changement, Graphify (carte codebase) (+3 more)
+Nodes (11): Arborescence code (rappel), code:text (packages/ui/          @allaboard/ui — tokens, primitives, st), code:bash (# Racine monorepo — Node 22+), code:bash (git remote set-url origin git@github.com:AllAboard-THP/All-A), Design system — documentation canonique, Démarrage rapide (nouveau contributeur), Liens externes, Navigation (Diátaxis) (+3 more)
 
 ### Community 74 - "Community 74"
+Cohesion: 0.17
+Nodes (11): CI GitHub Actions (`.github/workflows/ci.yml`), code:bash (pnpm setup:hooks   # une fois), code:bash (uv tool install graphifyy    # une fois — binaire graphify), code:bash (docker build -f infra/docker/Dockerfile.storybook -t allaboa), Dépannage, ESLint — frontières (`@allaboard/config-eslint`), Gates par type de changement, Graphify (carte codebase) (+3 more)
+
+### Community 75 - "Community 75"
 Cohesion: 0.21
 Nodes (9): Badge(), badgeVariants, AllVariants, Default, Destructive, Outline, Secondary, Story (+1 more)
 
-### Community 75 - "Community 75"
-Cohesion: 0.20
-Nodes (9): Separator(), separator, DetailHero, DetailHeroStory(), FeedHero, FeedHeroStory(), MentorHero, MentorHeroStory() (+1 more)
-
 ### Community 76 - "Community 76"
 Cohesion: 0.20
-Nodes (11): useLegacyAdminUsers(), useLegacyModeration(), AdminModerationQueueDefault, AdminUsersTableDefault, ModerationStory(), Story, UsersTableStory(), AdminModerationQueue() (+3 more)
+Nodes (9): Separator(), separator, DetailHero, DetailHeroStory(), FeedHero, FeedHeroStory(), MentorHero, MentorHeroStory() (+1 more)
 
 ### Community 77 - "Community 77"
 Cohesion: 0.17
 Nodes (12): exports, ./components/*, ./globals.css, ./hooks/*, ./i18n/*, ./i18n/legacy-labels, ./i18n/post-card-labels, ./i18n/storybook-locale (+4 more)
 
 ### Community 78 - "Community 78"
-Cohesion: 0.21
-Nodes (8): Button(), buttonVariants, button, EventCard(), EventCardList(), EventsListWithFilters(), EventsPageHeader(), EventsUpcomingSection()
+Cohesion: 0.20
+Nodes (11): useLegacyAdminUsers(), useLegacyModeration(), AdminModerationQueueDefault, AdminUsersTableDefault, ModerationStory(), Story, UsersTableStory(), AdminModerationQueue() (+3 more)
 
 ### Community 79 - "Community 79"
 Cohesion: 0.17
@@ -531,36 +527,36 @@ Cohesion: 0.29
 Nodes (9): buildFeedConditions(), countFeedItems(), feedPublicVisibility, fetchFeedRows(), fetchUnansweredRows(), mentorFeedWhere, resolveSubjectIdBySlug(), FeedQueryParams (+1 more)
 
 ### Community 82 - "Community 82"
-Cohesion: 0.18
-Nodes (11): helpForm, duplicate, email, invalidCredentials, password, rubberduckHandoff, submit, tags (+3 more)
+Cohesion: 0.25
+Nodes (9): LegacyConversation, legacyConversations, legacyConversationsEn, QuickReply(), ConversationList(), ConversationListItem(), MessagesEmptyState(), MessageThreadPanel() (+1 more)
 
 ### Community 83 - "Community 83"
 Cohesion: 0.18
 Nodes (11): helpForm, duplicate, email, invalidCredentials, password, rubberduckHandoff, submit, tags (+3 more)
 
 ### Community 84 - "Community 84"
-Cohesion: 0.20
-Nodes (9): Critères de clôture (#37), Doc canonique (lecture), Décision architecture (2026-05-27), Décision architecture (2026-06-02), Livrables (cadrage), Objectif, Sous-tâches, Tâche #37 — Phase 4 Agent All-Aboard & Intuition (+1 more)
+Cohesion: 0.18
+Nodes (11): helpForm, duplicate, email, invalidCredentials, password, rubberduckHandoff, submit, tags (+3 more)
 
 ### Community 85 - "Community 85"
 Cohesion: 0.20
-Nodes (9): Fichiers (#79–#81), Hors scope (hors epic #78), Livraison — filtrage certifications (#83, PR #88), Livraison — notifications mentor (#82, PR #87), Livraison — thread réponses (#79–#81, PR #84), Phase 2b — Réponses & communauté (MOC), Smoke manuel (régression Phase 2b), Sous-tâches (+1 more)
+Nodes (9): Critères de clôture (#37), Doc canonique (lecture), Décision architecture (2026-05-27), Décision architecture (2026-06-02), Livrables (cadrage), Objectif, Sous-tâches, Tâche #37 — Phase 4 Agent All-Aboard & Intuition (+1 more)
 
 ### Community 86 - "Community 86"
 Cohesion: 0.20
-Nodes (9): Concepts et architecture (Getting Started + Concepts), Démarrage rapide (Quick Start), Index — documentation Intuition, Notes pour le monorepo All-Aboard, Outils développeur (SDK, GraphQL, contrats, protocole), Racine et méta, Ressources et optionnel, Réseau et infrastructure (+1 more)
+Nodes (9): Fichiers (#79–#81), Hors scope (hors epic #78), Livraison — filtrage certifications (#83, PR #88), Livraison — notifications mentor (#82, PR #87), Livraison — thread réponses (#79–#81, PR #84), Phase 2b — Réponses & communauté (MOC), Smoke manuel (régression Phase 2b), Sous-tâches (+1 more)
 
 ### Community 87 - "Community 87"
 Cohesion: 0.20
-Nodes (9): compilerOptions, composite, declaration, declarationMap, outDir, rootDir, exclude, extends (+1 more)
+Nodes (9): Concepts et architecture (Getting Started + Concepts), Démarrage rapide (Quick Start), Index — documentation Intuition, Notes pour le monorepo All-Aboard, Outils développeur (SDK, GraphQL, contrats, protocole), Racine et méta, Ressources et optionnel, Réseau et infrastructure (+1 more)
 
 ### Community 88 - "Community 88"
-Cohesion: 0.27
-Nodes (6): createDb(), FastifyInstance, FastifyJWT, pool, __dirname, runMigrationsIfConfigured()
+Cohesion: 0.20
+Nodes (9): compilerOptions, composite, declaration, declarationMap, outDir, rootDir, exclude, extends (+1 more)
 
 ### Community 89 - "Community 89"
-Cohesion: 0.40
-Nodes (7): ProfileTabs, Story, Tabs(), TabsContent(), TabsList(), tabsListVariants, TabsTrigger()
+Cohesion: 0.27
+Nodes (6): createDb(), FastifyInstance, FastifyJWT, pool, __dirname, runMigrationsIfConfigured()
 
 ### Community 90 - "Community 90"
 Cohesion: 0.22
@@ -595,8 +591,8 @@ Cohesion: 0.22
 Nodes (8): exports, ./base.json, ./next.json, ./node.json, files, name, private, version
 
 ### Community 98 - "Community 98"
-Cohesion: 0.22
-Nodes (8): PostCardFixture, postCardFixtureEn, postCardFixtureFr, postCardFixtureSecondaryEn, postCardFixtureSecondaryFr, PostCardLabels, postCardLabelsEn, postCardLabelsFr
+Cohesion: 0.28
+Nodes (6): Skeleton(), FeedList, FeedListStory(), RequestDetail, RequestDetailStory(), Story
 
 ### Community 99 - "Community 99"
 Cohesion: 0.22
@@ -730,67 +726,51 @@ Nodes (5): Doc canonique (lecture), Fichiers, Notes de travail, Objectif, Tâche
 Cohesion: 0.33
 Nodes (5): All-Aboard Design System, code:bash (pnpm storybook          # http://localhost:6006), Commandes, Navigation, Stack
 
-### Community 133 - "Community 133"
+### Community 134 - "Community 134"
 Cohesion: 0.33
-Nodes (5): legacyModeration, legacyModerationEn, ModerationFixture, ModerationFlaggedComment, ModerationFlaggedPost
+Nodes (6): locale, en, fr, label, switchToEn, switchToFr
 
 ### Community 135 - "Community 135"
 Cohesion: 0.33
-Nodes (6): locale, en, fr, label, switchToEn, switchToFr
+Nodes (6): nav, ariaLabel, feed, mentor, mentorUnreadAria, newRequest
 
 ### Community 136 - "Community 136"
 Cohesion: 0.33
-Nodes (6): nav, ariaLabel, feed, mentor, mentorUnreadAria, newRequest
+Nodes (6): locale, en, fr, label, switchToEn, switchToFr
 
 ### Community 137 - "Community 137"
 Cohesion: 0.33
-Nodes (5): brandingAssets, __dirname, monorepoRoot, nextConfig, withNextIntl
+Nodes (6): nav, ariaLabel, feed, mentor, mentorUnreadAria, newRequest
 
 ### Community 138 - "Community 138"
 Cohesion: 0.33
-Nodes (6): locale, en, fr, label, switchToEn, switchToFr
+Nodes (5): brandingAssets, __dirname, monorepoRoot, nextConfig, withNextIntl
 
 ### Community 139 - "Community 139"
-Cohesion: 0.33
-Nodes (6): nav, ariaLabel, feed, mentor, mentorUnreadAria, newRequest
-
-### Community 140 - "Community 140"
 Cohesion: 0.40
 Nodes (4): Doc canonique, Notes de travail, Objectif, Tâche #18 — ADR stratégie d'authentification
 
 ### Community 141 - "Community 141"
-Cohesion: 0.40
-Nodes (4): LegacyProfile, legacyProfileEn, LegacyProfilePost, LegacyProfileReply
-
-### Community 143 - "Community 143"
 Cohesion: 0.50
 Nodes (3): Liens, Plan d'initialisation Turborepo — MVP All-Aboard, Structure actuelle (référence)
 
-### Community 144 - "Community 144"
+### Community 142 - "Community 142"
 Cohesion: 0.67
 Nodes (3): isOpenApiDocsEnabled(), openapiYamlPath, registerOpenApiDocs()
 
-### Community 145 - "Community 145"
+### Community 143 - "Community 143"
 Cohesion: 0.50
 Nodes (3): dialect, entries, version
 
-### Community 146 - "Community 146"
+### Community 144 - "Community 144"
 Cohesion: 0.50
 Nodes (3): durations, Story, Transitions
 
-### Community 147 - "Community 147"
+### Community 145 - "Community 145"
 Cohesion: 0.50
 Nodes (3): radii, RadiusScale, Story
 
-### Community 148 - "Community 148"
-Cohesion: 0.50
-Nodes (3): AlertLabels, alertLabelsEn, alertLabelsFr
-
-### Community 149 - "Community 149"
-Cohesion: 0.50
-Nodes (3): LegacyConversation, legacyConversations, legacyConversationsEn
-
-### Community 150 - "Community 150"
+### Community 146 - "Community 146"
 Cohesion: 0.50
 Nodes (4): scripts, lint, test, typecheck
 
@@ -802,14 +782,14 @@ Nodes (4): scripts, lint, test, typecheck
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `Community 5` to `Community 3`, `Community 4`, `Community 9`, `Community 11`, `Community 14`, `Community 15`, `Community 16`, `Community 20`, `Community 21`, `Community 23`, `Community 27`, `Community 28`, `Community 30`, `Community 33`, `Community 34`, `Community 40`, `Community 46`, `Community 47`, `Community 53`, `Community 54`, `Community 63`, `Community 65`, `Community 74`, `Community 75`, `Community 76`, `Community 78`, `Community 89`?**
+- **Why does `cn()` connect `Community 6` to `Community 4`, `Community 5`, `Community 7`, `Community 12`, `Community 13`, `Community 14`, `Community 16`, `Community 20`, `Community 25`, `Community 29`, `Community 30`, `Community 34`, `Community 36`, `Community 45`, `Community 50`, `Community 51`, `Community 52`, `Community 53`, `Community 58`, `Community 65`, `Community 66`, `Community 67`, `Community 75`, `Community 76`, `Community 78`, `Community 82`, `Community 98`?**
   _High betweenness centrality (0.019) - this node is a cross-community bridge._
-- **Why does `useLegacyLabels()` connect `Community 15` to `Community 64`, `Community 33`, `Community 3`, `Community 40`, `Community 9`, `Community 76`, `Community 46`, `Community 47`, `Community 16`, `Community 20`, `Community 21`, `Community 22`, `Community 53`, `Community 28`, `Community 63`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Why does `Button()` connect `Community 78` to `Community 4`, `Community 5`, `Community 40`, `Community 9`, `Community 75`, `Community 11`, `Community 13`, `Community 21`, `Community 54`, `Community 23`, `Community 62`, `Community 89`, `Community 27`, `Community 30`?**
+- **Why does `useLegacyLabels()` connect `Community 13` to `Community 65`, `Community 2`, `Community 66`, `Community 36`, `Community 5`, `Community 67`, `Community 7`, `Community 45`, `Community 78`, `Community 16`, `Community 52`, `Community 53`, `Community 58`, `Community 30`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **Why does `Button()` connect `Community 20` to `Community 64`, `Community 2`, `Community 4`, `Community 5`, `Community 6`, `Community 36`, `Community 43`, `Community 76`, `Community 12`, `Community 50`, `Community 51`, `Community 21`, `Community 25`, `Community 29`, `Community 63`?**
   _High betweenness centrality (0.011) - this node is a cross-community bridge._
-- **Are the 116 inferred relationships involving `cn()` (e.g. with `LegalPageLayout()` and `PatternDemoCardShell()`) actually correct?**
-  _`cn()` has 116 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 121 inferred relationships involving `cn()` (e.g. with `LegalPageLayout()` and `PatternDemoCardShell()`) actually correct?**
+  _`cn()` has 121 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `withNextIntl`, `__dirname`, `monorepoRoot` to the rest of the system?**
   _1287 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**

@@ -32,15 +32,15 @@ export const APP_CHROME_MAIN_OFFSET_CLASS = "pt-[6rem] sm:pt-24";
 /** Main landmark below fixed header (edge padding + optional inner max width). */
 export const APP_CHROME_MAIN_CLASS = `flex-1 w-full ${APP_CHROME_MAIN_OFFSET_CLASS} ${LANDING_EDGE_PADDING_CLASS}`;
 
-/** Feed main — symmetric horizontal gutters (header/footer keep landing edge padding). */
+/** Feed main — balanced side padding (between flush rails and heavy gutters). */
 export const APP_CHROME_FEED_EDGE_PADDING_CLASS =
-  "w-full px-4 sm:px-6 lg:px-8 xl:px-12";
+  "w-full px-4 sm:px-5 lg:px-6 xl:px-8";
 
 export const APP_CHROME_FEED_MAIN_CLASS = `flex-1 w-full ${APP_CHROME_MAIN_OFFSET_CLASS} ${APP_CHROME_FEED_EDGE_PADDING_CLASS}`;
 
 export const APP_CHROME_MAIN_INNER_CLASS = "mx-auto w-full max-w-7xl";
 
-/** Feed three-column — full content width so rails align with tri-band background. */
+/** Feed three-column — wide stage with a soft max width. */
 export const APP_CHROME_FEED_INNER_CLASS = "mx-auto w-full min-w-0 max-w-[100rem]";
 
 /** Shell footer spacing aligned with landing. */
@@ -90,6 +90,10 @@ export const FEED_STAGE_GLASS_CARD_CLASS =
 /** Feed post cards — slightly darker than rails (code + thread). */
 export const FEED_POST_GLASS_CARD_CLASS =
   "feed-post-glass-card motion-reduce:transition-none";
+
+/** Rail list rows — scaled closer to center post typography. */
+export const FEED_RAIL_LIST_ITEM_CLASS =
+  "w-full rounded-2xl bg-white/5 p-5 text-left transition-colors hover:bg-white/10 lg:p-6";
 
 /** Login card — same glass + hover as feed panels. */
 export const LANDING_LOGIN_CARD_CLASS = LANDING_GLASS_CARD_CLASS;

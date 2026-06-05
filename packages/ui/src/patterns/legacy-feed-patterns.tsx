@@ -31,8 +31,10 @@ import {
   FEED_POST_THREAD_PANEL_OPEN_CLASS,
   FEED_REPLY_FOOTER_CLASS,
   FEED_POST_GLASS_CARD_CLASS,
+  FEED_RAIL_LIST_ITEM_CLASS,
   FEED_STAGE_GLASS_CARD_CLASS,
 } from "./landing-layout";
+import { FEED_SIDE_RAIL_PANEL_CLASS } from "./feed-concept-background";
 import { legacyDemoToast } from "./legacy-story-feedback";
 
 export function CommentCard({
@@ -144,20 +146,20 @@ export function SidebarPanel({
     <div
       className={cn(
         FEED_STAGE_GLASS_CARD_CLASS,
-        "w-full min-w-0 rounded-2xl p-6",
+        "flex w-full min-w-0 flex-col rounded-2xl p-7 sm:p-8 lg:p-9",
         className,
       )}
     >
-      <div className="mb-4 flex items-center gap-2">
-        <Icon className="size-4 text-primary" />
-        <h3 className="font-semibold text-gray-300">{title}</h3>
+      <div className="mb-6 flex shrink-0 items-center gap-2.5">
+        <Icon className="size-6 text-primary" />
+        <h3 className="text-lg font-semibold text-gray-200">{title}</h3>
         {count !== undefined ? (
-          <span className="ml-auto rounded-full bg-orange-500/20 px-2 py-0.5 text-xs font-medium text-orange-400">
+          <span className="ml-auto rounded-full bg-orange-500/20 px-2.5 py-1 text-sm font-medium text-orange-400">
             {count}
           </span>
         ) : null}
       </div>
-      {children}
+      <div className="flex flex-col">{children}</div>
     </div>
   );
 }
@@ -172,9 +174,9 @@ export function SidebarEmptyState({
   iconClassName?: string;
 }) {
   return (
-    <div className="py-4 text-center text-muted-foreground">
-      <Icon className={cn("mx-auto mb-2 block size-8", iconClassName)} />
-      <p className="text-xs">{message}</p>
+    <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+      <Icon className={cn("mx-auto mb-4 block size-12", iconClassName)} />
+      <p className="max-w-[16rem] text-base leading-relaxed">{message}</p>
     </div>
   );
 }
@@ -199,7 +201,7 @@ export function UnansweredListItem({
   return (
     <button
       type="button"
-      className="w-full rounded-xl bg-white/5 p-3 text-left transition-colors hover:bg-white/10"
+      className={FEED_RAIL_LIST_ITEM_CLASS}
       onClick={() => {
         onClick?.();
         if (!onClick) {
@@ -207,9 +209,9 @@ export function UnansweredListItem({
         }
       }}
     >
-      <div className="mb-1 flex items-center gap-1.5">
+      <div className="mb-2 flex items-center gap-2">
         <span
-          className="rounded-full px-1.5 py-0.5 text-[10px] font-medium"
+          className="rounded-full px-2.5 py-1 text-xs font-medium"
           style={{
             color: accentColor,
             backgroundColor: `${accentColor}18`,
@@ -217,16 +219,14 @@ export function UnansweredListItem({
         >
           {subjectName}
         </span>
-        <span className="ml-auto text-[10px] text-muted-foreground">
-          {timeAgo}
-        </span>
+        <span className="ml-auto text-xs text-muted-foreground">{timeAgo}</span>
       </div>
-      <p className="line-clamp-2 text-xs text-gray-300">{title}</p>
-      <div className="mt-1.5 flex items-center gap-1.5">
-        <Avatar className="size-4">
-          <AvatarFallback className="text-[8px]">{authorInitials}</AvatarFallback>
+      <p className="line-clamp-2 text-base leading-snug text-gray-200">{title}</p>
+      <div className="mt-3 flex items-center gap-2.5">
+        <Avatar className="size-8 border border-white/10">
+          <AvatarFallback className="text-[11px]">{authorInitials}</AvatarFallback>
         </Avatar>
-        <span className="text-[10px] text-muted-foreground">{authorName}</span>
+        <span className="text-sm font-medium text-muted-foreground">{authorName}</span>
       </div>
     </button>
   );
@@ -248,12 +248,12 @@ export function ContributionListItem({
   return (
     <button
       type="button"
-      className="w-full rounded-xl bg-white/5 p-3 text-left transition-colors hover:bg-white/10"
+      className={FEED_RAIL_LIST_ITEM_CLASS}
       onClick={() => legacyDemoToast(postTitle)}
     >
-      <div className="mb-1 flex items-center gap-1.5">
+      <div className="mb-2 flex items-center gap-2">
         <span
-          className="rounded-full px-1.5 py-0.5 text-[10px] font-medium"
+          className="rounded-full px-2.5 py-1 text-xs font-medium"
           style={{
             color: accentColor,
             backgroundColor: `${accentColor}18`,
@@ -261,12 +261,10 @@ export function ContributionListItem({
         >
           {subjectName}
         </span>
-        <span className="ml-auto text-[10px] text-muted-foreground">
-          {timeAgo}
-        </span>
+        <span className="ml-auto text-xs text-muted-foreground">{timeAgo}</span>
       </div>
-      <p className="line-clamp-1 text-xs text-muted-foreground">{postTitle}</p>
-      <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground italic">
+      <p className="line-clamp-1 text-base text-muted-foreground">{postTitle}</p>
+      <p className="mt-1.5 line-clamp-2 text-base leading-snug text-muted-foreground italic">
         &quot;{commentBody}&quot;
       </p>
     </button>
@@ -283,11 +281,15 @@ export function FeedSearchCard({
   const [query, setQuery] = useState("");
 
   return (
-    <SidebarPanel title={labels.feed.searchTitle} icon={Search} className={className}>
+    <SidebarPanel
+      title={labels.feed.searchTitle}
+      icon={Search}
+      className={cn("shrink-0", className)}
+    >
       <div className="relative">
         <Input
           placeholder={labels.feed.searchPlaceholder}
-          className="rounded-xl border-white/10 bg-white/5 pr-10"
+          className="h-12 rounded-2xl border-white/10 bg-white/5 pr-12 text-base sm:h-14"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           onKeyDown={(event) => {
@@ -307,7 +309,7 @@ export function FeedSearchCard({
             }
           }}
         >
-          <ArrowRight className="size-4" />
+          <ArrowRight className="size-5" />
         </Button>
       </div>
     </SidebarPanel>
@@ -461,6 +463,7 @@ export function FeedPostWithThread({
         }}
         onHashtagClick={(tag) => legacyDemoToast(`#${tag}`)}
         onSubjectClick={() => legacyDemoToast(fixture.subjectName)}
+        className="p-7 lg:p-8"
       />
 
       <div
@@ -562,9 +565,9 @@ export function FeedSidebarUnanswered({
       title={labels.feed.unansweredTitle}
       icon={CircleHelp}
       count={items.length}
-      className={className}
+      className={cn(FEED_SIDE_RAIL_PANEL_CLASS, className)}
     >
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-5">
         {items.map((item) => (
           <UnansweredListItem
             key={item.id}
@@ -597,7 +600,11 @@ export function FeedSidebarRecentEmpty({
   className?: string;
 }) {
   return (
-    <SidebarPanel title={labels.feed.recentTitle} icon={History} className={className}>
+    <SidebarPanel
+      title={labels.feed.recentTitle}
+      icon={History}
+      className={cn(FEED_SIDE_RAIL_PANEL_CLASS, className)}
+    >
       <SidebarEmptyState message={labels.feed.recentEmpty} />
     </SidebarPanel>
   );
@@ -619,18 +626,22 @@ export function FeedSidebarRecentViewed({
   }
 
   return (
-    <SidebarPanel title={labels.feed.recentTitle} icon={History} className={className}>
-      <div className="flex flex-col gap-3">
+    <SidebarPanel
+      title={labels.feed.recentTitle}
+      icon={History}
+      className={cn(FEED_SIDE_RAIL_PANEL_CLASS, className)}
+    >
+      <div className="flex flex-col gap-5">
         {items.map((item) => (
           <button
             key={item.id}
             type="button"
-            className="w-full rounded-xl bg-white/5 p-3 text-left transition-colors hover:bg-white/10"
+            className={FEED_RAIL_LIST_ITEM_CLASS}
             onClick={() => onItemClick?.(item.id)}
           >
-            <div className="mb-1 flex items-center gap-1.5">
+            <div className="mb-2 flex items-center gap-2">
               <span
-                className="rounded-full px-1.5 py-0.5 text-[10px] font-medium"
+                className="rounded-full px-2.5 py-1 text-xs font-medium"
                 style={{
                   color: item.accentColor,
                   backgroundColor: `${item.accentColor}18`,
@@ -638,11 +649,11 @@ export function FeedSidebarRecentViewed({
               >
                 {item.subjectName}
               </span>
-              <span className="ml-auto text-[10px] text-muted-foreground">
+              <span className="ml-auto text-xs text-muted-foreground">
                 {item.timeAgo}
               </span>
             </div>
-            <p className="line-clamp-2 text-xs text-gray-300">{item.title}</p>
+            <p className="line-clamp-2 text-base leading-snug text-gray-200">{item.title}</p>
           </button>
         ))}
       </div>
@@ -679,8 +690,12 @@ export function FeedSidebarContributions({
   ];
 
   return (
-    <SidebarPanel title={labels.feed.contributionsTitle} icon={MessageCircle}>
-      <div className="flex flex-col gap-3">
+    <SidebarPanel
+      title={labels.feed.contributionsTitle}
+      icon={MessageCircle}
+      className={FEED_SIDE_RAIL_PANEL_CLASS}
+    >
+      <div className="flex flex-col gap-5">
         {contributions.map((item) => (
           <ContributionListItem
             key={item.id}
