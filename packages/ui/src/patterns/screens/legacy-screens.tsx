@@ -1,18 +1,6 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Button } from "../../components/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../../components/card";
-import { Checkbox } from "../../components/checkbox";
-import { Input } from "../../components/input";
-import { Label } from "../../components/label";
-import { cn } from "@allaboard/ui/lib/utils";
 import {
   useLegacyAdminUsers,
   useLegacyConversations,
@@ -38,7 +26,6 @@ import {
   AdminStatsGrid,
 } from "../legacy-admin-patterns";
 import {
-  ForgotPasswordForm,
   RegisterForm,
   RegisterHeroPanel,
 } from "../legacy-auth-patterns";
@@ -70,23 +57,10 @@ import {
   ProfileHeaderCard,
   ProfileStatGrid,
 } from "../legacy-profile-patterns";
-import {
-  LANDING_HERO_CONTAINER_CLASS,
-  LANDING_HERO_COPY_CLASS,
-  LANDING_HERO_DESCRIPTION_CLASS,
-  LANDING_HERO_HEADING_CLASS,
-  LANDING_HERO_GRID_CLASS,
-  LANDING_HERO_PADDING_CLASS,
-  LANDING_HERO_SECTION_CLASS,
-  LANDING_GLASS_INPUT_CLASS,
-  LANDING_LOGIN_CARD_CLASS,
-} from "../landing-layout";
+import { LandingForgotPasswordBody } from "../landing-forgot-password-body";
+import { LandingHeroBody } from "../landing-hero-body";
 import { LandingPageShell } from "../landing-page-shell";
-import {
-  FeaturePill,
-  GradientHeading,
-  SubjectCardGrid,
-} from "../legacy-ui";
+import { SubjectCardGrid } from "../legacy-ui";
 import {
   ResourceCardList,
   ResourcesPageHeader,
@@ -108,97 +82,7 @@ export function LandingLoginScreen() {
 
   return (
     <LandingPageShell labels={labels}>
-      <div
-        className={cn(
-          "auth-grid",
-          LANDING_HERO_SECTION_CLASS,
-          LANDING_HERO_PADDING_CLASS,
-        )}
-      >
-        <div className={cn(LANDING_HERO_CONTAINER_CLASS, LANDING_HERO_GRID_CLASS)}>
-          <div className={LANDING_HERO_COPY_CLASS}>
-            <GradientHeading
-              allowWrap
-              chromeText
-              className={LANDING_HERO_HEADING_CLASS}
-              lead={labels.landing.headingLead}
-              line2Prefix={labels.landing.headingLine2Prefix}
-              accent={labels.landing.headingAccent}
-            />
-            <p className={LANDING_HERO_DESCRIPTION_CLASS}>
-              {labels.landing.description}
-            </p>
-            <div className="flex flex-wrap gap-2.5 sm:gap-3">
-              {labels.landing.pills.map((pill, index) => (
-                <FeaturePill
-                  key={pill}
-                  label={pill}
-                  iconIndex={index as 0 | 1 | 2}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="flex min-w-0 items-center justify-center lg:justify-end">
-            <Card
-              className={cn(
-                "flex aspect-square w-full max-w-[min(100%,32rem)] shrink-0 flex-col justify-between rounded-[2rem] border-white/10 p-6 shadow-none sm:max-h-[min(34rem,calc(100dvh-14rem))] sm:p-8",
-                LANDING_LOGIN_CARD_CLASS,
-              )}
-            >
-              <CardHeader className="shrink-0 px-0 pb-0 text-center">
-                <CardTitle className="text-xl sm:text-2xl">
-                  {labels.auth.loginTitle}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex min-h-0 flex-1 flex-col justify-center gap-3.5 px-0">
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="legacy-email">{labels.auth.email}</Label>
-                  <Input
-                    id="legacy-email"
-                    type="email"
-                    className={LANDING_GLASS_INPUT_CLASS}
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="legacy-password">
-                    {labels.auth.password}
-                  </Label>
-                  <Input
-                    id="legacy-password"
-                    type="password"
-                    className={LANDING_GLASS_INPUT_CLASS}
-                  />
-                </div>
-                <div className="flex items-center gap-2 rounded-lg">
-                  <Checkbox id="legacy-remember" />
-                  <Label htmlFor="legacy-remember" className="text-sm">
-                    {labels.auth.rememberMe}
-                  </Label>
-                </div>
-              </CardContent>
-              <CardFooter className="shrink-0 flex-col gap-3 px-0 pt-0">
-                <Button
-                  className="h-10 w-full rounded-2xl sm:h-11"
-                  onClick={() => legacyDemoToast(labels.auth.submit)}
-                >
-                  {labels.auth.submit}
-                </Button>
-                <p className="text-center text-xs text-muted-foreground sm:text-sm">
-                  {labels.auth.noAccount}{" "}
-                  <button
-                    type="button"
-                    className="text-primary hover:underline"
-                    onClick={() => legacyDemoToast(labels.auth.signUp)}
-                  >
-                    {labels.auth.signUp}
-                  </button>
-                </p>
-              </CardFooter>
-            </Card>
-          </div>
-        </div>
-      </div>
+      <LandingHeroBody labels={labels} />
     </LandingPageShell>
   );
 }
@@ -360,14 +244,9 @@ export function ForgotPasswordScreen() {
   const labels = useLegacyLabels();
 
   return (
-    <AppChrome showNav={false}>
-      <div className="auth-shell relative min-h-[100dvh] overflow-hidden">
-        <div className="landing-grid absolute inset-0" />
-        <div className="auth-grid relative mx-auto flex min-h-[90vh] max-w-3xl items-center px-4 py-8 sm:px-6 lg:px-8">
-          <ForgotPasswordForm labels={labels} />
-        </div>
-      </div>
-    </AppChrome>
+    <LandingPageShell labels={labels} activeAction="signIn">
+      <LandingForgotPasswordBody labels={labels} />
+    </LandingPageShell>
   );
 }
 

@@ -25,6 +25,10 @@ export type LegacyLabels = {
     headingLine2Prefix: string;
     /** Gradient phrase on the second line (period added in UI). */
     headingAccent: string;
+    /** Solid purple span before gradient tail (landing hero, optional). */
+    headingAccentPrimary?: string;
+    /** Gradient tail on its own line (landing hero, optional). */
+    headingAccentSecondary?: string;
     description: string;
     pills: [string, string, string];
   };
@@ -40,6 +44,7 @@ export type LegacyLabels = {
     email: string;
     password: string;
     rememberMe: string;
+    forgotPassword: string;
     submit: string;
     noAccount: string;
     signUp: string;
@@ -260,6 +265,8 @@ export const legacyLabelsFr: LegacyLabels = {
     headingLead: "L'espace où les",
     headingLine2Prefix: "étudiants ",
     headingAccent: "s'aident vraiment",
+    headingAccentPrimary: "s'aident",
+    headingAccentSecondary: "vraiment",
     description:
       "Publiez une requête, recevez des réponses ciblées, obtenez de l'aide de professionnels confirmés, échangez vos savoirs !",
     pills: ["Feed social ciblé", "Chat temps réel", "Exploration par matière"],
@@ -278,6 +285,7 @@ export const legacyLabelsFr: LegacyLabels = {
     email: "Email",
     password: "Mot de passe",
     rememberMe: "Se souvenir de moi",
+    forgotPassword: "Mot de passe oublié ?",
     submit: "Se connecter",
     noAccount: "Pas encore de compte ?",
     signUp: "Inscris-toi",
@@ -508,6 +516,8 @@ export const legacyLabelsEn: LegacyLabels = {
     headingLead: "The space where",
     headingLine2Prefix: "students ",
     headingAccent: "actually help each other",
+    headingAccentPrimary: "actually help",
+    headingAccentSecondary: "each other",
     description:
       "Post a request, get targeted answers, learn from mentors, and share knowledge.",
     pills: ["Targeted social feed", "Real-time chat", "Browse by subject"],
@@ -525,6 +535,7 @@ export const legacyLabelsEn: LegacyLabels = {
     email: "Email",
     password: "Password",
     rememberMe: "Remember me",
+    forgotPassword: "Forgot password?",
     submit: "Sign in",
     noAccount: "Don't have an account?",
     signUp: "Sign up",

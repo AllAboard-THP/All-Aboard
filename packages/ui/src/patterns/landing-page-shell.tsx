@@ -57,8 +57,9 @@ export function LandingPageShell({
         onLogoClick={onLogoClick}
       />
       <main
+        id="main-content"
         className={cn(
-          "relative z-10 flex flex-1 flex-col",
+          "relative z-10 flex min-h-0 flex-1 flex-col",
           LANDING_HEADER_OFFSET_CLASS,
         )}
       >

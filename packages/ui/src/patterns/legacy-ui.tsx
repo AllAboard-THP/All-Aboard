@@ -100,16 +100,24 @@ export function Eyebrow({
   children,
   className,
   chromeText = false,
+  variant = "default",
 }: {
   children: ReactNode;
   className?: string;
   chromeText?: boolean;
+  /** Landing hero — lavender glow on photo background. */
+  variant?: "default" | "landing";
 }) {
   return (
     <p
       className={cn(
-        "mb-4 text-xs tracking-[0.3em] uppercase",
-        chromeText ? "landing-chrome-text--eyebrow" : "text-primary",
+        "mb-4 uppercase tracking-[0.3em]",
+        variant === "landing"
+          ? "landing-hero-eyebrow landing-hero-hover-zoom"
+          : cn(
+              "text-xs",
+              chromeText ? "landing-chrome-text--eyebrow" : "text-primary",
+            ),
         className,
       )}
     >
@@ -122,37 +130,65 @@ export function GradientHeading({
   lead,
   line2Prefix,
   accent,
+  accentPrimary,
+  accentSecondary,
   className,
   allowWrap = false,
   chromeText = false,
+  landingHero = false,
 }: {
   lead: string;
   line2Prefix: string;
   accent: string;
+  accentPrimary?: string;
+  accentSecondary?: string;
   className?: string;
   /** When true, lines wrap inside narrow columns (e.g. landing grid). */
   allowWrap?: boolean;
   /** Metallic chrome on lead + line2; accent keeps brand gradient. */
   chromeText?: boolean;
+  /** Photo landing — white title, purple + gradient accent split. */
+  landingHero?: boolean;
 }) {
   const lineClass = cn(
     "block text-pretty",
     allowWrap ? "text-balance" : "whitespace-nowrap",
   );
-  const chromeLine = chromeText ? "landing-chrome-text" : undefined;
+  const lightLine = landingHero
+    ? "landing-hero-title-light"
+    : chromeText
+      ? "landing-chrome-text"
+      : undefined;
+  const useAccentSplit =
+    landingHero && accentPrimary != null && accentSecondary != null;
 
   return (
     <h1
       className={cn(
         "text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.12] font-bold tracking-tight text-foreground",
+        landingHero && "landing-hero-heading font-extrabold",
         className,
       )}
     >
-      <span className={cn(lineClass, chromeLine)}>{lead}</span>
-      <span className={lineClass}>
-        <span className={chromeLine}>{line2Prefix}</span>
-        <span className="gradient-text">{accent}</span>.
-      </span>
+      {useAccentSplit ? (
+        <>
+          <span className={cn(lineClass, lightLine)}>
+            {`${lead.trimEnd()} ${line2Prefix.trimStart()}`}
+          </span>
+          <span className={lineClass}>
+            <span className="landing-hero-accent-purple">{accentPrimary}</span>{" "}
+            <span className="gradient-text">{accentSecondary}</span>.
+          </span>
+        </>
+      ) : (
+        <>
+          <span className={cn(lineClass, lightLine)}>{lead}</span>
+          <span className={lineClass}>
+            <span className={lightLine}>{line2Prefix}</span>
+            <span className="gradient-text">{accent}</span>.
+          </span>
+        </>
+      )}
     </h1>
   );
 }
@@ -162,10 +198,12 @@ const pillIcons = [Zap, MessageCircle, Layers] as const;
 export function FeaturePill({
   label,
   iconIndex,
+  size = "default",
   className,
 }: {
   label: string;
   iconIndex: 0 | 1 | 2;
+  size?: "default" | "lg";
   className?: string;
 }) {
   const Icon = pillIcons[iconIndex];
@@ -179,7 +217,10 @@ export function FeaturePill({
   return (
     <span
       className={cn(
-        "subject-chip group inline-flex cursor-default items-center gap-2 rounded-full px-4 py-2 text-sm text-gray-200 shadow-none",
+        "subject-chip group inline-flex cursor-default items-center gap-2 rounded-full text-gray-200 shadow-none",
+        size === "lg"
+          ? "px-5 py-2.5 text-base sm:px-6 sm:py-3"
+          : "px-4 py-2 text-sm",
         "transition-[transform,background-color,border-color] duration-200 ease-out",
         "hover:scale-105 hover:border-white/30 hover:bg-white/12",
         "motion-reduce:transition-none motion-reduce:hover:scale-100",
@@ -188,7 +229,8 @@ export function FeaturePill({
     >
       <Icon
         className={cn(
-          "size-4 transition-[filter,transform] duration-200 group-hover:scale-110 group-hover:brightness-125",
+          size === "lg" ? "size-5" : "size-4",
+          "transition-[filter,transform] duration-200 group-hover:scale-110 group-hover:brightness-125",
           iconClass,
         )}
       />

@@ -51,33 +51,58 @@ export const APP_CHROME_FOOTER_SHELL_CLASS =
 export const LANDING_HEADER_TAGLINE_CLASS =
   "text-xs font-normal leading-snug tracking-normal text-muted-foreground normal-case sm:text-sm";
 
-/** Symmetric horizontal padding for landing hero (equal left/right gutters). */
-export const LANDING_HERO_PADDING_CLASS =
-  "px-4 sm:px-6 lg:px-8 xl:px-12";
+/** Symmetric horizontal padding for landing hero — aligned with header/footer edges. */
+export const LANDING_HERO_PADDING_CLASS = LANDING_EDGE_PADDING_CLASS;
 
-/** Hero fills viewport between header and footer. */
+/** Hero fills viewport between header and footer — vertically centered in main. */
 export const LANDING_HERO_SECTION_CLASS =
-  "relative flex min-h-0 flex-1 flex-col justify-center py-4 sm:py-6 lg:py-8";
+  "relative flex min-h-0 flex-1 flex-col justify-center py-4 sm:py-6";
 
-/** Centered hero block — even edge space without column overlap. */
+/** Landing body — hero stage (auth-grid + vertical center + chrome-aligned padding). */
+export const LANDING_HERO_BODY_CLASS = `auth-grid ${LANDING_HERO_SECTION_CLASS} ${LANDING_HERO_PADDING_CLASS}`;
+
+/** Hero grid wrapper — stretches to fill shell main so copy can pin pills to the bottom. */
 export const LANDING_HERO_CONTAINER_CLASS =
-  "mx-auto flex w-full min-h-0 max-w-6xl flex-col justify-center xl:max-w-7xl lg:min-h-[calc(100dvh-13.5rem)]";
+  "flex w-full min-h-0 flex-1 items-center";
 
 export const LANDING_HERO_GRID_CLASS =
-  "grid w-full min-w-0 items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-10 xl:gap-12";
+  "grid w-full min-h-0 min-w-0 flex-1 items-stretch gap-10 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:gap-x-16 lg:py-2 xl:gap-x-24 2xl:gap-x-32";
 
-/** Left column copy — shared UI typography. */
+/** Left column — fills grid row height; copy spread top-to-bottom on large screens. */
 export const LANDING_HERO_COPY_CLASS =
-  "flex min-w-0 flex-col gap-5 sm:gap-6 lg:max-w-2xl";
+  "flex min-h-0 min-w-0 flex-col gap-6 sm:gap-8 lg:h-full lg:justify-between lg:gap-10 xl:gap-12";
+
+/** Eyebrow + title + description stack. */
+export const LANDING_HERO_COPY_TOP_CLASS =
+  "flex flex-col gap-5 sm:gap-6 lg:gap-7 xl:gap-8";
+
+/** Feature pills — single horizontal row (wraps only on narrow viewports). */
+export const LANDING_HERO_PILLS_CLASS =
+  "flex flex-row flex-wrap gap-2.5 sm:gap-3 lg:flex-nowrap lg:gap-3.5 lg:shrink-0";
+
+/** Right column — login card pinned to the outer edge, vertically centered with copy. */
+export const LANDING_HERO_LOGIN_COLUMN_CLASS =
+  "flex min-w-0 w-full items-center justify-center sm:justify-end lg:h-full";
 
 /** Hero title + subtitle — see `.landing-hero-hover-zoom` in globals.css. */
 export const LANDING_HERO_HOVER_ZOOM_CLASS = "landing-hero-hover-zoom";
 
 export const LANDING_HERO_HEADING_CLASS =
-  `text-[clamp(2rem,5vw,4rem)] leading-[1.08] ${LANDING_HERO_HOVER_ZOOM_CLASS}`;
+  `text-[clamp(2.5rem,4.8vw,5.25rem)] leading-[1.05] ${LANDING_HERO_HOVER_ZOOM_CLASS}`;
 
 export const LANDING_HERO_DESCRIPTION_CLASS =
-  `landing-hero-description text-lg leading-relaxed sm:text-xl ${LANDING_HERO_HOVER_ZOOM_CLASS}`;
+  `landing-hero-description text-pretty text-xl leading-relaxed sm:text-2xl lg:text-[clamp(1.125rem,1.35vw,1.5rem)] ${LANDING_HERO_HOVER_ZOOM_CLASS}`;
+
+/** Auth card width — login (square) and forgot-password (auto height). */
+export const LANDING_AUTH_CARD_WIDTH_CLASS =
+  "ml-auto w-full max-w-[min(100%,22rem)] sm:max-w-[24rem] lg:max-w-[26rem]";
+
+/** Login card — square footprint within the hero right column. */
+export const LANDING_LOGIN_CARD_WIDTH_CLASS = `aspect-square ${LANDING_AUTH_CARD_WIDTH_CLASS}`;
+
+/** Login card inner layout — centered stack inside the square. */
+export const LANDING_LOGIN_CARD_LAYOUT_CLASS =
+  "flex shrink-0 flex-col justify-center gap-5 rounded-[2rem] border-white/10 p-6 shadow-none sm:gap-6 sm:p-7 lg:p-8";
 
 /** Landing + feed glass cards — `.landing-glass-card` (glass, saturation, subtle hover zoom). */
 export const LANDING_GLASS_CARD_CLASS =
@@ -100,7 +125,7 @@ export const LANDING_LOGIN_CARD_CLASS = LANDING_GLASS_CARD_CLASS;
 
 /** Glass pill fields — `.landing-glass-input` in globals.css (minimal white highlight on hover/focus). */
 export const LANDING_GLASS_INPUT_CLASS =
-  "landing-glass-input h-10 rounded-xl sm:h-11 focus-visible:ring-0";
+  "landing-glass-input h-11 rounded-xl sm:h-12 focus-visible:ring-0";
 
 /** Collapsible feed thread inside unified post card — see globals.css `.feed-thread-panel`. */
 export const FEED_POST_THREAD_PANEL_CLASS = "feed-thread-panel";
