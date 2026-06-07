@@ -115,6 +115,11 @@ export const adminSubjectRequestPatchSchema = z.object({
   status: z.enum(["pending", "approved", "rejected"]),
 });
 
+export const suggestTagsBodySchema = z.object({
+  title: z.string().max(500).optional(),
+  body: z.string().max(50_000).optional(),
+});
+
 export const createConversationBodySchema = z.object({
   recipientId: z.string().uuid(),
   helpRequestId: z.string().uuid().optional(),

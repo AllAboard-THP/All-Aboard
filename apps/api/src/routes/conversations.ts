@@ -16,6 +16,7 @@ import {
   parseMessagesListQuery,
 } from "../lib/schemas.js";
 import { displayNameFromUser } from "../lib/user-mappers.js";
+import { broadcastChatMessage } from "../services/chat-broadcast.js";
 import {
   findOrCreateDirectConversation,
   isConversationParticipant,
@@ -203,6 +204,7 @@ export function registerConversationRoutes(
         parsed.data.body,
       );
       await markConversationReadForUser(db, conversationId, sender.id);
+      broadcastChatMessage(conversationId, message);
 
       return reply.code(201).send({ item: message });
     },

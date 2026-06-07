@@ -102,6 +102,7 @@ export const helpRequests = pgTable("help_requests", {
   responsesCount: integer("responses_count").notNull().default(0),
   bookmarksCount: integer("bookmarks_count").notNull().default(0),
   flaggedForModeration: boolean("flagged_for_moderation").notNull().default(false),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

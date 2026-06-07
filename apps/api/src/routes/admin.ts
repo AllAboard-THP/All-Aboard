@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { count, desc, eq, inArray } from "drizzle-orm";
+import { and, count, desc, eq, inArray, isNull } from "drizzle-orm";
 import type {
   AdminDashboardResponse,
   AdminDenylistPatternsResponse,
@@ -97,7 +97,12 @@ export function registerAdminRoutes(
         })
         .from(helpRequests)
         .leftJoin(subjects, eq(helpRequests.subjectId, subjects.id))
-        .where(eq(helpRequests.flaggedForModeration, false))
+        .where(
+          and(
+            eq(helpRequests.flaggedForModeration, false),
+            isNull(helpRequests.deletedAt),
+          ),
+        )
         .orderBy(desc(helpRequests.createdAt))
         .limit(10);
 

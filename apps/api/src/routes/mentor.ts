@@ -272,4 +272,58 @@ export function registerMentorRoutes(
       };
     },
   );
+
+  app.post(
+    "/mentor/resources/:id/reject",
+    { preHandler: [app.authenticate] },
+    async (request, reply): Promise<ApproveResourceResponse | void> => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      const jwtUser = getJwtUser(request);
+      const role = roleFromJwtClaims(jwtUser.sub, jwtUser.role);
+      if (role !== "mentor" && role !== "admin") {
+        return reply.code(403).send({ error: "forbidden" });
+      }
+
+      const user = await loadUserByEmail(db, jwtUser.sub);
+      if (!user) {
+        return reply.code(404).send({ error: "user_not_found" });
+      }
+
+      const { id } = request.params as { id: string };
+      const bundle = await loadResourceBundle(db, id);
+      if (!bundle || bundle.resource.status !== "pending") {
+        return reply.code(404).send({ error: "not_found" });
+      }
+
+      if (role !== "admin") {
+        const mentorSubjectIds = await loadMentorSubjectIds(db, user.id);
+        if (
+          !subjectInMentorScope(bundle.resource.subjectId, mentorSubjectIds)
+        ) {
+          return reply.code(403).send({ error: "forbidden" });
+        }
+      }
+
+      await db
+        .update(resources)
+        .set({ status: "rejected", updatedAt: new Date() })
+        .where(eq(resources.id, id));
+
+      const updated = await loadResourceBundle(db, id);
+      if (!updated) {
+        return reply.code(500).send({ error: "reject_failed" });
+      }
+
+      return {
+        item: mapResourceRow(
+          updated.resource,
+          updated.subject,
+          updated.author,
+          updated.tags,
+        ),
+      };
+    },
+  );
 }

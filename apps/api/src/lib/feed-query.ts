@@ -4,6 +4,7 @@ import {
   desc,
   eq,
   ilike,
+  isNull,
   or,
   sql,
   type SQL,
@@ -12,8 +13,11 @@ import type { AppDatabase } from "../db/client.js";
 import { helpRequests, subjects } from "../db/schema.js";
 import type { FeedQueryParams } from "./schemas.js";
 
-/** Contenu masqué du fil public tant que la modération n'a pas approuvé (Rails feed). */
-export const feedPublicVisibility = eq(helpRequests.flaggedForModeration, false);
+/** Contenu masqué du fil public (modération + soft delete). */
+export const feedPublicVisibility = and(
+  eq(helpRequests.flaggedForModeration, false),
+  isNull(helpRequests.deletedAt),
+)!;
 
 export function buildFeedConditions(params: FeedQueryParams): SQL | undefined {
   const conditions: SQL[] = [feedPublicVisibility];

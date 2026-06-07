@@ -1,4 +1,4 @@
-import { count, eq, inArray } from "drizzle-orm";
+import { and, count, eq, inArray, isNull } from "drizzle-orm";
 import type { SubjectSummary } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import {
@@ -86,7 +86,13 @@ export async function countUserPosts(
   const rows = await db
     .select({ value: count() })
     .from(helpRequests)
-    .where(eq(helpRequests.authorId, authorEmail));
+    .where(
+      and(
+        eq(helpRequests.authorId, authorEmail),
+        isNull(helpRequests.deletedAt),
+        eq(helpRequests.flaggedForModeration, false),
+      ),
+    );
   return Number(rows[0]?.value ?? 0);
 }
 

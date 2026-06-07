@@ -69,8 +69,12 @@ Modèle vierge : [_template/README.md](_template/README.md).
 | [api-rails-parity-phase2/](api-rails-parity-phase2/) | Parité Rails **Phase 2** — likes, bookmarks, `/me/*`, CRUD réponses (API livré) |
 | [api-rails-parity-phase3/](api-rails-parity-phase3/) | Parité Rails **Phase 3** — auth register, profils, CGU |
 | [api-rails-parity-phase4/](api-rails-parity-phase4/) | Parité Rails **Phase 4** — resources, subject requests, mentor dashboard |
-| [api-rails-parity-phase5/](api-rails-parity-phase5/) | Parité Rails **Phase 5** — messagerie |
-| [api-rails-parity-phase6/](api-rails-parity-phase6/) | Parité Rails **Phase 6** — admin & modération |
+| [api-rails-parity-phase5/](api-rails-parity-phase5/) | Parité Rails **Phase 5** — messagerie REST |
+| [api-rails-parity-phase6/](api-rails-parity-phase6/) | Parité Rails **Phase 6** — admin & modération — ✅ livré |
+| [api-rails-parity/](api-rails-parity/) | **Hub** parité Rails phases 1–7 + lots A / 5b / 7 |
+| [api-parity-delete-reject/](api-parity-delete-reject/) | Lot A — soft delete post + reject resource mentor (OpenAPI 0.8.1) |
+| [api-rails-parity-phase5b/](api-rails-parity-phase5b/) | Phase 5b — chat WebSocket (OpenAPI 0.9.0) |
+| [api-rails-parity-phase7/](api-rails-parity-phase7/) | Phase 7 — suggest-tags + `ai_summary` (OpenAPI 0.10.0) |
 
 *(Ajouter une ligne ici à la création d’un nouveau dossier — une ligne par PR, conflits rares.)*
 

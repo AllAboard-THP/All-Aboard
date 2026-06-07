@@ -4,7 +4,7 @@ info:
   description: |
     Contrat HTTP Phase 2 MVP (feed, auth JWT, demandes d'aide, mentor feed).
     Source de vérité types : `packages/types`. Doc opérationnelle : `Docs/plan-mise-en-place-web-api-donnees.md`.
-  version: 0.8.0
+  version: 0.10.0
   contact:
     name: All-Aboard THP
     url: https://github.com/AllAboard-THP/All-Aboard
@@ -468,6 +468,39 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /help-requests/suggest-tags:
+    post:
+      operationId: suggestHelpRequestTags
+      tags: [help-requests]
+      summary: Suggérer des tags (proxy agent ou stub)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuggestTagsBody"
+      responses:
+        "200":
+          description: Tags suggérés (2–5)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuggestTagsResponse"
+        "400":
+          description: Corps invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /help-requests/{id}:
     get:
       operationId: getHelpRequestById
@@ -568,6 +601,40 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Demande absente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteHelpRequestById
+      tags: [help-requests]
+      summary: Supprimer une demande (soft delete — auteur ou admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Demande supprimée (masquée du fil public)
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Non auteur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Demande absente ou déjà supprimée
           content:
             application/json:
               schema:
@@ -962,6 +1029,52 @@ paths:
       responses:
         "200":
           description: Ressource publiée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApproveResourceResponse"
+        "401":
+          description: JWT absent ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Rôle mentor requis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Ressource introuvable ou non modérable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /mentor/resources/{id}/reject:
+    post:
+      operationId: rejectMentorResource
+      tags: [mentor]
+      summary: Refuser une ressource en attente (compétences mentor)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Ressource refusée
           content:
             application/json:
               schema:
@@ -1456,6 +1569,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
+  /conversations/{id}/ws:
+    get:
+      operationId: subscribeConversationWebSocket
+      tags: [conversations]
+      summary: Abonnement WebSocket temps réel (messages)
+      description: |
+        Upgrade WebSocket (RFC 6455). Auth via cookie `access_token` ou query `?token=<JWT>`.
+        Le serveur pousse des payloads `ChatMessage` JSON après chaque `POST …/messages`.
+        Fermeture : `4401` non authentifié, `4403` non participant, `4503` base indisponible.
+        Hub en mémoire — une instance API (mono-replica).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: token
+          in: query
+          required: false
+          schema:
+            type: string
+          description: JWT Bearer (alternative au cookie HttpOnly)
+      responses:
+        "101":
+          description: Switching Protocols — flux `ChatMessage` JSON
+        "401":
+          description: JWT absent ou invalide
+        "403":
+          description: Non participant à la conversation
 
   /admin/dashboard:
     get:
@@ -1982,6 +2126,9 @@ components:
           format: date-time
         flaggedForModeration:
           type: boolean
+        deletedAt:
+          type: string
+          format: date-time
 
     SubjectSummary:
       type: object
@@ -2310,6 +2457,25 @@ components:
             visibleCount:
               type: integer
               minimum: 0
+
+    SuggestTagsBody:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 500
+        body:
+          type: string
+          maxLength: 50000
+
+    SuggestTagsResponse:
+      type: object
+      required: [tags]
+      properties:
+        tags:
+          type: array
+          items:
+            type: string
 
     CreateHelpRequestBody:
       type: object

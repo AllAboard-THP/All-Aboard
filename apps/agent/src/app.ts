@@ -1,6 +1,15 @@
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import { z } from "zod";
-import type { AgentRoutingEvaluateResponse } from "@allaboard/types";
+import type {
+  AgentRoutingEvaluateResponse,
+  AgentSummaryGenerateResponse,
+  AgentTagsSuggestResponse,
+} from "@allaboard/types";
+import {
+  generateSummaryFallback,
+  summaryGenerateBodySchema,
+} from "./summary-generate.js";
+import { suggestTagsFallback, tagsSuggestBodySchema } from "./tag-suggest.js";
 
 /** Aligné stub API Phase 2 — suggestion redirect Rubberduck (service externe). */
 const RUBBERDUCK_REDIRECT_WORD_THRESHOLD = 6;
@@ -42,6 +51,41 @@ export async function buildApp() {
           : {}),
       };
       return reply.status(200).send(body);
+    },
+  );
+
+  app.post(
+    "/tags/suggest",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const parsed = tagsSuggestBodySchema.safeParse(request.body);
+      if (!parsed.success) return invalidBody(reply);
+
+      const title = parsed.data.title?.trim();
+      const body = parsed.data.body?.trim();
+      if (!title && !body) {
+        return reply.status(200).send({ tags: [] } satisfies AgentTagsSuggestResponse);
+      }
+
+      const tags = suggestTagsFallback(title, body);
+      return reply.status(200).send({ tags } satisfies AgentTagsSuggestResponse);
+    },
+  );
+
+  app.post(
+    "/summary/generate",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const parsed = summaryGenerateBodySchema.safeParse(request.body);
+      if (!parsed.success) return invalidBody(reply);
+
+      const summary = generateSummaryFallback({
+        title: parsed.data.title.trim(),
+        body: parsed.data.body,
+        codeSnippet: parsed.data.codeSnippet,
+        responses: parsed.data.responses,
+      });
+      return reply
+        .status(200)
+        .send({ summary } satisfies AgentSummaryGenerateResponse);
     },
   );
 

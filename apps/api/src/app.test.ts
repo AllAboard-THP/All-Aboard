@@ -16,7 +16,11 @@ import {
   seedUsers,
 } from "./db/seed";
 import { outboxEvents, subjects, users } from "./db/schema";
-import { HELP_REQUEST_CREATED } from "./intuition/outbox";
+import {
+  HELP_REQUEST_CREATED,
+  HELP_REQUEST_SUMMARY_REQUESTED,
+} from "./intuition/outbox";
+import { processPendingSummaryEvents } from "./services/ai-summary-worker";
 import { isOpenApiDocsEnabled } from "./openapi";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -1809,6 +1813,190 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         item: { status: string };
       };
       expect(patched.item.status).toBe("approved");
+    });
+
+    it("DELETE /help-requests/:id soft-deletes for author and hides from feed", async () => {
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const title = `Soft delete ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const delRes = await app.inject({
+        method: "DELETE",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      expect(delRes.statusCode).toBe(204);
+
+      const feedRes = await app.inject({ method: "GET", url: "/feed" });
+      const feed = JSON.parse(feedRes.payload) as {
+        items: Array<{ id: string }>;
+      };
+      expect(feed.items.some((i) => i.id === created.item.id)).toBe(false);
+
+      const detailRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      expect(detailRes.statusCode).toBe(200);
+      const detail = JSON.parse(detailRes.payload) as {
+        item: { deletedAt?: string };
+      };
+      expect(detail.item.deletedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+
+      const publicRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+      });
+      expect(publicRes.statusCode).toBe(404);
+    });
+
+    it("DELETE /help-requests/:id returns 403 for non-author", async () => {
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const title = `No delete ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const delRes = await app.inject({
+        method: "DELETE",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(delRes.statusCode).toBe(403);
+    });
+
+    it("POST /mentor/resources/:id/reject sets status rejected", async () => {
+      const reactRows = await db
+        .select({ id: subjects.id })
+        .from(subjects)
+        .where(eq(subjects.slug, "react"))
+        .limit(1);
+      const subjectId = reactRows[0]?.id;
+      expect(subjectId).toBeDefined();
+
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const title = `Reject me ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/resources",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title, body: "À rejeter.", subjectId },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const rejectRes = await app.inject({
+        method: "POST",
+        url: `/mentor/resources/${created.item.id}/reject`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(rejectRes.statusCode).toBe(200);
+      const rejected = JSON.parse(rejectRes.payload) as {
+        item: { status: string };
+      };
+      expect(rejected.item.status).toBe("rejected");
+
+      const dashRes = await app.inject({
+        method: "GET",
+        url: "/mentor/dashboard",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      const dash = JSON.parse(dashRes.payload) as {
+        pendingResources: Array<{ id: string }>;
+      };
+      expect(
+        dash.pendingResources.some((r) => r.id === created.item.id),
+      ).toBe(false);
+    });
+
+    it("POST /help-requests/suggest-tags returns tag suggestions", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "POST",
+        url: "/help-requests/suggest-tags",
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          title: "React useEffect infinite loop",
+          body: "mon composant rerender sans fin",
+        },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as { tags: string[] };
+      expect(Array.isArray(body.tags)).toBe(true);
+      expect(body.tags.length).toBeGreaterThan(0);
+    });
+
+    it("PATCH resolved enqueues summary outbox and worker fills aiSummary", async () => {
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const title = `Resolve me ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title, body: "J'ai un bug TypeScript" },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/responses`,
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { body: "Vérifie tes types génériques." },
+      });
+
+      const patchRes = await app.inject({
+        method: "PATCH",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { status: "resolved" },
+      });
+      expect(patchRes.statusCode).toBe(200);
+
+      const outboxRows = await db
+        .select()
+        .from(outboxEvents)
+        .where(eq(outboxEvents.aggregateId, created.item.id));
+      expect(
+        outboxRows.some(
+          (e) => e.eventType === HELP_REQUEST_SUMMARY_REQUESTED,
+        ),
+      ).toBe(true);
+
+      await processPendingSummaryEvents(db, {
+        generateSummary: async () => ({
+          summary: "Problème : bug TS. Solution : typer correctement.",
+        }),
+      });
+
+      const detailRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      const detail = JSON.parse(detailRes.payload) as {
+        item: { aiSummary?: string; status?: string };
+      };
+      expect(detail.item.status).toBe("resolved");
+      expect(detail.item.aiSummary).toContain("Problème");
     });
   },
 );
