@@ -52,11 +52,10 @@ export function LandingHeroBody({
           LANDING_LOGIN_CARD_CLASS,
         )}
       >
-        <CardHeader className="shrink-0 space-y-1 px-0 pb-0 text-center sm:text-left">
+        <CardHeader className="shrink-0 px-0 pb-0 text-center">
           <CardTitle className="text-2xl sm:text-3xl">
             {labels.auth.loginTitle}
           </CardTitle>
-          <p className="text-muted-foreground">{labels.auth.loginSubtitle}</p>
         </CardHeader>
         <CardContent className="flex flex-col gap-5 px-0">
           <div className="flex flex-col gap-2">

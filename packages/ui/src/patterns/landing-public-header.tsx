@@ -67,7 +67,7 @@ export function LandingPublicHeader({
             type="button"
             variant={activeAction === "signUp" ? "default" : "outline"}
             size="sm"
-            className="rounded-xl"
+            className="min-w-[7.5rem] rounded-full px-4"
             aria-current={activeAction === "signUp" ? "page" : undefined}
             onClick={handleSignUp}
           >
