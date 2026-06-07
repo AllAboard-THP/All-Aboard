@@ -77,12 +77,22 @@ import {
 import { legacyDemoToast } from "../legacy-story-feedback";
 import { GraduationCap } from "lucide-react";
 
-export function LandingLoginScreen() {
+export function LandingLoginScreen({
+  onForgotPasswordClick,
+  onSignUpClick,
+}: {
+  onForgotPasswordClick?: () => void;
+  onSignUpClick?: () => void;
+} = {}) {
   const labels = useLegacyLabels();
 
   return (
     <LandingPageShell labels={labels}>
-      <LandingHeroBody labels={labels} />
+      <LandingHeroBody
+        labels={labels}
+        onForgotPasswordClick={onForgotPasswordClick}
+        onSignUpClick={onSignUpClick}
+      />
     </LandingPageShell>
   );
 }

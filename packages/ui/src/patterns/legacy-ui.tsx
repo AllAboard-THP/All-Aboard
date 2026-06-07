@@ -42,7 +42,6 @@ import {
   APP_CHROME_HEADER_CLASS,
   APP_CHROME_HEADER_ROW_CLASS,
   LANDING_EDGE_PADDING_CLASS,
-  LANDING_HEADER_TAGLINE_CLASS,
 } from "./landing-layout";
 import {
   legacySubjects,
@@ -513,15 +512,7 @@ export function AppNavBar({
   return (
     <header className={cn(APP_CHROME_HEADER_CLASS, className)}>
       <div className={APP_CHROME_HEADER_ROW_CLASS}>
-        <BrandLogo
-          labels={labels}
-          className="min-w-0 shrink-0 items-start"
-          tagline={
-            <span className={LANDING_HEADER_TAGLINE_CLASS}>
-              {labels.landing.eyebrow}
-            </span>
-          }
-        />
+        <BrandLogo labels={labels} className="min-w-0 shrink-0 items-start" />
         {showMainNav || showUserMenu ? (
           <div className="ml-auto flex shrink-0 items-center gap-2 self-center sm:gap-4">
             {showMainNav ? (

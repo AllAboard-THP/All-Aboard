@@ -9,7 +9,6 @@ import { cn } from "@allaboard/ui/lib/utils";
 import {
   APP_CHROME_HEADER_CLASS,
   APP_CHROME_HEADER_ROW_CLASS,
-  LANDING_HEADER_TAGLINE_CLASS,
 } from "./landing-layout";
 import { BrandLogo } from "./legacy-ui";
 import { legacyDemoToast } from "./legacy-story-feedback";
@@ -45,15 +44,7 @@ export function LandingPublicHeader({
           onClick={handleLogo}
           aria-label={labels.brandName}
         >
-          <BrandLogo
-            labels={labels}
-            className="items-start"
-            tagline={
-              <span className={LANDING_HEADER_TAGLINE_CLASS}>
-                {labels.landing.eyebrow}
-              </span>
-            }
-          />
+          <BrandLogo labels={labels} className="items-start" />
         </button>
 
         <nav

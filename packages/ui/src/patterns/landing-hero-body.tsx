@@ -25,6 +25,7 @@ import { legacyDemoToast } from "./legacy-story-feedback";
 type LandingHeroBodyProps = {
   labels: LegacyLabels;
   onForgotPasswordClick?: () => void;
+  onSignUpClick?: () => void;
 };
 
 /**
@@ -34,10 +35,13 @@ type LandingHeroBodyProps = {
 export function LandingHeroBody({
   labels,
   onForgotPasswordClick,
+  onSignUpClick,
 }: LandingHeroBodyProps) {
   const handleForgotPassword =
     onForgotPasswordClick ??
     (() => legacyDemoToast(labels.auth.forgotPassword));
+  const handleSignUp =
+    onSignUpClick ?? (() => legacyDemoToast(labels.auth.signUp));
 
   return (
     <LandingAuthHeroLayout labels={labels}>
@@ -99,7 +103,7 @@ export function LandingHeroBody({
             <button
               type="button"
               className="text-primary hover:underline"
-              onClick={() => legacyDemoToast(labels.auth.signUp)}
+                onClick={handleSignUp}
             >
               {labels.auth.signUp}
             </button>

@@ -10,7 +10,6 @@ import {
   APP_CHROME_HEADER_ROW_CLASS,
   APP_CHROME_MAIN_CLASS,
   APP_CHROME_MAIN_INNER_CLASS,
-  LANDING_HEADER_TAGLINE_CLASS,
 } from "@allaboard/ui/patterns/landing-layout";
 import { cn } from "@allaboard/ui/lib/utils";
 
@@ -35,10 +34,7 @@ export async function AppShell({ children }: AppShellProps) {
             className="-ml-1 flex min-w-0 shrink-0 items-center gap-3 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <AllAboardLogoMark className="size-10" title={t("brand")} />
-            <span className="flex min-w-0 flex-col gap-0.5">
-              <span className="gradient-text text-xl font-bold">{t("brand")}</span>
-              <span className={LANDING_HEADER_TAGLINE_CLASS}>{t("tagline")}</span>
-            </span>
+            <span className="gradient-text min-w-0 text-xl font-bold">{t("brand")}</span>
           </Link>
           <div className="ml-auto flex shrink-0 flex-wrap items-center gap-2 self-center sm:gap-4">
             <AppShellNav />
