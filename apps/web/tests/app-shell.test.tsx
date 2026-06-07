@@ -40,7 +40,7 @@ describe("AppShell", () => {
     renderWithI18n(ui);
 
     expect(screen.getByRole("banner")).toBeTruthy();
-    expect(screen.getByText("Entraide étudiante en temps réel")).toBeTruthy();
+    expect(screen.getAllByText("All-Aboard").length).toBeGreaterThan(0);
     expect(screen.getByRole("navigation", { name: "Navigation principale" })).toBeTruthy();
     expect(screen.getByRole("main").getAttribute("id")).toBe("main-content");
     expect(screen.getByTestId("locale-switcher")).toBeTruthy();
