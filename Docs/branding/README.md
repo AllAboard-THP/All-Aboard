@@ -1,6 +1,6 @@
 # Branding — visual concepts
 
-**Last updated:** 2026-06-03 (landing hero: open-space student lounge)
+**Last updated:** 2026-06-08 (landing hero: illustrated port entry)
 
 Exploratory hero / marketing illustrations for All-Aboard. Not yet tied to production assets (`packages/ui`, Storybook, or `apps/web`).
 
@@ -33,7 +33,10 @@ Storybook: **Patterns/Legacy Brand** (`legacy-brand.stories.tsx`).
 |----|------|-------|-------|
 | **concept-1** | [concept-1.png](assets/concept-1.png) | Students at a marina dock, sailboat in background | **Canonical marina hero** — six students on pier; A-frame sign with FR copy; All-Aboard logos on tops and hull; indigo → pink sails; Mediterranean town |
 | **concept-2** | [concept-2.png](assets/concept-2.png) | Paris Seine — student nautical sports | **Validated hero (2026-05-31)** — illustrated style; mirrored composition; six students cross-legged on quay; full FR copy on main sail (readable); kayaks/paddle/dinghies dispersed; no freestanding sign |
-| **concept-open-space-landing** | [concept-open-space-landing.png](assets/concept-open-space-landing.png) | Student open space — bay window, yacht on sea | **Landing hero (2026-06-03)** — yacht in left window bay (readable branding, no mirror); `object-[32%_34%]` in `LandingConceptBackground` |
+| **concept-landing-port-entry** | [concept-landing-port-entry.png](assets/concept-landing-port-entry.png) | Illustrated sailboat entering port | **Landing hero (2026-06-08)** — editorial illustration (concept-2 style); full boat; branding on right sail; warm mood; `object-[40%_42%]` in `LandingConceptBackground` |
+| **concept-landing-villette-arrival** | [concept-landing-villette-arrival.png](assets/concept-landing-villette-arrival.png) | Photo-real Paris Bassin de la Villette | Exploratory variant B — archived |
+| **concept-landing-port-arrival** | [concept-landing-port-arrival.png](assets/concept-landing-port-arrival.png) | Sailboat arriving at marina — students on deck | Previous landing iteration — archived |
+| **concept-open-space-landing** | [concept-open-space-landing.png](assets/concept-open-space-landing.png) | Student open space — bay window, yacht on sea | Previous landing hero (2026-06-03) — archived reference |
 | **concept-feed-three-column-morning-illustrated** | [concept-feed-three-column-morning-illustrated.png](assets/concept-feed-three-column-morning-illustrated.png) | Feed stage — dawn, tri-band; illustrated open-space; premium brand props; branded wall frame; **2704×1520 (2.7K)** | **Feed three-column** — sole feed raster; `FeedConceptBackground` (2026-06-05) |
 ---
 
@@ -80,6 +83,6 @@ When regenerating or editing concept visuals (AI or manual):
 - **Language:** Illustrations are locale-neutral; user-facing copy remains French in product UI.
 - **Status:** **concept-1** = canonical marina hero (Mediterranean, A-frame sign). **concept-2** = **validated** Seine sport hero (2026-05-31). Series files Vendée Globe and Seine night remain exploratory.
 
-**Storybook / landing (body):** `Screens/LandingLogin` and `apps/web` route `/` use [concept-open-space-landing.png](assets/concept-open-space-landing.png) via `packages/ui/src/assets/concept-open-space-landing.png` symlink (`LandingConceptBackground`, `object-[34%_36%]`). **Feed:** `Screens/FeedThreeColumn` and `apps/web` `/feed` use [concept-feed-three-column-morning-illustrated.png](assets/concept-feed-three-column-morning-illustrated.png) (canonical raster in `Docs/branding/assets/`) via `packages/ui/src/assets/concept-feed-three-column-morning-illustrated.png` symlink and `FeedConceptBackground` (`AppChrome` `mainInnerLayout="feed"` or `app/.../feed/layout.tsx`). Previous Seine hero: [concept-2-bicolor-sail-proposal.png](assets/concept-2-bicolor-sail-proposal.png). Canonical marina / Seine reference scenes: [concept-1.png](assets/concept-1.png), [concept-2.png](assets/concept-2.png).
+**Storybook / landing (body):** `Screens/LandingLogin` and `apps/web` route `/` use [concept-landing-port-entry.png](assets/concept-landing-port-entry.png) via `packages/ui/src/assets/concept-landing-port-entry.png` symlink (`LandingConceptBackground`, `object-[42%_40%]`). **Feed:** `Screens/FeedThreeColumn` and `apps/web` `/feed` use [concept-feed-three-column-morning-illustrated.png](assets/concept-feed-three-column-morning-illustrated.png) (canonical raster in `Docs/branding/assets/`) via `packages/ui/src/assets/concept-feed-three-column-morning-illustrated.png` symlink and `FeedConceptBackground` (`AppChrome` `mainInnerLayout="feed"` or `app/.../feed/layout.tsx`). Previous Seine hero: [concept-2-bicolor-sail-proposal.png](assets/concept-2-bicolor-sail-proposal.png). Canonical marina / Seine reference scenes: [concept-1.png](assets/concept-1.png), [concept-2.png](assets/concept-2.png).
 
 When promoting a concept to production, document the decision here or in an ADR and add optimized exports (SVG, WebP, favicon) under the appropriate app or design-system path.

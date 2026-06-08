@@ -225,8 +225,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/tests/app-shell.test.tsx": {
-    "mtime": 1780583786.2312899,
-    "ast_hash": "695778954be9c33a6886b5925e43440c",
+    "mtime": 1780874760.825891,
+    "ast_hash": "6e7a94ba84063eeabde7a76497a18935",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/tests/rubberduck-redirect.test.ts": {
@@ -290,8 +290,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/app-shell.tsx": {
-    "mtime": 1780583940.6547227,
-    "ast_hash": "42163daabc797446625ef17f3f34e83a",
+    "mtime": 1780874626.885835,
+    "ast_hash": "b91ba15ca5081752b90d604038cc6614",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/locale-switcher.tsx": {
@@ -835,8 +835,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-public-header.tsx": {
-    "mtime": 1780583931.7427576,
-    "ast_hash": "c76faf9e67df5c757209857e6c1dc33a",
+    "mtime": 1780875378.3620572,
+    "ast_hash": "b8a786ee2d954bb274108c3db7642879",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/legacy-messages-patterns.tsx": {
@@ -865,8 +865,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/legacy-ui.tsx": {
-    "mtime": 1780872413.8007648,
-    "ast_hash": "dd3a76e0e8fcbefcee59051cb059d9d8",
+    "mtime": 1780874634.7338371,
+    "ast_hash": "76df9b5790556f8c4b1b6cb42c1ca430",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/mentor-patterns.stories.tsx": {
@@ -935,8 +935,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-concept-background.tsx": {
-    "mtime": 1780508512.64917,
-    "ast_hash": "c20e358e60b1790a25e24094928146f5",
+    "mtime": 1780876725.7383626,
+    "ast_hash": "64556cbc1aaeda0194c6f2c199c08fe2",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-layout.ts": {
@@ -1155,8 +1155,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/components/button.tsx": {
-    "mtime": 1779799623.6618152,
-    "ast_hash": "ef32404bf5fd9b813b7280064d934cc2",
+    "mtime": 1780875377.970057,
+    "ast_hash": "89e1099756ed0dbf48e791b90db42728",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/components/tabs.tsx": {
@@ -1565,8 +1565,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/branding/README.md": {
-    "mtime": 1780870350.6994338,
-    "ast_hash": "485cfa8dab05671c222c757406bbf4b4",
+    "mtime": 1780876722.8383617,
+    "ast_hash": "65d87666c3e69deeb52592f3d3b30a83",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/design-system/contributor-guide.md": {
@@ -1705,8 +1705,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-hero-body.tsx": {
-    "mtime": 1780874430.2297823,
-    "ast_hash": "dbfa76e91e7ccfde184caf8ccc50542e",
+    "mtime": 1780874884.1259422,
+    "ast_hash": "0ba135a479849f93b8354ff78ac925c7",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-auth-hero-layout.tsx": {
@@ -1805,13 +1805,43 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/landing-login-page.tsx": {
-    "mtime": 1780874446.413755,
-    "ast_hash": "e060a547293491014a547de7e9a39692",
+    "mtime": 1780875258.7860327,
+    "ast_hash": "58c1ec7fcb1fdfeb29f2479619a3f498",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/legacy-screen-page.tsx": {
-    "mtime": 1780874425.8657808,
-    "ast_hash": "7081d748cb41e694c1deceb5ed61eb72",
+    "mtime": 1780875258.4580326,
+    "ast_hash": "2b10314e24210e524f692541a910fa4e",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/concept-landing-port-arrival.png": {
+    "mtime": 1780876004.7022035,
+    "ast_hash": "3cb0bc0ccad0283d4f3a8c0e5b0a1186",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-landing-port-arrival.png": {
+    "mtime": 1780876004.7022035,
+    "ast_hash": "3cb0bc0ccad0283d4f3a8c0e5b0a1186",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/concept-landing-villette-arrival.png": {
+    "mtime": 1780876327.2262785,
+    "ast_hash": "93ac38f6d9f214d755f6de559cf5722b",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/concept-landing-port-entry.png": {
+    "mtime": 1780876721.8063612,
+    "ast_hash": "12e52c2fc302ec0fb05e2c747f57c909",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-landing-villette-arrival.png": {
+    "mtime": 1780876327.2262785,
+    "ast_hash": "93ac38f6d9f214d755f6de559cf5722b",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-landing-port-entry.png": {
+    "mtime": 1780876721.8063612,
+    "ast_hash": "12e52c2fc302ec0fb05e2c747f57c909",
     "semantic_hash": ""
   }
 }
