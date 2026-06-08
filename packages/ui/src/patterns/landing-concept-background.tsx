@@ -3,7 +3,7 @@ import conceptLandingPortEntryUrl from "../assets/concept-landing-port-entry.png
 import { cn } from "@allaboard/ui/lib/utils";
 
 /** Bust browser/Vite cache when the canonical Docs asset changes (md5 prefix). */
-const LANDING_CONCEPT_BG_REVISION = "c0316a46";
+const LANDING_CONCEPT_BG_REVISION = "d30d2e38";
 
 function brandAssetUrl(asset: string | { src: string }): string {
   const base = typeof asset === "string" ? asset : asset.src;
@@ -26,7 +26,7 @@ export function LandingConceptBackground({ className }: { className?: string }) 
         fetchPriority="low"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-background/62 via-background/14 to-background/10" />
-      <div className="absolute inset-0 bg-gradient-to-b from-white/[0.07] via-transparent to-background/5" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/[0.07] via-transparent to-background/8" />
     </div>
   );
 }
