@@ -208,28 +208,14 @@
     border: 1px solid rgb(255 255 255 / 0.08);
   }
 
-  /** Shared landing/feed glass — lighter than .glass; −4% saturation; subtle hover like login card. */
-  .landing-glass-card {
-    background:
-      linear-gradient(160deg, rgb(99 102 241 / 0.09), rgb(15 23 42 / 0.08)),
-      rgb(30 41 59 / 0.46);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgb(255 255 255 / 0.08);
-    filter: saturate(96%);
-    transform: scale(1);
-    transform-origin: center;
-    transition:
-      filter 200ms ease-out,
-      transform 200ms ease-out;
-  }
-
-  .landing-glass-card:hover {
-    filter: saturate(96%) brightness(1.1);
-    transform: scale(1.008);
-  }
-
-  /** Feed side rails — slightly darker glass for readable copy on illustrated stage. */
-  .feed-stage-glass-card {
+  /**
+   * Canonical app card glass — feed rails, posts, login, shadcn Card.
+   * Aliases: .landing-glass-card, .feed-stage-glass-card, .feed-post-glass-card
+   */
+  .app-glass-card,
+  .landing-glass-card,
+  .feed-stage-glass-card,
+  .feed-post-glass-card {
     background:
       linear-gradient(160deg, rgb(99 102 241 / 0.08), rgb(15 23 42 / 0.14)),
       rgb(15 23 42 / 0.54);
@@ -243,52 +229,25 @@
       transform 200ms ease-out;
   }
 
-  .feed-stage-glass-card:hover {
+  .app-glass-card:hover,
+  .landing-glass-card:hover,
+  .feed-stage-glass-card:hover,
+  .feed-post-glass-card:hover {
     filter: saturate(98%) brightness(1.05);
     transform: scale(1.006);
   }
 
-  /** Feed post cards — a touch darker than rails (code blocks, long copy). */
-  .feed-post-glass-card {
-    background:
-      linear-gradient(160deg, rgb(99 102 241 / 0.07), rgb(15 23 42 / 0.16)),
-      rgb(15 23 42 / 0.6);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgb(255 255 255 / 0.08);
-    filter: saturate(96%);
-    transform: scale(1);
-    transform-origin: center;
-    transition:
-      filter 200ms ease-out,
-      transform 200ms ease-out;
-  }
-
-  .feed-post-glass-card:hover {
-    filter: saturate(96%) brightness(1.05);
-    transform: scale(1.008);
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .landing-glass-card {
-      transition: none;
-    }
-
-    .landing-glass-card:hover {
-      transform: scale(1);
-    }
-
-    .feed-stage-glass-card {
-      transition: none;
-    }
-
-    .feed-stage-glass-card:hover {
-      transform: scale(1);
-    }
-
+    .app-glass-card,
+    .landing-glass-card,
+    .feed-stage-glass-card,
     .feed-post-glass-card {
       transition: none;
     }
 
+    .app-glass-card:hover,
+    .landing-glass-card:hover,
+    .feed-stage-glass-card:hover,
     .feed-post-glass-card:hover {
       transform: scale(1);
     }
@@ -503,9 +462,12 @@
     text-shadow: 0 0 22px rgb(168 85 247 / 0.4);
   }
 
-  /** Landing hero heading wrapper — extra-bold + gradient tail glow. */
+  /** Landing hero heading wrapper — gradient tail legibility on photo background. */
   .landing-hero-heading .gradient-text {
-    filter: drop-shadow(0 0 14px rgb(236 72 153 / 0.28));
+    filter:
+      drop-shadow(0 1px 2px rgb(0 0 0 / 0.55))
+      drop-shadow(0 2px 10px rgb(0 0 0 / 0.32))
+      drop-shadow(0 0 16px rgb(236 72 153 / 0.32));
   }
 
   .landing-chrome-text--eyebrow {

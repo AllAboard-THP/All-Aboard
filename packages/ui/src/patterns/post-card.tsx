@@ -26,7 +26,7 @@ import {
   type PostCardLabels,
 } from "../i18n/post-card-labels";
 import { cn } from "@allaboard/ui/lib/utils";
-import { LANDING_GLASS_CARD_CLASS } from "./landing-layout";
+import { APP_GLASS_CARD_CLASS } from "./landing-layout";
 import { legacyDemoToast } from "./legacy-story-feedback";
 
 export type { PostCardLabels } from "../i18n/post-card-labels";
@@ -402,8 +402,8 @@ export function PostCard({
   return (
     <article
       className={cn(
-        glassVariant === "landing" ? LANDING_GLASS_CARD_CLASS : "glass",
-        "w-full max-w-2xl rounded-2xl text-left shadow-sm",
+        APP_GLASS_CARD_CLASS,
+        "w-full max-w-2xl rounded-2xl text-left shadow-none",
         className,
       )}
     >

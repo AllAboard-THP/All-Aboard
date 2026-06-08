@@ -18,6 +18,7 @@ import {
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
 import { StatCard } from "./legacy-ui";
+import { APP_GLASS_CARD_CLASS } from "./landing-layout";
 import { legacyDemoToast } from "./legacy-story-feedback";
 
 type AdminActionTone = "primary" | "yellow" | "emerald" | "accent" | "orange";
@@ -113,7 +114,7 @@ export function AdminActionGrid({
   const actions = labels.admin.actions;
 
   return (
-    <div className="glass rounded-2xl p-6">
+    <div className={cn(APP_GLASS_CARD_CLASS, "rounded-2xl p-6")}>
       <h2 className="mb-4 text-2xl font-bold">{labels.admin.actionsTitle}</h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <AdminActionButton label={actions.managePosts} icon={Trash2} />

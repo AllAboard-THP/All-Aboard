@@ -16,7 +16,7 @@ export default async function NewHelpRequestPage() {
 
   return (
     <MarketingPageShell maxWidth="narrow">
-      <Card className="bg-card/90">
+      <Card>
         <CardHeader>
           <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
             {t("eyebrow")}

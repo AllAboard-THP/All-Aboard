@@ -21,11 +21,12 @@ export function LandingConceptBackground({ className }: { className?: string }) 
       <img
         src={brandAssetUrl(conceptLandingPortEntryUrl)}
         alt=""
-        className="size-full object-cover object-center brightness-[1.02] saturate-[0.9]"
+        className="size-full object-cover object-[58%_center] brightness-[1.02] saturate-[0.9]"
         decoding="async"
         fetchPriority="low"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/62 via-background/14 to-background/10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/78 via-background/24 to-background/8" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_72%_85%_at_14%_50%,rgb(15_23_42/0.5),transparent_68%)]" />
       <div className="absolute inset-0 bg-gradient-to-b from-white/[0.07] via-transparent to-background/8" />
     </div>
   );

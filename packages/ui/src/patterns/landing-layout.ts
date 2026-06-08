@@ -104,17 +104,18 @@ export const LANDING_LOGIN_CARD_WIDTH_CLASS = `aspect-square ${LANDING_AUTH_CARD
 export const LANDING_LOGIN_CARD_LAYOUT_CLASS =
   "flex shrink-0 flex-col justify-center gap-5 rounded-[2rem] border-white/10 p-6 shadow-none sm:gap-6 sm:p-7 lg:p-8";
 
-/** Landing + feed glass cards — `.landing-glass-card` (glass, saturation, subtle hover zoom). */
-export const LANDING_GLASS_CARD_CLASS =
-  "landing-glass-card motion-reduce:transition-none";
+/** Canonical glass surface — `.app-glass-card` in globals.css (feed search rail style). */
+export const APP_GLASS_CARD_CLASS =
+  "app-glass-card motion-reduce:transition-none";
 
-/** Feed side rails — darker glass for illustrated stage readability. */
-export const FEED_STAGE_GLASS_CARD_CLASS =
-  "feed-stage-glass-card motion-reduce:transition-none";
+/** @deprecated Use APP_GLASS_CARD_CLASS — kept for existing imports. */
+export const LANDING_GLASS_CARD_CLASS = APP_GLASS_CARD_CLASS;
 
-/** Feed post cards — slightly darker than rails (code + thread). */
-export const FEED_POST_GLASS_CARD_CLASS =
-  "feed-post-glass-card motion-reduce:transition-none";
+/** @deprecated Use APP_GLASS_CARD_CLASS — kept for existing imports. */
+export const FEED_STAGE_GLASS_CARD_CLASS = APP_GLASS_CARD_CLASS;
+
+/** @deprecated Use APP_GLASS_CARD_CLASS — kept for existing imports. */
+export const FEED_POST_GLASS_CARD_CLASS = APP_GLASS_CARD_CLASS;
 
 /** Rail list rows — scaled closer to center post typography. */
 export const FEED_RAIL_LIST_ITEM_CLASS =

@@ -41,6 +41,7 @@ import { cn } from "@allaboard/ui/lib/utils";
 import {
   APP_CHROME_HEADER_CLASS,
   APP_CHROME_HEADER_ROW_CLASS,
+  APP_GLASS_CARD_CLASS,
   LANDING_EDGE_PADDING_CLASS,
 } from "./landing-layout";
 import {
@@ -171,11 +172,12 @@ export function GradientHeading({
     >
       {useAccentSplit ? (
         <>
-          <span className={cn(lineClass, lightLine)}>
-            {`${lead.trimEnd()} ${line2Prefix.trimStart()}`}
+          <span className={cn(lineClass, lightLine)}>{lead.trimEnd()}</span>
+          <span className={lineClass}>
+            <span className={lightLine}>{line2Prefix}</span>
+            <span className="landing-hero-accent-purple">{accentPrimary}</span>
           </span>
           <span className={lineClass}>
-            <span className="landing-hero-accent-purple">{accentPrimary}</span>{" "}
             <span className="gradient-text">{accentSecondary}</span>.
           </span>
         </>
@@ -396,7 +398,7 @@ export function StatCard({
   }[tone];
 
   return (
-    <div className={cn("glass rounded-2xl p-4 text-center md:p-6", className)}>
+    <div className={cn(APP_GLASS_CARD_CLASS, "rounded-2xl p-4 text-center md:p-6", className)}>
       <p className={cn("text-3xl font-bold", toneClass)}>{value}</p>
       <p className="mt-1 text-xs text-muted-foreground">{label}</p>
     </div>

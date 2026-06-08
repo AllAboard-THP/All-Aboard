@@ -16,6 +16,7 @@ import {
   type LegacyLabels,
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
+import { APP_GLASS_CARD_CLASS } from "./landing-layout";
 import {
   legacyMentorDashboard,
   type MentorDashboardFixture,
@@ -144,7 +145,7 @@ export function MentorValidationPanel({
   const [resources, setResources] = useState(initialResources);
 
   return (
-    <div className={cn("glass rounded-2xl", className)}>
+    <div className={cn(APP_GLASS_CARD_CLASS, "rounded-2xl", className)}>
       <div className="flex items-center justify-between border-b border-white/10 p-5">
         <h2 className="flex items-center gap-2 font-semibold">
           <ClipboardCheck className="size-4 text-yellow-400" />

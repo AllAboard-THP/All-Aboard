@@ -15,6 +15,7 @@ import {
   type LegacyLabels,
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
+import { APP_GLASS_CARD_CLASS } from "./landing-layout";
 import {
   legacyProfile,
   type LegacyProfile,
@@ -106,7 +107,7 @@ export function ProfileAboutCard({
   className?: string;
 }) {
   return (
-    <div className={cn("glass rounded-2xl p-6", className)}>
+    <div className={cn(APP_GLASS_CARD_CLASS, "rounded-2xl p-6", className)}>
       <h2 className="mb-3 text-xl font-semibold">{labels.profile.aboutTitle}</h2>
       <p className="leading-relaxed text-muted-foreground">{profile.bio}</p>
     </div>
@@ -123,7 +124,7 @@ export function ProfileActivityTabs({
   className?: string;
 }) {
   return (
-    <div className={cn("glass rounded-2xl p-6", className)}>
+    <div className={cn(APP_GLASS_CARD_CLASS, "rounded-2xl p-6", className)}>
       <Tabs defaultValue="posts">
         <TabsList className="mb-6 h-auto gap-2 bg-transparent p-0">
           <TabsTrigger

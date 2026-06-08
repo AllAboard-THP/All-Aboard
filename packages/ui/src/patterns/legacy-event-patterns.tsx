@@ -14,6 +14,7 @@ import {
   type LegacyEvent,
 } from "./fixtures/legacy-events";
 import { legacySubjects } from "./fixtures/legacy-subjects";
+import { APP_GLASS_CARD_CLASS } from "./landing-layout";
 import { legacyDemoToast } from "./legacy-story-feedback";
 
 const EVENTS_PAGE_SIZE = 2;
@@ -51,7 +52,8 @@ export function EventCard({
   return (
     <article
       className={cn(
-        "glass rounded-2xl p-5 transition-colors hover:bg-white/5",
+        APP_GLASS_CARD_CLASS,
+        "rounded-2xl p-5",
         className,
       )}
     >

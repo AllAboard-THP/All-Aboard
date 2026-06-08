@@ -29,6 +29,7 @@ import {
   type ModerationFlaggedComment,
   type ModerationFlaggedPost,
 } from "./fixtures/legacy-moderation";
+import { APP_GLASS_CARD_CLASS } from "./landing-layout";
 import { legacyDemoToast } from "./legacy-story-feedback";
 
 function ModerationItemActions({
@@ -230,7 +231,7 @@ export function AdminModerationQueue({
         )}
       </div>
 
-      <div className="glass rounded-2xl">
+      <div className={cn(APP_GLASS_CARD_CLASS, "rounded-2xl")}>
         <div className="flex items-center gap-2 border-b border-white/10 p-5">
           <MessageCircle className="size-4 text-orange-400" />
           <h2 className="font-semibold">{labels.moderation.commentsTitle}</h2>

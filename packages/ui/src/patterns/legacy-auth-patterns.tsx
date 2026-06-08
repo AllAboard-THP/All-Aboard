@@ -37,7 +37,7 @@ export function RegisterForm({
   return (
     <Card
       className={cn(
-        "hero-panel glass rounded-[2rem] border-white/10 p-8 shadow-none md:p-10",
+        "rounded-[2rem] p-8 md:p-10",
         className,
       )}
     >
@@ -146,7 +146,7 @@ export function ForgotPasswordForm({
               LANDING_AUTH_CARD_WIDTH_CLASS,
               LANDING_LOGIN_CARD_CLASS,
             )
-          : "hero-panel glass w-full rounded-[2rem] border-white/10 p-8 shadow-none md:p-10",
+          : "w-full rounded-[2rem] p-8 md:p-10",
         className,
       )}
     >

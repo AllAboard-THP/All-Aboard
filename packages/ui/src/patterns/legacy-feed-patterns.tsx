@@ -432,7 +432,7 @@ export function FeedPostWithThread({
     <article
       className={cn(
         FEED_POST_GLASS_CARD_CLASS,
-        "w-full rounded-2xl text-left shadow-sm",
+        "w-full rounded-2xl text-left shadow-none",
       )}
     >
       <PostCardBody
