@@ -48,7 +48,6 @@ export function LandingPageShell({
         className,
       )}
     >
-      <LandingConceptBackground className="fixed inset-0 z-0" />
       <LandingPublicHeader
         labels={labels}
         activeAction={activeAction}
@@ -58,12 +57,17 @@ export function LandingPageShell({
       />
       <main
         id="main-content"
-        className={cn(
-          "relative z-10 flex min-h-0 flex-1 flex-col",
-          LANDING_HEADER_OFFSET_CLASS,
-        )}
+        className="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden"
       >
-        {children}
+        <LandingConceptBackground className="absolute inset-x-0 bottom-0 top-[4.75rem] z-0 sm:top-20" />
+        <div
+          className={cn(
+            "relative z-10 flex min-h-0 flex-1 flex-col",
+            LANDING_HEADER_OFFSET_CLASS,
+          )}
+        >
+          {children}
+        </div>
       </main>
       <AppFooter
         labels={labels}

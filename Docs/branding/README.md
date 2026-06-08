@@ -70,10 +70,29 @@ All-Aboard
 When regenerating or editing concept visuals (AI or manual):
 
 - **Only what the human asks** — change **only** the element explicitly requested (e.g. sign copy). **No other modification** — no reframing, no recolor, no new props, no style tweaks, no quality keywords.
-- **Never use “sharp”** in prompts (even as negation). **No Pillow**, **no `sharp` npm**, **no local patch overlays** that alter rendering outside the requested element.
+- **Never use “sharp”** in **image prompts** (model keyword). Export tooling may use Lanczos upscale — see [Native 4K export](#native-4k-export-mandatory) below.
 - **No invented instructions** — do not add filters, glow, haze, decorative effects, or any constraint the human did not state.
+- **Background = scenery only** — never bake login cards, buttons, headlines, or UI mockups into hero rasters; product UI is React (`LandingConceptBackground` + `Connexion` card).
 - **Reference:** start from the approved [concept-1](assets/concept-1.png), [concept-2](assets/concept-2.png), or a series variant above; preserve everything except the requested change.
 - **Do not overwrite** `assets/concept-1.png`, `assets/concept-2.png`, or series files without explicit human approval.
+
+### Hero raster resolution (mandatory)
+
+| Term | Meaning |
+|------|---------|
+| **Native 4K** | Source **≥ 3840 px wide** before upscale — true detail |
+| **Deploy 4K** | Canonical file **3840 × 2560** in `Docs/branding/assets/` |
+
+**Priority:** true 4K source → else Cursor generator (~1536×1024) in **editorial illustration** style (not photoreal) → `export-hero-raster-4k.mjs` (warns on upscale). Never label upscale-only output as native 4K.
+
+| Field | Landing hero (`concept-landing-port-entry`) |
+|-------|---------------------------------------------|
+| Deploy output | **3840 × 2560** (16∶9) |
+| PNG | RGB 24-bit (`palette: false`) |
+| WebP | quality **94** |
+| Script | `node scripts/branding/export-hero-raster-4k.mjs --source <draft> --basename concept-landing-port-entry` |
+
+After export: bump `LANDING_CONCEPT_BG_REVISION` in `landing-concept-background.tsx`. Rule: [.cursor/rules/branding-hero-4k.mdc](../../.cursor/rules/branding-hero-4k.mdc).
 
 ---
 

@@ -210,9 +210,10 @@
 
   /**
    * Canonical app card glass — feed rails, posts, login, shadcn Card.
-   * Aliases: .landing-glass-card, .feed-stage-glass-card, .feed-post-glass-card
+   * Aliases: .landing-auth-glass-card, .landing-glass-card, .feed-stage-glass-card, .feed-post-glass-card
    */
   .app-glass-card,
+  .landing-auth-glass-card,
   .landing-glass-card,
   .feed-stage-glass-card,
   .feed-post-glass-card {
@@ -230,6 +231,7 @@
   }
 
   .app-glass-card:hover,
+  .landing-auth-glass-card:hover,
   .landing-glass-card:hover,
   .feed-stage-glass-card:hover,
   .feed-post-glass-card:hover {
@@ -239,6 +241,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .app-glass-card,
+    .landing-auth-glass-card,
     .landing-glass-card,
     .feed-stage-glass-card,
     .feed-post-glass-card {
@@ -246,6 +249,7 @@
     }
 
     .app-glass-card:hover,
+    .landing-auth-glass-card:hover,
     .landing-glass-card:hover,
     .feed-stage-glass-card:hover,
     .feed-post-glass-card:hover {
@@ -357,9 +361,10 @@
     }
   }
 
-  /** Landing header/footer — lighter than .glass + .hero-panel. */
+  /** Landing header/footer — glass chrome over hero stage. */
   .landing-chrome {
     background: rgb(15 23 42 / 0.38);
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     border-color: rgb(255 255 255 / 0.08);
   }

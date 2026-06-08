@@ -108,8 +108,12 @@ export const LANDING_LOGIN_CARD_LAYOUT_CLASS =
 export const APP_GLASS_CARD_CLASS =
   "app-glass-card motion-reduce:transition-none";
 
-/** @deprecated Use APP_GLASS_CARD_CLASS — kept for existing imports. */
-export const LANDING_GLASS_CARD_CLASS = APP_GLASS_CARD_CLASS;
+/** Landing Connexion card — light glass (see `.landing-auth-glass-card` in globals.css). */
+export const LANDING_AUTH_GLASS_CARD_CLASS =
+  "landing-auth-glass-card motion-reduce:transition-none";
+
+/** @deprecated Use LANDING_AUTH_GLASS_CARD_CLASS on landing; APP_GLASS_CARD_CLASS elsewhere. */
+export const LANDING_GLASS_CARD_CLASS = LANDING_AUTH_GLASS_CARD_CLASS;
 
 /** @deprecated Use APP_GLASS_CARD_CLASS — kept for existing imports. */
 export const FEED_STAGE_GLASS_CARD_CLASS = APP_GLASS_CARD_CLASS;
@@ -121,8 +125,8 @@ export const FEED_POST_GLASS_CARD_CLASS = APP_GLASS_CARD_CLASS;
 export const FEED_RAIL_LIST_ITEM_CLASS =
   "w-full rounded-2xl bg-white/5 p-5 text-left transition-colors hover:bg-white/10 lg:p-6";
 
-/** Login card — same glass + hover as feed panels. */
-export const LANDING_LOGIN_CARD_CLASS = LANDING_GLASS_CARD_CLASS;
+/** Login card — landing light glass (not feed `.app-glass-card`). */
+export const LANDING_LOGIN_CARD_CLASS = LANDING_AUTH_GLASS_CARD_CLASS;
 
 /** Glass pill fields — `.landing-glass-input` in globals.css (minimal white highlight on hover/focus). */
 export const LANDING_GLASS_INPUT_CLASS =

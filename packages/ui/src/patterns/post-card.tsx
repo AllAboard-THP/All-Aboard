@@ -63,7 +63,6 @@ export type PostCardProps = {
   canDelete?: boolean;
   showPrivateMessage?: boolean;
   labels?: PostCardLabels;
-  glassVariant?: "default" | "landing";
   className?: string;
   repliesExpanded?: boolean;
   /** ID of the collapsible thread panel (for aria-controls). */
@@ -198,7 +197,7 @@ export function PostCardBody({
   onTitleClick,
   onHashtagClick,
   onSubjectClick,
-}: Omit<PostCardProps, "glassVariant">) {
+}: PostCardProps) {
   const [isLiked, setIsLiked] = useState(liked);
   const [isBookmarked, setIsBookmarked] = useState(bookmarked);
   const [likes, setLikes] = useState(likesCount);
@@ -395,7 +394,6 @@ export function PostCardBody({
 }
 
 export function PostCard({
-  glassVariant = "default",
   className,
   ...bodyProps
 }: PostCardProps) {
