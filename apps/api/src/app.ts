@@ -13,6 +13,7 @@ import {
 import { jwtSecret } from "./lib/auth-helpers.js";
 import { registerOpenApiDocs } from "./openapi.js";
 import { registerAdminRoutes } from "./routes/admin.js";
+import { registerGoogleOAuthRoutes } from "./auth/oauth/google-routes.js";
 import { registerAuthRoutes } from "./routes/auth.js";
 import { registerFeedRoutes } from "./routes/feed.js";
 import { registerHelpRequestRoutes } from "./routes/help-requests.js";
@@ -85,6 +86,7 @@ export async function buildApp(options?: BuildAppOptions) {
   registerSocialRoutes(app, db);
   registerMeRoutes(app, db);
   registerAuthRoutes(app, db);
+  registerGoogleOAuthRoutes(app, db);
   registerUserRoutes(app, db);
   registerLegalRoutes(app, db);
   registerResourceRoutes(app, db);

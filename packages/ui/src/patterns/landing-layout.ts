@@ -2,18 +2,27 @@
 export const LANDING_EDGE_PADDING_CLASS =
   "w-full px-4 sm:pl-5 sm:pr-6 lg:pl-8 lg:pr-10 xl:pl-10 xl:pr-14";
 
-/** Lighter glass for landing header/footer — see .landing-chrome in globals.css. */
+/** Lighter glass for in-app header/footer — see `.landing-chrome` in globals.css. */
 export const LANDING_GLASS_CHROME_CLASS = "landing-chrome border-white/10";
+
+/** Landing shell chrome — Connexion-card glass surface (`.landing-shell-chrome`). */
+export const LANDING_SHELL_GLASS_MOTION_CLASS = "motion-reduce:transition-none";
 
 /** Landing header/footer — brightness highlight on hover only. */
 export const LANDING_CHROME_HOVER_HIGHLIGHT_CLASS =
   "transition-[filter] duration-200 ease-out hover:brightness-110 motion-reduce:transition-none";
 
-/** Fixed app header shell (landing + in-app pages). */
+/** Fixed app header shell (feed + in-app pages). */
 export const APP_CHROME_HEADER_CLASS = `fixed top-0 z-50 w-full border-b ${LANDING_GLASS_CHROME_CLASS} ${LANDING_CHROME_HOVER_HIGHLIGHT_CLASS}`;
 
-/** App footer chrome (landing + in-app pages). */
+/** Landing shell header — same glass as Connexion card. */
+export const LANDING_SHELL_HEADER_CLASS = `fixed top-0 z-50 w-full landing-shell-chrome landing-shell-chrome--header ${LANDING_SHELL_GLASS_MOTION_CLASS}`;
+
+/** App footer chrome (feed + in-app pages). */
 export const APP_CHROME_FOOTER_CLASS = `${LANDING_GLASS_CHROME_CLASS} ${LANDING_CHROME_HOVER_HIGHLIGHT_CLASS}`;
+
+/** Landing shell footer — same glass as Connexion card. */
+export const LANDING_SHELL_FOOTER_CLASS = `landing-shell-chrome landing-shell-chrome--footer ${LANDING_SHELL_GLASS_MOTION_CLASS}`;
 
 /** Header inner row — same alignment as `LandingPublicHeader`. */
 export const APP_CHROME_HEADER_ROW_CLASS =
@@ -108,9 +117,9 @@ export const LANDING_LOGIN_CARD_LAYOUT_CLASS =
 export const APP_GLASS_CARD_CLASS =
   "app-glass-card motion-reduce:transition-none";
 
-/** Landing Connexion card — light glass (see `.landing-auth-glass-card` in globals.css). */
+/** Landing Connexion card — glass surface (see `.landing-auth-glass-surface` in globals.css). */
 export const LANDING_AUTH_GLASS_CARD_CLASS =
-  "landing-auth-glass-card motion-reduce:transition-none";
+  "landing-auth-glass-surface landing-auth-glass-card motion-reduce:transition-none";
 
 /** @deprecated Use LANDING_AUTH_GLASS_CARD_CLASS on landing; APP_GLASS_CARD_CLASS elsewhere. */
 export const LANDING_GLASS_CARD_CLASS = LANDING_AUTH_GLASS_CARD_CLASS;

@@ -39,6 +39,13 @@
     hsl(239 84% 67% / 0.25) 0%,
     transparent 60%
   );
+
+  /* Connexion card + landing shell chrome — shared glass tokens */
+  --landing-auth-glass-bg:
+    linear-gradient(160deg, rgb(99 102 241 / 0.08), rgb(15 23 42 / 0.14)),
+    rgb(15 23 42 / 0.54);
+  --landing-auth-glass-border: rgb(255 255 255 / 0.07);
+  --landing-auth-glass-blur: 14px;
 }
 
 @theme inline {
@@ -209,6 +216,24 @@
   }
 
   /**
+   * Connexion card + landing shell chrome — shared glass surface.
+   * Keep header/footer visually identical to the login card.
+   */
+  .landing-auth-glass-surface,
+  .app-glass-card,
+  .landing-auth-glass-card,
+  .landing-glass-card,
+  .feed-stage-glass-card,
+  .feed-post-glass-card,
+  .landing-shell-chrome {
+    background: var(--landing-auth-glass-bg);
+    -webkit-backdrop-filter: blur(var(--landing-auth-glass-blur));
+    backdrop-filter: blur(var(--landing-auth-glass-blur));
+    border: 1px solid var(--landing-auth-glass-border);
+    filter: saturate(98%);
+  }
+
+  /**
    * Canonical app card glass — feed rails, posts, login, shadcn Card.
    * Aliases: .landing-auth-glass-card, .landing-glass-card, .feed-stage-glass-card, .feed-post-glass-card
    */
@@ -217,17 +242,26 @@
   .landing-glass-card,
   .feed-stage-glass-card,
   .feed-post-glass-card {
-    background:
-      linear-gradient(160deg, rgb(99 102 241 / 0.08), rgb(15 23 42 / 0.14)),
-      rgb(15 23 42 / 0.54);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgb(255 255 255 / 0.07);
-    filter: saturate(98%);
     transform: scale(1);
     transform-origin: center;
     transition:
       filter 200ms ease-out,
       transform 200ms ease-out;
+  }
+
+  .landing-shell-chrome {
+    transform: none;
+    transition: filter 200ms ease-out;
+  }
+
+  .landing-shell-chrome--header {
+    border-width: 0 0 1px;
+    border-radius: 0;
+  }
+
+  .landing-shell-chrome--footer {
+    border-width: 1px 0 0;
+    border-radius: 0;
   }
 
   .app-glass-card:hover,
@@ -239,12 +273,20 @@
     transform: scale(1.006);
   }
 
+  .landing-shell-chrome:hover {
+    filter: saturate(98%) brightness(1.05);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .app-glass-card,
     .landing-auth-glass-card,
     .landing-glass-card,
     .feed-stage-glass-card,
     .feed-post-glass-card {
+      transition: none;
+    }
+
+    .landing-shell-chrome {
       transition: none;
     }
 
@@ -361,7 +403,22 @@
     }
   }
 
-  /** Landing header/footer — glass chrome over hero stage. */
+  /**
+   * Landing hero — muted bicolor stage (slate left, indigo → pink wash right).
+   * Dark enough for white hero copy; left ~40% stays calm for readability.
+   */
+  .landing-hero-stage-bicolor {
+    background:
+      linear-gradient(
+        118deg,
+        rgb(30 41 59) 0%,
+        rgb(30 27 75) 32%,
+        rgb(76 29 149) 62%,
+        rgb(157 23 77) 100%
+      );
+  }
+
+  /** Landing header/footer — glass chrome over hero stage (in-app feed, etc.). */
   .landing-chrome {
     background: rgb(15 23 42 / 0.38);
     -webkit-backdrop-filter: blur(8px);

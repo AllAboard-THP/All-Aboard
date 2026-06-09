@@ -34,3 +34,17 @@ export async function getAccessToken(): Promise<string | undefined> {
 export function missingTokenResponse(): NextResponse {
   return NextResponse.json({ error: "missing_token" }, { status: 401 });
 }
+
+/** Relaie redirect upstream + Set-Cookie (OAuth callback). */
+export function relayRedirectWithCookies(res: Response): NextResponse {
+  const location = res.headers.get("location");
+  const out = new NextResponse(null, {
+    status: res.status === 200 ? 302 : res.status,
+    headers: location ? { location } : undefined,
+  });
+  const setCookies = res.headers.getSetCookie?.() ?? [];
+  for (const c of setCookies) {
+    out.headers.append("Set-Cookie", c);
+  }
+  return out;
+}

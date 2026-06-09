@@ -1,6 +1,8 @@
 "use client";
 
 import { Button } from "../components/button";
+import { GoogleSignInButton } from "../components/google-sign-in-button";
+import { Separator } from "../components/separator";
 import {
   Card,
   CardContent,
@@ -26,6 +28,7 @@ type LandingHeroBodyProps = {
   labels: LegacyLabels;
   onForgotPasswordClick?: () => void;
   onSignUpClick?: () => void;
+  onGoogleSignInClick?: () => void;
 };
 
 /**
@@ -36,12 +39,16 @@ export function LandingHeroBody({
   labels,
   onForgotPasswordClick,
   onSignUpClick,
+  onGoogleSignInClick,
 }: LandingHeroBodyProps) {
   const handleForgotPassword =
     onForgotPasswordClick ??
     (() => legacyDemoToast(labels.auth.forgotPassword));
   const handleSignUp =
     onSignUpClick ?? (() => legacyDemoToast(labels.auth.signUp));
+  const handleGoogleSignIn =
+    onGoogleSignInClick ??
+    (() => legacyDemoToast(labels.auth.continueWithGoogle));
 
   return (
     <LandingAuthHeroLayout labels={labels}>
@@ -97,6 +104,17 @@ export function LandingHeroBody({
           >
             {labels.auth.submit}
           </Button>
+          <div className="flex w-full items-center gap-3">
+            <Separator className="flex-1" />
+            <span className="text-xs text-muted-foreground">
+              {labels.auth.orContinueWithEmail}
+            </span>
+            <Separator className="flex-1" />
+          </div>
+          <GoogleSignInButton
+            label={labels.auth.continueWithGoogle}
+            onClick={handleGoogleSignIn}
+          />
           <p className="text-center text-sm text-muted-foreground">
             {labels.auth.noAccount}{" "}
             <button

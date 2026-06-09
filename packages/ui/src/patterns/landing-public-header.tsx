@@ -7,8 +7,8 @@ import {
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
 import {
-  APP_CHROME_HEADER_CLASS,
   APP_CHROME_HEADER_ROW_CLASS,
+  LANDING_SHELL_HEADER_CLASS,
 } from "./landing-layout";
 import { BrandLogo } from "./legacy-ui";
 import { legacyDemoToast } from "./legacy-story-feedback";
@@ -36,7 +36,7 @@ export function LandingPublicHeader({
   const handleLogo = onLogoClick ?? (() => legacyDemoToast(labels.brandName));
 
   return (
-    <header className={cn(APP_CHROME_HEADER_CLASS, className)}>
+    <header className={cn(LANDING_SHELL_HEADER_CLASS, className)}>
       <div className={APP_CHROME_HEADER_ROW_CLASS}>
         <button
           type="button"

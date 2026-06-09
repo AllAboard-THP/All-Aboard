@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "../components/button";
+import { Checkbox } from "../components/checkbox";
 import {
   Card,
   CardContent,
@@ -198,6 +200,118 @@ export function ForgotPasswordForm({
             {labels.auth.signIn}
           </button>
         </p>
+      </CardFooter>
+    </Card>
+  );
+}
+
+export type OAuthOnboardingSubmitInput = {
+  fullName: string;
+  educationLevel?: string;
+  headline?: string;
+  acceptCgu: boolean;
+};
+
+export function OAuthOnboardingForm({
+  labels = legacyLabelsFr,
+  className,
+  initialFullName = "",
+  initialEducationLevel = "",
+  initialHeadline = "",
+  submitting = false,
+  errorMessage,
+  onSubmit,
+}: {
+  labels?: LegacyLabels;
+  className?: string;
+  initialFullName?: string;
+  initialEducationLevel?: string;
+  initialHeadline?: string;
+  submitting?: boolean;
+  errorMessage?: string | null;
+  onSubmit: (input: OAuthOnboardingSubmitInput) => void | Promise<void>;
+}) {
+  const [fullName, setFullName] = useState(initialFullName);
+  const [educationLevel, setEducationLevel] = useState(initialEducationLevel);
+  const [headline, setHeadline] = useState(initialHeadline);
+  const [acceptCgu, setAcceptCgu] = useState(false);
+
+  return (
+    <Card
+      className={cn(
+        LANDING_LOGIN_CARD_LAYOUT_CLASS,
+        LANDING_AUTH_CARD_WIDTH_CLASS,
+        LANDING_LOGIN_CARD_CLASS,
+        className,
+      )}
+    >
+      <CardHeader className="shrink-0 px-0 pb-0 text-center">
+        <CardTitle className="text-2xl sm:text-3xl">
+          {labels.auth.onboardingTitle}
+        </CardTitle>
+        <p className="text-muted-foreground">{labels.auth.onboardingSubtitle}</p>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-5 px-0">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-2 sm:col-span-2">
+            <Label htmlFor="onboarding-full-name">{labels.auth.fullName}</Label>
+            <Input
+              id="onboarding-full-name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className={LANDING_GLASS_INPUT_CLASS}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="onboarding-level">{labels.auth.educationLevel}</Label>
+            <Input
+              id="onboarding-level"
+              value={educationLevel}
+              onChange={(e) => setEducationLevel(e.target.value)}
+              placeholder={labels.auth.educationLevelPlaceholder}
+              className={LANDING_GLASS_INPUT_CLASS}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="onboarding-headline">{labels.auth.headline}</Label>
+            <Input
+              id="onboarding-headline"
+              value={headline}
+              onChange={(e) => setHeadline(e.target.value)}
+              placeholder={labels.auth.headlinePlaceholder}
+              className={LANDING_GLASS_INPUT_CLASS}
+            />
+          </div>
+        </div>
+        <div className="flex items-start gap-2 rounded-lg">
+          <Checkbox
+            id="onboarding-cgu"
+            checked={acceptCgu}
+            onCheckedChange={(checked) => setAcceptCgu(checked === true)}
+          />
+          <Label htmlFor="onboarding-cgu" className="text-sm leading-snug">
+            {labels.auth.acceptCgu}
+          </Label>
+        </div>
+        {errorMessage ? (
+          <p className="text-sm text-destructive">{errorMessage}</p>
+        ) : null}
+      </CardContent>
+      <CardFooter className="shrink-0 flex-col gap-3 px-0 pt-0">
+        <Button
+          className="h-12 w-full rounded-2xl"
+          disabled={submitting || !fullName.trim() || !acceptCgu}
+          onClick={() =>
+            void onSubmit({
+              fullName: fullName.trim(),
+              educationLevel: educationLevel.trim() || undefined,
+              headline: headline.trim() || undefined,
+              acceptCgu,
+            })
+          }
+        >
+          {labels.auth.onboardingSubmit}
+        </Button>
       </CardFooter>
     </Card>
   );

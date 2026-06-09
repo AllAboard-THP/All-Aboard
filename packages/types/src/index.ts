@@ -257,6 +257,12 @@ export type LogoutResponse = {
   ok: true;
 };
 
+/** Erreurs OAuth query string landing (`?auth_error=`). */
+export type OAuthAuthError = "oauth_failed";
+
+/** Erreur API lorsque Google OAuth n'est pas configuré. */
+export type OAuthNotConfiguredError = "oauth_not_configured";
+
 /** Réponse `GET /auth/me`. */
 export type AuthMeResponse = {
   userId: string;

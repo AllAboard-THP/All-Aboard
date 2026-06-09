@@ -16,6 +16,8 @@
     "./lib/*": "./src/lib/*.ts",
     "./hooks/*": "./src/hooks/*.ts",
     "./patterns/landing-layout": "./src/patterns/landing-layout.ts",
+    "./patterns/landing-page-shell": "./src/patterns/landing-page-shell.tsx",
+    "./patterns/legacy-auth-patterns": "./src/patterns/legacy-auth-patterns.tsx",
     "./patterns/feed-concept-background": "./src/patterns/feed-concept-background.tsx",
     "./patterns/screens/legacy-screens": "./src/patterns/screens/legacy-screens.tsx"
   },

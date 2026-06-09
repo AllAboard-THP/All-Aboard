@@ -80,9 +80,11 @@ import { GraduationCap } from "lucide-react";
 export function LandingLoginScreen({
   onForgotPasswordClick,
   onSignUpClick,
+  onGoogleSignInClick,
 }: {
   onForgotPasswordClick?: () => void;
   onSignUpClick?: () => void;
+  onGoogleSignInClick?: () => void;
 } = {}) {
   const labels = useLegacyLabels();
 
@@ -92,6 +94,7 @@ export function LandingLoginScreen({
         labels={labels}
         onForgotPasswordClick={onForgotPasswordClick}
         onSignUpClick={onSignUpClick}
+        onGoogleSignInClick={onGoogleSignInClick}
       />
     </LandingPageShell>
   );

@@ -9,9 +9,9 @@ import {
 import { cn } from "@allaboard/ui/lib/utils";
 import { LandingConceptBackground } from "./landing-concept-background";
 import {
-  APP_CHROME_FOOTER_CLASS,
   APP_CHROME_FOOTER_SHELL_CLASS,
   LANDING_HEADER_OFFSET_CLASS,
+  LANDING_SHELL_FOOTER_CLASS,
 } from "./landing-layout";
 import { AppFooter, type LegacyLegalLinkKey } from "./legacy-ui";
 import {
@@ -44,10 +44,11 @@ export function LandingPageShell({
   return (
     <div
       className={cn(
-        "relative flex min-h-[100dvh] flex-col overflow-x-hidden text-foreground",
+        "relative flex min-h-[100dvh] flex-col text-foreground",
         className,
       )}
     >
+      <LandingConceptBackground className="absolute inset-0 z-0" />
       <LandingPublicHeader
         labels={labels}
         activeAction={activeAction}
@@ -57,9 +58,8 @@ export function LandingPageShell({
       />
       <main
         id="main-content"
-        className="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden"
+        className="relative z-10 flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-hidden"
       >
-        <LandingConceptBackground className="absolute inset-x-0 bottom-0 top-[4.75rem] z-0 sm:top-20" />
         <div
           className={cn(
             "relative z-10 flex min-h-0 flex-1 flex-col",
@@ -74,7 +74,7 @@ export function LandingPageShell({
         className={cn(
           "relative z-10",
           APP_CHROME_FOOTER_SHELL_CLASS,
-          APP_CHROME_FOOTER_CLASS,
+          LANDING_SHELL_FOOTER_CLASS,
           footerClassName,
         )}
         onLegalLinkClick={onLegalLinkClick}

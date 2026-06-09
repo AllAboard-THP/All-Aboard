@@ -67,6 +67,10 @@ Ces variables concernent **Phase 2** (auth sur l’API) ; voir [ADR 0001](adr/00
 | Variable | Web | API | Agent | Indexer | Obligatoire |
 |---|:---:|:---:|:---:|:---:|:---:|
 | `JWT_SECRET` |  | x | x |  | Oui (API avec auth JWT — min. 32 caractères) |
+| `GOOGLE_CLIENT_ID` |  | x |  |  | Oui si OAuth Google actif (ADR 0004) |
+| `GOOGLE_CLIENT_SECRET` |  | x |  |  | Oui si OAuth Google actif |
+| `OAUTH_GOOGLE_CALLBACK_URL` |  | x |  |  | Oui si OAuth — URI BFF `/api/auth/google/callback` |
+| `WEB_APP_URL` |  | x |  |  | Oui si OAuth — origine web (redirect post-login) |
 | `MVP_LOGIN_PASSWORD` |  | x |  |  | Oui en dev/MVP (login `POST /auth/login` ; à remplacer avant prod large) |
 | `SESSION_SECRET` | x | x |  |  | Oui si session |
 | `CORS_ALLOWED_ORIGINS` |  | x |  |  | Oui si le **navigateur** appelle l’API en direct ; **N/A** tant que le flux passe par le BFF Next (voir plan opérationnel) |

@@ -66,6 +66,13 @@ export type LegacyLabels = {
     forgotTitle: string;
     forgotSubtitle: string;
     forgotSubmit: string;
+    continueWithGoogle: string;
+    orContinueWithEmail: string;
+    oauthError: string;
+    onboardingTitle: string;
+    onboardingSubtitle: string;
+    onboardingSubmit: string;
+    acceptCgu: string;
   };
   explore: {
     title: string;
@@ -309,6 +316,14 @@ export const legacyLabelsFr: LegacyLabels = {
     forgotSubtitle:
       "Entrez votre email pour recevoir les instructions de réinitialisation.",
     forgotSubmit: "Envoyer les instructions",
+    continueWithGoogle: "Continuer avec Google",
+    orContinueWithEmail: "ou",
+    oauthError: "La connexion Google a échoué. Réessayez.",
+    onboardingTitle: "Finalise ton profil",
+    onboardingSubtitle:
+      "Quelques informations et l'acceptation des CGU pour terminer ton inscription.",
+    onboardingSubmit: "Terminer l'inscription",
+    acceptCgu: "J'accepte les conditions générales d'utilisation",
   },
   explore: {
     title: "Explorer",
@@ -558,6 +573,14 @@ export const legacyLabelsEn: LegacyLabels = {
     forgotTitle: "Forgot your password?",
     forgotSubtitle: "Enter your email to receive reset instructions.",
     forgotSubmit: "Send instructions",
+    continueWithGoogle: "Continue with Google",
+    orContinueWithEmail: "or",
+    oauthError: "Google sign-in failed. Please try again.",
+    onboardingTitle: "Complete your profile",
+    onboardingSubtitle:
+      "A few details and accepting the terms to finish signing up.",
+    onboardingSubmit: "Finish sign-up",
+    acceptCgu: "I accept the terms of use",
   },
   explore: {
     title: "Explore",
