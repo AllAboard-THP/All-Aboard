@@ -48,7 +48,7 @@ export function LandingPageShell({
         className,
       )}
     >
-      <LandingConceptBackground className="absolute inset-0 z-0" />
+      <LandingConceptBackground />
       <LandingPublicHeader
         labels={labels}
         activeAction={activeAction}
