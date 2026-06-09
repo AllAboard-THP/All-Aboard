@@ -19,7 +19,10 @@
     "./patterns/landing-page-shell": "./src/patterns/landing-page-shell.tsx",
     "./patterns/legacy-auth-patterns": "./src/patterns/legacy-auth-patterns.tsx",
     "./patterns/feed-concept-background": "./src/patterns/feed-concept-background.tsx",
-    "./patterns/screens/legacy-screens": "./src/patterns/screens/legacy-screens.tsx"
+    "./patterns/screens/legacy-screens": "./src/patterns/screens/legacy-screens.tsx",
+    "./patterns/*": "./src/patterns/*.tsx",
+    "./patterns/student-dashboard-labels": "./src/patterns/student-dashboard-labels.ts",
+    "./patterns/fixtures/*": "./src/patterns/fixtures/*.ts"
   },
   "scripts": {
     "lint": "eslint .",

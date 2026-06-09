@@ -34,11 +34,14 @@
   --motion-duration-slow: 400ms;
   --motion-ease-kit: cubic-bezier(0.4, 0, 0.2, 1);
 
-  --canvas-gradient: radial-gradient(
-    90% 80% at 20% 0%,
-    hsl(239 84% 67% / 0.25) 0%,
-    transparent 60%
-  );
+  --canvas-gradient:
+    radial-gradient(circle at top left, hsl(239 84% 67% / 0.18), transparent 32%),
+    radial-gradient(circle at top right, hsl(330 81% 60% / 0.14), transparent 28%),
+    radial-gradient(90% 80% at 20% 0%, hsl(239 84% 67% / 0.22) 0%, transparent 60%);
+
+  --brand-gradient: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+  --dashboard-glow-indigo: hsl(239 84% 67% / 0.28);
+  --dashboard-glow-pink: hsl(330 81% 60% / 0.22);
 
   /* Connexion card + landing shell chrome — shared glass tokens */
   --landing-auth-glass-bg:
@@ -556,7 +559,101 @@
     color: transparent;
   }
 
+  .landing-eyebrow {
+    @apply text-xs font-bold tracking-widest text-primary uppercase;
+  }
+
+  .dashboard-stage {
+    @apply relative isolate overflow-hidden;
+  }
+
+  .dashboard-stage-glow {
+    @apply pointer-events-none absolute rounded-full blur-3xl;
+  }
+
+  .dashboard-stage-glow--indigo {
+    background: var(--dashboard-glow-indigo);
+  }
+
+  .dashboard-stage-glow--pink {
+    background: var(--dashboard-glow-pink);
+  }
+
+  .dashboard-glass-surface {
+    @apply border border-white/10 bg-card/75 shadow-xl backdrop-blur-md;
+  }
+
+  .dashboard-glass-card {
+    @apply border border-white/10 bg-card/75 shadow-xl backdrop-blur-md transition-[transform,box-shadow,filter] duration-300 ease-out;
+  }
+
+  .dashboard-glass-card:hover {
+    @apply brightness-110;
+    box-shadow:
+      0 20px 40px -12px hsl(239 84% 67% / 0.28),
+      0 0 0 1px hsl(0 0% 100% / 0.06);
+    transform: translateY(-2px);
+  }
+
+  .dashboard-stat-card {
+    @apply rounded-2xl border border-white/10 bg-card/75 px-4 py-3 text-center shadow-xl backdrop-blur-md transition-[transform,box-shadow,filter] duration-300 ease-out;
+  }
+
+  .dashboard-stat-card:hover {
+    @apply brightness-110;
+    box-shadow:
+      0 20px 40px -12px hsl(239 84% 67% / 0.28),
+      0 0 0 1px hsl(0 0% 100% / 0.06);
+    transform: translateY(-2px);
+  }
+
+  .dashboard-inner-card {
+    @apply rounded-xl border border-white/10 bg-white/[0.04] p-4 transition-[transform,background-color,border-color] duration-300 ease-out;
+  }
+
+  .dashboard-inner-card:hover {
+    @apply border-primary/25 bg-primary/5;
+    transform: translateY(-1px);
+  }
+
+  .dashboard-nav-active {
+    background: linear-gradient(
+      135deg,
+      hsl(239 84% 67% / 0.22) 0%,
+      hsl(263 70% 50% / 0.14) 100%
+    );
+    box-shadow: inset 0 0 0 1px hsl(239 84% 67% / 0.28);
+  }
+
+  .animate-fade-in {
+    animation: dashboard-fade-in 500ms var(--motion-ease-kit) both;
+  }
+
+  @keyframes dashboard-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .focus-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dashboard-glass-card:hover,
+    .dashboard-stat-card:hover,
+    .dashboard-inner-card:hover {
+      transform: none;
+    }
+
+    .animate-fade-in {
+      animation: none;
+    }
   }
 }

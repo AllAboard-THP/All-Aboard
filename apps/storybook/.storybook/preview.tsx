@@ -7,7 +7,6 @@ import {
   resolveStorybookLocale,
   StorybookLocaleProvider,
 } from "@allaboard/ui/i18n/storybook-locale";
-
 import "@allaboard/ui/globals.css";
 import "./preview.css";
 
