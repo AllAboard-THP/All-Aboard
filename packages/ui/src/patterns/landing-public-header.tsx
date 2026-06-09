@@ -8,6 +8,9 @@ import {
 import { cn } from "@allaboard/ui/lib/utils";
 import {
   APP_CHROME_HEADER_ROW_CLASS,
+  LANDING_HEADER_GHOST_BUTTON_CLASS,
+  LANDING_HEADER_OUTLINE_BUTTON_CLASS,
+  LANDING_HEADER_SUBMIT_BUTTON_CLASS,
   LANDING_SHELL_HEADER_CLASS,
 } from "./landing-layout";
 import { BrandLogo } from "./legacy-ui";
@@ -53,10 +56,11 @@ export function LandingPublicHeader({
         >
           <Button
             type="button"
-            variant="ghost"
+            variant="landingHeaderGhost"
             size="sm"
             className={cn(
-              activeAction === "signIn" && "text-primary hover:text-primary",
+              LANDING_HEADER_GHOST_BUTTON_CLASS,
+              activeAction === "signIn" && "text-white",
             )}
             aria-current={activeAction === "signIn" ? "page" : undefined}
             onClick={handleSignIn}
@@ -65,9 +69,13 @@ export function LandingPublicHeader({
           </Button>
           <Button
             type="button"
-            variant={activeAction === "signUp" ? "default" : "outline"}
+            variant={activeAction === "signUp" ? "landingSubmit" : "landingHeaderOutline"}
             size="sm"
-            className="min-w-[7.5rem] rounded-full px-4"
+            className={cn(
+              activeAction === "signUp"
+                ? LANDING_HEADER_SUBMIT_BUTTON_CLASS
+                : LANDING_HEADER_OUTLINE_BUTTON_CLASS,
+            )}
             aria-current={activeAction === "signUp" ? "page" : undefined}
             onClick={handleSignUp}
           >

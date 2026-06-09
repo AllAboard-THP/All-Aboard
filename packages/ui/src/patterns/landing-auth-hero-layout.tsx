@@ -12,6 +12,7 @@ import {
   LANDING_HERO_GRID_CLASS,
   LANDING_HERO_HEADING_CLASS,
   LANDING_HERO_LOGIN_COLUMN_CLASS,
+  LANDING_HERO_LOGIN_SLOT_CLASS,
   LANDING_HERO_PILLS_CLASS,
 } from "./landing-layout";
 import {
@@ -65,7 +66,9 @@ export function LandingAuthHeroLayout({
             </div>
           </div>
 
-          <div className={LANDING_HERO_LOGIN_COLUMN_CLASS}>{children}</div>
+          <div className={LANDING_HERO_LOGIN_COLUMN_CLASS}>
+            <div className={LANDING_HERO_LOGIN_SLOT_CLASS}>{children}</div>
+          </div>
         </div>
       </div>
     </div>

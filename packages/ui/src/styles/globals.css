@@ -510,6 +510,13 @@
     }
   }
 
+  @media (min-width: 1024px) {
+    .landing-hero-eyebrow {
+      font-size: 1rem;
+      letter-spacing: 0.06em;
+    }
+  }
+
   /** Landing hero title — pure white copy with legibility shadow. */
   .landing-hero-title-light {
     color: rgb(255 255 255);
@@ -518,10 +525,14 @@
       0 2px 12px rgb(0 0 0 / 0.28);
   }
 
-  /** Landing hero accent — solid purple keyword before gradient tail. */
+  /** Landing hero accent — purple keyword before gradient tail; legible on photo. */
   .landing-hero-accent-purple {
     color: rgb(168 85 247);
-    text-shadow: 0 0 22px rgb(168 85 247 / 0.4);
+    text-shadow:
+      0 0 1px rgb(0 0 0 / 0.85),
+      0 1px 4px rgb(0 0 0 / 0.72),
+      0 2px 14px rgb(0 0 0 / 0.48),
+      0 0 22px rgb(168 85 247 / 0.5);
   }
 
   /** Landing hero heading wrapper — gradient tail legibility on photo background. */

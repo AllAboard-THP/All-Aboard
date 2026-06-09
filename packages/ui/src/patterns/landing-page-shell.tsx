@@ -44,7 +44,7 @@ export function LandingPageShell({
   return (
     <div
       className={cn(
-        "relative flex min-h-[100dvh] flex-col text-foreground",
+        "relative flex min-h-[100dvh] flex-col overflow-x-hidden text-foreground",
         className,
       )}
     >
@@ -58,7 +58,7 @@ export function LandingPageShell({
       />
       <main
         id="main-content"
-        className="relative z-10 flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-hidden"
+        className="relative z-10 flex min-h-0 flex-1 flex-col"
       >
         <div
           className={cn(

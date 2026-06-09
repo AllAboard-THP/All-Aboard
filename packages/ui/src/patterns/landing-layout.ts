@@ -24,6 +24,17 @@ export const APP_CHROME_FOOTER_CLASS = `${LANDING_GLASS_CHROME_CLASS} ${LANDING_
 /** Landing shell footer — same glass as Connexion card. */
 export const LANDING_SHELL_FOOTER_CLASS = `landing-shell-chrome landing-shell-chrome--footer ${LANDING_SHELL_GLASS_MOTION_CLASS}`;
 
+/** Landing header auth — ghost link; glass hover (no purple accent fill). */
+export const LANDING_HEADER_GHOST_BUTTON_CLASS = "rounded-full";
+
+/** Landing header auth — outline pill on glass chrome. */
+export const LANDING_HEADER_OUTLINE_BUTTON_CLASS =
+  "min-w-[7.5rem] rounded-full px-4";
+
+/** Landing header auth — active sign-up pill (matches Connexion card CTA). */
+export const LANDING_HEADER_SUBMIT_BUTTON_CLASS =
+  "min-w-[7.5rem] h-8 rounded-full px-4 text-sm font-semibold";
+
 /** Header inner row — same alignment as `LandingPublicHeader`. */
 export const APP_CHROME_HEADER_ROW_CLASS =
   `flex min-h-[4.25rem] w-full items-center justify-between gap-4 py-2 sm:min-h-[4.5rem] ${LANDING_EDGE_PADDING_CLASS}`;
@@ -63,14 +74,14 @@ export const LANDING_HEADER_TAGLINE_CLASS =
 /** Symmetric horizontal padding for landing hero — aligned with header/footer edges. */
 export const LANDING_HERO_PADDING_CLASS = LANDING_EDGE_PADDING_CLASS;
 
-/** Hero fills viewport between header and footer — vertically centered in main. */
+/** Hero fills viewport between header and footer — vertically centered. */
 export const LANDING_HERO_SECTION_CLASS =
   "relative flex min-h-0 flex-1 flex-col justify-center py-4 sm:py-6";
 
 /** Landing body — hero stage (auth-grid + vertical center + chrome-aligned padding). */
 export const LANDING_HERO_BODY_CLASS = `auth-grid ${LANDING_HERO_SECTION_CLASS} ${LANDING_HERO_PADDING_CLASS}`;
 
-/** Hero grid wrapper — stretches to fill shell main so copy can pin pills to the bottom. */
+/** Hero grid wrapper — full-width stage between header and footer. */
 export const LANDING_HERO_CONTAINER_CLASS =
   "flex w-full min-h-0 flex-1 items-center";
 
@@ -85,13 +96,17 @@ export const LANDING_HERO_COPY_CLASS =
 export const LANDING_HERO_COPY_TOP_CLASS =
   "flex flex-col gap-5 sm:gap-6 lg:gap-7 xl:gap-8";
 
-/** Feature pills — single horizontal row (wraps only on narrow viewports). */
+/** Feature pills — horizontal row under description area. */
 export const LANDING_HERO_PILLS_CLASS =
   "flex flex-row flex-wrap gap-2.5 sm:gap-3 lg:flex-nowrap lg:gap-3.5 lg:shrink-0";
 
-/** Right column — login card pinned to the outer edge, vertically centered with copy. */
+/** Right column — centers the login slot in the grid cell (horizontal + vertical). */
 export const LANDING_HERO_LOGIN_COLUMN_CLASS =
-  "flex min-w-0 w-full items-center justify-center sm:justify-end lg:h-full";
+  "grid min-w-0 w-full items-center justify-items-center lg:min-h-full lg:justify-items-end";
+
+/** Fixed-width slot so the card can center (avoid `w-full` on the card itself). */
+export const LANDING_HERO_LOGIN_SLOT_CLASS =
+  "w-[min(100%,28rem)] sm:w-[30rem] lg:w-[34rem] xl:w-[36rem]";
 
 /** Hero title + subtitle — see `.landing-hero-hover-zoom` in globals.css. */
 export const LANDING_HERO_HOVER_ZOOM_CLASS = "landing-hero-hover-zoom";
@@ -102,16 +117,15 @@ export const LANDING_HERO_HEADING_CLASS =
 export const LANDING_HERO_DESCRIPTION_CLASS =
   `landing-hero-description text-pretty text-xl leading-relaxed sm:text-2xl lg:text-[clamp(1.125rem,1.35vw,1.5rem)] ${LANDING_HERO_HOVER_ZOOM_CLASS}`;
 
-/** Auth card width — login (square) and forgot-password (auto height). */
-export const LANDING_AUTH_CARD_WIDTH_CLASS =
-  "ml-auto w-full max-w-[min(100%,22rem)] sm:max-w-[24rem] lg:max-w-[26rem]";
+/** Auth card width — fills its parent slot (`LANDING_HERO_LOGIN_SLOT_CLASS` on landing). */
+export const LANDING_AUTH_CARD_WIDTH_CLASS = "w-full";
 
-/** Login card — square footprint within the hero right column. */
-export const LANDING_LOGIN_CARD_WIDTH_CLASS = `aspect-square ${LANDING_AUTH_CARD_WIDTH_CLASS}`;
+/** Login card — auto height (Google OAuth adds footer content). */
+export const LANDING_LOGIN_CARD_WIDTH_CLASS = LANDING_AUTH_CARD_WIDTH_CLASS;
 
-/** Login card inner layout — centered stack inside the square. */
+/** Login card inner layout. */
 export const LANDING_LOGIN_CARD_LAYOUT_CLASS =
-  "flex shrink-0 flex-col justify-center gap-5 rounded-[2rem] border-white/10 p-6 shadow-none sm:gap-6 sm:p-7 lg:p-8";
+  "flex shrink-0 flex-col justify-center gap-5 rounded-[2rem] border-white/10 p-6 shadow-none sm:gap-6 sm:p-8 lg:gap-7 lg:p-10";
 
 /** Canonical glass surface — `.app-glass-card` in globals.css (feed search rail style). */
 export const APP_GLASS_CARD_CLASS =
@@ -140,6 +154,10 @@ export const LANDING_LOGIN_CARD_CLASS = LANDING_AUTH_GLASS_CARD_CLASS;
 /** Glass pill fields — `.landing-glass-input` in globals.css (minimal white highlight on hover/focus). */
 export const LANDING_GLASS_INPUT_CLASS =
   "landing-glass-input h-11 rounded-xl sm:h-12 focus-visible:ring-0";
+
+/** Landing auth primary CTA — editorial white pill (`Button` variant `landingSubmit`). */
+export const LANDING_AUTH_SUBMIT_BUTTON_CLASS =
+  "h-12 w-full rounded-2xl font-semibold";
 
 /** Collapsible feed thread inside unified post card — see globals.css `.feed-thread-panel`. */
 export const FEED_POST_THREAD_PANEL_CLASS = "feed-thread-panel";

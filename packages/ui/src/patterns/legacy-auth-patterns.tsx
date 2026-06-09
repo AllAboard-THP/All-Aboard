@@ -19,6 +19,7 @@ import {
 import { cn } from "@allaboard/ui/lib/utils";
 import {
   LANDING_AUTH_CARD_WIDTH_CLASS,
+  LANDING_AUTH_SUBMIT_BUTTON_CLASS,
   LANDING_GLASS_INPUT_CLASS,
   LANDING_LOGIN_CARD_CLASS,
   LANDING_LOGIN_CARD_LAYOUT_CLASS,
@@ -186,7 +187,8 @@ export function ForgotPasswordForm({
         className={cn("flex-col px-0", isLanding ? "shrink-0 gap-3 pt-0" : "gap-4")}
       >
         <Button
-          className={isLanding ? "h-12 w-full rounded-2xl" : "w-full rounded-xl"}
+          variant={isLanding ? "landingSubmit" : "default"}
+          className={isLanding ? LANDING_AUTH_SUBMIT_BUTTON_CLASS : "w-full rounded-xl"}
           onClick={() => legacyDemoToast(labels.auth.forgotSubmit)}
         >
           {labels.auth.forgotSubmit}
@@ -299,7 +301,8 @@ export function OAuthOnboardingForm({
       </CardContent>
       <CardFooter className="shrink-0 flex-col gap-3 px-0 pt-0">
         <Button
-          className="h-12 w-full rounded-2xl"
+          variant="landingSubmit"
+          className={LANDING_AUTH_SUBMIT_BUTTON_CLASS}
           disabled={submitting || !fullName.trim() || !acceptCgu}
           onClick={() =>
             void onSubmit({

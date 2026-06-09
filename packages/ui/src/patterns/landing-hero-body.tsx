@@ -17,6 +17,7 @@ import type { LegacyLabels } from "../i18n/legacy-labels";
 import { cn } from "../lib/utils";
 import { LandingAuthHeroLayout } from "./landing-auth-hero-layout";
 import {
+  LANDING_AUTH_SUBMIT_BUTTON_CLASS,
   LANDING_GLASS_INPUT_CLASS,
   LANDING_LOGIN_CARD_CLASS,
   LANDING_LOGIN_CARD_LAYOUT_CLASS,
@@ -99,7 +100,8 @@ export function LandingHeroBody({
         </CardContent>
         <CardFooter className="shrink-0 flex-col gap-3 px-0 pt-0">
           <Button
-            className="h-12 w-full rounded-2xl"
+            variant="landingSubmit"
+            className={LANDING_AUTH_SUBMIT_BUTTON_CLASS}
             onClick={() => legacyDemoToast(labels.auth.submit)}
           >
             {labels.auth.submit}
