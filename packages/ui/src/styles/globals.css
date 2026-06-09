@@ -130,6 +130,39 @@
     mask-image: linear-gradient(to bottom, rgb(0 0 0 / 0.65), transparent);
   }
 
+  /**
+   * In-app global stage — rose → violet → rose (vertical: top / center / bottom).
+   * Dark enough for light UI tokens + landing glass.
+   */
+  .app-abstract-background-base {
+    background-color: hsl(263 40% 12%);
+    background-image: linear-gradient(
+      180deg,
+      hsl(330 52% 22%) 0%,
+      hsl(330 46% 19%) 14%,
+      hsl(263 55% 21%) 50%,
+      hsl(330 46% 19%) 86%,
+      hsl(330 52% 22%) 100%
+    );
+  }
+
+  /** Top/bottom roses + central violet wash. */
+  .app-abstract-background-glow {
+    background-image:
+      radial-gradient(ellipse 85% 58% at 50% 0%, hsl(330 81% 60% / 0.38), transparent 62%),
+      radial-gradient(ellipse 85% 58% at 50% 100%, hsl(330 81% 60% / 0.38), transparent 62%),
+      radial-gradient(ellipse 70% 65% at 50% 50%, hsl(263 70% 50% / 0.2), transparent 58%);
+  }
+
+  /** Soft center anchor — readability without flattening the violet band. */
+  .app-abstract-background-depth {
+    background: radial-gradient(
+      ellipse 90% 80% at 50% 45%,
+      hsl(222 47% 6% / 0.22) 0%,
+      transparent 72%
+    );
+  }
+
   .subject-chip {
     border: 1px solid rgb(255 255 255 / 0.1);
     background: rgb(255 255 255 / 0.04);
@@ -228,6 +261,8 @@
   .landing-glass-card,
   .feed-stage-glass-card,
   .feed-post-glass-card,
+  .dashboard-glass-card,
+  .dashboard-stat-card,
   .landing-shell-chrome {
     background: var(--landing-auth-glass-bg);
     -webkit-backdrop-filter: blur(var(--landing-auth-glass-blur));
@@ -244,7 +279,9 @@
   .landing-auth-glass-card,
   .landing-glass-card,
   .feed-stage-glass-card,
-  .feed-post-glass-card {
+  .feed-post-glass-card,
+  .dashboard-glass-card,
+  .dashboard-stat-card {
     transform: scale(1);
     transform-origin: center;
     transition:
@@ -271,7 +308,9 @@
   .landing-auth-glass-card:hover,
   .landing-glass-card:hover,
   .feed-stage-glass-card:hover,
-  .feed-post-glass-card:hover {
+  .feed-post-glass-card:hover,
+  .dashboard-glass-card:hover,
+  .dashboard-stat-card:hover {
     filter: saturate(98%) brightness(1.05);
     transform: scale(1.006);
   }
@@ -285,7 +324,9 @@
     .landing-auth-glass-card,
     .landing-glass-card,
     .feed-stage-glass-card,
-    .feed-post-glass-card {
+    .feed-post-glass-card,
+    .dashboard-glass-card,
+    .dashboard-stat-card {
       transition: none;
     }
 
@@ -297,7 +338,9 @@
     .landing-auth-glass-card:hover,
     .landing-glass-card:hover,
     .feed-stage-glass-card:hover,
-    .feed-post-glass-card:hover {
+    .feed-post-glass-card:hover,
+    .dashboard-glass-card:hover,
+    .dashboard-stat-card:hover {
       transform: scale(1);
     }
   }
@@ -580,31 +623,16 @@
   }
 
   .dashboard-glass-surface {
-    @apply border border-white/10 bg-card/75 shadow-xl backdrop-blur-md;
-  }
-
-  .dashboard-glass-card {
-    @apply border border-white/10 bg-card/75 shadow-xl backdrop-blur-md transition-[transform,box-shadow,filter] duration-300 ease-out;
-  }
-
-  .dashboard-glass-card:hover {
-    @apply brightness-110;
-    box-shadow:
-      0 20px 40px -12px hsl(239 84% 67% / 0.28),
-      0 0 0 1px hsl(0 0% 100% / 0.06);
-    transform: translateY(-2px);
+    background: rgb(15 23 42 / 0.38);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-color: rgb(255 255 255 / 0.08);
   }
 
   .dashboard-stat-card {
-    @apply rounded-2xl border border-white/10 bg-card/75 px-4 py-3 text-center shadow-xl backdrop-blur-md transition-[transform,box-shadow,filter] duration-300 ease-out;
-  }
-
-  .dashboard-stat-card:hover {
-    @apply brightness-110;
-    box-shadow:
-      0 20px 40px -12px hsl(239 84% 67% / 0.28),
-      0 0 0 1px hsl(0 0% 100% / 0.06);
-    transform: translateY(-2px);
+    border-radius: 1rem;
+    padding: 0.75rem 1rem;
+    text-align: center;
   }
 
   .dashboard-inner-card {

@@ -1,17 +1,10 @@
 import type { ReactNode } from "react";
 
-import { FeedConceptBackground } from "@allaboard/ui/patterns/feed-concept-background";
-
 type Props = {
   children: ReactNode;
 };
 
-/** Feed route — illustrated tri-band stage (concept-feed-three-column-morning-illustrated). */
+/** Feed route — content only; stage bg lives on `AppShell` (`AppAbstractBackground`). */
 export default function FeedLayout({ children }: Props) {
-  return (
-    <div className="relative min-h-[60vh]">
-      <FeedConceptBackground />
-      <div className="relative z-10">{children}</div>
-    </div>
-  );
+  return <div className="relative min-h-[60vh]">{children}</div>;
 }

@@ -18,6 +18,7 @@ import {
   Zap,
 } from "lucide-react";
 
+import { AllAboardLogoMark } from "../components/allaboard-logo-mark";
 import { Badge } from "../components/badge";
 import { Button } from "../components/button";
 import {
@@ -37,9 +38,15 @@ import {
   type StudentUpcomingTeaser,
 } from "./fixtures/student-dashboard";
 import {
+  APP_GLASS_CARD_CLASS,
+  APP_STAGE_CLASS,
+  LANDING_EDGE_PADDING_CLASS,
+} from "./landing-layout";
+import {
   studentDashboardLabelsFr,
   type StudentDashboardLabels,
 } from "./student-dashboard-labels";
+import { AppAbstractBackground } from "./app-abstract-background";
 
 type SidebarItem = {
   id: string;
@@ -48,36 +55,10 @@ type SidebarItem = {
   active?: boolean;
 };
 
-function BrandMark({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn(
-        "relative flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 to-pink-500/20 text-sm font-bold text-primary shadow-[0_0_24px_hsl(239_84%_67%_/_0.25)] ring-1 ring-white/15",
-        className,
-      )}
-      aria-hidden
-    >
-      AA
-    </div>
-  );
-}
-
 function DashboardStage({ children }: { children: ReactNode }) {
   return (
-    <div className="dashboard-stage flex min-h-[100dvh] flex-col">
-      <div className="landing-grid pointer-events-none absolute inset-0" aria-hidden />
-      <div
-        className="dashboard-stage-glow dashboard-stage-glow--indigo -left-24 top-0 size-72"
-        aria-hidden
-      />
-      <div
-        className="dashboard-stage-glow dashboard-stage-glow--pink right-0 top-1/3 size-64"
-        aria-hidden
-      />
-      <div
-        className="dashboard-stage-glow dashboard-stage-glow--indigo bottom-0 left-1/3 size-80 opacity-70"
-        aria-hidden
-      />
+    <div className={cn(APP_STAGE_CLASS, "dashboard-stage relative flex min-h-[100dvh] flex-col")}>
+      <AppAbstractBackground />
       <div className="relative z-10 flex min-h-[100dvh] flex-col">{children}</div>
     </div>
   );
@@ -90,17 +71,17 @@ function StatCard({
 }: {
   value: string | number;
   label: string;
-  tone?: "primary" | "accent" | "emerald";
+  tone?: "primary" | "accent" | "gradient";
 }) {
-  const toneClass = {
+  const valueClass = {
     primary: "text-primary",
     accent: "text-accent",
-    emerald: "text-emerald-400",
+    gradient: "gradient-text",
   }[tone];
 
   return (
-    <div className="dashboard-stat-card min-w-[7.5rem]">
-      <p className={cn("text-2xl font-bold sm:text-3xl", toneClass)}>{value}</p>
+    <div className="dashboard-stat-card flex-1">
+      <p className={cn("text-2xl font-bold sm:text-3xl", valueClass)}>{value}</p>
       <p className="landing-eyebrow mt-1 text-[10px] text-muted-foreground normal-case tracking-wide">
         {label}
       </p>
@@ -134,6 +115,35 @@ function SidebarNavButton({
   );
 }
 
+const DASHBOARD_SIDEBAR_CLASS =
+  "landing-chrome flex w-full shrink-0 flex-col border-white/10 md:w-64 md:min-h-0 md:border-r";
+
+function StudentDashboardTopHeader({
+  labels,
+  headerEnd,
+}: {
+  labels: StudentDashboardLabels;
+  headerEnd?: ReactNode;
+}) {
+  return (
+    <header className="landing-chrome sticky top-0 z-20 grid shrink-0 grid-cols-[1fr_auto] border-b border-white/10 md:grid-cols-[16rem_minmax(0,1fr)]">
+      <div className="flex min-h-[4.25rem] items-center gap-3 px-3 py-3 sm:px-4">
+        <AllAboardLogoMark className="size-10" title={labels.brandName} />
+        <span className="gradient-text min-w-0 text-xl font-bold">{labels.brandName}</span>
+      </div>
+      <div className="flex min-h-[4.25rem] items-center justify-end gap-2 px-3 py-3 sm:gap-3 sm:px-4 md:px-6 lg:px-8">
+        {headerEnd}
+        <Badge
+          variant="outline"
+          className="rounded-full border-primary/30 bg-primary/10 text-primary"
+        >
+          {labels.chrome.demoBadge}
+        </Badge>
+      </div>
+    </header>
+  );
+}
+
 function StudentDashboardSidebar({
   labels,
   fixture,
@@ -158,7 +168,7 @@ function StudentDashboardSidebar({
   ];
 
   return (
-    <aside className="dashboard-glass-surface flex w-full shrink-0 flex-col rounded-none border-y-0 border-l-0 md:w-64">
+    <aside className={DASHBOARD_SIDEBAR_CLASS}>
       <nav
         className="flex-1 space-y-6 overflow-y-auto px-3 py-5"
         aria-label={labels.sidebar.navigationGroup}
@@ -227,7 +237,7 @@ function DashboardPanel({
   footer?: ReactNode;
 }) {
   return (
-    <Card className="dashboard-glass-card gap-0 rounded-2xl py-0 shadow-none">
+    <Card className={cn(APP_GLASS_CARD_CLASS, "dashboard-glass-card gap-0 rounded-2xl py-0 shadow-none")}>
       <CardHeader className="flex-row items-center gap-2 border-b border-white/10 px-5 py-4">
         <span className="flex size-8 items-center justify-center rounded-lg bg-primary/15 ring-1 ring-primary/20">
           <Icon className="size-4 text-primary" aria-hidden />
@@ -332,37 +342,6 @@ function DemoLinkButton({
   );
 }
 
-function StudentDashboardTopHeader({
-  labels,
-  headerEnd,
-}: {
-  labels: StudentDashboardLabels;
-  headerEnd?: ReactNode;
-}) {
-  return (
-    <header className="landing-chrome sticky top-0 z-20 shrink-0 border-b">
-      <div className="flex min-h-[4.25rem] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-        <div className="flex min-w-0 items-center gap-3">
-          <BrandMark className="size-10" />
-          <div className="min-w-0">
-            <p className="gradient-text text-lg font-bold">{labels.brandName}</p>
-            <p className="truncate text-xs text-violet-200/70">{labels.chrome.demoBadge}</p>
-          </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-3">
-          {headerEnd}
-          <Badge
-            variant="outline"
-            className="hidden rounded-full border-primary/30 bg-primary/10 text-primary sm:inline-flex"
-          >
-            {labels.chrome.demoBadge}
-          </Badge>
-        </div>
-      </div>
-    </header>
-  );
-}
-
 function StudentDashboardFooter({
   labels,
   onDemoClick,
@@ -379,9 +358,14 @@ function StudentDashboardFooter({
 
   return (
     <footer className="landing-chrome shrink-0 border-t">
-      <div className="flex flex-col items-center justify-between gap-4 px-4 py-5 sm:flex-row sm:px-6 lg:px-8">
+      <div
+        className={cn(
+          LANDING_EDGE_PADDING_CLASS,
+          "flex flex-col items-center justify-between gap-4 py-5 sm:flex-row",
+        )}
+      >
         <div className="flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground sm:justify-start">
-          <BrandMark className="size-7 text-[10px]" />
+          <AllAboardLogoMark className="size-5" title={labels.brandName} />
           <span className="gradient-text font-semibold">{labels.brandName}</span>
           <span>{labels.chrome.footerRights(year)}</span>
         </div>
@@ -428,49 +412,46 @@ export function StudentDashboardScreen({
           onDemoClick={handleDemoClick}
         />
 
-        <div className="flex min-w-0 flex-1 flex-col">
-          <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
             <div className="animate-fade-in mx-auto max-w-6xl space-y-6">
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-                <div className="space-y-3">
-                  <Badge
-                    variant="outline"
-                    className="landing-eyebrow rounded-full border-primary/30 bg-primary/10 px-3 py-1 text-primary normal-case"
-                  >
-                    {fixture.dateLabel}
-                  </Badge>
-                  <div>
-                    <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                      {labels.header.greetingPrefix}{" "}
-                      <span className="gradient-text">{fixture.firstName}</span>
-                      {labels.header.greetingSuffix}
-                    </h1>
-                    <p className="mt-2 max-w-xl text-muted-foreground">
-                      {labels.header.subtitle}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-3 lg:justify-end">
-                  <StatCard
-                    value={fixture.postsCount}
-                    label={labels.header.statPosts}
-                    tone="primary"
-                  />
-                  <StatCard
-                    value={fixture.repliesCount}
-                    label={labels.header.statReplies}
-                    tone="emerald"
-                  />
-                  <StatCard
-                    value={fixture.communityRating}
-                    label={labels.header.statRating}
-                    tone="accent"
-                  />
+              <div className="space-y-3">
+                <Badge
+                  variant="outline"
+                  className="landing-eyebrow rounded-full border-primary/30 bg-primary/10 px-3 py-1 text-primary normal-case"
+                >
+                  {fixture.dateLabel}
+                </Badge>
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                    {labels.header.greetingPrefix}{" "}
+                    <span className="gradient-text">{fixture.firstName}</span>
+                    {labels.header.greetingSuffix}
+                  </h1>
+                  <p className="mt-2 max-w-xl text-muted-foreground">
+                    {labels.header.subtitle}
+                  </p>
                 </div>
               </div>
 
-              <div className="grid gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <StatCard
+                  value={fixture.postsCount}
+                  label={labels.header.statPosts}
+                  tone="primary"
+                />
+                <StatCard
+                  value={fixture.repliesCount}
+                  label={labels.header.statReplies}
+                  tone="accent"
+                />
+                <StatCard
+                  value={fixture.communityRating}
+                  label={labels.header.statRating}
+                  tone="gradient"
+                />
+              </div>
+
+              <div className="grid gap-6 lg:grid-cols-2">
                 <div className="space-y-6">
                   <DashboardPanel
                     title={labels.panels.helpRequestsTitle}
@@ -499,27 +480,6 @@ export function StudentDashboardScreen({
                         <UpcomingTeaserCard key={item.id} item={item} />
                       ))}
                     </div>
-                  </DashboardPanel>
-
-                  <DashboardPanel
-                    title={labels.panels.resourcesTitle}
-                    icon={Library}
-                    footer={
-                      <DemoLinkButton
-                        label={labels.panels.resourcesCta}
-                        onClick={handleDemoClick}
-                      />
-                    }
-                  >
-                    {fixture.resources.length > 0 ? (
-                      <div className="space-y-3">
-                        {fixture.resources.map((item) => (
-                          <ResourcePreviewCard key={item.id} item={item} />
-                        ))}
-                      </div>
-                    ) : (
-                      <EmptyState message={labels.panels.resourcesEmpty} />
-                    )}
                   </DashboardPanel>
                 </div>
 
@@ -556,9 +516,29 @@ export function StudentDashboardScreen({
                   </DashboardPanel>
                 </div>
               </div>
+
+              <DashboardPanel
+                title={labels.panels.resourcesTitle}
+                icon={Library}
+                footer={
+                  <DemoLinkButton
+                    label={labels.panels.resourcesCta}
+                    onClick={handleDemoClick}
+                  />
+                }
+              >
+                {fixture.resources.length > 0 ? (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {fixture.resources.map((item) => (
+                      <ResourcePreviewCard key={item.id} item={item} />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState message={labels.panels.resourcesEmpty} />
+                )}
+              </DashboardPanel>
             </div>
           </main>
-        </div>
       </div>
 
       <StudentDashboardFooter labels={labels} onDemoClick={handleDemoClick} />

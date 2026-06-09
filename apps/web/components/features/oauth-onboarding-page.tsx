@@ -117,7 +117,7 @@ function OAuthOnboardingContent() {
   const labels = useLegacyLabels();
 
   return (
-    <LandingPageShell labels={labels}>
+    <LandingPageShell labels={labels} background="app">
       <OAuthOnboardingBody />
     </LandingPageShell>
   );

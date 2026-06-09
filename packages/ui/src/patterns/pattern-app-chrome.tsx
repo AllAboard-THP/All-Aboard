@@ -9,7 +9,7 @@ import {
   MobileBottomNav,
   type MobileNavLink,
 } from "./legacy-mobile-patterns";
-import { FeedConceptBackground } from "./feed-concept-background";
+import { AppAbstractBackground } from "./app-abstract-background";
 import {
   APP_CHROME_FOOTER_CLASS,
   APP_CHROME_FOOTER_SHELL_CLASS,
@@ -17,6 +17,7 @@ import {
   APP_CHROME_FEED_MAIN_CLASS,
   APP_CHROME_MAIN_CLASS,
   APP_CHROME_MAIN_INNER_CLASS,
+  APP_STAGE_CLASS,
 } from "./landing-layout";
 import {
   AppFooter,
@@ -62,7 +63,8 @@ export function AppChrome({
   const labels = useLegacyLabels();
 
   return (
-    <div className="flex min-h-[100dvh] flex-col">
+    <div className={cn(APP_STAGE_CLASS, "relative flex min-h-[100dvh] flex-col")}>
+      <AppAbstractBackground />
       <AppNavBar
         activeLink={activeLink}
         messageCount={messageCount}
@@ -74,7 +76,6 @@ export function AppChrome({
         showMainNav={showNav}
         showUserMenu={showNav}
       />
-      {mainInnerLayout === "feed" ? <FeedConceptBackground /> : null}
       <main className={cnMainClass(mobileChrome, mainInnerLayout)}>
         <div
           className={
@@ -90,6 +91,7 @@ export function AppChrome({
         <AppFooter
           labels={labels}
           className={cn(
+            "relative z-10",
             APP_CHROME_FOOTER_SHELL_CLASS,
             APP_CHROME_FOOTER_CLASS,
             mobileChrome ? "pb-20 md:pb-0" : undefined,

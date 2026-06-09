@@ -7,9 +7,11 @@ import {
   type LegacyLabels,
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
+import { AppAbstractBackground } from "./app-abstract-background";
 import { LandingConceptBackground } from "./landing-concept-background";
 import {
   APP_CHROME_FOOTER_SHELL_CLASS,
+  APP_STAGE_CLASS,
   LANDING_HEADER_OFFSET_CLASS,
   LANDING_SHELL_FOOTER_CLASS,
 } from "./landing-layout";
@@ -19,9 +21,13 @@ import {
   type LandingPublicHeaderProps,
 } from "./landing-public-header";
 
+export type LandingPageShellBackground = "landing" | "app";
+
 export type LandingPageShellProps = {
   children: ReactNode;
   labels?: LegacyLabels;
+  /** `landing` = hero photo; `app` = light abstract bicolor (auth aux pages). */
+  background?: LandingPageShellBackground;
   className?: string;
   footerClassName?: string;
   onLegalLinkClick?: (key: LegacyLegalLinkKey) => void;
@@ -33,6 +39,7 @@ export type LandingPageShellProps = {
 export function LandingPageShell({
   children,
   labels = legacyLabelsFr,
+  background = "landing",
   className,
   footerClassName,
   activeAction = "signIn",
@@ -45,10 +52,15 @@ export function LandingPageShell({
     <div
       className={cn(
         "relative flex min-h-[100dvh] flex-col overflow-x-hidden text-foreground",
+        background === "app" ? APP_STAGE_CLASS : undefined,
         className,
       )}
     >
-      <LandingConceptBackground />
+      {background === "landing" ? (
+        <LandingConceptBackground />
+      ) : (
+        <AppAbstractBackground />
+      )}
       <LandingPublicHeader
         labels={labels}
         activeAction={activeAction}

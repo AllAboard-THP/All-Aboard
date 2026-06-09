@@ -10,7 +10,9 @@ import {
   APP_CHROME_HEADER_ROW_CLASS,
   APP_CHROME_MAIN_CLASS,
   APP_CHROME_MAIN_INNER_CLASS,
+  APP_STAGE_CLASS,
 } from "@allaboard/ui/patterns/landing-layout";
+import { AppAbstractBackground } from "@allaboard/ui/patterns/app-abstract-background";
 import { cn } from "@allaboard/ui/lib/utils";
 
 import { AppShellNav } from "@/components/features/app-shell-nav";
@@ -26,8 +28,9 @@ export async function AppShell({ children }: AppShellProps) {
   const year = new Date().getFullYear();
 
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-background text-foreground">
-      <header className={APP_CHROME_HEADER_CLASS}>
+    <div className={cn(APP_STAGE_CLASS, "relative flex min-h-[100dvh] flex-col text-foreground")}>
+      <AppAbstractBackground />
+      <header className={cn(APP_CHROME_HEADER_CLASS, "relative z-50")}>
         <div className={APP_CHROME_HEADER_ROW_CLASS}>
           <Link
             href="/feed"
@@ -42,11 +45,15 @@ export async function AppShell({ children }: AppShellProps) {
           </div>
         </div>
       </header>
-      <main id="main-content" className={APP_CHROME_MAIN_CLASS}>
+      <main id="main-content" className={cn(APP_CHROME_MAIN_CLASS, "relative z-10")}>
         <div className={cn(APP_CHROME_MAIN_INNER_CLASS, "pb-8")}>{children}</div>
       </main>
       <footer
-        className={cn(APP_CHROME_FOOTER_SHELL_CLASS, APP_CHROME_FOOTER_CLASS)}
+        className={cn(
+          APP_CHROME_FOOTER_SHELL_CLASS,
+          APP_CHROME_FOOTER_CLASS,
+          "relative z-10",
+        )}
       >
         <div className={APP_CHROME_FOOTER_ROW_CLASS}>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

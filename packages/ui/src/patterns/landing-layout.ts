@@ -2,6 +2,9 @@
 export const LANDING_EDGE_PADDING_CLASS =
   "w-full px-4 sm:pl-5 sm:pr-6 lg:pl-8 lg:pr-10 xl:pl-10 xl:pr-14";
 
+/** Root wrapper for in-app pages on `AppAbstractBackground` (standard landing glass applies). */
+export const APP_STAGE_CLASS = "app-stage";
+
 /** Lighter glass for in-app header/footer — see `.landing-chrome` in globals.css. */
 export const LANDING_GLASS_CHROME_CLASS = "landing-chrome border-white/10";
 

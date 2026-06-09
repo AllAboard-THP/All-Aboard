@@ -240,13 +240,10 @@ export function RegisterScreen() {
 
   return (
     <AppChrome showNav={false}>
-      <div className="auth-shell relative min-h-[100dvh] overflow-hidden">
-        <div className="landing-grid absolute inset-0" />
-        <div className="auth-grid relative mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="grid min-h-[90vh] items-center gap-12 lg:grid-cols-2">
-            <RegisterHeroPanel labels={labels} />
-            <RegisterForm labels={labels} />
-          </div>
+      <div className="auth-grid relative mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="grid min-h-[90vh] items-center gap-12 lg:grid-cols-2">
+          <RegisterHeroPanel labels={labels} />
+          <RegisterForm labels={labels} />
         </div>
       </div>
     </AppChrome>
@@ -257,7 +254,7 @@ export function ForgotPasswordScreen() {
   const labels = useLegacyLabels();
 
   return (
-    <LandingPageShell labels={labels} activeAction="signIn">
+    <LandingPageShell labels={labels} activeAction="signIn" background="app">
       <LandingForgotPasswordBody labels={labels} />
     </LandingPageShell>
   );
