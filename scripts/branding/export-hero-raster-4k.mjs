@@ -8,7 +8,7 @@
  * Usage:
  *   node scripts/branding/export-hero-raster-4k.mjs \
  *     --source /path/to/draft.png \
- *     --basename concept-landing-port-entry
+ *     --basename concept-landing-hero
  */
 
 import { createHash } from "node:crypto";

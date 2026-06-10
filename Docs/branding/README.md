@@ -27,13 +27,15 @@ Storybook: **Patterns/Legacy Brand** (`legacy-brand.stories.tsx`).
 
 ## Production assets (`assets/`)
 
+**Naming:** `concept-{page}-hero` — production basenames match table IDs (`landing-hero` → `concept-landing-hero`, `feed-hero` → `concept-feed-hero`). Scene details live in Notes, not filenames. PNG + WebP siblings when exported via `export-hero-raster-4k.mjs`.
+
 | ID | File | Usage | Notes |
 |----|------|-------|-------|
-| **landing-hero** | [concept-landing-port-entry.png](assets/concept-landing-port-entry.png) · [`.webp`](assets/concept-landing-port-entry.webp) | Landing `/` — `LandingConceptBackground` | **Deploy 4K** 3840×2560 (2026-06-08) — editorial port-entry illustration |
-| **feed-hero** | [concept-feed-three-column-morning-illustrated.png](assets/concept-feed-three-column-morning-illustrated.png) | Feed `/feed` — `FeedConceptBackground` | 2704×1520 — sole feed raster (2026-06-05) |
+| **landing-hero** | [concept-landing-hero.png](assets/concept-landing-hero.png) · [`.webp`](assets/concept-landing-hero.webp) | Landing `/` — `LandingConceptBackground` | **Deploy 4K** 3840×2560 (2026-06-08) — port-entry editorial illustration |
+| **feed-hero** | [concept-feed-hero.png](assets/concept-feed-hero.png) | Feed `/feed` — `FeedConceptBackground` | 2704×1520 — morning illustrated scene (2026-06-05) |
 | **logo-mark** | [logo-mark.png](assets/logo-mark.png) · [logo-mark.svg](assets/logo-mark.svg) | App chrome, Storybook, favicon source | PNG immutable per project rule |
 
-Symlinks: `packages/ui/src/assets/{concept-landing-port-entry,concept-feed-three-column-morning-illustrated,logo-mark}.*` → `Docs/branding/assets/`.
+Symlinks: `packages/ui/src/assets/{concept-landing-hero,concept-feed-hero,logo-mark}.*` → `Docs/branding/assets/`.
 
 ---
 
@@ -76,12 +78,12 @@ When regenerating or editing concept visuals (AI or manual):
 
 **Priority:** true 4K source → else Cursor generator (~1536×1024) in **editorial illustration** style (not photoreal) → `export-hero-raster-4k.mjs` (warns on upscale). Never label upscale-only output as native 4K.
 
-| Field | Landing hero (`concept-landing-port-entry`) |
+| Field | Landing hero (`concept-landing-hero`) |
 |-------|---------------------------------------------|
 | Deploy output | **3840 × 2560** (16∶9) |
 | PNG | RGB 24-bit (`palette: false`) |
 | WebP | quality **94** |
-| Script | `node scripts/branding/export-hero-raster-4k.mjs --source <draft> --basename concept-landing-port-entry` |
+| Script | `node scripts/branding/export-hero-raster-4k.mjs --source <draft> --basename concept-landing-hero` |
 
 After export: bump `LANDING_CONCEPT_BG_REVISION` in `landing-concept-background.tsx`. Rule: [.cursor/rules/branding-hero-4k.mdc](../../.cursor/rules/branding-hero-4k.mdc).
 
@@ -91,6 +93,6 @@ After export: bump `LANDING_CONCEPT_BG_REVISION` in `landing-concept-background.
 
 - **Format:** 16:9 hero-friendly; top area kept clear for optional headline overlay.
 - **Language:** Illustrations are locale-neutral; user-facing copy remains French in product UI.
-- **Status:** Production landing = **concept-landing-port-entry** ; production feed = **concept-feed-three-column-morning-illustrated**.
+- **Status:** Production landing = **concept-landing-hero** ; production feed = **concept-feed-hero**.
 
 When promoting a concept to production, document the decision here or in an ADR and add optimized exports (PNG, WebP) under `assets/`.

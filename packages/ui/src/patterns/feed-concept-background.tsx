@@ -1,4 +1,4 @@
-import conceptFeedThreeColumnUrl from "../assets/concept-feed-three-column-morning-illustrated.png";
+import conceptFeedHeroUrl from "../assets/concept-feed-hero.png";
 
 import { cn } from "@allaboard/ui/lib/utils";
 
@@ -14,7 +14,7 @@ function brandAssetUrl(asset: string | { src: string }): string {
 /**
  * Feed three-column stage — illustrated morning scene; premium in-scene branding
  * (canonical logo mark on tote, mug, yacht, framed print, small paper plane).
- * Canonical raster: Docs/branding/assets/concept-feed-three-column-morning-illustrated.png
+ * Canonical raster: Docs/branding/assets/concept-feed-hero.png
  */
 export function FeedConceptBackground({ className }: { className?: string }) {
   return (
@@ -26,7 +26,7 @@ export function FeedConceptBackground({ className }: { className?: string }) {
       aria-hidden
     >
       <img
-        src={brandAssetUrl(conceptFeedThreeColumnUrl)}
+        src={brandAssetUrl(conceptFeedHeroUrl)}
         alt=""
         className="size-full object-cover object-center brightness-[1.1] saturate-[0.95]"
         decoding="async"

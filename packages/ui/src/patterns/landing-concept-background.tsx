@@ -1,5 +1,5 @@
-import conceptLandingPortEntryPngUrl from "../assets/concept-landing-port-entry.png";
-import conceptLandingPortEntryWebpUrl from "../assets/concept-landing-port-entry.webp";
+import conceptLandingHeroPngUrl from "../assets/concept-landing-hero.png";
+import conceptLandingHeroWebpUrl from "../assets/concept-landing-hero.webp";
 
 import { cn } from "@allaboard/ui/lib/utils";
 
@@ -20,7 +20,7 @@ const LANDING_BG_IMAGE_CLASS =
 
 /**
  * Landing hero — mural photo (2700×1800); fixed full-viewport cover under header/footer glass.
- * Canonical: Docs/branding/assets/concept-landing-port-entry.{webp,png}
+ * Canonical: Docs/branding/assets/concept-landing-hero.{webp,png}
  */
 export function LandingConceptBackground({ className }: { className?: string }) {
   return (
@@ -33,11 +33,11 @@ export function LandingConceptBackground({ className }: { className?: string }) 
     >
       <picture>
         <source
-          srcSet={brandAssetUrl(conceptLandingPortEntryWebpUrl)}
+          srcSet={brandAssetUrl(conceptLandingHeroWebpUrl)}
           type="image/webp"
         />
         <img
-          src={brandAssetUrl(conceptLandingPortEntryPngUrl)}
+          src={brandAssetUrl(conceptLandingHeroPngUrl)}
           alt=""
           width={LANDING_CONCEPT_WIDTH}
           height={LANDING_CONCEPT_HEIGHT}

@@ -930,8 +930,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-concept-background.tsx": {
-    "mtime": 1781058990.6397314,
-    "ast_hash": "9ddaa44212358a093c57eec36713d993",
+    "mtime": 1781061685.7091799,
+    "ast_hash": "2105ec1ba3537cd47dc1d820f1e55cf2",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-layout.ts": {
@@ -1490,8 +1490,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/branding/README.md": {
-    "mtime": 1781060920.208566,
-    "ast_hash": "ebd48d9d14d61478e4f08b5a2ece317b",
+    "mtime": 1781061692.629187,
+    "ast_hash": "fcb16a900817061bba3111052a8a13da",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/design-system/contributor-guide.md": {
@@ -1540,18 +1540,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/feed-concept-background.tsx": {
-    "mtime": 1781058990.6357315,
-    "ast_hash": "ea7c5ef86aaac2256f247e1d941e7f8a",
-    "semantic_hash": ""
-  },
-  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-feed-three-column-morning-illustrated.png": {
-    "mtime": 1781058990.4917314,
-    "ast_hash": "93b29497bc01078f5990afb85fc0ae2a",
-    "semantic_hash": ""
-  },
-  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/concept-feed-three-column-morning-illustrated.png": {
-    "mtime": 1781058990.4917314,
-    "ast_hash": "93b29497bc01078f5990afb85fc0ae2a",
+    "mtime": 1781061685.93718,
+    "ast_hash": "7ba38eccc962a560d34e143daecf8dee",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/drizzle/0011_api_soft_delete_help_requests.sql": {
@@ -1722,26 +1712,6 @@
   "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/legacy-screen-page.tsx": {
     "mtime": 1781058990.5997314,
     "ast_hash": "2b10314e24210e524f692541a910fa4e",
-    "semantic_hash": ""
-  },
-  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/concept-landing-port-entry.png": {
-    "mtime": 1781058990.5677314,
-    "ast_hash": "fd8d3f6feccfa3edbe353eeb9d53572b",
-    "semantic_hash": ""
-  },
-  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-landing-port-entry.png": {
-    "mtime": 1781058990.5677314,
-    "ast_hash": "fd8d3f6feccfa3edbe353eeb9d53572b",
-    "semantic_hash": ""
-  },
-  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/concept-landing-port-entry.webp": {
-    "mtime": 1781058990.5717313,
-    "ast_hash": "e866ccbec8596985b75ec192ca5a7274",
-    "semantic_hash": ""
-  },
-  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-landing-port-entry.webp": {
-    "mtime": 1781058990.5717313,
-    "ast_hash": "e866ccbec8596985b75ec192ca5a7274",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/app/[locale]/(public)/onboarding/page.tsx": {
@@ -2112,6 +2082,36 @@
   "/home/toxy/dossierlinux/project/allaboard/apps/web/lib/use-auth-role.ts": {
     "mtime": 1781060894.156554,
     "ast_hash": "4e0d5d305f9f13f53267048d73bef1d7",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/concept-landing-hero.webp": {
+    "mtime": 1781058990.5717313,
+    "ast_hash": "e866ccbec8596985b75ec192ca5a7274",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/concept-feed-hero.png": {
+    "mtime": 1781058990.4917314,
+    "ast_hash": "93b29497bc01078f5990afb85fc0ae2a",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/concept-landing-hero.png": {
+    "mtime": 1781058990.5677314,
+    "ast_hash": "fd8d3f6feccfa3edbe353eeb9d53572b",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-landing-hero.webp": {
+    "mtime": 1781058990.5717313,
+    "ast_hash": "e866ccbec8596985b75ec192ca5a7274",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-feed-hero.png": {
+    "mtime": 1781058990.4917314,
+    "ast_hash": "93b29497bc01078f5990afb85fc0ae2a",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/Docs/branding/assets/concept-landing-hero.png": {
+    "mtime": 1781058990.5677314,
+    "ast_hash": "fd8d3f6feccfa3edbe353eeb9d53572b",
     "semantic_hash": ""
   }
 }

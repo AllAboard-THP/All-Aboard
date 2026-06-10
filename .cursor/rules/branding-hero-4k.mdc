@@ -33,7 +33,7 @@ When generating or replacing a **hero / concept background** for landing or feed
 ```bash
 node scripts/branding/export-hero-raster-4k.mjs \
   --source <path-to-draft.png> \
-  --basename concept-landing-port-entry
+  --basename concept-landing-hero
 ```
 
 4. **Bump** `LANDING_CONCEPT_BG_REVISION` / `FEED_CONCEPT_BG_REVISION` in `*-concept-background.tsx`.
@@ -44,7 +44,7 @@ node scripts/branding/export-hero-raster-4k.mjs \
 - **Left 40%**: calm pale sky + soft water — no sun disk, no glare (hero copy zone).
 - **Center-right**: catamaran hero, **smaller in frame** (full mast + hull visible, header/footer safe margins).
 - **Sail**: flat indigo `#6366f1` + pink `#ec4899`, no panel seams. Hull: "All-Aboard" only.
-- **Style**: match `concept-feed-three-column-morning-illustrated` — premium editorial, not photo/AI realism.
+- **Style**: match `concept-feed-hero` — premium editorial, not photo/AI realism.
 
 ## Deploy specs
 
