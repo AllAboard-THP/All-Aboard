@@ -45,7 +45,7 @@ test.describe("i18n — locale routing", () => {
   test("switch EN → FR from feed", async ({ page }) => {
     await page.goto("/en");
     await page.getByTestId("locale-switch-fr").click();
-    await expect(page).toHaveURL(/^\/?$/);
+    await expect(page).toHaveURL("/");
     await expect(
       page.getByRole("heading", { level: 1, name: "Feed communautaire" }),
     ).toBeVisible();
@@ -70,7 +70,7 @@ test.describe("i18n — localized SSR copy", () => {
       timeout: 30_000,
     });
     await expect(
-      page.getByRole("heading", { name: "Demande introuvable" }),
+      page.getByTestId("help-request-not-found").getByText("Demande introuvable"),
     ).toBeVisible();
   });
 
@@ -80,7 +80,7 @@ test.describe("i18n — localized SSR copy", () => {
       timeout: 30_000,
     });
     await expect(
-      page.getByRole("heading", { name: "Request not found" }),
+      page.getByTestId("help-request-not-found").getByText("Request not found"),
     ).toBeVisible();
   });
 });
