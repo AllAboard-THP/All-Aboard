@@ -12,13 +12,11 @@ import {
   APP_SIDEBAR_WIDTH_EXPANDED,
 } from "./landing-layout";
 import {
-  AppSidebarContextPanel,
   AppSidebarDrawerSection,
   AppSidebarRailItem,
 } from "./app-sidebar-parts";
 import { useAppSidebarOptional } from "./app-sidebar-provider";
 import type {
-  AppSidebarContextPanelData,
   AppSidebarNavId,
   AppSidebarSection,
   AppSidebarSectionId,
@@ -55,8 +53,6 @@ export type AppSidebarLinkProps = {
 export type AppSidebarProps = {
   labels: AppSidebarLabels;
   sections: AppSidebarSection[];
-  context?: AppSidebarContextPanelData;
-  activeId?: AppSidebarNavId;
   openSectionIds?: AppSidebarSectionId[];
   badges?: Partial<Record<AppSidebarNavId, number>>;
   mentorDot?: boolean;
@@ -80,8 +76,6 @@ function sectionLabel(labels: AppSidebarLabels, section: AppSidebarSection): str
 export function AppSidebar({
   labels,
   sections,
-  context,
-  activeId,
   openSectionIds = ["navigation"],
   badges,
   mentorDot,
@@ -218,15 +212,6 @@ export function AppSidebar({
             })}
           </div>
         )}
-
-        {expanded ? (
-          <AppSidebarContextPanel
-            data={context}
-            activeId={activeId}
-            LinkComponent={LinkComponent}
-            onItemClick={onItemClick}
-          />
-        ) : null}
 
         <div className="min-h-6 flex-1 shrink-0" aria-hidden />
       </nav>

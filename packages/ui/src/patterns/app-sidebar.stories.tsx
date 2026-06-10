@@ -33,7 +33,7 @@ function SidebarDemoInner({
 }) {
   const { setExpanded } = useAppSidebar();
   const pathname = APP_SIDEBAR_ACTIVE_ID_PATH[activeId ?? "feed"];
-  const resolved = resolveAppSidebarContext(pathname, { isMentor, isAdmin, labelMap });
+  const resolved = resolveAppSidebarContext(pathname, { isMentor, isAdmin });
   const sections = buildAppSidebarSections(labelMap, {
     activeId: resolved.activeId,
     showMentorSection: resolved.showMentorSection,
@@ -56,8 +56,6 @@ function SidebarDemoInner({
           collapseSidebar: labelMap.collapseSidebar,
         }}
         sections={sections}
-        context={resolved.context}
-        activeId={resolved.activeId}
         openSectionIds={resolved.openSectionIds}
         badges={messageCount > 0 ? { messages: messageCount } : undefined}
         mentorDot={showMentorDot}

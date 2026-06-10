@@ -42,36 +42,6 @@ function buildLabelMap(labels: StudentDashboardLabels): AppSidebarLabelMap {
     admin: s.adminOverview,
     adminUsers: s.adminUsers,
     adminModeration: s.adminModeration,
-    "context.dashboard.title": s.context.dashboard.title,
-    "context.dashboard.description": s.context.dashboard.description,
-    "context.dashboard.demo": s.context.dashboard.demo,
-    "context.subjects.title": s.context.subjects.title,
-    "context.subjects.explore": s.context.subjects.explore,
-    "context.resources.title": s.context.resources.title,
-    "context.resources.all": s.context.resources.all,
-    "context.events.title": s.context.events.title,
-    "context.events.all": s.context.events.all,
-    "context.newRequest.title": s.context.newRequest.title,
-    "context.newRequest.description": s.context.newRequest.description,
-    "context.newRequest.create": s.context.newRequest.create,
-    "context.newRequest.backToFeed": s.context.newRequest.backToFeed,
-    "context.feed.title": s.context.feed.title,
-    "context.feed.description": s.context.feed.description,
-    "context.feed.browse": s.context.feed.browse,
-    "context.feed.newRequest": s.context.feed.newRequest,
-    "context.feed.backToFeed": s.context.feed.backToFeed,
-    "context.messages.title": s.context.messages.title,
-    "context.messages.inbox": s.context.messages.inbox,
-    "context.mentor.title": s.context.mentor.title,
-    "context.mentor.space": s.context.mentor.space,
-    "context.mentor.demo": s.context.mentor.demo,
-    "context.profile.title": s.context.profile.title,
-    "context.profile.view": s.context.profile.view,
-    "context.admin.title": s.context.admin.title,
-    "context.admin.description": s.context.admin.description,
-    "context.admin.overview": s.context.admin.overview,
-    "context.admin.users": s.context.admin.users,
-    "context.admin.moderation": s.context.admin.moderation,
   };
 }
 
@@ -105,7 +75,6 @@ export function AppChromeSidebar({
       resolveAppSidebarContext(pathname, {
         isMentor,
         isAdmin,
-        labelMap,
       }),
     [pathname, isMentor, isAdmin, labelMap],
   );
@@ -134,8 +103,6 @@ export function AppChromeSidebar({
         collapseSidebar: labelMap.collapseSidebar,
       }}
       sections={sections}
-      context={resolved.context}
-      activeId={resolved.activeId}
       openSectionIds={resolved.openSectionIds}
       badges={badges}
       mentorDot={showMentorDot}

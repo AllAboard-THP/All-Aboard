@@ -50,36 +50,6 @@ function useSidebarLabelMap(): AppSidebarLabelMap {
       admin: t("adminOverview"),
       adminUsers: t("adminUsers"),
       adminModeration: t("adminModeration"),
-      "context.dashboard.title": t("context.dashboard.title"),
-      "context.dashboard.description": t("context.dashboard.description"),
-      "context.dashboard.demo": t("context.dashboard.demo"),
-      "context.subjects.title": t("context.subjects.title"),
-      "context.subjects.explore": t("context.subjects.explore"),
-      "context.resources.title": t("context.resources.title"),
-      "context.resources.all": t("context.resources.all"),
-      "context.events.title": t("context.events.title"),
-      "context.events.all": t("context.events.all"),
-      "context.newRequest.title": t("context.newRequest.title"),
-      "context.newRequest.description": t("context.newRequest.description"),
-      "context.newRequest.create": t("context.newRequest.create"),
-      "context.newRequest.backToFeed": t("context.newRequest.backToFeed"),
-      "context.feed.title": t("context.feed.title"),
-      "context.feed.description": t("context.feed.description"),
-      "context.feed.browse": t("context.feed.browse"),
-      "context.feed.newRequest": t("context.feed.newRequest"),
-      "context.feed.backToFeed": t("context.feed.backToFeed"),
-      "context.messages.title": t("context.messages.title"),
-      "context.messages.inbox": t("context.messages.inbox"),
-      "context.mentor.title": t("context.mentor.title"),
-      "context.mentor.space": t("context.mentor.space"),
-      "context.mentor.demo": t("context.mentor.demo"),
-      "context.profile.title": t("context.profile.title"),
-      "context.profile.view": t("context.profile.view"),
-      "context.admin.title": t("context.admin.title"),
-      "context.admin.description": t("context.admin.description"),
-      "context.admin.overview": t("context.admin.overview"),
-      "context.admin.users": t("context.admin.users"),
-      "context.admin.moderation": t("context.admin.moderation"),
     }),
     [t],
   );
@@ -108,7 +78,6 @@ export function AppShellSidebarContent({
       resolveAppSidebarContext(pathname, {
         isMentor,
         isAdmin,
-        labelMap,
       }),
     [pathname, isMentor, isAdmin, labelMap],
   );
@@ -140,8 +109,6 @@ export function AppShellSidebarContent({
         collapseSidebar: labelMap.collapseSidebar,
       }}
       sections={sections}
-      context={resolved.context}
-      activeId={resolved.activeId}
       openSectionIds={resolved.openSectionIds}
       badges={badges}
       mentorDot={showMentorDot}

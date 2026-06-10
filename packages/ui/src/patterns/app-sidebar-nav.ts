@@ -1,6 +1,5 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  ArrowLeft,
   BookOpen,
   Calendar,
   Compass,
@@ -54,20 +53,6 @@ export type AppSidebarSectionLabelKey =
   | "mentorGroup"
   | "adminGroup";
 
-export type AppSidebarContextLinkDef = {
-  id: string;
-  href: string;
-  labelKey: string;
-  icon?: LucideIcon;
-};
-
-export type AppSidebarContextDef = {
-  navId: AppSidebarNavId;
-  titleKey: string;
-  descriptionKey?: string;
-  links: AppSidebarContextLinkDef[];
-};
-
 /** Student + mentor/admin base routes — mentor items live in APP_SIDEBAR_MENTOR_NAV. */
 export const APP_SIDEBAR_NAV: AppSidebarNavDef[] = [
   { id: "dashboard", href: "/dashboard/demo", icon: LayoutDashboard, group: "navigation" },
@@ -99,93 +84,6 @@ export const APP_SIDEBAR_ALL_NAV: AppSidebarNavDef[] = [
   ...APP_SIDEBAR_ADMIN_NAV,
 ];
 
-export const APP_SIDEBAR_CONTEXT: Partial<Record<AppSidebarNavId, AppSidebarContextDef>> = {
-  dashboard: {
-    navId: "dashboard",
-    titleKey: "context.dashboard.title",
-    descriptionKey: "context.dashboard.description",
-    links: [{ id: "demo", href: "/dashboard/demo", labelKey: "context.dashboard.demo" }],
-  },
-  subjects: {
-    navId: "subjects",
-    titleKey: "context.subjects.title",
-    links: [{ id: "explore", href: "/explore", labelKey: "context.subjects.explore" }],
-  },
-  resources: {
-    navId: "resources",
-    titleKey: "context.resources.title",
-    links: [{ id: "all", href: "/resources", labelKey: "context.resources.all" }],
-  },
-  events: {
-    navId: "events",
-    titleKey: "context.events.title",
-    links: [{ id: "all", href: "/events", labelKey: "context.events.all" }],
-  },
-  newRequest: {
-    navId: "newRequest",
-    titleKey: "context.newRequest.title",
-    descriptionKey: "context.newRequest.description",
-    links: [
-      { id: "create", href: "/help/new", labelKey: "context.newRequest.create", icon: Plus },
-      { id: "feed", href: "/feed", labelKey: "context.newRequest.backToFeed", icon: ArrowLeft },
-    ],
-  },
-  feed: {
-    navId: "feed",
-    titleKey: "context.feed.title",
-    descriptionKey: "context.feed.description",
-    links: [
-      { id: "feed", href: "/feed", labelKey: "context.feed.browse" },
-      { id: "new", href: "/help/new", labelKey: "context.feed.newRequest", icon: Plus },
-    ],
-  },
-  messages: {
-    navId: "messages",
-    titleKey: "context.messages.title",
-    links: [{ id: "inbox", href: "/messages", labelKey: "context.messages.inbox" }],
-  },
-  mentor: {
-    navId: "mentor",
-    titleKey: "context.mentor.title",
-    links: [
-      { id: "space", href: "/mentor", labelKey: "context.mentor.space" },
-      { id: "demo", href: "/mentor/demo", labelKey: "context.mentor.demo" },
-    ],
-  },
-  profile: {
-    navId: "profile",
-    titleKey: "context.profile.title",
-    links: [{ id: "view", href: "/profile", labelKey: "context.profile.view" }],
-  },
-  admin: {
-    navId: "admin",
-    titleKey: "context.admin.title",
-    descriptionKey: "context.admin.description",
-    links: [
-      { id: "overview", href: "/admin", labelKey: "context.admin.overview" },
-      { id: "users", href: "/admin/users", labelKey: "context.admin.users", icon: UserCog },
-      { id: "moderation", href: "/admin/moderation", labelKey: "context.admin.moderation", icon: Gavel },
-    ],
-  },
-  adminUsers: {
-    navId: "adminUsers",
-    titleKey: "context.admin.title",
-    links: [{ id: "users", href: "/admin/users", labelKey: "context.admin.users", icon: UserCog }],
-  },
-  adminModeration: {
-    navId: "adminModeration",
-    titleKey: "context.admin.title",
-    links: [
-      {
-        id: "moderation",
-        href: "/admin/moderation",
-        labelKey: "context.admin.moderation",
-        icon: Gavel,
-      },
-    ],
-  },
-};
-
 export type AppSidebarLabelMap = {
   navigationGroup: string;
   communityGroup: string;
@@ -195,29 +93,13 @@ export type AppSidebarLabelMap = {
   collapseSidebar: string;
   openMenu: string;
   closeMenu: string;
-} & Record<AppSidebarNavId, string> &
-  Record<string, string>;
-
-export type AppSidebarContextLink = {
-  id: string;
-  href: string;
-  label: string;
-  icon?: LucideIcon;
-  active?: boolean;
-};
-
-export type AppSidebarContextPanelData = {
-  title: string;
-  description?: string;
-  links: AppSidebarContextLink[];
-};
+} & Record<AppSidebarNavId, string>;
 
 export type AppSidebarResolvedContext = {
   activeId?: AppSidebarNavId;
   openSectionIds: AppSidebarSectionId[];
   showMentorSection: boolean;
   showAdminSection: boolean;
-  context?: AppSidebarContextPanelData;
 };
 
 export type AppSidebarRoleOptions = {
@@ -311,35 +193,6 @@ function resolveOpenSectionIds(options: {
   return sections;
 }
 
-function resolveContextLinks(
-  pathname: string | null,
-  activeId?: AppSidebarNavId,
-  labelMap?: AppSidebarLabelMap,
-): AppSidebarContextPanelData | undefined {
-  if (!activeId) {
-    return undefined;
-  }
-
-  const def = APP_SIDEBAR_CONTEXT[activeId];
-  if (!def || !labelMap) {
-    return undefined;
-  }
-
-  const path = pathname ? normalizeAppSidebarPathname(pathname) : "";
-
-  return {
-    title: labelMap[def.titleKey] ?? def.titleKey,
-    description: def.descriptionKey ? labelMap[def.descriptionKey] : undefined,
-    links: def.links.map((link) => ({
-      id: link.id,
-      href: link.href,
-      label: labelMap[link.labelKey] ?? link.labelKey,
-      icon: link.icon,
-      active: path === link.href || path.startsWith(`${link.href}/`),
-    })),
-  };
-}
-
 export function resolveAppSidebarRoleFlags(options?: AppSidebarRoleOptions): {
   showMentorSection: boolean;
   showAdminSection: boolean;
@@ -355,9 +208,7 @@ export function resolveAppSidebarRoleFlags(options?: AppSidebarRoleOptions): {
 
 export function resolveAppSidebarContext(
   pathname: string | null,
-  options?: AppSidebarRoleOptions & {
-    labelMap?: AppSidebarLabelMap;
-  },
+  options?: AppSidebarRoleOptions,
 ): AppSidebarResolvedContext {
   const activeId = resolveAppSidebarActiveId(pathname);
   const { showMentorSection, showAdminSection } = resolveAppSidebarRoleFlags(options);
@@ -367,7 +218,6 @@ export function resolveAppSidebarContext(
     openSectionIds: resolveOpenSectionIds({ showMentorSection, showAdminSection }),
     showMentorSection,
     showAdminSection,
-    context: resolveContextLinks(pathname, activeId, options?.labelMap),
   };
 }
 
