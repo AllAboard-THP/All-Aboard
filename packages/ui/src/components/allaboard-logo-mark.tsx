@@ -19,7 +19,7 @@ export function AllAboardLogoMark({
       xmlns="http://www.w3.org/2000/svg"
       role="img"
       aria-label={title}
-      className={cn("block h-auto w-10 shrink-0", className)}
+      className={cn("block shrink-0", className)}
     >
       <polygon points="22,13 22,44 10,44" fill={LOGO_NAVY} />
       <polygon points="25,13 25,44 35,44" fill={LOGO_MAGENTA} />

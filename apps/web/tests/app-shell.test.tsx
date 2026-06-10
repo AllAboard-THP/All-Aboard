@@ -13,10 +13,7 @@ vi.mock("@/i18n/navigation", () => ({
     children: React.ReactNode;
     href: string;
   }) => <a href={href}>{children}</a>,
-}));
-
-vi.mock("@/components/features/app-shell-nav", () => ({
-  AppShellNav: () => <nav aria-label="Navigation principale">Nav</nav>,
+  usePathname: () => "/feed",
 }));
 
 vi.mock("@/components/features/locale-switcher", () => ({
@@ -35,15 +32,16 @@ vi.mock("next-intl/server", () => ({
 }));
 
 describe("AppShell", () => {
-  it("exposes header, main landmark, navigation and locale switcher", async () => {
+  it("exposes header, sidebar nav, main landmark and locale switcher", async () => {
     const ui = await AppShell({ children: <p>Contenu page</p> });
     renderWithI18n(ui);
 
     expect(screen.getByRole("banner")).toBeTruthy();
     expect(screen.getAllByText("All-Aboard").length).toBeGreaterThan(0);
-    expect(screen.getByRole("navigation", { name: "Navigation principale" })).toBeTruthy();
+    expect(screen.getByRole("navigation", { name: "Navigation" })).toBeTruthy();
     expect(screen.getByRole("main").getAttribute("id")).toBe("main-content");
     expect(screen.getByTestId("locale-switcher")).toBeTruthy();
     expect(screen.getByText("Contenu page")).toBeTruthy();
+    expect(screen.getByText("Mon dashboard")).toBeTruthy();
   });
 });

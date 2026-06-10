@@ -9,8 +9,6 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { LocaleSwitcher } from "@/components/features/locale-switcher";
-
 export function StudentDashboardDemo() {
   const locale = useLocale();
   const t = useTranslations("studentDashboard");
@@ -19,7 +17,6 @@ export function StudentDashboardDemo() {
   const labels: StudentDashboardLabels = {
     brandName: t("brandName"),
     chrome: {
-      demoBadge: t("chrome.demoBadge"),
       footerRights: () => t("chrome.footerRights", { year }),
       footerCgu: t("chrome.footerCgu"),
       footerPrivacy: t("chrome.footerPrivacy"),
@@ -70,7 +67,7 @@ export function StudentDashboardDemo() {
     <StudentDashboardScreen
       labels={labels}
       fixture={fixture}
-      headerEnd={<LocaleSwitcher />}
+      variant="content"
       onDemoAction={(message) => toast.message(message)}
     />
   );

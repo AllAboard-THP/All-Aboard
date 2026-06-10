@@ -38,9 +38,10 @@ import {
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
 
+import { AppChromeBrand, AppChromeHeader, AppChromeHeaderRow } from "./app-chrome-shell";
 import {
-  APP_CHROME_HEADER_CLASS,
-  APP_CHROME_HEADER_ROW_CLASS,
+  APP_CHROME_BRAND_MARK_CLASS,
+  APP_CHROME_BRAND_WORDMARK_CLASS,
   APP_GLASS_CARD_CLASS,
   LANDING_EDGE_PADDING_CLASS,
 } from "./landing-layout";
@@ -74,24 +75,30 @@ export function BrandLogo({
   /** Renders below the wordmark (e.g. landing header tagline). */
   tagline?: ReactNode;
 }) {
-  const wordmark = showWordmark ? (
-    <span className="gradient-text text-xl font-bold">{labels.brandName}</span>
-  ) : null;
+  if (showWordmark && !tagline) {
+    return (
+      <AppChromeBrand
+        brandName={labels.brandName}
+        className={className}
+        markClassName={markClassName}
+      />
+    );
+  }
 
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <AllAboardLogoMark
-        className={markClassName ?? "size-10"}
+        className={markClassName ?? APP_CHROME_BRAND_MARK_CLASS}
         title={labels.brandName}
       />
       {tagline ? (
         <div className="flex min-w-0 flex-col gap-0.5">
-          {wordmark}
+          {showWordmark ? (
+            <span className={APP_CHROME_BRAND_WORDMARK_CLASS}>{labels.brandName}</span>
+          ) : null}
           {tagline}
         </div>
-      ) : (
-        wordmark
-      )}
+      ) : null}
     </div>
   );
 }
@@ -512,9 +519,9 @@ export function AppNavBar({
   }, [activeLink]);
 
   return (
-    <header className={cn(APP_CHROME_HEADER_CLASS, className)}>
-      <div className={APP_CHROME_HEADER_ROW_CLASS}>
-        <BrandLogo labels={labels} className="min-w-0 shrink-0 items-start" />
+    <AppChromeHeader layout="bar" className={className}>
+      <AppChromeHeaderRow>
+        <BrandLogo labels={labels} className="min-w-0 shrink-0" />
         {showMainNav || showUserMenu ? (
           <div className="ml-auto flex shrink-0 items-center gap-2 self-center sm:gap-4">
             {showMainNav ? (
@@ -563,8 +570,8 @@ export function AppNavBar({
             ) : null}
           </div>
         ) : null}
-      </div>
-    </header>
+      </AppChromeHeaderRow>
+    </AppChromeHeader>
   );
 }
 

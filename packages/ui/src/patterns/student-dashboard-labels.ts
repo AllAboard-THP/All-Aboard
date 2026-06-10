@@ -1,7 +1,6 @@
 export type StudentDashboardLabels = {
   brandName: string;
   chrome: {
-    demoBadge: string;
     footerRights: (year: number) => string;
     footerCgu: string;
     footerPrivacy: string;
@@ -49,7 +48,6 @@ export type StudentDashboardLabels = {
 export const studentDashboardLabelsFr: StudentDashboardLabels = {
   brandName: "All-Aboard",
   chrome: {
-    demoBadge: "Dashboard étudiant · Démo",
     footerRights: (year) => `© ${year} All-Aboard — Tous droits réservés`,
     footerCgu: "CGU",
     footerPrivacy: "Confidentialité",
@@ -97,7 +95,6 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
 export const studentDashboardLabelsEn: StudentDashboardLabels = {
   brandName: "All-Aboard",
   chrome: {
-    demoBadge: "Student dashboard · Demo",
     footerRights: (year) => `© ${year} All-Aboard — All rights reserved`,
     footerCgu: "Terms",
     footerPrivacy: "Privacy",

@@ -1,14 +1,39 @@
 # AppShell — navigation applicative (#25)
 
 **Issue** : [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25)  
-**Statut** : livré (`65a1596`)  
-**Parcours MOC** : [moc-parcours-utilisateur.md](../moc-parcours-utilisateur.md)
+**Statut** : livré + chrome verre canonique (2026-06)  
+**Parcours MOC** : [moc-parcours-utilisateur.md](../moc-parcours-utilisateur.md)  
+**Règle agent** : [.cursor/rules/app-chrome-shell.mdc](../../.cursor/rules/app-chrome-shell.mdc)
+
+---
+
+## Règle absolue — header & footer
+
+Les versions **header / footer verre** (`landing-shell-chrome`, brand agrandi, fond mesh `AppAbstractBackground`) sont **canoniques** pour tout le MVP :
+
+- **Existantes** : feed, explore, mentor, landing auth, dashboard démo, Storybook patterns.
+- **Futures** : toute nouvelle page **doit** hériter d’un shell parent — **jamais** de header/footer recopiés à la main.
+
+| Type de page | Shell | Application |
+|--------------|-------|-------------|
+| Produit connecté | `AppShell` | Automatique via `app/[locale]/(app)/layout.tsx` |
+| Marketing / auth | `LandingPageShell` | `LandingPublicHeader` + `AppFooter` |
+| Dashboard sidebar | `StudentDashboardScreen` | Même chrome via `AppChromeHeader` / `AppChromeFooter` |
+| Hors shell | `health`, API | Pas de chrome produit |
+
+**Source de vérité code** :
+
+- Constantes : `packages/ui/src/patterns/landing-layout.ts` (`APP_SHELL_*`, `APP_CHROME_BRAND_*`)
+- Composants : `packages/ui/src/patterns/app-chrome-shell.tsx`
+- CSS : `packages/ui/src/styles/globals.css` (`.landing-shell-chrome`, `.app-stage`)
+
+**Interdit** : `landing-chrome` ad hoc, tailles logo/texte custom, fond opaque local par page.
 
 ---
 
 ## Rôle
 
-`AppShell` fournit le **chrome** persistant (header + navigation) pour les pages produit. Le contenu page peut rester dans `MarketingPageShell` (home, formulaire aide) pour les zones centrées.
+`AppShell` fournit le **chrome** persistant (header + footer + mesh) pour les pages produit. Le contenu page reste dans `<main id="main-content">`.
 
 ---
 
@@ -16,17 +41,18 @@
 
 ```text
 apps/web/app/
-├── layout.tsx                 # racine : Providers, globals.css
-├── health/page.tsx            # hors shell (pas de nav produit)
-└── (app)/
-    ├── layout.tsx             # <AppShell>{children}</AppShell>
-    ├── page.tsx               # / — HomeContent (feed SSR + TanStack)
-    ├── help/new/page.tsx      # /help/new — création demande (auth + mutation)
-    ├── requests/[id]/page.tsx # /requests/[id] — détail demande (SSR + client)
-    └── mentor/page.tsx        # /mentor — dashboard mentor (feed tagué)
+├── layout.tsx                      # racine : Providers, globals.css
+├── health/page.tsx                 # hors shell (pas de nav produit)
+├── [locale]/
+│   ├── (public)/                   # landing, auth — LandingPageShell
+│   │   └── layout.tsx
+│   ├── (app)/                      # produit — AppShell + sidebar automatiques
+│   │   ├── layout.tsx              # <AppShell>{children}</AppShell>
+│   │   ├── feed/…
+│   │   ├── dashboard/demo/         # dashboard (contenu seul)
+│   │   └── …
+│   └── (public)/                   # landing, legal, auth — sans sidebar
 ```
-
-URLs publiques : `/`, `/help/new`, `/requests/[id]`, `/mentor`.
 
 ---
 
@@ -34,18 +60,21 @@ URLs publiques : `/`, `/help/new`, `/requests/[id]`, `/mentor`.
 
 | Fichier | Rôle |
 |---------|------|
-| `components/features/app-shell.tsx` | Server : `<header>`, `<main id="main-content">` |
-| `components/features/app-shell-nav.tsx` | Client : `usePathname`, liens, `aria-current="page"` |
+| `components/features/app-shell.tsx` | Server : compose `AppShellLayout` |
+| `components/features/app-shell-layout.tsx` | Client : header/footer + sidebar conditionnelle |
+| `components/features/app-shell-sidebar.tsx` | Client : `AppSidebar` + liens i18n |
+| `lib/app-shell-sidebar.ts` | Nav items, exclusions, état actif |
+| `packages/ui/…/app-sidebar.tsx` | Sidebar canonique (Storybook + web) |
 
-Navigation (constante `APP_SHELL_NAV`) :
+---
 
-- Feed → `/`
-- Nouvelle demande → `/help/new`
-- Mentor → `/mentor`
+## Nouvelle page produit — checklist
 
-Les pages détail (`/requests/[id]`) sont atteignables depuis le feed ou le dashboard mentor ; pas de lien nav dédié.
-
-Primitives : `Button` ghost + `Link` (`@allaboard/ui`).
+1. Créer la route sous `app/[locale]/(app)/…` — **ne pas** ajouter de `<header>` / `<footer>` dans la page.
+2. Contenu uniquement dans le `<main>` rendu par `AppShell`.
+3. Si entrée nav globale → ajouter dans `APP_SHELL_NAV`.
+4. Si layout spécial (sidebar pleine hauteur) → wrapper feature avec `StudentDashboardScreen` ou composer `AppChromeHeader` / `AppChromeFooter` depuis `@allaboard/ui/patterns/app-chrome-shell`.
+5. `pnpm --filter web test` + `pnpm verify` avant PR.
 
 ---
 
@@ -63,13 +92,7 @@ Tests : `apps/web/tests/app-shell.test.tsx`, `app-shell-nav.test.tsx`.
 
 ## Étendre le shell
 
-**Auth / zone connectée** : prévoir un slot `headerActions` dans `AppShell` (hors scope #25).
-
-**Nouvelle route produit** :
-
-1. Ajouter la page sous `app/(app)/…`
-2. Ajouter l’entrée dans `APP_SHELL_NAV` si visible dans la nav globale
-3. `pnpm --filter web test` + `pnpm --filter web build`
+**Auth / zone connectée** : slot `headerActions` dans `AppShell` (évolution produit).
 
 **Ne pas** mettre les routes API ou health sous `(app)`.
 
@@ -77,6 +100,6 @@ Tests : `apps/web/tests/app-shell.test.tsx`, `app-shell-nav.test.tsx`.
 
 ## Hors scope #25 (livré ensuite)
 
-- Données réelles feed / détail → [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) (clos)
-- Alert / Skeleton dans `@allaboard/ui` → [PR #59](https://github.com/AllAboard-THP/All-Aboard/pull/59) (2026-05-27)
-- Sidebar desktop dense — backlog produit
+- Données réelles feed / détail → [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26)
+- Alert / Skeleton dans `@allaboard/ui` → [PR #59](https://github.com/AllAboard-THP/All-Aboard/pull/59)
+- Migration dashboard sous `(app)/` avec route group dédié — backlog technique

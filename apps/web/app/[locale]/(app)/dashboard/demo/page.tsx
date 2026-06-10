@@ -1,6 +1,6 @@
 import { StudentDashboardDemo } from "@/components/features/student-dashboard-demo";
 
-/** Student dashboard layout demo — mock data, full-width sidebar chrome. */
+/** Student dashboard demo — chrome from AppShell sidebar + header. */
 export default function StudentDashboardDemoPage() {
   return <StudentDashboardDemo />;
 }

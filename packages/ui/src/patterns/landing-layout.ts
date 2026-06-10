@@ -5,27 +5,43 @@ export const LANDING_EDGE_PADDING_CLASS =
 /** Root wrapper for in-app pages on `AppAbstractBackground` (standard landing glass applies). */
 export const APP_STAGE_CLASS = "app-stage";
 
-/** Lighter glass for in-app header/footer — see `.landing-chrome` in globals.css. */
+/**
+ * Canonical app chrome — header, footer, brand, offsets.
+ * Single source of truth: all MVP pages MUST use these constants or
+ * `AppChromeHeader` / `AppChromeFooter` / `AppChromeBrand` from `app-chrome-shell.tsx`.
+ * See `.cursor/rules/app-chrome-shell.mdc` and `Docs/design-system/app-shell.md`.
+ */
+
+/** @deprecated Prefer APP_SHELL_*_CHROME_CLASS — lighter legacy glass (`.landing-chrome`). */
 export const LANDING_GLASS_CHROME_CLASS = "landing-chrome border-white/10";
 
 /** Landing shell chrome — Connexion-card glass surface (`.landing-shell-chrome`). */
 export const LANDING_SHELL_GLASS_MOTION_CLASS = "motion-reduce:transition-none";
 
-/** Landing header/footer — brightness highlight on hover only. */
+/** Shared header glass — same surface as landing Connexion card + shell. */
+export const APP_SHELL_HEADER_CHROME_CLASS = `landing-shell-chrome landing-shell-chrome--header ${LANDING_SHELL_GLASS_MOTION_CLASS}`;
+
+/** Shared footer glass — same surface as landing Connexion card + shell. */
+export const APP_SHELL_FOOTER_CHROME_CLASS = `landing-shell-chrome landing-shell-chrome--footer ${LANDING_SHELL_GLASS_MOTION_CLASS}`;
+
+/** Shared sidebar glass — same surface, right-edge separator on desktop. */
+export const APP_SHELL_SIDEBAR_CHROME_CLASS = `landing-shell-chrome landing-shell-chrome--sidebar ${LANDING_SHELL_GLASS_MOTION_CLASS}`;
+
+/** @deprecated Use `.landing-shell-chrome:hover` — kept for one-off imports. */
 export const LANDING_CHROME_HOVER_HIGHLIGHT_CLASS =
   "transition-[filter] duration-200 ease-out hover:brightness-110 motion-reduce:transition-none";
 
 /** Fixed app header shell (feed + in-app pages). */
-export const APP_CHROME_HEADER_CLASS = `fixed top-0 z-50 w-full border-b ${LANDING_GLASS_CHROME_CLASS} ${LANDING_CHROME_HOVER_HIGHLIGHT_CLASS}`;
+export const APP_CHROME_HEADER_CLASS = `fixed top-0 z-50 w-full ${APP_SHELL_HEADER_CHROME_CLASS}`;
 
 /** Landing shell header — same glass as Connexion card. */
-export const LANDING_SHELL_HEADER_CLASS = `fixed top-0 z-50 w-full landing-shell-chrome landing-shell-chrome--header ${LANDING_SHELL_GLASS_MOTION_CLASS}`;
+export const LANDING_SHELL_HEADER_CLASS = `fixed top-0 z-50 w-full ${APP_SHELL_HEADER_CHROME_CLASS}`;
 
 /** App footer chrome (feed + in-app pages). */
-export const APP_CHROME_FOOTER_CLASS = `${LANDING_GLASS_CHROME_CLASS} ${LANDING_CHROME_HOVER_HIGHLIGHT_CLASS}`;
+export const APP_CHROME_FOOTER_CLASS = APP_SHELL_FOOTER_CHROME_CLASS;
 
 /** Landing shell footer — same glass as Connexion card. */
-export const LANDING_SHELL_FOOTER_CLASS = `landing-shell-chrome landing-shell-chrome--footer ${LANDING_SHELL_GLASS_MOTION_CLASS}`;
+export const LANDING_SHELL_FOOTER_CLASS = APP_SHELL_FOOTER_CHROME_CLASS;
 
 /** Landing header auth — ghost link; glass hover (no purple accent fill). */
 export const LANDING_HEADER_GHOST_BUTTON_CLASS = "rounded-full";
@@ -40,7 +56,14 @@ export const LANDING_HEADER_SUBMIT_BUTTON_CLASS =
 
 /** Header inner row — same alignment as `LandingPublicHeader`. */
 export const APP_CHROME_HEADER_ROW_CLASS =
-  `flex min-h-[4.25rem] w-full items-center justify-between gap-4 py-2 sm:min-h-[4.5rem] ${LANDING_EDGE_PADDING_CLASS}`;
+  `flex min-h-[4.25rem] w-full items-center justify-between gap-4 sm:min-h-[4.75rem] ${LANDING_EDGE_PADDING_CLASS}`;
+
+/** Header brand mark — portrait SVG; height-led sizing keeps aspect ratio. */
+export const APP_CHROME_BRAND_MARK_CLASS = "h-12 w-auto shrink-0 sm:h-14";
+
+/** Header brand wordmark — gradient logotype beside mark. */
+export const APP_CHROME_BRAND_WORDMARK_CLASS =
+  "app-chrome-brand-wordmark gradient-text min-w-0 text-2xl font-bold tracking-tight sm:text-3xl";
 
 /** Footer inner row — same alignment as landing shell footer. */
 export const APP_CHROME_FOOTER_ROW_CLASS =

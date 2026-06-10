@@ -84,6 +84,8 @@ import "@allaboard/ui/globals.css"; // via app/globals.css + @source (voir layou
 
 **Vérifications utiles** : `pnpm storybook` · `pnpm build:storybook` · `pnpm --filter @allaboard/ui test` · [verification-and-ci.md](Docs/design-system/verification-and-ci.md) · ADR [0002](Docs/adr/0002-design-system-monorepo.md).
 
+**Chrome header/footer (absolu MVP)** : [.cursor/rules/app-chrome-shell.mdc](.cursor/rules/app-chrome-shell.mdc) · [app-shell.md](Docs/design-system/app-shell.md) · composants `AppChromeHeader` / `AppChromeFooter` dans `packages/ui/src/patterns/app-chrome-shell.tsx`. Pages `(app)/` → shell automatique via layout ; ne pas dupliquer le chrome dans les pages.
+
 ## Graphify (carte codebase MVP)
 
 Graphe de connaissance à la racine : `graphify-out/` (`GRAPH_REPORT.md`, `graph.json`, `graph.html`).

@@ -75,7 +75,6 @@
   "studentDashboard": {
     "brandName": "All-Aboard",
     "chrome": {
-      "demoBadge": "Student dashboard · Demo",
       "footerRights": "© {year} All-Aboard — All rights reserved",
       "footerCgu": "Terms",
       "footerPrivacy": "Privacy",

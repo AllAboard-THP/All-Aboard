@@ -10,18 +10,27 @@ import {
   type MobileNavLink,
 } from "./legacy-mobile-patterns";
 import { AppAbstractBackground } from "./app-abstract-background";
+import { AppChromeSidebar } from "./app-chrome-sidebar";
 import {
+  AppChromeBrand,
+  AppChromeFooter,
+  AppChromeHeader,
+} from "./app-chrome-shell";
+import {
+  APP_CHROME_FEED_INNER_CLASS,
   APP_CHROME_FOOTER_CLASS,
   APP_CHROME_FOOTER_SHELL_CLASS,
-  APP_CHROME_FEED_INNER_CLASS,
-  APP_CHROME_FEED_MAIN_CLASS,
-  APP_CHROME_MAIN_CLASS,
   APP_CHROME_MAIN_INNER_CLASS,
   APP_STAGE_CLASS,
 } from "./landing-layout";
 import {
+  resolveSidebarActiveId,
+  type AppSidebarNavId,
+} from "./app-sidebar-nav";
+import {
   AppFooter,
   AppNavBar,
+  UserMenu,
   type LegacyNavLink,
 } from "./legacy-ui";
 import { patternStoryParameters } from "./pattern-story-frame";
@@ -36,10 +45,12 @@ export function AppChrome({
   children,
   activeLink = "feed",
   showNav = true,
+  showSidebar,
+  sidebarActiveId,
   showFooter = true,
   messageCount = 0,
   userMenuOpen = false,
-  isAdmin = true,
+  isAdmin = false,
   isMentor = false,
   mobileChrome = false,
   showMentorDot = false,
@@ -47,10 +58,13 @@ export function AppChrome({
   mainInnerLayout = "contained",
 }: {
   children: ReactNode;
-  /** `feed` uses full-width inner track for tri-band background alignment. */
   mainInnerLayout?: "contained" | "feed";
   activeLink?: LegacyNavLink;
+  /** @deprecated Top nav pills — sidebar replaces main nav when visible. */
   showNav?: boolean;
+  /** Defaults to `showNav` — false for register / legal full-width screens. */
+  showSidebar?: boolean;
+  sidebarActiveId?: AppSidebarNavId;
   showFooter?: boolean;
   messageCount?: number;
   userMenuOpen?: boolean;
@@ -61,43 +75,97 @@ export function AppChrome({
   userInitials?: string;
 }) {
   const labels = useLegacyLabels();
+  const sidebarVisible = (showSidebar ?? showNav) && !mobileChrome;
+  const resolvedActiveId = resolveSidebarActiveId(sidebarActiveId, activeLink);
 
   return (
-    <div className={cn(APP_STAGE_CLASS, "relative flex min-h-[100dvh] flex-col")}>
+    <div className={cn(APP_STAGE_CLASS, "relative flex min-h-[100dvh] flex-col text-foreground")}>
       <AppAbstractBackground />
-      <AppNavBar
-        activeLink={activeLink}
-        messageCount={messageCount}
-        userMenuOpen={userMenuOpen}
-        isAdmin={isAdmin}
-        isMentor={isMentor}
-        userInitials={userInitials}
-        labels={labels}
-        showMainNav={showNav}
-        showUserMenu={showNav}
-      />
-      <main className={cnMainClass(mobileChrome, mainInnerLayout)}>
-        <div
-          className={
-            mainInnerLayout === "feed"
-              ? APP_CHROME_FEED_INNER_CLASS
-              : APP_CHROME_MAIN_INNER_CLASS
-          }
+
+      {sidebarVisible ? (
+        <AppChromeHeader
+          layout="surface"
+          className="sticky top-0 z-20 grid shrink-0 grid-cols-[1fr_auto] md:grid-cols-[16rem_minmax(0,1fr)]"
         >
-          {children}
-        </div>
-      </main>
-      {showFooter ? (
-        <AppFooter
+          <div className="flex min-h-[4.25rem] items-center gap-3 px-3 sm:min-h-[4.75rem] sm:px-4">
+            <AppChromeBrand brandName={labels.brandName} />
+          </div>
+          <div className="flex min-h-[4.25rem] flex-wrap items-center justify-end gap-2 px-3 sm:min-h-[4.75rem] sm:gap-3 sm:px-4 md:px-6 lg:px-8">
+            {showNav ? (
+              <UserMenu
+                userName={isAdmin ? "Admin AllAboard" : "Inès Martin"}
+                userEmail="demo@allaboard.app"
+                userInitials={userInitials}
+                isAdmin={isAdmin}
+                isMentor={isMentor}
+                defaultOpen={userMenuOpen}
+                labels={labels}
+              />
+            ) : null}
+          </div>
+        </AppChromeHeader>
+      ) : (
+        <AppNavBar
+          activeLink={activeLink}
+          messageCount={messageCount}
+          userMenuOpen={userMenuOpen}
+          isAdmin={isAdmin}
+          isMentor={isMentor}
+          userInitials={userInitials}
           labels={labels}
-          className={cn(
-            "relative z-10",
-            APP_CHROME_FOOTER_SHELL_CLASS,
-            APP_CHROME_FOOTER_CLASS,
-            mobileChrome ? "pb-20 md:pb-0" : undefined,
-          )}
+          showMainNav={showNav}
+          showUserMenu={showNav}
+          className="relative z-50"
         />
+      )}
+
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
+        {sidebarVisible ? <AppChromeSidebar activeId={resolvedActiveId} /> : null}
+        <main
+          id="main-content"
+          className={cn(
+            "relative z-10 min-w-0 flex-1",
+            sidebarVisible
+              ? cn("px-4 py-6 sm:px-6 lg:px-8", mobileChrome && "pb-24 md:pb-8")
+              : cn(
+                  "w-full pb-8 pt-[6rem] sm:pt-24",
+                ),
+          )}
+        >
+          {sidebarVisible ? (
+            children
+          ) : (
+            <div
+              className={
+                mainInnerLayout === "feed"
+                  ? APP_CHROME_FEED_INNER_CLASS
+                  : APP_CHROME_MAIN_INNER_CLASS
+              }
+            >
+              {children}
+            </div>
+          )}
+        </main>
+      </div>
+
+      {showFooter ? (
+        sidebarVisible ? (
+          <AppChromeFooter className={cn("relative z-10 shrink-0", mobileChrome && "pb-20 md:pb-0")}>
+            <AppFooter labels={labels} edgeToEdge />
+          </AppChromeFooter>
+        ) : (
+          <AppFooter
+            labels={labels}
+            className={cn(
+              "relative z-10",
+              APP_CHROME_FOOTER_SHELL_CLASS,
+              APP_CHROME_FOOTER_CLASS,
+              mobileChrome ? "pb-20 md:pb-0" : undefined,
+            )}
+          />
+        )
       ) : null}
+
       {mobileChrome ? (
         <MobileBottomNav
           activeLink={resolveMobileNavLink(activeLink)}
@@ -111,55 +179,23 @@ export function AppChrome({
   );
 }
 
-function cnMainClass(
-  mobileChrome: boolean,
-  mainInnerLayout: "contained" | "feed",
-) {
-  const mainClass =
-    mainInnerLayout === "feed" ? APP_CHROME_FEED_MAIN_CLASS : APP_CHROME_MAIN_CLASS;
-
-  return mobileChrome
-    ? cn(mainClass, "relative z-10 pb-24 md:pb-8")
-    : cn(mainClass, "relative z-10 pb-8");
-}
-
-function AppChromeStoryWrapper({
-  activeLink,
-  showNav,
-  showFooter,
-  mobileChrome,
-  children,
-}: {
-  activeLink: LegacyNavLink;
-  showNav?: boolean;
-  showFooter?: boolean;
-  mobileChrome?: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <AppChrome
-      activeLink={activeLink}
-      showNav={showNav}
-      showFooter={showFooter}
-      mobileChrome={mobileChrome}
-    >
-      {children}
-    </AppChrome>
-  );
-}
-
 export function withAppChrome(
   activeLink: LegacyNavLink = "feed",
-  options?: { showNav?: boolean; showFooter?: boolean },
+  options?: {
+    showNav?: boolean;
+    showFooter?: boolean;
+    sidebarActiveId?: AppSidebarNavId;
+  },
 ): Decorator {
   return (Story) => (
-    <AppChromeStoryWrapper
+    <AppChrome
       activeLink={activeLink}
       showNav={options?.showNav ?? true}
       showFooter={options?.showFooter ?? true}
+      sidebarActiveId={options?.sidebarActiveId}
     >
       <Story />
-    </AppChromeStoryWrapper>
+    </AppChrome>
   );
 }
 
@@ -169,6 +205,7 @@ export function withMobileChrome(
     messageCount?: number;
     showMentorDot?: boolean;
     showFooter?: boolean;
+    sidebarActiveId?: AppSidebarNavId;
   },
 ): Decorator {
   return (Story) => (
@@ -178,6 +215,7 @@ export function withMobileChrome(
       messageCount={options?.messageCount ?? 0}
       showMentorDot={options?.showMentorDot}
       showFooter={options?.showFooter ?? true}
+      sidebarActiveId={options?.sidebarActiveId}
     >
       <Story />
     </AppChrome>

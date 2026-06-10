@@ -7,11 +7,13 @@ import {
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
 import {
-  APP_CHROME_HEADER_ROW_CLASS,
+  AppChromeHeader,
+  AppChromeHeaderRow,
+} from "./app-chrome-shell";
+import {
   LANDING_HEADER_GHOST_BUTTON_CLASS,
   LANDING_HEADER_OUTLINE_BUTTON_CLASS,
   LANDING_HEADER_SUBMIT_BUTTON_CLASS,
-  LANDING_SHELL_HEADER_CLASS,
 } from "./landing-layout";
 import { BrandLogo } from "./legacy-ui";
 import { legacyDemoToast } from "./legacy-story-feedback";
@@ -39,15 +41,15 @@ export function LandingPublicHeader({
   const handleLogo = onLogoClick ?? (() => legacyDemoToast(labels.brandName));
 
   return (
-    <header className={cn(LANDING_SHELL_HEADER_CLASS, className)}>
-      <div className={APP_CHROME_HEADER_ROW_CLASS}>
+    <AppChromeHeader layout="bar" className={className}>
+      <AppChromeHeaderRow>
         <button
           type="button"
           className="-ml-1 shrink-0 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onClick={handleLogo}
           aria-label={labels.brandName}
         >
-          <BrandLogo labels={labels} className="items-start" />
+          <BrandLogo labels={labels} className="min-w-0 shrink-0" />
         </button>
 
         <nav
@@ -82,7 +84,7 @@ export function LandingPublicHeader({
             {labels.auth.signUp}
           </Button>
         </nav>
-      </div>
-    </header>
+      </AppChromeHeaderRow>
+    </AppChromeHeader>
   );
 }

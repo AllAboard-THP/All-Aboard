@@ -1,0 +1,52 @@
+---
+description: Header/footer verre canoniques — obligatoires sur toutes les pages MVP
+alwaysApply: true
+---
+
+# App chrome — header & footer absolus
+
+Les versions **header / footer verre** (`landing-shell-chrome`, brand agrandi, fond mesh app) sont **canoniques** et **non négociables** sur le MVP All-Aboard.
+
+## Source de vérité (code)
+
+| Couche | Fichier | Rôle |
+|--------|---------|------|
+| Tokens & classes | `packages/ui/src/patterns/landing-layout.ts` | `APP_SHELL_*_CHROME_CLASS`, `APP_CHROME_BRAND_*`, offsets main |
+| Composants | `packages/ui/src/patterns/app-chrome-shell.tsx` | `AppChromeHeader`, `AppChromeFooter`, `AppChromeBrand`, rows |
+| CSS | `packages/ui/src/styles/globals.css` | `.landing-shell-chrome`, `.app-stage`, mesh `AppAbstractBackground` |
+| Doc | `Docs/design-system/app-shell.md` | Routing, shells, checklist nouvelle page |
+
+**Interdit** : recréer un header/footer avec `landing-chrome`, bordures ad hoc, tailles logo/texte custom, ou fond opaque local.
+
+## Application automatique par type de page
+
+| Contexte | Shell obligatoire | Sidebar | Route Next (`apps/web`) |
+|----------|-------------------|---------|-------------------------|
+| Pages produit connectées | `AppShell` | **Oui** (auto) | `app/[locale]/(app)/…` via `(app)/layout.tsx` |
+| Landing `/` | `LandingPageShell` | **Non** | `app/[locale]/(public)/page.tsx` |
+| Auth publique | `LandingPageShell` | **Non** | `(public)/register`, `forgot-password`, `onboarding` |
+| Pages légales | contenu public | **Non** | `(public)/legal/*` (CGU, privacy, mentions) |
+| Dashboard étudiant | `AppShell` + contenu | **Oui** (shell global) | `(app)/dashboard/demo` — `StudentDashboardScreen variant="content"` |
+| Storybook / patterns | `AppChrome`, `StudentDashboardScreen` standalone | selon story | pas de markup sidebar ad hoc |
+
+**Exclusions sidebar** (helper `shouldShowAppSidebar` dans `apps/web/lib/app-shell-sidebar.ts`) :
+
+- `/` (landing)
+- `/legal/*` (CGU, confidentialité, mentions)
+- `/register`, `/forgot-password`, `/onboarding`
+
+**Composant canonique** : `AppSidebar` (`packages/ui/src/patterns/app-sidebar.tsx`) via `AppShellSidebar` (`apps/web/components/features/app-shell-sidebar.tsx`).
+
+## Nouvelle page — checklist agent
+
+1. **Produit authentifié** → fichier sous `(app)/` ; le layout parent injecte `AppShell` + sidebar — **ne pas** recréer la sidebar dans la page.
+2. **Marketing / auth / legal** → `(public)/` sans sidebar.
+3. **Layout spécial plein écran** → ajouter le préfixe à `APP_SIDEBAR_EXCLUDED_PREFIXES` si la sidebar doit disparaître.
+4. **Fond** : mesh global via `APP_STAGE_CLASS` + `AppAbstractBackground` sur le shell parent — pas de fond par page (sauf `/` landing photo).
+5. **Brand** : toujours `AppChromeBrand` ou `BrandLogo` (délègue au brand canonique).
+
+## Modification du chrome
+
+Toute évolution visuelle header/footer se fait **une seule fois** dans `landing-layout.ts`, `globals.css` (`.landing-shell-chrome`) et `app-chrome-shell.tsx` — jamais page par page.
+
+Après changement : `pnpm --filter @allaboard/ui typecheck`, revue Storybook (`StudentDashboard`, `Landing`, `AppChrome`), `./scripts/graphify-update.sh` si doc/code MVP touché.

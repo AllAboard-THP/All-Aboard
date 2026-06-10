@@ -75,7 +75,6 @@
   "studentDashboard": {
     "brandName": "All-Aboard",
     "chrome": {
-      "demoBadge": "Dashboard étudiant · Démo",
       "footerRights": "© {year} All-Aboard — Tous droits réservés",
       "footerCgu": "CGU",
       "footerPrivacy": "Confidentialité",

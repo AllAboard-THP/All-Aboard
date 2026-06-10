@@ -107,7 +107,7 @@ export function ExploreSubjectsScreen({
   const [subjectRequestOpen, setSubjectRequestOpen] = useState(false);
 
   return (
-    <AppChrome activeLink="explore" mobileChrome={mobileChrome}>
+    <AppChrome activeLink="explore" mobileChrome={mobileChrome} sidebarActiveId="subjects">
       <div className="animate-fade-in">
         <div className="mb-8">
           <h2 className="mb-2 text-3xl font-bold">{labels.explore.title}</h2>
@@ -134,7 +134,7 @@ export function ResourcesListScreen({
   const resources = useLegacyResources().slice(0, 3);
 
   return (
-    <AppChrome activeLink="resources" mobileChrome={mobileChrome}>
+    <AppChrome activeLink="resources" mobileChrome={mobileChrome} sidebarActiveId="resources">
       <div className="mx-auto max-w-4xl animate-fade-in">
         <ResourcesPageHeader labels={labels} />
         <SearchBar
@@ -154,7 +154,7 @@ export function AdminDashboardScreen({
   const labels = useLegacyLabels();
 
   return (
-    <AppChrome activeLink="feed" isAdmin mobileChrome={mobileChrome}>
+    <AppChrome activeLink="feed" isAdmin mobileChrome={mobileChrome} sidebarActiveId="dashboard">
       <div className="animate-fade-in">
         <div className="mb-8">
           <h1 className="mb-2 text-4xl font-bold">{labels.admin.title}</h1>
@@ -191,7 +191,7 @@ export function EventsListScreen({ mobileChrome = false }: { mobileChrome?: bool
   const events = useLegacyEvents().slice(0, 3);
 
   return (
-    <AppChrome activeLink="events" mobileChrome={mobileChrome}>
+    <AppChrome activeLink="events" mobileChrome={mobileChrome} sidebarActiveId="events">
       <div className="mx-auto max-w-4xl animate-fade-in">
         <EventsPageHeader labels={labels} />
         <EventsListWithFilters
@@ -209,7 +209,7 @@ export function MessagesInboxScreen({ mobileChrome = false }: { mobileChrome?: b
   const conversations = useLegacyConversations();
 
   return (
-    <AppChrome activeLink="messages" messageCount={3} mobileChrome={mobileChrome}>
+    <AppChrome activeLink="messages" messageCount={3} mobileChrome={mobileChrome} sidebarActiveId="messages">
       <div className="animate-fade-in">
         <MessagesInboxLayout conversations={conversations} labels={labels} />
       </div>
@@ -224,7 +224,7 @@ export function UserProfileScreen({
   const profile = useLegacyProfile();
 
   return (
-    <AppChrome activeLink="feed" mobileChrome={mobileChrome}>
+    <AppChrome activeLink="feed" mobileChrome={mobileChrome} sidebarActiveId="profile">
       <div className="mx-auto max-w-5xl animate-fade-in space-y-6">
         <ProfileHeaderCard profile={profile} labels={labels} />
         <ProfileAboutCard profile={profile} labels={labels} />
@@ -239,7 +239,7 @@ export function RegisterScreen() {
   const labels = useLegacyLabels();
 
   return (
-    <AppChrome showNav={false}>
+    <AppChrome showNav={false} showSidebar={false}>
       <div className="auth-grid relative mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid min-h-[90vh] items-center gap-12 lg:grid-cols-2">
           <RegisterHeroPanel labels={labels} />
@@ -265,7 +265,7 @@ export function LegalCguScreen() {
   const content = useLegacyLegalContent("cgu");
 
   return (
-    <AppChrome showNav={false}>
+    <AppChrome showNav={false} showSidebar={false}>
       <div className="animate-fade-in px-4 py-10">
         <LegalPageLayout content={content} labels={labels} />
       </div>
@@ -278,7 +278,7 @@ export function LegalPrivacyScreen() {
   const content = useLegacyLegalContent("privacy");
 
   return (
-    <AppChrome showNav={false}>
+    <AppChrome showNav={false} showSidebar={false}>
       <div className="animate-fade-in px-4 py-10">
         <LegalPageLayout content={content} labels={labels} />
       </div>
@@ -291,7 +291,7 @@ export function LegalMentionsScreen() {
   const content = useLegacyLegalContent("mentions");
 
   return (
-    <AppChrome showNav={false}>
+    <AppChrome showNav={false} showSidebar={false}>
       <div className="animate-fade-in px-4 py-10">
         <LegalPageLayout content={content} labels={labels} />
       </div>
@@ -306,7 +306,7 @@ export function MentorDashboardScreen({
   const fixture = useLegacyMentorDashboard();
 
   return (
-    <AppChrome activeLink="feed" isAdmin isMentor showMentorDot mobileChrome={mobileChrome}>
+    <AppChrome activeLink="feed" isAdmin isMentor showMentorDot mobileChrome={mobileChrome} sidebarActiveId="mentor">
       <div className="mx-auto max-w-4xl animate-fade-in">
         <div className="mb-8">
           <h1 className="mb-1 flex items-center gap-3 text-3xl font-bold">
@@ -333,7 +333,7 @@ export function AdminModerationScreen({
   const fixture = useLegacyModeration();
 
   return (
-    <AppChrome activeLink="feed" isAdmin mobileChrome={mobileChrome}>
+    <AppChrome activeLink="feed" isAdmin mobileChrome={mobileChrome} sidebarActiveId="dashboard">
       <div className="animate-fade-in">
         <AdminModerationQueue fixture={fixture} labels={labels} />
       </div>
@@ -348,7 +348,7 @@ export function AdminUsersScreen({
   const users = useLegacyAdminUsers();
 
   return (
-    <AppChrome activeLink="feed" isAdmin mobileChrome={mobileChrome}>
+    <AppChrome activeLink="feed" isAdmin mobileChrome={mobileChrome} sidebarActiveId="dashboard">
       <div className="animate-fade-in">
         <AdminUsersTable users={users} labels={labels} />
       </div>

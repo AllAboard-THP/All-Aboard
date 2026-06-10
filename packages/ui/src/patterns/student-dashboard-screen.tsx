@@ -38,6 +38,12 @@ import {
   type StudentUpcomingTeaser,
 } from "./fixtures/student-dashboard";
 import {
+  AppChromeBrand,
+  AppChromeFooter,
+  AppChromeHeader,
+} from "./app-chrome-shell";
+import { AppSidebar } from "./app-sidebar";
+import {
   APP_GLASS_CARD_CLASS,
   APP_STAGE_CLASS,
   LANDING_EDGE_PADDING_CLASS,
@@ -89,68 +95,82 @@ function StatCard({
   );
 }
 
-function SidebarNavButton({
-  item,
-  onDemoClick,
-}: {
-  item: SidebarItem;
-  onDemoClick: () => void;
-}) {
-  const Icon = item.icon;
-
-  return (
-    <button
-      type="button"
-      onClick={onDemoClick}
-      className={cn(
-        "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-all duration-200",
-        item.active
-          ? "dashboard-nav-active font-medium text-primary"
-          : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
-      )}
-    >
-      <Icon className="size-4 shrink-0" aria-hidden />
-      <span>{item.label}</span>
-    </button>
-  );
-}
-
-const DASHBOARD_SIDEBAR_CLASS =
-  "landing-chrome flex w-full shrink-0 flex-col border-white/10 md:w-64 md:min-h-0 md:border-r";
-
-function StudentDashboardTopHeader({
-  labels,
-  headerEnd,
-}: {
-  labels: StudentDashboardLabels;
-  headerEnd?: ReactNode;
-}) {
-  return (
-    <header className="landing-chrome sticky top-0 z-20 grid shrink-0 grid-cols-[1fr_auto] border-b border-white/10 md:grid-cols-[16rem_minmax(0,1fr)]">
-      <div className="flex min-h-[4.25rem] items-center gap-3 px-3 py-3 sm:px-4">
-        <AllAboardLogoMark className="size-10" title={labels.brandName} />
-        <span className="gradient-text min-w-0 text-xl font-bold">{labels.brandName}</span>
-      </div>
-      <div className="flex min-h-[4.25rem] items-center justify-end gap-2 px-3 py-3 sm:gap-3 sm:px-4 md:px-6 lg:px-8">
-        {headerEnd}
-        <Badge
-          variant="outline"
-          className="rounded-full border-primary/30 bg-primary/10 text-primary"
-        >
-          {labels.chrome.demoBadge}
-        </Badge>
-      </div>
-    </header>
-  );
-}
-
-function StudentDashboardSidebar({
+function StudentDashboardProfileMenu({
   labels,
   fixture,
   onDemoClick,
 }: {
   labels: StudentDashboardLabels;
   fixture: StudentDashboardFixture;
+  onDemoClick: () => void;
+}) {
+  return (
+    <div className="dashboard-inner-card flex max-w-[min(100%,18rem)] items-center gap-3 !p-2 sm:!p-3">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/35 to-pink-500/20 text-sm font-semibold ring-1 ring-white/15 sm:size-10">
+        {fixture.initials}
+      </div>
+      <div className="hidden min-w-0 flex-1 sm:block">
+        <p className="truncate text-sm font-semibold">{fixture.fullName}</p>
+        <p className="text-xs text-muted-foreground">{labels.sidebar.profile}</p>
+      </div>
+      <div className="flex shrink-0 gap-0.5 sm:gap-1">
+        <button
+          type="button"
+          onClick={onDemoClick}
+          className="dashboard-hover-link rounded-lg p-2 text-muted-foreground"
+          aria-label={labels.sidebar.settings}
+        >
+          <Settings className="size-4" />
+        </button>
+        <button
+          type="button"
+          onClick={onDemoClick}
+          className="dashboard-hover-link rounded-lg p-2 text-muted-foreground"
+          aria-label={labels.sidebar.signOut}
+        >
+          <LogOut className="size-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function StudentDashboardTopHeader({
+  labels,
+  fixture,
+  headerEnd,
+  onDemoClick,
+}: {
+  labels: StudentDashboardLabels;
+  fixture: StudentDashboardFixture;
+  headerEnd?: ReactNode;
+  onDemoClick: () => void;
+}) {
+  return (
+    <AppChromeHeader
+      layout="surface"
+      className="sticky top-0 z-20 grid shrink-0 grid-cols-[1fr_auto] md:grid-cols-[16rem_minmax(0,1fr)]"
+    >
+      <div className="flex min-h-[4.25rem] items-center gap-3 px-3 sm:min-h-[4.75rem] sm:px-4">
+        <AppChromeBrand brandName={labels.brandName} />
+      </div>
+      <div className="flex min-h-[4.25rem] flex-wrap items-center justify-end gap-2 px-3 sm:min-h-[4.75rem] sm:gap-3 sm:px-4 md:px-6 lg:px-8">
+        {headerEnd}
+        <StudentDashboardProfileMenu
+          labels={labels}
+          fixture={fixture}
+          onDemoClick={onDemoClick}
+        />
+      </div>
+    </AppChromeHeader>
+  );
+}
+
+function StudentDashboardSidebar({
+  labels,
+  onDemoClick,
+}: {
+  labels: StudentDashboardLabels;
   onDemoClick: () => void;
 }) {
   const navigationItems: SidebarItem[] = [
@@ -168,60 +188,15 @@ function StudentDashboardSidebar({
   ];
 
   return (
-    <aside className={DASHBOARD_SIDEBAR_CLASS}>
-      <nav
-        className="flex-1 space-y-6 overflow-y-auto px-3 py-5"
-        aria-label={labels.sidebar.navigationGroup}
-      >
-        <div>
-          <p className="landing-eyebrow mb-2 px-3">{labels.sidebar.navigationGroup}</p>
-          <div className="space-y-1">
-            {navigationItems.map((item) => (
-              <SidebarNavButton key={item.id} item={item} onDemoClick={onDemoClick} />
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p className="landing-eyebrow mb-2 px-3">{labels.sidebar.communityGroup}</p>
-          <div className="space-y-1">
-            {communityItems.map((item) => (
-              <SidebarNavButton key={item.id} item={item} onDemoClick={onDemoClick} />
-            ))}
-          </div>
-        </div>
-      </nav>
-
-      <div className="border-t border-white/10 p-4">
-        <div className="dashboard-inner-card flex items-center gap-3 !p-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/35 to-pink-500/20 text-sm font-semibold ring-1 ring-white/15">
-            {fixture.initials}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{fixture.fullName}</p>
-            <p className="text-xs text-muted-foreground">{labels.sidebar.profile}</p>
-          </div>
-          <div className="flex shrink-0 gap-1">
-            <button
-              type="button"
-              onClick={onDemoClick}
-              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-white/10 hover:text-primary"
-              aria-label={labels.sidebar.settings}
-            >
-              <Settings className="size-4" />
-            </button>
-            <button
-              type="button"
-              onClick={onDemoClick}
-              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-white/10 hover:text-primary"
-              aria-label={labels.sidebar.signOut}
-            >
-              <LogOut className="size-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </aside>
+    <AppSidebar
+      labels={{
+        navigationGroup: labels.sidebar.navigationGroup,
+        communityGroup: labels.sidebar.communityGroup,
+      }}
+      navigationItems={navigationItems}
+      communityItems={communityItems}
+      onItemClick={() => onDemoClick()}
+    />
   );
 }
 
@@ -333,7 +308,7 @@ function DemoLinkButton({
   return (
     <Button
       variant="ghost"
-      className="gap-2 rounded-full text-primary hover:bg-primary/10 hover:text-primary"
+      className="dashboard-hover-link gap-2 rounded-full text-primary hover:text-foreground"
       onClick={onClick}
     >
       {label}
@@ -357,11 +332,11 @@ function StudentDashboardFooter({
   ] as const;
 
   return (
-    <footer className="landing-chrome shrink-0 border-t">
+    <AppChromeFooter className="relative z-10 shrink-0">
       <div
         className={cn(
           LANDING_EDGE_PADDING_CLASS,
-          "flex flex-col items-center justify-between gap-4 py-5 sm:flex-row",
+          "flex flex-col items-center justify-between gap-4 md:flex-row",
         )}
       >
         <div className="flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground sm:justify-start">
@@ -375,14 +350,130 @@ function StudentDashboardFooter({
               key={link.id}
               type="button"
               onClick={onDemoClick}
-              className="text-sm text-muted-foreground transition-colors hover:text-primary"
+              className="dashboard-hover-link rounded-md px-2 py-1 text-sm text-muted-foreground"
             >
               {link.label}
             </button>
           ))}
         </nav>
       </div>
-    </footer>
+    </AppChromeFooter>
+  );
+}
+
+export type StudentDashboardVariant = "standalone" | "content";
+
+function StudentDashboardMain({
+  labels,
+  fixture,
+  onDemoClick,
+}: {
+  labels: StudentDashboardLabels;
+  fixture: StudentDashboardFixture;
+  onDemoClick: () => void;
+}) {
+  return (
+    <div className="animate-fade-in mx-auto max-w-6xl space-y-6">
+      <div className="space-y-3">
+        <span className="dashboard-date-badge">{fixture.dateLabel}</span>
+        <div>
+          <h1 className="landing-hero-heading text-3xl font-bold tracking-tight sm:text-4xl">
+            <span className="landing-chrome-text">{labels.header.greetingPrefix}</span>{" "}
+            <span className="gradient-text">
+              {fixture.firstName}
+              {labels.header.greetingSuffix}
+            </span>
+          </h1>
+          <p className="mt-2 max-w-xl text-muted-foreground">{labels.header.subtitle}</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <StatCard value={fixture.postsCount} label={labels.header.statPosts} tone="primary" />
+        <StatCard value={fixture.repliesCount} label={labels.header.statReplies} tone="accent" />
+        <StatCard
+          value={fixture.communityRating}
+          label={labels.header.statRating}
+          tone="gradient"
+        />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="space-y-6">
+          <DashboardPanel
+            title={labels.panels.helpRequestsTitle}
+            icon={Zap}
+            footer={
+              <DemoLinkButton label={labels.panels.helpRequestsCta} onClick={onDemoClick} />
+            }
+          >
+            {fixture.helpRequests.length > 0 ? (
+              <div className="space-y-3">
+                {fixture.helpRequests.map((item) => (
+                  <HelpRequestPreviewCard key={item.id} item={item} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState message={labels.panels.helpRequestsEmpty} />
+            )}
+          </DashboardPanel>
+
+          <DashboardPanel title={labels.panels.upcomingTitle} icon={Sparkles}>
+            <div className="space-y-3">
+              {fixture.upcoming.map((item) => (
+                <UpcomingTeaserCard key={item.id} item={item} />
+              ))}
+            </div>
+          </DashboardPanel>
+        </div>
+
+        <div className="space-y-6">
+          <DashboardPanel
+            title={labels.panels.subjectsTitle}
+            icon={Compass}
+            footer={
+              <DemoLinkButton label={labels.panels.subjectsCta} onClick={onDemoClick} />
+            }
+          >
+            {fixture.subjects.length > 0 ? (
+              <div className="space-y-3">
+                {fixture.subjects.map((item) => (
+                  <SubjectChip key={item.slug} item={item} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState message={labels.panels.subjectsEmpty} />
+            )}
+          </DashboardPanel>
+
+          <DashboardPanel title={labels.panels.unansweredTitle} icon={Users}>
+            {fixture.unansweredCount > 0 ? (
+              <p className="text-center text-3xl font-bold text-primary">
+                {fixture.unansweredCount}
+              </p>
+            ) : (
+              <EmptyState message={labels.panels.unansweredEmpty} />
+            )}
+          </DashboardPanel>
+        </div>
+      </div>
+
+      <DashboardPanel
+        title={labels.panels.resourcesTitle}
+        icon={Library}
+        footer={<DemoLinkButton label={labels.panels.resourcesCta} onClick={onDemoClick} />}
+      >
+        {fixture.resources.length > 0 ? (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {fixture.resources.map((item) => (
+              <ResourcePreviewCard key={item.id} item={item} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState message={labels.panels.resourcesEmpty} />
+        )}
+      </DashboardPanel>
+    </div>
   );
 }
 
@@ -391,154 +482,48 @@ export function StudentDashboardScreen({
   fixture = studentDashboardFixtureFr,
   onDemoAction,
   headerEnd,
+  variant = "standalone",
 }: {
   labels?: StudentDashboardLabels;
   fixture?: StudentDashboardFixture;
   onDemoAction?: (message: string) => void;
   headerEnd?: ReactNode;
+  /** `content` = main panels only (sidebar/header from AppShell). */
+  variant?: StudentDashboardVariant;
 }) {
   const handleDemoClick = () => {
     onDemoAction?.(labels.panels.demoToast);
   };
 
+  if (variant === "content") {
+    return (
+      <StudentDashboardMain
+        labels={labels}
+        fixture={fixture}
+        onDemoClick={handleDemoClick}
+      />
+    );
+  }
+
   return (
     <DashboardStage>
-      <StudentDashboardTopHeader labels={labels} headerEnd={headerEnd} />
+      <StudentDashboardTopHeader
+        labels={labels}
+        fixture={fixture}
+        headerEnd={headerEnd}
+        onDemoClick={handleDemoClick}
+      />
 
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-        <StudentDashboardSidebar
-          labels={labels}
-          fixture={fixture}
-          onDemoClick={handleDemoClick}
-        />
+        <StudentDashboardSidebar labels={labels} onDemoClick={handleDemoClick} />
 
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-            <div className="animate-fade-in mx-auto max-w-6xl space-y-6">
-              <div className="space-y-3">
-                <Badge
-                  variant="outline"
-                  className="landing-eyebrow rounded-full border-primary/30 bg-primary/10 px-3 py-1 text-primary normal-case"
-                >
-                  {fixture.dateLabel}
-                </Badge>
-                <div>
-                  <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                    {labels.header.greetingPrefix}{" "}
-                    <span className="gradient-text">{fixture.firstName}</span>
-                    {labels.header.greetingSuffix}
-                  </h1>
-                  <p className="mt-2 max-w-xl text-muted-foreground">
-                    {labels.header.subtitle}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <StatCard
-                  value={fixture.postsCount}
-                  label={labels.header.statPosts}
-                  tone="primary"
-                />
-                <StatCard
-                  value={fixture.repliesCount}
-                  label={labels.header.statReplies}
-                  tone="accent"
-                />
-                <StatCard
-                  value={fixture.communityRating}
-                  label={labels.header.statRating}
-                  tone="gradient"
-                />
-              </div>
-
-              <div className="grid gap-6 lg:grid-cols-2">
-                <div className="space-y-6">
-                  <DashboardPanel
-                    title={labels.panels.helpRequestsTitle}
-                    icon={Zap}
-                    footer={
-                      <DemoLinkButton
-                        label={labels.panels.helpRequestsCta}
-                        onClick={handleDemoClick}
-                      />
-                    }
-                  >
-                    {fixture.helpRequests.length > 0 ? (
-                      <div className="space-y-3">
-                        {fixture.helpRequests.map((item) => (
-                          <HelpRequestPreviewCard key={item.id} item={item} />
-                        ))}
-                      </div>
-                    ) : (
-                      <EmptyState message={labels.panels.helpRequestsEmpty} />
-                    )}
-                  </DashboardPanel>
-
-                  <DashboardPanel title={labels.panels.upcomingTitle} icon={Sparkles}>
-                    <div className="space-y-3">
-                      {fixture.upcoming.map((item) => (
-                        <UpcomingTeaserCard key={item.id} item={item} />
-                      ))}
-                    </div>
-                  </DashboardPanel>
-                </div>
-
-                <div className="space-y-6">
-                  <DashboardPanel
-                    title={labels.panels.subjectsTitle}
-                    icon={Compass}
-                    footer={
-                      <DemoLinkButton
-                        label={labels.panels.subjectsCta}
-                        onClick={handleDemoClick}
-                      />
-                    }
-                  >
-                    {fixture.subjects.length > 0 ? (
-                      <div className="space-y-3">
-                        {fixture.subjects.map((item) => (
-                          <SubjectChip key={item.slug} item={item} />
-                        ))}
-                      </div>
-                    ) : (
-                      <EmptyState message={labels.panels.subjectsEmpty} />
-                    )}
-                  </DashboardPanel>
-
-                  <DashboardPanel title={labels.panels.unansweredTitle} icon={Users}>
-                    {fixture.unansweredCount > 0 ? (
-                      <p className="text-center text-3xl font-bold text-primary">
-                        {fixture.unansweredCount}
-                      </p>
-                    ) : (
-                      <EmptyState message={labels.panels.unansweredEmpty} />
-                    )}
-                  </DashboardPanel>
-                </div>
-              </div>
-
-              <DashboardPanel
-                title={labels.panels.resourcesTitle}
-                icon={Library}
-                footer={
-                  <DemoLinkButton
-                    label={labels.panels.resourcesCta}
-                    onClick={handleDemoClick}
-                  />
-                }
-              >
-                {fixture.resources.length > 0 ? (
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {fixture.resources.map((item) => (
-                      <ResourcePreviewCard key={item.id} item={item} />
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState message={labels.panels.resourcesEmpty} />
-                )}
-              </DashboardPanel>
-            </div>
-          </main>
+          <StudentDashboardMain
+            labels={labels}
+            fixture={fixture}
+            onDemoClick={handleDemoClick}
+          />
+        </main>
       </div>
 
       <StudentDashboardFooter labels={labels} onDemoClick={handleDemoClick} />
