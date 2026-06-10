@@ -269,22 +269,3 @@ export function AppSidebarMobileTrigger({
     </button>
   );
 }
-
-export function AppSidebarMobileSheet({
-  children,
-  title,
-  open,
-  onOpenChange,
-}: {
-  children: ReactNode;
-  title: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  // Lazy import pattern — Sheet used from app-shell-layout in web; this is a thin wrapper for Storybook if needed
-  return (
-    <div data-sidebar-mobile-sheet data-open={open ? "true" : "false"} aria-label={title}>
-      {open ? children : null}
-    </div>
-  );
-}

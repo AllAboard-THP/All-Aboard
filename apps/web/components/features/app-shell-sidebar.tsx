@@ -7,7 +7,6 @@ import {
   AppSidebar,
   type AppSidebarLinkProps,
 } from "@allaboard/ui/patterns/app-sidebar";
-import { useAppSidebar } from "@allaboard/ui/patterns/app-sidebar-provider";
 import {
   buildAppSidebarSections,
   resolveAppSidebarContext,
