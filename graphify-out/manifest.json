@@ -185,13 +185,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/help-request-detail-client.tsx": {
-    "mtime": 1780501574.5453234,
-    "ast_hash": "13149244f4dacea869a7ec9719f4b3bd",
+    "mtime": 1781082850.79628,
+    "ast_hash": "bd66816a78b9a5350abd2d1ad39d5c77",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/help-request-form.tsx": {
-    "mtime": 1780501574.5453234,
-    "ast_hash": "c773f2eb261621e14bd24de690e18ff0",
+    "mtime": 1781082845.1976168,
+    "ast_hash": "32b8c3f4b48ac7605fd75d7ca1415627",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/api-server.ts": {
@@ -700,8 +700,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/moc-parcours-utilisateur.md": {
-    "mtime": 1780662804.8050966,
-    "ast_hash": "1e95e3d1d67ac3f5925e6b26dfeb7ebc",
+    "mtime": 1780662819.3311813,
+    "ast_hash": "1d096e84a13eae6ba97336fc37c24aff",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/staging-checklist.md": {
@@ -935,18 +935,18 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/e2e/i18n.spec.ts": {
-    "mtime": 1780501574.5453234,
-    "ast_hash": "33bbde9b77c0904f3e6cb5eae44b4478",
+    "mtime": 1781088792.9412591,
+    "ast_hash": "8441ffbbe569943fd726fee805572f32",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/en.json": {
-    "mtime": 1780501574.5453234,
-    "ast_hash": "ec71f3079b5a857e195eab1ec00f2c2c",
+    "mtime": 1781082841.145953,
+    "ast_hash": "7aeaedcb5c53e237c0608ceca6afbe1b",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/fr.json": {
-    "mtime": 1780501574.5493233,
-    "ast_hash": "01398bc34b8957d9088a567db4624e74",
+    "mtime": 1781082840.6692865,
+    "ast_hash": "e82d11ea9fb63e282f80b38ff1f80e91",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/layout.tsx": {
@@ -960,7 +960,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/(app)/layout.tsx": {
-    "mtime": 1780655843.5630336,
+    "mtime": 1781082732.2417786,
     "ast_hash": "bd57a4c255dfec4c9ca54e701e9c6583",
     "semantic_hash": ""
   },
@@ -980,8 +980,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/i18n-test-utils.tsx": {
-    "mtime": 1780501574.5493233,
-    "ast_hash": "ca57e5350736a889af2dfaadaed6fe14",
+    "mtime": 1781082855.6669433,
+    "ast_hash": "fd91ae6103d9899ffaa6f0410ad630f2",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/locale-switcher.tsx": {
@@ -995,8 +995,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/75-i18n-web/README.md": {
-    "mtime": 1780501574.5373235,
-    "ast_hash": "1a21533ad54f16ce529f54b763600375",
+    "mtime": 1781088789.1409283,
+    "ast_hash": "17d535cbd9fbe24b2b3f005804641300",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0005_api_rails_phase1.sql": {
@@ -1302,6 +1302,16 @@
   "/home/dim/AllAboard/Docs/tasks/api-rails-parity/README.md": {
     "mtime": 1780662759.9458244,
     "ast_hash": "293b4b5d69043b2d62356088fb2a9f3a",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/tests/map-api-error.test.ts": {
+    "mtime": 1781082854.9866104,
+    "ast_hash": "1a3b339b538b3cf9d52b3b1e3e535e41",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/lib/map-api-error.ts": {
+    "mtime": 1781082836.244956,
+    "ast_hash": "cea9bf2aab909db3b48e4f313d3f9d31",
     "semantic_hash": ""
   }
 }
