@@ -11,15 +11,16 @@ import {
   buildRubberduckRedirectUrl,
   fetchRubberduckRedirectUrl,
 } from "@/lib/rubberduck-redirect";
+import {
+  ApiRequestError,
+  mapApiError,
+  throwFromApiResponse,
+} from "@/lib/map-api-error";
 import { Link, useRouter } from "@/i18n/navigation";
 
 type CreateResult = {
   item: { id: string };
   hints?: { rubberduckEligible?: boolean };
-};
-
-type DuplicateError = {
-  existingId?: string;
 };
 
 async function loginAndCreate(input: {
@@ -35,8 +36,8 @@ async function loginAndCreate(input: {
     body: JSON.stringify({ email: input.email, password: input.password }),
   });
   if (!loginRes.ok) {
-    const t = await loginRes.text();
-    throw new Error(loginRes.status === 401 ? "invalid_credentials" : t);
+    const body = await loginRes.text();
+    throwFromApiResponse(loginRes.status, body);
   }
 
   const createRes = await fetch("/api/help-requests", {
@@ -50,14 +51,8 @@ async function loginAndCreate(input: {
   });
   const createText = await createRes.text();
 
-  if (createRes.status === 409) {
-    const dup = JSON.parse(createText) as DuplicateError;
-    const err = new Error("duplicate") as Error & { existingId?: string };
-    err.existingId = dup.existingId;
-    throw err;
-  }
   if (!createRes.ok) {
-    throw new Error(createText || `Erreur ${createRes.status}`);
+    throwFromApiResponse(createRes.status, createText);
   }
   return JSON.parse(createText) as CreateResult;
 }
@@ -66,6 +61,7 @@ export function HelpRequestForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const t = useTranslations("helpForm");
+  const tErrors = useTranslations("errors");
   const tCommon = useTranslations("common");
   const [email, setEmail] = useState("bob@dev.local");
   const [password, setPassword] = useState("");
@@ -99,9 +95,9 @@ export function HelpRequestForm() {
       }
       router.push(`/requests/${data.item.id}`);
     },
-    onError: (err: Error & { existingId?: string }) => {
+    onError: (err: Error) => {
       setRubberduckMessage(null);
-      if (err.message === "duplicate" && err.existingId) {
+      if (err instanceof ApiRequestError && err.code === "duplicate" && err.existingId) {
         setDuplicateId(err.existingId);
       } else {
         setDuplicateId(null);
@@ -120,10 +116,13 @@ export function HelpRequestForm() {
   }
 
   const errorMessage =
-    mutation.error && mutation.error.message !== "duplicate"
-      ? mutation.error.message === "invalid_credentials"
-        ? t("invalidCredentials")
-        : mutation.error.message
+    mutation.error instanceof ApiRequestError && mutation.error.code !== "duplicate"
+      ? tErrors(
+          mapApiError({
+            status: mutation.error.status,
+            body: { error: mutation.error.code },
+          }),
+        )
       : null;
 
   return (

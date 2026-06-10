@@ -10,6 +10,25 @@
     "updating": "Updating…",
     "sending": "Sending…"
   },
+  "errors": {
+    "invalidCredentials": "Invalid credentials.",
+    "unauthorized": "Sign-in required.",
+    "missingToken": "Session expired. Please sign in again.",
+    "forbidden": "Access denied.",
+    "notFound": "Resource not found.",
+    "duplicate": "Duplicate detected.",
+    "conflict": "Conflict — this resource already exists.",
+    "invalidBody": "Invalid data.",
+    "invalidSubject": "Invalid subject.",
+    "serviceUnavailable": "Service temporarily unavailable.",
+    "serverError": "Server error. Please try again later.",
+    "emailTaken": "This email is already in use.",
+    "loginNotConfigured": "Sign-in is not configured on this server.",
+    "userNotFound": "User not found.",
+    "invalidRegex": "Invalid regular expression.",
+    "contentModeration": "Content flagged for moderation.",
+    "unknown": "An unexpected error occurred."
+  },
   "nav": {
     "ariaLabel": "Main navigation",
     "feed": "Feed",
@@ -51,7 +70,6 @@
     "title": "Request title",
     "tags": "Tags (optional, comma-separated)",
     "tagsPlaceholder": "mentor, rails",
-    "invalidCredentials": "Invalid credentials.",
     "duplicate": "Duplicate detected (MOC).",
     "viewExisting": "View existing request",
     "rubberduckHandoff": "Rubberduck handoff: your request is published. Set RUBBERDUCK_URL to enable external redirect.",

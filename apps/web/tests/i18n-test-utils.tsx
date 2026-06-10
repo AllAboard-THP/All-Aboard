@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { render, type RenderOptions } from "@testing-library/react";
 
 import frMessages from "../messages/fr.json";
+import enMessages from "../messages/en.json";
 
 type Props = {
   children: ReactNode;
@@ -10,8 +11,9 @@ type Props = {
 };
 
 function I18nTestProvider({ children, locale = "fr" }: Props) {
+  const messages = locale === "en" ? enMessages : frMessages;
   return (
-    <NextIntlClientProvider locale={locale} messages={frMessages}>
+    <NextIntlClientProvider locale={locale} messages={messages}>
       {children}
     </NextIntlClientProvider>
   );

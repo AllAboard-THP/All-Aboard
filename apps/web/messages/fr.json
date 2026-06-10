@@ -10,6 +10,25 @@
     "updating": "Mise à jour…",
     "sending": "Envoi…"
   },
+  "errors": {
+    "invalidCredentials": "Identifiants invalides.",
+    "unauthorized": "Connexion requise.",
+    "missingToken": "Session expirée. Reconnectez-vous.",
+    "forbidden": "Accès refusé.",
+    "notFound": "Ressource introuvable.",
+    "duplicate": "Doublon détecté.",
+    "conflict": "Conflit — cette ressource existe déjà.",
+    "invalidBody": "Données invalides.",
+    "invalidSubject": "Sujet invalide.",
+    "serviceUnavailable": "Service temporairement indisponible.",
+    "serverError": "Erreur serveur. Réessayez plus tard.",
+    "emailTaken": "Cet email est déjà utilisé.",
+    "loginNotConfigured": "Connexion non configurée sur ce serveur.",
+    "userNotFound": "Utilisateur introuvable.",
+    "invalidRegex": "Expression régulière invalide.",
+    "contentModeration": "Contenu signalé pour modération.",
+    "unknown": "Une erreur inattendue s'est produite."
+  },
   "nav": {
     "ariaLabel": "Navigation principale",
     "feed": "Feed",
@@ -51,7 +70,6 @@
     "title": "Titre de la demande",
     "tags": "Tags (optionnel, séparés par virgule)",
     "tagsPlaceholder": "mentor, rails",
-    "invalidCredentials": "Identifiants invalides.",
     "duplicate": "Doublon détecté (MOC).",
     "viewExisting": "Voir la demande existante",
     "rubberduckHandoff": "Handoff Rubberduck : votre demande est publiée. Configurez RUBBERDUCK_URL pour activer la redirection externe.",
