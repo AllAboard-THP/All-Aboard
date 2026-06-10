@@ -1,9 +1,11 @@
-"use client";
-
 import { EventsListScreen } from "@allaboard/ui/patterns/screens/legacy-screens";
 
-import { LegacyScreenPage } from "@/components/features/legacy-screen-page";
+import { initPageLocale } from "@/lib/init-page-locale";
 
-export default function EventsPage() {
-  return <LegacyScreenPage screen={EventsListScreen} />;
+type PageProps = { params: Promise<{ locale: string }> };
+
+export default async function EventsPage({ params }: PageProps) {
+  const { locale } = await params;
+  initPageLocale(locale);
+  return <EventsListScreen />;
 }

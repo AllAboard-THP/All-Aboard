@@ -1,9 +1,11 @@
-"use client";
-
 import { AdminModerationScreen } from "@allaboard/ui/patterns/screens/legacy-screens";
 
-import { LegacyScreenPage } from "@/components/features/legacy-screen-page";
+import { initPageLocale } from "@/lib/init-page-locale";
 
-export default function AdminModerationPage() {
-  return <LegacyScreenPage screen={AdminModerationScreen} />;
+type PageProps = { params: Promise<{ locale: string }> };
+
+export default async function AdminModerationPage({ params }: PageProps) {
+  const { locale } = await params;
+  initPageLocale(locale);
+  return <AdminModerationScreen />;
 }

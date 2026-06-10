@@ -1,9 +1,11 @@
-"use client";
-
 import { MessagesInboxScreen } from "@allaboard/ui/patterns/screens/legacy-screens";
 
-import { LegacyScreenPage } from "@/components/features/legacy-screen-page";
+import { initPageLocale } from "@/lib/init-page-locale";
 
-export default function MessagesPage() {
-  return <LegacyScreenPage screen={MessagesInboxScreen} />;
+type PageProps = { params: Promise<{ locale: string }> };
+
+export default async function MessagesPage({ params }: PageProps) {
+  const { locale } = await params;
+  initPageLocale(locale);
+  return <MessagesInboxScreen />;
 }

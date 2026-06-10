@@ -1,9 +1,11 @@
-"use client";
-
 import { LegalPrivacyScreen } from "@allaboard/ui/patterns/screens/legacy-screens";
 
-import { LegacyScreenPage } from "@/components/features/legacy-screen-page";
+import { initPageLocale } from "@/lib/init-page-locale";
 
-export default function LegalPrivacyPage() {
-  return <LegacyScreenPage screen={LegalPrivacyScreen} />;
+type PageProps = { params: Promise<{ locale: string }> };
+
+export default async function LegalPrivacyPage({ params }: PageProps) {
+  const { locale } = await params;
+  initPageLocale(locale);
+  return <LegalPrivacyScreen />;
 }

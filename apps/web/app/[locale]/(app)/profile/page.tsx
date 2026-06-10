@@ -1,9 +1,11 @@
-"use client";
-
 import { UserProfileScreen } from "@allaboard/ui/patterns/screens/legacy-screens";
 
-import { LegacyScreenPage } from "@/components/features/legacy-screen-page";
+import { initPageLocale } from "@/lib/init-page-locale";
 
-export default function ProfilePage() {
-  return <LegacyScreenPage screen={UserProfileScreen} />;
+type PageProps = { params: Promise<{ locale: string }> };
+
+export default async function ProfilePage({ params }: PageProps) {
+  const { locale } = await params;
+  initPageLocale(locale);
+  return <UserProfileScreen />;
 }

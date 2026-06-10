@@ -1,15 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLocale } from "next-intl";
 
 import { Alert, AlertDescription } from "@allaboard/ui/components/alert";
 import { LandingLoginScreen } from "@allaboard/ui/patterns/screens/legacy-screens";
-import {
-  StorybookLocaleProvider,
-  useLegacyLabels,
-  type StorybookLocale,
-} from "@allaboard/ui/i18n/storybook-locale";
+import { useLegacyLabels } from "@allaboard/ui/i18n/storybook-locale";
 
 import { useRouter } from "@/i18n/navigation";
 
@@ -41,13 +36,12 @@ function LandingLoginOAuthFeedback() {
   );
 }
 
-/** Landing login — wired to apps/web auth routes + next-intl locale. */
+/** Landing login — wired to apps/web auth routes; locale via root `LocaleBridge`. */
 export function LandingLoginPage() {
   const router = useRouter();
-  const locale = useLocale() as StorybookLocale;
 
   return (
-    <StorybookLocaleProvider locale={locale}>
+    <>
       <LandingLoginOAuthFeedback />
       <LandingLoginScreen
         onForgotPasswordClick={() => router.push("/forgot-password")}
@@ -56,6 +50,6 @@ export function LandingLoginPage() {
           window.location.href = "/api/auth/google";
         }}
       />
-    </StorybookLocaleProvider>
+    </>
   );
 }

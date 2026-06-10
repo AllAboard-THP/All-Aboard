@@ -10,8 +10,13 @@ import {
 import { HelpRequestForm } from "@/components/features/help-request-form";
 import { MarketingPageShell } from "@/components/features/marketing-page-shell";
 import { Link } from "@/i18n/navigation";
+import { initPageLocale } from "@/lib/init-page-locale";
 
-export default async function NewHelpRequestPage() {
+type PageProps = { params: Promise<{ locale: string }> };
+
+export default async function NewHelpRequestPage({ params }: PageProps) {
+  const { locale } = await params;
+  initPageLocale(locale);
   const t = await getTranslations("helpNew");
 
   return (

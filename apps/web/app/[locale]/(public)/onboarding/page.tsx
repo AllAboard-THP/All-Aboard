@@ -1,5 +1,10 @@
 import { OAuthOnboardingPage } from "@/components/features/oauth-onboarding-page";
+import { initPageLocale } from "@/lib/init-page-locale";
 
-export default function OnboardingPage() {
+type PageProps = { params: Promise<{ locale: string }> };
+
+export default async function OnboardingPage({ params }: PageProps) {
+  const { locale } = await params;
+  initPageLocale(locale);
   return <OAuthOnboardingPage />;
 }

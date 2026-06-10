@@ -1,9 +1,11 @@
-"use client";
-
 import { RegisterScreen } from "@allaboard/ui/patterns/screens/legacy-screens";
 
-import { LegacyScreenPage } from "@/components/features/legacy-screen-page";
+import { initPageLocale } from "@/lib/init-page-locale";
 
-export default function RegisterPage() {
-  return <LegacyScreenPage screen={RegisterScreen} />;
+type PageProps = { params: Promise<{ locale: string }> };
+
+export default async function RegisterPage({ params }: PageProps) {
+  const { locale } = await params;
+  initPageLocale(locale);
+  return <RegisterScreen />;
 }

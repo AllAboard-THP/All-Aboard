@@ -1,9 +1,11 @@
-"use client";
-
 import { ForgotPasswordScreen } from "@allaboard/ui/patterns/screens/legacy-screens";
 
-import { LegacyScreenPage } from "@/components/features/legacy-screen-page";
+import { initPageLocale } from "@/lib/init-page-locale";
 
-export default function ForgotPasswordPage() {
-  return <LegacyScreenPage screen={ForgotPasswordScreen} />;
+type PageProps = { params: Promise<{ locale: string }> };
+
+export default async function ForgotPasswordPage({ params }: PageProps) {
+  const { locale } = await params;
+  initPageLocale(locale);
+  return <ForgotPasswordScreen />;
 }

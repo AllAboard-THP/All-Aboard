@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLocale } from "next-intl";
 import type { AuthMeResponse } from "@allaboard/types";
 
 import {
@@ -9,11 +8,7 @@ import {
   type OAuthOnboardingSubmitInput,
 } from "@allaboard/ui/patterns/legacy-auth-patterns";
 import { LandingPageShell } from "@allaboard/ui/patterns/landing-page-shell";
-import {
-  StorybookLocaleProvider,
-  useLegacyLabels,
-  type StorybookLocale,
-} from "@allaboard/ui/i18n/storybook-locale";
+import { useLegacyLabels } from "@allaboard/ui/i18n/storybook-locale";
 
 import { useRouter } from "@/i18n/navigation";
 
@@ -113,22 +108,12 @@ function OAuthOnboardingBody() {
   );
 }
 
-function OAuthOnboardingContent() {
+export function OAuthOnboardingPage() {
   const labels = useLegacyLabels();
 
   return (
     <LandingPageShell labels={labels} background="app">
       <OAuthOnboardingBody />
     </LandingPageShell>
-  );
-}
-
-export function OAuthOnboardingPage() {
-  const locale = useLocale() as StorybookLocale;
-
-  return (
-    <StorybookLocaleProvider locale={locale}>
-      <OAuthOnboardingContent />
-    </StorybookLocaleProvider>
   );
 }

@@ -20,10 +20,15 @@ import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { fetchAuthMe, fetchMentorFeed } from "@/lib/api-server";
 import { formatDateTime } from "@/lib/format-datetime";
+import { initPageLocale } from "@/lib/init-page-locale";
 
 export const dynamic = "force-dynamic";
 
-export default async function MentorDashboardPage() {
+type PageProps = { params: Promise<{ locale: string }> };
+
+export default async function MentorDashboardPage({ params }: PageProps) {
+  const { locale: pageLocale } = await params;
+  initPageLocale(pageLocale);
   const t = await getTranslations("mentor");
   const tNav = await getTranslations("nav");
   const tFeed = await getTranslations("feed");
