@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { toast } from "sonner";
 
+import { useStorybookLocale } from "../i18n/storybook-locale";
 import {
   studentDashboardFixtureEn,
   studentDashboardFixtureFr,
@@ -24,20 +25,24 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const DefaultFr: Story = {
-  name: "Default (FR)",
-  args: {
-    labels: studentDashboardLabelsFr,
-    fixture: studentDashboardFixtureFr,
-    onDemoAction: (message) => toast.message(message),
-  },
-};
+function StudentDashboardPreview() {
+  const locale = useStorybookLocale();
+  const labels =
+    locale === "en" ? studentDashboardLabelsEn : studentDashboardLabelsFr;
+  const fixture =
+    locale === "en" ? studentDashboardFixtureEn : studentDashboardFixtureFr;
 
-export const DefaultEn: Story = {
-  name: "Default (EN)",
-  args: {
-    labels: studentDashboardLabelsEn,
-    fixture: studentDashboardFixtureEn,
-    onDemoAction: (message) => toast.message(message),
-  },
+  return (
+    <StudentDashboardScreen
+      labels={labels}
+      fixture={fixture}
+      onDemoAction={(message) => toast.message(message)}
+    />
+  );
+}
+
+/** Full chrome — sidebar, header, footer. Locale via Storybook toolbar. */
+export const Standalone: Story = {
+  name: "Standalone",
+  render: () => <StudentDashboardPreview />,
 };

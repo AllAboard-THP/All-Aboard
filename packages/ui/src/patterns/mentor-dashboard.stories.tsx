@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { toast } from "sonner";
 
+import { useStorybookLocale } from "../i18n/storybook-locale";
 import {
   mentorDashboardFixtureEn,
   mentorDashboardFixtureFr,
@@ -24,32 +25,51 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const DefaultFr: Story = {
-  name: "Default (FR)",
-  args: {
-    labels: mentorDashboardLabelsFr,
-    fixture: mentorDashboardFixtureFr,
-    locale: "fr",
-    onDemoAction: (message) => toast.message(message),
-  },
-};
+function useMentorDashboardStoryProps() {
+  const locale = useStorybookLocale();
+  return {
+    locale,
+    labels:
+      locale === "en" ? mentorDashboardLabelsEn : mentorDashboardLabelsFr,
+    fixture:
+      locale === "en" ? mentorDashboardFixtureEn : mentorDashboardFixtureFr,
+  };
+}
 
-export const DefaultEn: Story = {
-  name: "Default (EN)",
-  args: {
-    labels: mentorDashboardLabelsEn,
-    fixture: mentorDashboardFixtureEn,
-    locale: "en",
-    onDemoAction: (message) => toast.message(message),
-  },
+function MentorDashboardPreview() {
+  const { labels, fixture, locale } = useMentorDashboardStoryProps();
+
+  return (
+    <MentorDashboardScreen
+      labels={labels}
+      fixture={fixture}
+      locale={locale}
+      onDemoAction={(message) => toast.message(message)}
+    />
+  );
+}
+
+function MentorDashboardContentPreview() {
+  const { labels, fixture, locale } = useMentorDashboardStoryProps();
+
+  return (
+    <MentorDashboardScreen
+      labels={labels}
+      fixture={fixture}
+      locale={locale}
+      variant="content"
+      onDemoAction={(message) => toast.message(message)}
+    />
+  );
+}
+
+/** Full chrome — sidebar, header, footer. Locale via Storybook toolbar. */
+export const Standalone: Story = {
+  name: "Standalone",
+  render: () => <MentorDashboardPreview />,
 };
 
 export const ContentOnly: Story = {
   name: "Content (AppShell)",
-  args: {
-    labels: mentorDashboardLabelsFr,
-    fixture: mentorDashboardFixtureFr,
-    variant: "content",
-    onDemoAction: (message) => toast.message(message),
-  },
+  render: () => <MentorDashboardContentPreview />,
 };
