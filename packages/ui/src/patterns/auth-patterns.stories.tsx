@@ -1,10 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { useLegacyLabels } from "../i18n/storybook-locale";
-import {
-  ForgotPasswordForm,
-  RegisterForm,
-} from "./legacy-auth-patterns";
+import { legacyDemoToast } from "./legacy-story-feedback";
+import { ForgotPasswordForm } from "./legacy-auth-patterns";
+import { DedicatedRegisterForm } from "./register-form";
 import {
   patternStoryParameters,
   withPatternStoryFrame,
@@ -24,7 +23,10 @@ function RegisterFormStory() {
   const labels = useLegacyLabels();
   return (
     <div className="w-full max-w-lg">
-      <RegisterForm labels={labels} />
+      <DedicatedRegisterForm
+        labels={labels}
+        onSubmit={() => legacyDemoToast(labels.auth.registerSubmit)}
+      />
     </div>
   );
 }

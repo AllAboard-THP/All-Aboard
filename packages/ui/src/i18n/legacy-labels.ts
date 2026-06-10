@@ -54,6 +54,8 @@ export type LegacyLabels = {
     registerTitle: string;
     registerSubtitle: string;
     fullName: string;
+    firstName: string;
+    lastName: string;
     educationLevel: string;
     educationLevelPlaceholder: string;
     headline: string;
@@ -73,6 +75,11 @@ export type LegacyLabels = {
     onboardingSubtitle: string;
     onboardingSubmit: string;
     acceptCgu: string;
+    acceptCguPrefix: string;
+    acceptCguTermsLink: string;
+    registerEmailTaken: string;
+    registerPasswordMismatch: string;
+    registerGenericError: string;
   };
   explore: {
     title: string;
@@ -301,8 +308,11 @@ export const legacyLabelsFr: LegacyLabels = {
     registerDescription:
       "Inscris-toi pour publier des requêtes, aider d'autres étudiants et basculer en messagerie instantanée.",
     registerTitle: "Créer un compte",
-    registerSubtitle: "Quelques infos et ton espace est prêt.",
+    registerSubtitle:
+      "Le strict minimum pour commencer — tu complèteras ton profil ensuite.",
     fullName: "Nom complet",
+    firstName: "Prénom",
+    lastName: "Nom",
     educationLevel: "Niveau",
     educationLevelPlaceholder: "Ex: Licence Informatique",
     headline: "Headline",
@@ -323,7 +333,14 @@ export const legacyLabelsFr: LegacyLabels = {
     onboardingSubtitle:
       "Quelques informations et l'acceptation des CGU pour terminer ton inscription.",
     onboardingSubmit: "Terminer l'inscription",
-    acceptCgu: "J'accepte les conditions générales d'utilisation",
+    acceptCgu:
+      "J'ai lu et j'accepte les conditions générales d'utilisation",
+    acceptCguPrefix: "J'ai lu et j'accepte les",
+    acceptCguTermsLink: "conditions générales d'utilisation",
+    registerEmailTaken: "Cet email est déjà utilisé.",
+    registerPasswordMismatch: "Les mots de passe ne correspondent pas.",
+    registerGenericError:
+      "Impossible de créer le compte. Vérifie tes informations et réessaie.",
   },
   explore: {
     title: "Explorer",
@@ -559,8 +576,11 @@ export const legacyLabelsEn: LegacyLabels = {
     registerDescription:
       "Sign up to post requests, help other students and switch to instant messaging.",
     registerTitle: "Create an account",
-    registerSubtitle: "A few details and your space is ready.",
+    registerSubtitle:
+      "Just the essentials to get started — complete your profile later.",
     fullName: "Full name",
+    firstName: "First name",
+    lastName: "Last name",
     educationLevel: "Level",
     educationLevelPlaceholder: "E.g. Computer science (Bachelor)",
     headline: "Headline",
@@ -580,7 +600,13 @@ export const legacyLabelsEn: LegacyLabels = {
     onboardingSubtitle:
       "A few details and accepting the terms to finish signing up.",
     onboardingSubmit: "Finish sign-up",
-    acceptCgu: "I accept the terms of use",
+    acceptCgu: "I have read and accept the terms of use",
+    acceptCguPrefix: "I have read and accept the",
+    acceptCguTermsLink: "terms of use",
+    registerEmailTaken: "This email is already in use.",
+    registerPasswordMismatch: "Passwords do not match.",
+    registerGenericError:
+      "Could not create your account. Check your details and try again.",
   },
   explore: {
     title: "Explore",

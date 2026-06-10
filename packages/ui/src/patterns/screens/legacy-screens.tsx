@@ -234,12 +234,46 @@ export function UserProfileScreen({
   );
 }
 
-export function RegisterScreen() {
+export function RegisterScreen({
+  onSignInClick,
+  onGoogleSignInClick,
+  onCguClick,
+  onSubmit,
+  submitting = false,
+  errorMessage,
+}: {
+  onSignInClick?: () => void;
+  onGoogleSignInClick?: () => void;
+  onCguClick?: () => void;
+  onSubmit?: Parameters<
+    typeof import("../landing-register-body").LandingRegisterBody
+  >[0]["onSubmit"];
+  submitting?: boolean;
+  errorMessage?: string | null;
+} = {}) {
   const labels = useLegacyLabels();
 
+  const handleSignIn =
+    onSignInClick ?? (() => legacyDemoToast(labels.auth.signIn));
+  const handleGoogleSignIn =
+    onGoogleSignInClick ??
+    (() => legacyDemoToast(labels.auth.continueWithGoogle));
+
   return (
-    <LandingPageShell labels={labels} activeAction="signUp">
-      <LandingRegisterBody labels={labels} />
+    <LandingPageShell
+      labels={labels}
+      background="app"
+      activeAction="signUp"
+      onSignInClick={handleSignIn}
+    >
+      <LandingRegisterBody
+        labels={labels}
+        submitting={submitting}
+        errorMessage={errorMessage}
+        onSubmit={onSubmit}
+        onGoogleSignInClick={handleGoogleSignIn}
+        onCguClick={onCguClick}
+      />
     </LandingPageShell>
   );
 }

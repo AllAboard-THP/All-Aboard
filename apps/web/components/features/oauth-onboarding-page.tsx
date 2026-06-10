@@ -10,11 +10,16 @@ import {
 import { LandingPageShell } from "@allaboard/ui/patterns/landing-page-shell";
 import { useLegacyLabels } from "@allaboard/ui/i18n/storybook-locale";
 
+import { useLocale } from "next-intl";
+
 import { useRouter } from "@/i18n/navigation";
+import type { AppLocale } from "@/i18n/routing";
+import { openLegalCgu } from "@/lib/open-legal-cgu";
 
 function OAuthOnboardingBody() {
   const labels = useLegacyLabels();
   const router = useRouter();
+  const locale = useLocale() as AppLocale;
   const [profile, setProfile] = useState<AuthMeResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -103,6 +108,7 @@ function OAuthOnboardingBody() {
         submitting={submitting}
         errorMessage={errorMessage}
         onSubmit={handleSubmit}
+        onCguClick={() => openLegalCgu(locale)}
       />
     </div>
   );

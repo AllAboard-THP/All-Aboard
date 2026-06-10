@@ -172,6 +172,13 @@ export const LANDING_LOGIN_CARD_WIDTH_CLASS = LANDING_AUTH_CARD_WIDTH_CLASS;
 export const LANDING_LOGIN_CARD_LAYOUT_CLASS =
   "flex shrink-0 flex-col justify-center gap-5 rounded-[2rem] border-white/10 p-6 shadow-none sm:gap-6 sm:p-8 lg:gap-7 lg:p-10";
 
+/** Register card — denser than login so the full form fits without inner scroll. */
+export const REGISTER_LANDING_CARD_LAYOUT_CLASS =
+  "flex shrink-0 flex-col justify-center gap-3 rounded-[2rem] border-white/10 p-5 shadow-none sm:gap-4 sm:p-6 lg:p-7";
+
+/** Register page card width — compact generic signup form. */
+export const REGISTER_LANDING_CARD_WIDTH_CLASS = "w-full max-w-lg";
+
 /** Canonical glass surface — `.app-glass-card` in globals.css (feed search rail style). */
 export const APP_GLASS_CARD_CLASS =
   "app-glass-card motion-reduce:transition-none";
@@ -200,9 +207,21 @@ export const LANDING_LOGIN_CARD_CLASS = LANDING_AUTH_GLASS_CARD_CLASS;
 export const LANDING_GLASS_INPUT_CLASS =
   "landing-glass-input h-11 rounded-xl sm:h-12 focus-visible:ring-0";
 
+/** Register fields — compact height to avoid card scroll on auth aux pages. */
+export const REGISTER_LANDING_INPUT_CLASS =
+  "landing-glass-input h-10 rounded-xl focus-visible:ring-0";
+
 /** Landing auth primary CTA — glass pill (`.landing-glass-button`), aligned with inputs. */
 export const LANDING_AUTH_SUBMIT_BUTTON_CLASS =
   "h-12 w-full rounded-2xl font-semibold";
+
+/** Register CGU row — nudged right to align with input columns above. */
+export const REGISTER_LANDING_CGU_ROW_CLASS =
+  "mx-auto w-full max-w-md pl-4 sm:pl-5";
+
+/** Register submit — full-width glass CTA with readable disabled state. */
+export const REGISTER_LANDING_SUBMIT_BUTTON_CLASS =
+  "h-11 w-full rounded-2xl font-semibold disabled:opacity-100 disabled:border-white/15 disabled:bg-white/[0.03] disabled:text-muted-foreground/60";
 
 /** Google / secondary auth CTA on landing — same glass surface as submit. */
 export const LANDING_GLASS_BUTTON_CLASS = "landing-glass-button";

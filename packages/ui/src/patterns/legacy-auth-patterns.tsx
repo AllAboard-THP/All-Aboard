@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "../components/button";
 import { Checkbox } from "../components/checkbox";
+import { LegalCguButton } from "../components/legal-cgu-button";
 import {
   Card,
   CardContent,
@@ -274,6 +275,7 @@ export function OAuthOnboardingForm({
   submitting = false,
   errorMessage,
   onSubmit,
+  onCguClick,
 }: {
   labels?: LegacyLabels;
   className?: string;
@@ -283,7 +285,13 @@ export function OAuthOnboardingForm({
   submitting?: boolean;
   errorMessage?: string | null;
   onSubmit: (input: OAuthOnboardingSubmitInput) => void | Promise<void>;
+  onCguClick?: () => void;
 }) {
+  const handleCguClick =
+    onCguClick ??
+    (() => {
+      window.open("/legal/cgu", "_blank", "noopener,noreferrer");
+    });
   const [fullName, setFullName] = useState(initialFullName);
   const [educationLevel, setEducationLevel] = useState(initialEducationLevel);
   const [headline, setHeadline] = useState(initialHeadline);
@@ -336,15 +344,25 @@ export function OAuthOnboardingForm({
             />
           </div>
         </div>
-        <div className="flex items-start gap-2 rounded-lg">
+        <div className="flex items-start gap-2.5">
           <Checkbox
             id="onboarding-cgu"
             checked={acceptCgu}
             onCheckedChange={(checked) => setAcceptCgu(checked === true)}
+            className="mt-0.5 shrink-0 border-white/30 bg-white/5"
           />
-          <Label htmlFor="onboarding-cgu" className="text-sm leading-snug">
-            {labels.auth.acceptCgu}
-          </Label>
+          <label htmlFor="onboarding-cgu" className="cursor-pointer text-sm leading-snug">
+            <span className="text-muted-foreground">{labels.auth.acceptCguPrefix} </span>
+            <LegalCguButton
+              label={labels.auth.acceptCguTermsLink}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                handleCguClick();
+              }}
+              className="inline align-baseline font-normal"
+            />
+          </label>
         </div>
         {errorMessage ? (
           <p className="text-sm text-destructive">{errorMessage}</p>
