@@ -1,7 +1,7 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
-import type { ComponentType, ReactNode } from "react";
+import { Menu } from "lucide-react";
+import type { ComponentType, MouseEvent, ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { cn } from "../lib/utils";
@@ -48,6 +48,7 @@ export type AppSidebarLinkProps = {
   title?: string;
   "aria-current"?: "page";
   "aria-label"?: string;
+  onClick?: (event: MouseEvent<HTMLElement>) => void;
 };
 
 export type AppSidebarProps = {
@@ -64,10 +65,8 @@ export type AppSidebarProps = {
   onItemClick?: (id: string) => void;
   LinkComponent?: ComponentType<AppSidebarLinkProps>;
   className?: string;
-  /** Force expanded layout (mobile sheet). */
+  /** Force expanded layout (mobile sheet) — disables click-to-toggle. */
   forceExpanded?: boolean;
-  /** Hide collapse toggle (mobile sheet). */
-  hideToggle?: boolean;
 };
 
 function sectionLabel(labels: AppSidebarLabels, section: AppSidebarSection): string {
@@ -91,7 +90,6 @@ export function AppSidebar({
   LinkComponent,
   className,
   forceExpanded = false,
-  hideToggle = false,
 }: AppSidebarProps) {
   const sidebarContext = useAppSidebarOptional();
   const expanded = forceExpanded ? true : (expandedProp ?? sidebarContext?.expanded ?? true);
@@ -130,16 +128,19 @@ export function AppSidebar({
     });
   }, []);
 
-  const handleToggleExpand = useCallback(() => {
-    const next = !expanded;
-    onExpandedChange?.(next);
-    sidebarContext?.setExpanded(next);
-  }, [expanded, onExpandedChange, sidebarContext]);
-
   const flatItems = useMemo(
     () => sections.flatMap((section) => section.items),
     [sections],
   );
+
+  const handleShellClick = useCallback(() => {
+    if (forceExpanded) {
+      return;
+    }
+    const next = !expanded;
+    onExpandedChange?.(next);
+    sidebarContext?.setExpanded(next);
+  }, [expanded, forceExpanded, onExpandedChange, sidebarContext]);
 
   let staggerIndex = 0;
 
@@ -149,7 +150,7 @@ export function AppSidebar({
         APP_SHELL_SIDEBAR_CHROME_CLASS,
         APP_SIDEBAR_SHELL_CLASS,
         expanded ? "app-sidebar-shell--expanded" : "app-sidebar-shell--collapsed",
-        "hidden shrink-0 flex-col md:flex",
+        "app-sidebar-shell--click-toggle hidden shrink-0 flex-col md:flex",
         className,
       )}
       style={{
@@ -158,21 +159,8 @@ export function AppSidebar({
           : APP_SIDEBAR_WIDTH_COLLAPSED,
       }}
       data-sidebar-expanded={expanded ? "true" : "false"}
+      onClick={handleShellClick}
     >
-      {!hideToggle ? (
-        <div className={cn("flex shrink-0 border-b border-white/10 p-2", expanded ? "justify-end" : "justify-center")}>
-          <button
-            type="button"
-            className="dashboard-hover-link inline-flex size-9 items-center justify-center rounded-xl text-muted-foreground"
-            onClick={handleToggleExpand}
-            aria-expanded={expanded}
-            aria-label={expanded ? labels.collapseSidebar : labels.expandSidebar}
-          >
-            {expanded ? <ChevronLeft className="size-4" aria-hidden /> : <ChevronRight className="size-4" aria-hidden />}
-          </button>
-        </div>
-      ) : null}
-
       <nav
         className="flex min-h-0 flex-1 flex-col overflow-y-auto py-3"
         aria-label={labels.navigationGroup}
@@ -235,6 +223,8 @@ export function AppSidebar({
             onItemClick={onItemClick}
           />
         ) : null}
+
+        <div className="min-h-6 flex-1 shrink-0" aria-hidden />
       </nav>
     </aside>
   );

@@ -26,14 +26,12 @@ function AppSidebarLink({ href, className, children, ...rest }: AppSidebarLinkPr
 
 export function AppShellSidebarContent({
   forceExpanded = false,
-  hideToggle = false,
   className,
   messageCount = 0,
   showMentorDot = false,
   isAdmin = false,
 }: {
   forceExpanded?: boolean;
-  hideToggle?: boolean;
   className?: string;
   messageCount?: number;
   showMentorDot?: boolean;
@@ -130,7 +128,6 @@ export function AppShellSidebarContent({
       mentorDot={showMentorDot}
       LinkComponent={AppSidebarLink}
       forceExpanded={forceExpanded}
-      hideToggle={hideToggle}
       className={className}
     />
   );

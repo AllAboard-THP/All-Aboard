@@ -109,7 +109,7 @@ function AppShellLayoutInner({ children, brandName, year }: AppShellLayoutProps)
             <SheetHeader className="border-b border-white/10 px-4 py-3 text-left">
               <SheetTitle className="text-base">{t("openMenu")}</SheetTitle>
             </SheetHeader>
-            <AppShellSidebarContent forceExpanded hideToggle className="!flex h-[calc(100dvh-4rem)] border-0" />
+            <AppShellSidebarContent forceExpanded className="!flex h-[calc(100dvh-4rem)] border-0" />
           </SheetContent>
         </Sheet>
       ) : null}

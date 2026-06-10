@@ -11,7 +11,7 @@ import {
 } from "./pattern-story-frame";
 
 const meta = {
-  title: "Components/Auth",
+  title: "Patterns/Auth",
   parameters: patternStoryParameters,
   tags: ["autodocs"],
 } satisfies Meta;

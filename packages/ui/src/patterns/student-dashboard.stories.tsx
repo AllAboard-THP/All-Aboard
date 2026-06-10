@@ -13,7 +13,8 @@ import { StudentDashboardScreen } from "./student-dashboard-screen";
 import { patternStoryParameters } from "./pattern-story-frame";
 
 const meta = {
-  title: "Screens/StudentDashboard",
+  title: "Screens/UserDashboard",
+  id: "screens-userdashboard",
   component: StudentDashboardScreen,
   parameters: patternStoryParameters,
   tags: ["autodocs"],

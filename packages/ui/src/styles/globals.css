@@ -393,6 +393,17 @@
     transition: width var(--motion-duration-slow) ease-out;
   }
 
+  .app-sidebar-shell--click-toggle {
+    cursor: pointer;
+  }
+
+  .app-sidebar-shell--click-toggle .app-sidebar-nav-item,
+  .app-sidebar-shell--click-toggle .app-sidebar-drawer-section button,
+  .app-sidebar-shell--click-toggle .app-sidebar-context-panel a,
+  .app-sidebar-shell--click-toggle .app-sidebar-context-panel button {
+    cursor: pointer;
+  }
+
   .app-sidebar-drawer {
     display: grid;
     grid-template-rows: 0fr;

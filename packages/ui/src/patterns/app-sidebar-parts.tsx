@@ -2,7 +2,7 @@
 
 import type { LucideIcon } from "lucide-react";
 import { ChevronDown } from "lucide-react";
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType, ReactNode, MouseEvent } from "react";
 
 import { cn } from "../lib/utils";
 import type { AppSidebarLinkProps } from "./app-sidebar";
@@ -76,14 +76,26 @@ function ContextLink({
 
   if (link.href && LinkComponent) {
     return (
-      <LinkComponent href={link.href} className={className} aria-current={link.active ? "page" : undefined}>
+      <LinkComponent
+        href={link.href}
+        className={className}
+        aria-current={link.active ? "page" : undefined}
+        onClick={(event: MouseEvent) => event.stopPropagation()}
+      >
         {content}
       </LinkComponent>
     );
   }
 
   return (
-    <button type="button" className={className} onClick={() => onItemClick?.(link.id)}>
+    <button
+      type="button"
+      className={className}
+      onClick={(event) => {
+        event.stopPropagation();
+        onItemClick?.(link.id);
+      }}
+    >
       {content}
     </button>
   );
@@ -116,7 +128,10 @@ export function AppSidebarDrawerSection({
         type="button"
         className="dashboard-hover-link flex w-full items-center justify-between rounded-xl px-3 py-2 text-left"
         aria-expanded={open}
-        onClick={onToggle}
+        onClick={(event) => {
+          event.stopPropagation();
+          onToggle();
+        }}
       >
         <span className="landing-eyebrow">{label}</span>
         <ChevronDown
@@ -164,6 +179,12 @@ export function AppSidebarRailItem({
     item.active ? "dashboard-nav-active font-medium text-primary" : "text-muted-foreground",
   );
 
+  const stopToggleWhenExpanded = (event: MouseEvent) => {
+    if (expanded) {
+      event.stopPropagation();
+    }
+  };
+
   const content = (
     <>
       <span className="relative shrink-0">
@@ -198,6 +219,7 @@ export function AppSidebarRailItem({
         title={expanded ? undefined : item.label}
         aria-current={item.active ? "page" : undefined}
         aria-label={expanded ? undefined : item.label}
+        onClick={stopToggleWhenExpanded}
       >
         {content}
       </LinkComponent>
@@ -211,7 +233,10 @@ export function AppSidebarRailItem({
       style={style}
       title={expanded ? undefined : item.label}
       aria-label={expanded ? undefined : item.label}
-      onClick={() => onItemClick?.(item.id)}
+      onClick={(event) => {
+        stopToggleWhenExpanded(event);
+        onItemClick?.(item.id);
+      }}
     >
       {content}
     </button>

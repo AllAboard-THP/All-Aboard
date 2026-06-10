@@ -43,6 +43,26 @@ const preview: Preview = {
     themes: {
       disable: true,
     },
+    options: {
+      storySort: {
+        order: [
+          "Documentation",
+          ["Catalog", ["Patterns"]],
+          "Foundations",
+          "Components",
+          "Patterns",
+          "Screens",
+          ["Auth", "App", "UserDashboard", "MentorDashboard", "Admin", "Legal"],
+          "Mobile",
+          [
+            "Screens",
+            ["Auth", "App", "Dashboards", "Admin", "Legal"],
+            "BottomNav",
+          ],
+        ],
+        method: "alphabetical",
+      },
+    },
   },
   decorators: [
     withStorybookLocale,

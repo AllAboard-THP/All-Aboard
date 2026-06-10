@@ -26,10 +26,6 @@ import {
   AdminStatsGrid,
 } from "../legacy-admin-patterns";
 import {
-  RegisterForm,
-  RegisterHeroPanel,
-} from "../legacy-auth-patterns";
-import {
   EventsListWithFilters,
   EventsPageHeader,
 } from "../legacy-event-patterns";
@@ -60,6 +56,7 @@ import {
 import { LandingForgotPasswordBody } from "../landing-forgot-password-body";
 import { LandingHeroBody } from "../landing-hero-body";
 import { LandingPageShell } from "../landing-page-shell";
+import { LandingRegisterBody } from "../landing-register-body";
 import { SubjectCardGrid } from "../legacy-ui";
 import {
   ResourceCardList,
@@ -241,14 +238,9 @@ export function RegisterScreen() {
   const labels = useLegacyLabels();
 
   return (
-    <AppChrome showNav={false} showSidebar={false}>
-      <div className="auth-grid relative mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid min-h-[90vh] items-center gap-12 lg:grid-cols-2">
-          <RegisterHeroPanel labels={labels} />
-          <RegisterForm labels={labels} />
-        </div>
-      </div>
-    </AppChrome>
+    <LandingPageShell labels={labels} activeAction="signUp">
+      <LandingRegisterBody labels={labels} />
+    </LandingPageShell>
   );
 }
 

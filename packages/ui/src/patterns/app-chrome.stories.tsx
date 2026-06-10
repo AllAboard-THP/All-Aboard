@@ -9,7 +9,7 @@ import {
 } from "./pattern-story-frame";
 
 const meta = {
-  title: "Patterns/App Chrome",
+  title: "Patterns/AppChrome",
   parameters: patternStoryParameters,
   tags: ["autodocs"],
 } satisfies Meta;

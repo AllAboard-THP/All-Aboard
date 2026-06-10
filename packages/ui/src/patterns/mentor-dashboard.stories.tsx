@@ -14,6 +14,7 @@ import { patternStoryParameters } from "./pattern-story-frame";
 
 const meta = {
   title: "Screens/MentorDashboard",
+  id: "screens-mentordashboard",
   component: MentorDashboardScreen,
   parameters: patternStoryParameters,
   tags: ["autodocs"],

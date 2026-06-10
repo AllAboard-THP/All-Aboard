@@ -15,7 +15,7 @@ import {
 } from "./pattern-story-frame";
 
 const meta = {
-  title: "Patterns/Admin Extended",
+  title: "Patterns/AdminExtended",
   parameters: patternStoryParameters,
   tags: ["autodocs"],
 } satisfies Meta;

@@ -14,7 +14,7 @@ import {
 } from "./pattern-story-frame";
 
 const meta = {
-  title: "Patterns/Legacy Brand",
+  title: "Patterns/LegacyBrand",
   parameters: patternStoryParameters,
   decorators: [withPatternStoryFrame()],
   tags: ["autodocs"],

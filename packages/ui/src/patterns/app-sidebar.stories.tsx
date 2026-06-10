@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useEffect } from "react";
 
 import { AppSidebar } from "./app-sidebar";
-import { AppSidebarProvider } from "./app-sidebar-provider";
+import { AppSidebarProvider, useAppSidebar } from "./app-sidebar-provider";
 import {
   APP_SIDEBAR_ACTIVE_ID_PATH,
   buildAppSidebarSections,
@@ -15,7 +16,7 @@ import { patternStoryParameters } from "./pattern-story-frame";
 
 const labelMap = buildAppSidebarLabelMapFromDashboardLabels(studentDashboardLabelsFr);
 
-function SidebarDemo({
+function SidebarDemoInner({
   activeId = "feed",
   expanded = true,
   messageCount = 0,
@@ -28,6 +29,7 @@ function SidebarDemo({
   showMentorDot?: boolean;
   isAdmin?: boolean;
 }) {
+  const { setExpanded } = useAppSidebar();
   const pathname = APP_SIDEBAR_ACTIVE_ID_PATH[activeId ?? "feed"];
   const resolved = resolveAppSidebarContext(pathname, { isAdmin, labelMap });
   const sections = buildAppSidebarSections(labelMap, {
@@ -35,10 +37,13 @@ function SidebarDemo({
     showAdminSection: resolved.showAdminSection,
   });
 
+  useEffect(() => {
+    setExpanded(expanded);
+  }, [expanded, setExpanded]);
+
   return (
-    <AppSidebarProvider>
-      <div className="app-stage relative flex min-h-[32rem] md:min-h-[40rem]">
-        <AppSidebar
+    <div className="app-stage relative flex min-h-[32rem] md:min-h-[40rem]">
+      <AppSidebar
           labels={{
             navigationGroup: labelMap.navigationGroup,
             communityGroup: labelMap.communityGroup,
@@ -52,11 +57,17 @@ function SidebarDemo({
           openSectionIds={resolved.openSectionIds}
           badges={messageCount > 0 ? { messages: messageCount } : undefined}
           mentorDot={showMentorDot}
-          expanded={expanded}
           onItemClick={(id) => legacyDemoToast(id)}
           className="!flex"
-        />
-      </div>
+      />
+    </div>
+  );
+}
+
+function SidebarDemo(props: Parameters<typeof SidebarDemoInner>[0]) {
+  return (
+    <AppSidebarProvider>
+      <SidebarDemoInner {...props} />
     </AppSidebarProvider>
   );
 }
