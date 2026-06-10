@@ -443,7 +443,7 @@ export function AppFooter({
   ];
 
   return (
-    <footer className={cn("border-t border-white/5", className)}>
+    <footer className={className}>
       <div
         className={
           edgeToEdge

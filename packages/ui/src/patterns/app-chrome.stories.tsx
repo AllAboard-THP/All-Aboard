@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { useLegacyLabels } from "../i18n/storybook-locale";
+import { AppChromeFooter } from "./app-chrome-shell";
 import { LandingPublicHeader } from "./landing-public-header";
 import { AppFooter, AppNavBar, StatCard, UserMenu } from "./legacy-ui";
 import {
@@ -21,9 +22,9 @@ type Story = StoryObj<typeof meta>;
 function FooterStory() {
   const labels = useLegacyLabels();
   return (
-    <div className="w-full max-w-7xl px-4">
-      <AppFooter labels={labels} />
-    </div>
+    <AppChromeFooter className="w-full">
+      <AppFooter labels={labels} edgeToEdge />
+    </AppChromeFooter>
   );
 }
 
