@@ -278,11 +278,23 @@ export function RegisterScreen({
   );
 }
 
-export function ForgotPasswordScreen() {
+export function ForgotPasswordScreen({
+  onSignInClick,
+}: {
+  onSignInClick?: () => void;
+} = {}) {
   const labels = useLegacyLabels();
 
+  const handleSignIn =
+    onSignInClick ?? (() => legacyDemoToast(labels.auth.signIn));
+
   return (
-    <LandingPageShell labels={labels} activeAction="signIn">
+    <LandingPageShell
+      labels={labels}
+      background="app"
+      activeAction="signIn"
+      onSignInClick={handleSignIn}
+    >
       <LandingForgotPasswordBody labels={labels} />
     </LandingPageShell>
   );

@@ -219,6 +219,9 @@ export const LANDING_AUTH_SUBMIT_BUTTON_CLASS =
 export const REGISTER_LANDING_CGU_ROW_CLASS =
   "mx-auto w-full max-w-md pl-4 sm:pl-5";
 
+/** Auth landing field labels — slight inset for visual comfort above glass inputs. */
+export const AUTH_LANDING_LABEL_INSET_CLASS = "pl-3 sm:pl-4";
+
 /** Register submit — full-width glass CTA with readable disabled state. */
 export const REGISTER_LANDING_SUBMIT_BUTTON_CLASS =
   "h-11 w-full rounded-2xl font-semibold disabled:opacity-100 disabled:border-white/15 disabled:bg-white/[0.03] disabled:text-muted-foreground/60";

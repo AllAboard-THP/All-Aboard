@@ -24,6 +24,11 @@ import {
   LANDING_GLASS_INPUT_CLASS,
   LANDING_LOGIN_CARD_CLASS,
   LANDING_LOGIN_CARD_LAYOUT_CLASS,
+  REGISTER_LANDING_CARD_LAYOUT_CLASS,
+  REGISTER_LANDING_CARD_WIDTH_CLASS,
+  REGISTER_LANDING_INPUT_CLASS,
+  REGISTER_LANDING_SUBMIT_BUTTON_CLASS,
+  AUTH_LANDING_LABEL_INSET_CLASS,
 } from "./landing-layout";
 import {
   BrandLogo,
@@ -197,8 +202,8 @@ export function ForgotPasswordForm({
       className={cn(
         isLanding
           ? cn(
-              LANDING_LOGIN_CARD_LAYOUT_CLASS,
-              LANDING_AUTH_CARD_WIDTH_CLASS,
+              REGISTER_LANDING_CARD_LAYOUT_CLASS,
+              REGISTER_LANDING_CARD_WIDTH_CLASS,
               LANDING_LOGIN_CARD_CLASS,
             )
           : "w-full rounded-[2rem] p-8 md:p-10",
@@ -208,53 +213,79 @@ export function ForgotPasswordForm({
       <CardHeader
         className={cn(
           "px-0 pb-0",
-          isLanding && "shrink-0 space-y-1 text-center sm:text-left",
+          isLanding ? "shrink-0 space-y-1 text-center" : undefined,
         )}
       >
-        <CardTitle className={isLanding ? "text-2xl sm:text-3xl" : "text-3xl"}>
+        <CardTitle
+          className={cn(
+            isLanding ? "text-xl sm:text-2xl" : "text-3xl",
+            isLanding && "text-center",
+          )}
+        >
           {labels.auth.forgotTitle}
         </CardTitle>
-        <p className="text-muted-foreground">{labels.auth.forgotSubtitle}</p>
+        <p
+          className={cn(
+            "text-muted-foreground",
+            isLanding && "text-center text-sm",
+          )}
+        >
+          {labels.auth.forgotSubtitle}
+        </p>
       </CardHeader>
       <CardContent
         className={cn(
-          "flex flex-col gap-5 px-0",
-          isLanding ? undefined : "pt-6",
+          "flex flex-col px-0",
+          isLanding ? "gap-3 sm:gap-4" : "gap-5 pt-6",
         )}
       >
         <div className="flex flex-col gap-2">
-          <Label htmlFor="forgot-email">{labels.auth.email}</Label>
+          <Label
+            htmlFor="forgot-email"
+            className={isLanding ? AUTH_LANDING_LABEL_INSET_CLASS : undefined}
+          >
+            {labels.auth.email}
+          </Label>
           <Input
             id="forgot-email"
             type="email"
             className={
               isLanding
-                ? LANDING_GLASS_INPUT_CLASS
+                ? REGISTER_LANDING_INPUT_CLASS
                 : "rounded-xl border-white/10 bg-white/5"
             }
           />
         </div>
-      </CardContent>
-      <CardFooter
-        className={cn("flex-col px-0", isLanding ? "shrink-0 gap-3 pt-0" : "gap-4")}
-      >
-        <Button
-          variant={isLanding ? "landingSubmit" : "default"}
-          className={isLanding ? LANDING_AUTH_SUBMIT_BUTTON_CLASS : "w-full rounded-xl"}
-          onClick={() => legacyDemoToast(labels.auth.forgotSubmit)}
-        >
-          {labels.auth.forgotSubmit}
-        </Button>
-        <p className="text-center text-sm text-muted-foreground">
-          <button
-            type="button"
-            className="text-primary hover:underline"
-            onClick={() => legacyDemoToast(labels.auth.signIn)}
+        {isLanding ? (
+          <Button
+            variant="landingSubmit"
+            className={REGISTER_LANDING_SUBMIT_BUTTON_CLASS}
+            onClick={() => legacyDemoToast(labels.auth.forgotSubmit)}
           >
-            {labels.auth.signIn}
-          </button>
-        </p>
-      </CardFooter>
+            {labels.auth.forgotSubmit}
+          </Button>
+        ) : null}
+      </CardContent>
+      {!isLanding ? (
+        <CardFooter className="flex-col gap-4 px-0">
+          <Button
+            variant="default"
+            className="w-full rounded-xl"
+            onClick={() => legacyDemoToast(labels.auth.forgotSubmit)}
+          >
+            {labels.auth.forgotSubmit}
+          </Button>
+          <p className="text-center text-sm text-muted-foreground">
+            <button
+              type="button"
+              className="text-primary hover:underline"
+              onClick={() => legacyDemoToast(labels.auth.signIn)}
+            >
+              {labels.auth.signIn}
+            </button>
+          </p>
+        </CardFooter>
+      ) : null}
     </Card>
   );
 }

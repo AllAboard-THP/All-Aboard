@@ -325,7 +325,7 @@ export const legacyLabelsFr: LegacyLabels = {
     forgotTitle: "Mot de passe oublié ?",
     forgotSubtitle:
       "Entrez votre email pour recevoir les instructions de réinitialisation.",
-    forgotSubmit: "Envoyer les instructions",
+    forgotSubmit: "Réinitialiser mon mot de passe",
     continueWithGoogle: "Continuer avec Google",
     orContinueWithEmail: "ou",
     oauthError: "La connexion Google a échoué. Réessayez.",
@@ -592,7 +592,7 @@ export const legacyLabelsEn: LegacyLabels = {
     signIn: "Sign in",
     forgotTitle: "Forgot your password?",
     forgotSubtitle: "Enter your email to receive reset instructions.",
-    forgotSubmit: "Send instructions",
+    forgotSubmit: "Reset my password",
     continueWithGoogle: "Continue with Google",
     orContinueWithEmail: "or",
     oauthError: "Google sign-in failed. Please try again.",
