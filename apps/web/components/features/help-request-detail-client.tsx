@@ -20,6 +20,11 @@ import {
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
 import { Textarea } from "@allaboard/ui/components/textarea";
+import {
+  ApiRequestError,
+  mapApiError,
+  throwFromApiResponse,
+} from "@/lib/map-api-error";
 
 type Props = {
   requestId: string;
@@ -62,7 +67,7 @@ async function loginAndRespond(input: {
   });
   if (!loginRes.ok) {
     const text = await loginRes.text();
-    throw new Error(loginRes.status === 401 ? "invalid_credentials" : text);
+    throwFromApiResponse(loginRes.status, text);
   }
 
   const createRes = await fetch(
@@ -76,7 +81,7 @@ async function loginAndRespond(input: {
   );
   const createText = await createRes.text();
   if (!createRes.ok) {
-    throw new Error(createText || `Erreur ${createRes.status}`);
+    throwFromApiResponse(createRes.status, createText);
   }
   return JSON.parse(createText) as CreateResponseResponse;
 }
@@ -84,6 +89,7 @@ async function loginAndRespond(input: {
 export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
   const t = useTranslations("helpRequest");
   const tForm = useTranslations("helpForm");
+  const tErrors = useTranslations("errors");
   const tCommon = useTranslations("common");
   const queryClient = useQueryClient();
   const [email, setEmail] = useState("alice@dev.local");
@@ -135,9 +141,14 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
   }
 
   const errorMessage =
-    mutation.error?.message === "invalid_credentials"
-      ? tForm("invalidCredentials")
-      : (mutation.error?.message ?? null);
+    mutation.error instanceof ApiRequestError
+      ? tErrors(
+          mapApiError({
+            status: mutation.error.status,
+            body: { error: mutation.error.code },
+          }),
+        )
+      : null;
 
   return (
     <>
