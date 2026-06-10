@@ -24,7 +24,7 @@ const buttonVariants = cva(
         landingHeaderOutline:
           "border border-white/25 bg-transparent text-white shadow-none hover:bg-white/10 hover:text-white focus-visible:ring-white/30 dark:border-white/25 dark:bg-transparent dark:hover:bg-white/10 dark:hover:text-white",
         landingSubmit:
-          "border border-white/20 bg-slate-50 text-slate-900 shadow-[0_6px_24px_rgb(0_0_0/0.18)] hover:bg-white hover:text-slate-900 hover:shadow-[0_8px_28px_rgb(0_0_0/0.22)] focus-visible:ring-white/30 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-white dark:hover:text-slate-900",
+          "landing-glass-button focus-visible:ring-white/30",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

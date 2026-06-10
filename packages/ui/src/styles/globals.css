@@ -616,6 +616,30 @@
     outline: none;
   }
 
+  /** Landing auth CTAs — glass pills (login, register, Google), not solid white. */
+  .landing-glass-button {
+    border: 1px solid rgb(255 255 255 / 0.2);
+    background: rgb(255 255 255 / 0.05);
+    color: hsl(var(--foreground));
+    box-shadow: none;
+    transition:
+      border-color 200ms ease-out,
+      background-color 200ms ease-out,
+      color 200ms ease-out;
+  }
+
+  .landing-glass-button:hover {
+    border-color: rgb(255 255 255 / 0.28);
+    background: rgb(255 255 255 / 0.1);
+    color: hsl(var(--foreground));
+  }
+
+  .landing-glass-button:focus-visible {
+    outline: none;
+    border-color: rgb(255 255 255 / 0.32);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.14);
+  }
+
   /** Landing hero copy — subtle hover zoom, no outer glow; arrow cursor (not text I-beam). */
   .landing-hero-hover-zoom {
     cursor: default;

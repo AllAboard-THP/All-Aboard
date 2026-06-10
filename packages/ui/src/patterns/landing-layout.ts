@@ -200,9 +200,12 @@ export const LANDING_LOGIN_CARD_CLASS = LANDING_AUTH_GLASS_CARD_CLASS;
 export const LANDING_GLASS_INPUT_CLASS =
   "landing-glass-input h-11 rounded-xl sm:h-12 focus-visible:ring-0";
 
-/** Landing auth primary CTA — editorial white pill (`Button` variant `landingSubmit`). */
+/** Landing auth primary CTA — glass pill (`.landing-glass-button`), aligned with inputs. */
 export const LANDING_AUTH_SUBMIT_BUTTON_CLASS =
   "h-12 w-full rounded-2xl font-semibold";
+
+/** Google / secondary auth CTA on landing — same glass surface as submit. */
+export const LANDING_GLASS_BUTTON_CLASS = "landing-glass-button";
 
 /** Collapsible feed thread inside unified post card — see globals.css `.feed-thread-panel`. */
 export const FEED_POST_THREAD_PANEL_CLASS = "feed-thread-panel";

@@ -9,7 +9,7 @@ type GoogleSignInButtonProps = {
   className?: string;
 };
 
-/** Branded button aligned with Google Identity guidelines (light theme). */
+/** Branded Google CTA — landing glass pill (not solid white). */
 export function GoogleSignInButton({
   label,
   onClick,
@@ -22,7 +22,7 @@ export function GoogleSignInButton({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "inline-flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white px-4 text-sm font-medium text-[#1f1f1f] shadow-sm transition-colors hover:bg-[#f8f9fa] disabled:cursor-not-allowed disabled:opacity-60",
+        "landing-glass-button inline-flex h-12 w-full items-center justify-center gap-3 rounded-2xl px-4 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60",
         className,
       )}
     >
