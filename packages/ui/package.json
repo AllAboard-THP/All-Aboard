@@ -22,6 +22,7 @@
     "./patterns/screens/legacy-screens": "./src/patterns/screens/legacy-screens.tsx",
     "./patterns/*": "./src/patterns/*.tsx",
     "./patterns/student-dashboard-labels": "./src/patterns/student-dashboard-labels.ts",
+    "./patterns/mentor-dashboard-labels": "./src/patterns/mentor-dashboard-labels.ts",
     "./patterns/app-sidebar-nav": "./src/patterns/app-sidebar-nav.ts",
     "./patterns/fixtures/*": "./src/patterns/fixtures/*.ts"
   },

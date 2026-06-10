@@ -77,6 +77,8 @@ import {
 import { legacyDemoToast } from "../legacy-story-feedback";
 import { GraduationCap } from "lucide-react";
 
+import { MentorDashboardScreen as MentorDashboardPage } from "../mentor-dashboard-screen";
+
 export function LandingLoginScreen({
   onForgotPasswordClick,
   onSignUpClick,
@@ -302,28 +304,29 @@ export function LegalMentionsScreen() {
 export function MentorDashboardScreen({
   mobileChrome = false,
 }: { mobileChrome?: boolean } = {}) {
-  const labels = useLegacyLabels();
-  const fixture = useLegacyMentorDashboard();
+  if (mobileChrome) {
+    const labels = useLegacyLabels();
+    const fixture = useLegacyMentorDashboard();
 
-  return (
-    <AppChrome activeLink="feed" isAdmin isMentor showMentorDot mobileChrome={mobileChrome} sidebarActiveId="mentor">
-      <div className="mx-auto max-w-4xl animate-fade-in">
-        <div className="mb-8">
-          <h1 className="mb-1 flex items-center gap-3 text-3xl font-bold">
-            <GraduationCap className="size-7 text-emerald-400" />
-            {labels.mentor.title}
-          </h1>
-          <p className="text-muted-foreground">{labels.mentor.subtitle}</p>
+    return (
+      <AppChrome activeLink="feed" isAdmin isMentor showMentorDot mobileChrome sidebarActiveId="mentor">
+        <div className="mx-auto max-w-4xl animate-fade-in">
+          <div className="mb-8">
+            <h1 className="mb-1 flex items-center gap-3 text-3xl font-bold">
+              <GraduationCap className="size-7 text-emerald-400" />
+              {labels.mentor.title}
+            </h1>
+            <p className="text-muted-foreground">{labels.mentor.subtitle}</p>
+          </div>
+          <MentorStatsGrid fixture={fixture} labels={labels} className="mb-8" />
+          <MentorHelpPanel posts={fixture.helpPosts} labels={labels} />
+          <MentorValidationPanel resources={fixture.pendingResources} labels={labels} />
         </div>
-        <MentorStatsGrid fixture={fixture} labels={labels} className="mb-8" />
-        <MentorHelpPanel posts={fixture.helpPosts} labels={labels} />
-        <MentorValidationPanel
-          resources={fixture.pendingResources}
-          labels={labels}
-        />
-      </div>
-    </AppChrome>
-  );
+      </AppChrome>
+    );
+  }
+
+  return <MentorDashboardPage />;
 }
 
 export function AdminModerationScreen({

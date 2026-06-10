@@ -6,8 +6,6 @@ import {
   ArrowRight,
   Compass,
   Library,
-  LogOut,
-  Settings,
   Sparkles,
   Users,
   Zap,
@@ -38,6 +36,7 @@ import {
   AppChromeHeader,
 } from "./app-chrome-shell";
 import { AppChromeSidebar } from "./app-chrome-sidebar";
+import { AppChromeUserMenu } from "./app-chrome-user-menu";
 import { AppSidebarProvider } from "./app-sidebar-provider";
 import {
   APP_CHROME_HEADER_SIDEBAR_GRID_CLASS,
@@ -87,56 +86,14 @@ function StatCard({
   );
 }
 
-function StudentDashboardProfileMenu({
-  labels,
-  fixture,
-  onDemoClick,
-}: {
-  labels: StudentDashboardLabels;
-  fixture: StudentDashboardFixture;
-  onDemoClick: () => void;
-}) {
-  return (
-    <div className="dashboard-inner-card flex max-w-[min(100%,18rem)] items-center gap-3 !p-2 sm:!p-3">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/35 to-pink-500/20 text-sm font-semibold ring-1 ring-white/15 sm:size-10">
-        {fixture.initials}
-      </div>
-      <div className="hidden min-w-0 flex-1 sm:block">
-        <p className="truncate text-sm font-semibold">{fixture.fullName}</p>
-        <p className="text-xs text-muted-foreground">{labels.sidebar.profile}</p>
-      </div>
-      <div className="flex shrink-0 gap-0.5 sm:gap-1">
-        <button
-          type="button"
-          onClick={onDemoClick}
-          className="dashboard-hover-link rounded-lg p-2 text-muted-foreground"
-          aria-label={labels.sidebar.settings}
-        >
-          <Settings className="size-4" />
-        </button>
-        <button
-          type="button"
-          onClick={onDemoClick}
-          className="dashboard-hover-link rounded-lg p-2 text-muted-foreground"
-          aria-label={labels.sidebar.signOut}
-        >
-          <LogOut className="size-4" />
-        </button>
-      </div>
-    </div>
-  );
-}
-
 function StudentDashboardTopHeader({
   labels,
   fixture,
   headerEnd,
-  onDemoClick,
 }: {
   labels: StudentDashboardLabels;
   fixture: StudentDashboardFixture;
   headerEnd?: ReactNode;
-  onDemoClick: () => void;
 }) {
   return (
     <AppChromeHeader
@@ -151,10 +108,9 @@ function StudentDashboardTopHeader({
       </div>
       <div className="flex min-h-[4.25rem] flex-wrap items-center justify-end gap-2 px-3 sm:min-h-[4.75rem] sm:gap-3 sm:px-4 md:px-6 lg:px-8">
         {headerEnd}
-        <StudentDashboardProfileMenu
-          labels={labels}
-          fixture={fixture}
-          onDemoClick={onDemoClick}
+        <AppChromeUserMenu
+          userName={fixture.fullName}
+          userInitials={fixture.initials}
         />
       </div>
     </AppChromeHeader>
@@ -471,7 +427,6 @@ export function StudentDashboardScreen({
           labels={labels}
           fixture={fixture}
           headerEnd={headerEnd}
-          onDemoClick={handleDemoClick}
         />
 
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">

@@ -169,6 +169,42 @@
       "demoToast": "Démo — fonctionnalité à venir"
     }
   },
+  "mentorDashboard": {
+    "brandName": "All-Aboard",
+    "chrome": {
+      "footerRights": "© {year} All-Aboard — Tous droits réservés",
+      "footerCgu": "CGU",
+      "footerPrivacy": "Confidentialité",
+      "footerLegal": "Mentions légales"
+    },
+    "header": {
+      "greetingPrefix": "Bonjour",
+      "greetingSuffix": " !",
+      "subtitle": "Valide les ressources soumises et réponds aux demandes d'aide dans tes domaines.",
+      "statPublished": "Ressources publiées",
+      "statPending": "Ressources à valider",
+      "statHelp": "Demandes d'aide"
+    },
+    "mentor": {
+      "title": "Mon espace Mentor",
+      "subtitle": "Validez les ressources soumises par la communauté dans vos domaines de compétence.",
+      "statsPublished": "Ressources publiées",
+      "statsPending": "Ressources à valider",
+      "statsHelp": "Demandes d'aide",
+      "actionRequired": "Action requise",
+      "helpPanelTitle": "Demandes d'aide",
+      "helpEmpty": "Aucune demande d'aide pour le moment.",
+      "helpCta": "Aider",
+      "validationPanelTitle": "Ressources à valider",
+      "approve": "Approuver",
+      "reject": "Refuser",
+      "validationEmpty": "Aucune ressource en attente dans tes domaines de compétence.",
+      "submittedPrefix": "Soumise"
+    },
+    "panels": {
+      "demoToast": "Démo — fonctionnalité à venir"
+    }
+  },
   "mentor": {
     "loginRequiredTitle": "Connexion requise",
     "loginRequiredDescription": "Connectez-vous via <link></link> pour accéder au dashboard mentor.",

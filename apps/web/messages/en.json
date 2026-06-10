@@ -169,6 +169,42 @@
       "demoToast": "Demo — feature coming soon"
     }
   },
+  "mentorDashboard": {
+    "brandName": "All-Aboard",
+    "chrome": {
+      "footerRights": "© {year} All-Aboard — All rights reserved",
+      "footerCgu": "Terms",
+      "footerPrivacy": "Privacy",
+      "footerLegal": "Legal notice"
+    },
+    "header": {
+      "greetingPrefix": "Hello",
+      "greetingSuffix": "!",
+      "subtitle": "Review submitted resources and respond to help requests in your areas.",
+      "statPublished": "Published resources",
+      "statPending": "Resources to review",
+      "statHelp": "Help requests"
+    },
+    "mentor": {
+      "title": "My Mentor space",
+      "subtitle": "Review resources submitted by the community in your areas of expertise.",
+      "statsPublished": "Published resources",
+      "statsPending": "Resources to review",
+      "statsHelp": "Help requests",
+      "actionRequired": "Action required",
+      "helpPanelTitle": "Help requests",
+      "helpEmpty": "No help requests at the moment.",
+      "helpCta": "Help",
+      "validationPanelTitle": "Resources to review",
+      "approve": "Approve",
+      "reject": "Reject",
+      "validationEmpty": "No pending resources in your areas of expertise.",
+      "submittedPrefix": "Submitted"
+    },
+    "panels": {
+      "demoToast": "Demo — feature coming soon"
+    }
+  },
   "mentor": {
     "loginRequiredTitle": "Sign-in required",
     "loginRequiredDescription": "Sign in via <link></link> to access the mentor dashboard.",

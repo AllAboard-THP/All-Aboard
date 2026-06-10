@@ -24,10 +24,11 @@ import {
 } from "@allaboard/ui/components/sheet";
 import { AllAboardLogoMark } from "@allaboard/ui/components/allaboard-logo-mark";
 import { cn } from "@allaboard/ui/lib/utils";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { AppShellSidebarContent } from "@/components/features/app-shell-sidebar";
 import { LocaleSwitcher } from "@/components/features/locale-switcher";
+import { AppChromeUserMenu } from "@allaboard/ui/patterns/app-chrome-user-menu";
 import { shouldShowAppSidebar } from "@/lib/app-shell-sidebar";
 import { Link, usePathname } from "@/i18n/navigation";
 
@@ -42,6 +43,7 @@ function AppShellLayoutInner({ children, brandName, year }: AppShellLayoutProps)
   const showSidebar = shouldShowAppSidebar(pathname);
   const { mobileOpen, setMobileOpen } = useAppSidebar();
   const t = useTranslations("studentDashboard.sidebar");
+  const locale = useLocale();
 
   return (
     <div className={cn(APP_STAGE_CLASS, "relative flex min-h-[100dvh] flex-col text-foreground")}>
@@ -66,6 +68,7 @@ function AppShellLayoutInner({ children, brandName, year }: AppShellLayoutProps)
             </div>
             <div className="flex min-h-[4.25rem] flex-wrap items-center justify-end gap-2 px-3 sm:min-h-[4.75rem] sm:gap-3 sm:px-4 md:px-6 lg:px-8">
               <LocaleSwitcher />
+              <AppChromeUserMenu locale={locale === "en" ? "en" : "fr"} />
             </div>
           </>
         ) : (

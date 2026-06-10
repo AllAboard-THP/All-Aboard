@@ -43,8 +43,8 @@ export type StudentDashboardFixture = {
 
 export const studentDashboardFixtureFr: StudentDashboardFixture = {
   firstName: "Inès",
-  fullName: "Inès P.",
-  initials: "IP",
+  fullName: "Inès Martin",
+  initials: "AA",
   dateLabel: "9 juin 2026",
   postsCount: 7,
   repliesCount: 19,
@@ -103,8 +103,8 @@ export const studentDashboardFixtureFr: StudentDashboardFixture = {
 
 export const studentDashboardFixtureEn: StudentDashboardFixture = {
   firstName: "Inès",
-  fullName: "Inès P.",
-  initials: "IP",
+  fullName: "Inès Martin",
+  initials: "AA",
   dateLabel: "June 9, 2026",
   postsCount: 7,
   repliesCount: 19,

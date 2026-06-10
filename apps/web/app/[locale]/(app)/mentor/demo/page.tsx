@@ -1,10 +1,6 @@
-"use client";
+import { MentorDashboardDemo } from "@/components/features/mentor-dashboard-demo";
 
-import { MentorDashboardScreen } from "@allaboard/ui/patterns/screens/legacy-screens";
-
-import { LegacyScreenPage } from "@/components/features/legacy-screen-page";
-
-/** Storybook mentor dashboard — mock data. */
-export default function MentorDemoPage() {
-  return <LegacyScreenPage screen={MentorDashboardScreen} />;
+/** Mentor dashboard demo — chrome from AppShell sidebar + header. */
+export default function MentorDashboardDemoPage() {
+  return <MentorDashboardDemo />;
 }
