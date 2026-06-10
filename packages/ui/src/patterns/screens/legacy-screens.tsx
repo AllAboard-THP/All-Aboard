@@ -254,7 +254,7 @@ export function ForgotPasswordScreen() {
   const labels = useLegacyLabels();
 
   return (
-    <LandingPageShell labels={labels} activeAction="signIn" background="app">
+    <LandingPageShell labels={labels} activeAction="signIn">
       <LandingForgotPasswordBody labels={labels} />
     </LandingPageShell>
   );

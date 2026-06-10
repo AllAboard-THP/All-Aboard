@@ -29,7 +29,9 @@ describe("app-shell-sidebar", () => {
   it("marks feed and dashboard items active", () => {
     expect(isAppSidebarItemActive("/feed", "/feed")).toBe(true);
     expect(isAppSidebarItemActive("/requests/abc", "/feed")).toBe(true);
+    expect(isAppSidebarItemActive("/help/new", "/feed")).toBe(true);
     expect(isAppSidebarItemActive("/dashboard/demo", "/dashboard/demo")).toBe(true);
+    expect(isAppSidebarItemActive("/admin/users", "/admin")).toBe(true);
     expect(isAppSidebarItemActive("/profile", "/feed")).toBe(false);
   });
 });

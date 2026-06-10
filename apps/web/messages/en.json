@@ -83,6 +83,11 @@
     "sidebar": {
       "navigationGroup": "Navigation",
       "communityGroup": "Community",
+      "adminGroup": "Administration",
+      "expandSidebar": "Expand sidebar",
+      "collapseSidebar": "Collapse sidebar",
+      "openMenu": "Navigation menu",
+      "closeMenu": "Close menu",
       "dashboard": "My dashboard",
       "subjects": "Subjects",
       "resources": "Resources",
@@ -91,8 +96,54 @@
       "messages": "Messages",
       "mentor": "Mentor space",
       "profile": "My profile",
+      "admin": "Administration",
       "settings": "Settings",
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "context": {
+        "dashboard": {
+          "title": "Your space",
+          "description": "Track progress and open requests.",
+          "demo": "Demo dashboard"
+        },
+        "subjects": {
+          "title": "Subjects",
+          "explore": "Explore subjects"
+        },
+        "resources": {
+          "title": "Resources",
+          "all": "All resources"
+        },
+        "events": {
+          "title": "Events",
+          "all": "Full calendar"
+        },
+        "feed": {
+          "title": "Peer help",
+          "description": "Post a request or browse the feed.",
+          "newRequest": "New request",
+          "backToFeed": "Back to feed"
+        },
+        "messages": {
+          "title": "Messages",
+          "inbox": "Inbox"
+        },
+        "mentor": {
+          "title": "Mentoring",
+          "space": "Mentor space",
+          "demo": "Mentor demo dashboard"
+        },
+        "profile": {
+          "title": "Profile",
+          "view": "View my profile"
+        },
+        "admin": {
+          "title": "Administration",
+          "description": "Moderation and account management.",
+          "overview": "Overview",
+          "users": "Users",
+          "moderation": "Moderation"
+        }
+      }
     },
     "header": {
       "greetingPrefix": "Hello",

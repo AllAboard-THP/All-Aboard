@@ -37,6 +37,8 @@ Les versions **header / footer verre** (`landing-shell-chrome`, brand agrandi, f
 
 **Composant canonique** : `AppSidebar` (`packages/ui/src/patterns/app-sidebar.tsx`) via `AppShellSidebar` (`apps/web/components/features/app-shell-sidebar.tsx`).
 
+**Drawer** : rail repliable + sections accordéon + panneau contextuel par route (`resolveAppSidebarContext` dans `app-sidebar-nav.ts`). Largeur header synchronisée via `APP_SIDEBAR_GRID_CLASS` et `--app-sidebar-width`.
+
 ## Nouvelle page — checklist agent
 
 1. **Produit authentifié** → fichier sous `(app)/` ; le layout parent injecte `AppShell` + sidebar — **ne pas** recréer la sidebar dans la page.

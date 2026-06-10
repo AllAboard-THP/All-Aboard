@@ -9,6 +9,11 @@ export type StudentDashboardLabels = {
   sidebar: {
     navigationGroup: string;
     communityGroup: string;
+    adminGroup: string;
+    expandSidebar: string;
+    collapseSidebar: string;
+    openMenu: string;
+    closeMenu: string;
     dashboard: string;
     subjects: string;
     resources: string;
@@ -17,8 +22,26 @@ export type StudentDashboardLabels = {
     messages: string;
     mentor: string;
     profile: string;
+    admin: string;
     settings: string;
     signOut: string;
+    context: {
+      dashboard: { title: string; description: string; demo: string };
+      subjects: { title: string; explore: string };
+      resources: { title: string; all: string };
+      events: { title: string; all: string };
+      feed: { title: string; description: string; newRequest: string; backToFeed: string };
+      messages: { title: string; inbox: string };
+      mentor: { title: string; space: string; demo: string };
+      profile: { title: string; view: string };
+      admin: {
+        title: string;
+        description: string;
+        overview: string;
+        users: string;
+        moderation: string;
+      };
+    };
   };
   header: {
     greetingPrefix: string;
@@ -56,6 +79,11 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
   sidebar: {
     navigationGroup: "Navigation",
     communityGroup: "Communauté",
+    adminGroup: "Administration",
+    expandSidebar: "Déplier la barre latérale",
+    collapseSidebar: "Replier la barre latérale",
+    openMenu: "Menu de navigation",
+    closeMenu: "Fermer le menu",
     dashboard: "Mon dashboard",
     subjects: "Matières",
     resources: "Ressources",
@@ -64,8 +92,39 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
     messages: "Messages",
     mentor: "Espace mentor",
     profile: "Mon profil",
+    admin: "Administration",
     settings: "Paramètres",
     signOut: "Déconnexion",
+    context: {
+      dashboard: {
+        title: "Ton espace",
+        description: "Suivi de progression et demandes en cours.",
+        demo: "Dashboard démo",
+      },
+      subjects: { title: "Matières", explore: "Explorer les matières" },
+      resources: { title: "Ressources", all: "Toutes les ressources" },
+      events: { title: "Événements", all: "Agenda complet" },
+      feed: {
+        title: "Entraide",
+        description: "Publie une demande ou retrouve le fil.",
+        newRequest: "Nouvelle demande",
+        backToFeed: "Retour au fil",
+      },
+      messages: { title: "Messages", inbox: "Boîte de réception" },
+      mentor: {
+        title: "Mentorat",
+        space: "Espace mentor",
+        demo: "Dashboard mentor démo",
+      },
+      profile: { title: "Profil", view: "Voir mon profil" },
+      admin: {
+        title: "Administration",
+        description: "Modération et gestion des comptes.",
+        overview: "Vue d'ensemble",
+        users: "Utilisateurs",
+        moderation: "Modération",
+      },
+    },
   },
   header: {
     greetingPrefix: "Bonjour",
@@ -103,6 +162,11 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
   sidebar: {
     navigationGroup: "Navigation",
     communityGroup: "Community",
+    adminGroup: "Administration",
+    expandSidebar: "Expand sidebar",
+    collapseSidebar: "Collapse sidebar",
+    openMenu: "Navigation menu",
+    closeMenu: "Close menu",
     dashboard: "My dashboard",
     subjects: "Subjects",
     resources: "Resources",
@@ -111,8 +175,39 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
     messages: "Messages",
     mentor: "Mentor space",
     profile: "My profile",
+    admin: "Administration",
     settings: "Settings",
     signOut: "Sign out",
+    context: {
+      dashboard: {
+        title: "Your space",
+        description: "Track progress and open requests.",
+        demo: "Demo dashboard",
+      },
+      subjects: { title: "Subjects", explore: "Explore subjects" },
+      resources: { title: "Resources", all: "All resources" },
+      events: { title: "Events", all: "Full calendar" },
+      feed: {
+        title: "Peer help",
+        description: "Post a request or browse the feed.",
+        newRequest: "New request",
+        backToFeed: "Back to feed",
+      },
+      messages: { title: "Messages", inbox: "Inbox" },
+      mentor: {
+        title: "Mentoring",
+        space: "Mentor space",
+        demo: "Mentor demo dashboard",
+      },
+      profile: { title: "Profile", view: "View my profile" },
+      admin: {
+        title: "Administration",
+        description: "Moderation and account management.",
+        overview: "Overview",
+        users: "Users",
+        moderation: "Moderation",
+      },
+    },
   },
   header: {
     greetingPrefix: "Hello",

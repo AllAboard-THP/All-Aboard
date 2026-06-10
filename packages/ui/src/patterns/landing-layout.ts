@@ -27,6 +27,25 @@ export const APP_SHELL_FOOTER_CHROME_CLASS = `landing-shell-chrome landing-shell
 /** Shared sidebar glass — same surface, right-edge separator on desktop. */
 export const APP_SHELL_SIDEBAR_CHROME_CLASS = `landing-shell-chrome landing-shell-chrome--sidebar ${LANDING_SHELL_GLASS_MOTION_CLASS}`;
 
+/** Collapsed rail width (icon-only). */
+export const APP_SIDEBAR_WIDTH_COLLAPSED = "4rem";
+
+/** Expanded drawer width — primary navigation + context panel. */
+export const APP_SIDEBAR_WIDTH_EXPANDED = "18rem";
+
+/** Header grid column synced with `--app-sidebar-width` (set by AppSidebarProvider). */
+export const APP_SIDEBAR_GRID_CLASS = "md:grid-cols-[var(--app-sidebar-width)_minmax(0,1fr)]";
+
+/**
+ * Header grid when sidebar is present — leading column grows with brand (logo + wordmark)
+ * even if the sidebar rail is collapsed to icon width.
+ */
+export const APP_CHROME_HEADER_SIDEBAR_GRID_CLASS =
+  "md:grid-cols-[minmax(var(--app-sidebar-width),max-content)_minmax(0,1fr)]";
+
+/** Sidebar shell width transition — see `.app-sidebar-shell` in globals.css. */
+export const APP_SIDEBAR_SHELL_CLASS = "app-sidebar-shell w-full md:w-[var(--app-sidebar-width)]";
+
 /** @deprecated Use `.landing-shell-chrome:hover` — kept for one-off imports. */
 export const LANDING_CHROME_HOVER_HIGHLIGHT_CLASS =
   "transition-[filter] duration-200 ease-out hover:brightness-110 motion-reduce:transition-none";

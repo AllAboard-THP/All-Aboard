@@ -19,11 +19,11 @@ import {
   ResourcesListScreen,
   UserProfileScreen,
 } from "./screens/legacy-screens";
-import { screenStoryParameters } from "./pattern-story-frame";
+import { mobileStoryParameters } from "./pattern-story-frame";
 
 const meta = {
-  title: "Screens",
-  parameters: screenStoryParameters,
+  title: "Mobile/Screens",
+  parameters: mobileStoryParameters,
   tags: ["autodocs"],
 } satisfies Meta;
 
@@ -31,45 +31,64 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const LandingLogin: Story = {
-  name: "LandingLogin",
-  render: () => <LandingLoginScreen />,
+export const FeedThreeColumn: Story = {
+  name: "FeedThreeColumn",
+  render: () => <FeedThreeColumnScreen mobileChrome />,
 };
 
 export const ExploreSubjects: Story = {
   name: "ExploreSubjects",
-  render: () => <ExploreSubjectsScreen />,
+  render: () => <ExploreSubjectsScreen mobileChrome />,
 };
 
 export const ResourcesList: Story = {
   name: "ResourcesList",
-  render: () => <ResourcesListScreen />,
-};
-
-export const AdminDashboard: Story = {
-  name: "AdminDashboard",
-  render: () => <AdminDashboardScreen />,
-};
-
-/** ID Storybook historique : `screens--nav-with-user-menu-open` */
-export const NavWithUserMenuOpen: Story = {
-  name: "NavWithAdminUser",
-  render: () => <NavWithAdminUserScreen />,
+  render: () => <ResourcesListScreen mobileChrome />,
 };
 
 export const EventsList: Story = {
   name: "EventsList",
-  render: () => <EventsListScreen />,
+  render: () => <EventsListScreen mobileChrome />,
 };
 
 export const MessagesInbox: Story = {
   name: "MessagesInbox",
-  render: () => <MessagesInboxScreen />,
+  render: () => <MessagesInboxScreen mobileChrome />,
 };
 
 export const UserProfile: Story = {
   name: "UserProfile",
-  render: () => <UserProfileScreen />,
+  render: () => <UserProfileScreen mobileChrome />,
+};
+
+export const MentorDashboard: Story = {
+  name: "MentorDashboard",
+  render: () => <MentorDashboardScreen mobileChrome />,
+};
+
+export const AdminDashboard: Story = {
+  name: "AdminDashboard",
+  render: () => <AdminDashboardScreen mobileChrome />,
+};
+
+export const AdminModeration: Story = {
+  name: "AdminModeration",
+  render: () => <AdminModerationScreen mobileChrome />,
+};
+
+export const AdminUsers: Story = {
+  name: "AdminUsers",
+  render: () => <AdminUsersScreen mobileChrome />,
+};
+
+export const NavWithAdminUser: Story = {
+  name: "NavWithAdminUser",
+  render: () => <NavWithAdminUserScreen mobileChrome />,
+};
+
+export const LandingLogin: Story = {
+  name: "LandingLogin",
+  render: () => <LandingLoginScreen />,
 };
 
 export const Register: Story = {
@@ -95,24 +114,4 @@ export const LegalPrivacy: Story = {
 export const LegalMentions: Story = {
   name: "LegalMentions",
   render: () => <LegalMentionsScreen />,
-};
-
-export const MentorDashboard: Story = {
-  name: "MentorDashboard",
-  render: () => <MentorDashboardScreen />,
-};
-
-export const AdminModeration: Story = {
-  name: "AdminModeration",
-  render: () => <AdminModerationScreen />,
-};
-
-export const AdminUsers: Story = {
-  name: "AdminUsers",
-  render: () => <AdminUsersScreen />,
-};
-
-export const FeedThreeColumn: Story = {
-  name: "FeedThreeColumn",
-  render: () => <FeedThreeColumnScreen />,
 };

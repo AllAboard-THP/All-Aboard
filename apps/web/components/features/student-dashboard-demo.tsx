@@ -25,6 +25,11 @@ export function StudentDashboardDemo() {
     sidebar: {
       navigationGroup: t("sidebar.navigationGroup"),
       communityGroup: t("sidebar.communityGroup"),
+      adminGroup: t("sidebar.adminGroup"),
+      expandSidebar: t("sidebar.expandSidebar"),
+      collapseSidebar: t("sidebar.collapseSidebar"),
+      openMenu: t("sidebar.openMenu"),
+      closeMenu: t("sidebar.closeMenu"),
       dashboard: t("sidebar.dashboard"),
       subjects: t("sidebar.subjects"),
       resources: t("sidebar.resources"),
@@ -33,8 +38,54 @@ export function StudentDashboardDemo() {
       messages: t("sidebar.messages"),
       mentor: t("sidebar.mentor"),
       profile: t("sidebar.profile"),
+      admin: t("sidebar.admin"),
       settings: t("sidebar.settings"),
       signOut: t("sidebar.signOut"),
+      context: {
+        dashboard: {
+          title: t("sidebar.context.dashboard.title"),
+          description: t("sidebar.context.dashboard.description"),
+          demo: t("sidebar.context.dashboard.demo"),
+        },
+        subjects: {
+          title: t("sidebar.context.subjects.title"),
+          explore: t("sidebar.context.subjects.explore"),
+        },
+        resources: {
+          title: t("sidebar.context.resources.title"),
+          all: t("sidebar.context.resources.all"),
+        },
+        events: {
+          title: t("sidebar.context.events.title"),
+          all: t("sidebar.context.events.all"),
+        },
+        feed: {
+          title: t("sidebar.context.feed.title"),
+          description: t("sidebar.context.feed.description"),
+          newRequest: t("sidebar.context.feed.newRequest"),
+          backToFeed: t("sidebar.context.feed.backToFeed"),
+        },
+        messages: {
+          title: t("sidebar.context.messages.title"),
+          inbox: t("sidebar.context.messages.inbox"),
+        },
+        mentor: {
+          title: t("sidebar.context.mentor.title"),
+          space: t("sidebar.context.mentor.space"),
+          demo: t("sidebar.context.mentor.demo"),
+        },
+        profile: {
+          title: t("sidebar.context.profile.title"),
+          view: t("sidebar.context.profile.view"),
+        },
+        admin: {
+          title: t("sidebar.context.admin.title"),
+          description: t("sidebar.context.admin.description"),
+          overview: t("sidebar.context.admin.overview"),
+          users: t("sidebar.context.admin.users"),
+          moderation: t("sidebar.context.admin.moderation"),
+        },
+      },
     },
     header: {
       greetingPrefix: t("header.greetingPrefix"),

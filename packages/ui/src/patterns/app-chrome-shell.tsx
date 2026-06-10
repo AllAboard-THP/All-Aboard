@@ -64,12 +64,18 @@ export function AppChromeBrand({
   wordmarkClassName?: string;
 }) {
   return (
-    <div className={cn("flex min-w-0 items-center gap-3", className)}>
+    <div className={cn("flex shrink-0 items-center gap-3", className)}>
       <AllAboardLogoMark
         className={cn(APP_CHROME_BRAND_MARK_CLASS, markClassName)}
         title={brandName}
       />
-      <span className={cn(APP_CHROME_BRAND_WORDMARK_CLASS, wordmarkClassName)}>
+      <span
+        className={cn(
+          APP_CHROME_BRAND_WORDMARK_CLASS,
+          "whitespace-nowrap",
+          wordmarkClassName,
+        )}
+      >
         {brandName}
       </span>
     </div>

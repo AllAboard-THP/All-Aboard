@@ -74,3 +74,16 @@ export function withPatternStoryFrame(width: FrameWidth = "feed"): Decorator {
 export const patternStoryParameters = {
   layout: "fullscreen" as const,
 };
+
+export const mobileStoryParameters = {
+  ...patternStoryParameters,
+  layout: "fullscreen" as const,
+  viewport: {
+    defaultViewport: "mobile1",
+  },
+};
+
+export const screenStoryParameters = {
+  ...patternStoryParameters,
+  layout: "fullscreen" as const,
+};

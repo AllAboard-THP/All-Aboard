@@ -83,6 +83,11 @@
     "sidebar": {
       "navigationGroup": "Navigation",
       "communityGroup": "Communauté",
+      "adminGroup": "Administration",
+      "expandSidebar": "Déplier la barre latérale",
+      "collapseSidebar": "Replier la barre latérale",
+      "openMenu": "Menu de navigation",
+      "closeMenu": "Fermer le menu",
       "dashboard": "Mon dashboard",
       "subjects": "Matières",
       "resources": "Ressources",
@@ -91,8 +96,54 @@
       "messages": "Messages",
       "mentor": "Espace mentor",
       "profile": "Mon profil",
+      "admin": "Administration",
       "settings": "Paramètres",
-      "signOut": "Déconnexion"
+      "signOut": "Déconnexion",
+      "context": {
+        "dashboard": {
+          "title": "Ton espace",
+          "description": "Suivi de progression et demandes en cours.",
+          "demo": "Dashboard démo"
+        },
+        "subjects": {
+          "title": "Matières",
+          "explore": "Explorer les matières"
+        },
+        "resources": {
+          "title": "Ressources",
+          "all": "Toutes les ressources"
+        },
+        "events": {
+          "title": "Événements",
+          "all": "Agenda complet"
+        },
+        "feed": {
+          "title": "Entraide",
+          "description": "Publie une demande ou retrouve le fil.",
+          "newRequest": "Nouvelle demande",
+          "backToFeed": "Retour au fil"
+        },
+        "messages": {
+          "title": "Messages",
+          "inbox": "Boîte de réception"
+        },
+        "mentor": {
+          "title": "Mentorat",
+          "space": "Espace mentor",
+          "demo": "Dashboard mentor démo"
+        },
+        "profile": {
+          "title": "Profil",
+          "view": "Voir mon profil"
+        },
+        "admin": {
+          "title": "Administration",
+          "description": "Modération et gestion des comptes.",
+          "overview": "Vue d'ensemble",
+          "users": "Utilisateurs",
+          "moderation": "Modération"
+        }
+      }
     },
     "header": {
       "greetingPrefix": "Bonjour",

@@ -62,9 +62,36 @@ apps/web/app/
 |---------|------|
 | `components/features/app-shell.tsx` | Server : compose `AppShellLayout` |
 | `components/features/app-shell-layout.tsx` | Client : header/footer + sidebar conditionnelle |
-| `components/features/app-shell-sidebar.tsx` | Client : `AppSidebar` + liens i18n |
-| `lib/app-shell-sidebar.ts` | Nav items, exclusions, état actif |
-| `packages/ui/…/app-sidebar.tsx` | Sidebar canonique (Storybook + web) |
+| `components/features/app-shell-sidebar.tsx` | Client : `AppSidebar` + liens i18n + panneau contextuel |
+| `lib/app-shell-sidebar.ts` | Exclusions routes ; réexport résolution active/contexte |
+| `packages/ui/…/app-sidebar.tsx` | Sidebar drawer (rail + tiroirs + contexte) |
+| `packages/ui/…/app-sidebar-nav.ts` | Routes canoniques, `resolveAppSidebarContext`, liens contextuels |
+| `packages/ui/…/app-sidebar-provider.tsx` | État expand/collapse + `--app-sidebar-width` |
+
+---
+
+## Sidebar drawer (2026-06)
+
+La sidebar applicative est un **tiroir interne** à trois niveaux :
+
+1. **Rail repliable** — ~4rem (icônes) ↔ ~18rem (labels) ; persistance `localStorage` via `AppSidebarProvider`.
+2. **Tiroirs verticaux** — sections Navigation / Communauté / Admin (accordéon ; la section active s’ouvre au changement de route).
+3. **Panneau contextuel** — sous-liens propres à la page (ex. Entraide → « Nouvelle demande », Admin → Users / Modération).
+
+**Tokens** (`landing-layout.ts`) :
+
+- `APP_SIDEBAR_WIDTH_COLLAPSED` / `APP_SIDEBAR_WIDTH_EXPANDED`
+- `APP_SIDEBAR_GRID_CLASS` — header synchronisé via `--app-sidebar-width`
+
+**Mobile** (`< md`) : sidebar masquée en colonne ; bouton menu → `Sheet` gauche avec drawer forcé expanded.
+
+**Ajouter un lien contextuel** :
+
+1. Déclarer dans `APP_SIDEBAR_CONTEXT` (`app-sidebar-nav.ts`).
+2. Ajouter les clés i18n sous `studentDashboard.sidebar.context.*` (`apps/web/messages/{fr,en}.json` + `student-dashboard-labels.ts` pour Storybook).
+3. Vérifier `isAppSidebarItemActive` si la route parente change.
+
+**Storybook** : `Patterns/AppSidebar` — états collapsed/expanded, badges, admin.
 
 ---
 

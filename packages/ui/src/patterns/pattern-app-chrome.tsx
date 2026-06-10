@@ -20,6 +20,7 @@ import {
   APP_CHROME_FEED_INNER_CLASS,
   APP_CHROME_FOOTER_CLASS,
   APP_CHROME_FOOTER_SHELL_CLASS,
+  APP_CHROME_HEADER_SIDEBAR_GRID_CLASS,
   APP_CHROME_MAIN_INNER_CLASS,
   APP_STAGE_CLASS,
 } from "./landing-layout";
@@ -27,13 +28,13 @@ import {
   resolveSidebarActiveId,
   type AppSidebarNavId,
 } from "./app-sidebar-nav";
+import { AppSidebarProvider } from "./app-sidebar-provider";
 import {
   AppFooter,
   AppNavBar,
   UserMenu,
   type LegacyNavLink,
 } from "./legacy-ui";
-import { patternStoryParameters } from "./pattern-story-frame";
 
 function resolveMobileNavLink(activeLink: LegacyNavLink): MobileNavLink {
   if (activeLink === "explore") return "explore";
@@ -79,15 +80,19 @@ export function AppChrome({
   const resolvedActiveId = resolveSidebarActiveId(sidebarActiveId, activeLink);
 
   return (
-    <div className={cn(APP_STAGE_CLASS, "relative flex min-h-[100dvh] flex-col text-foreground")}>
-      <AppAbstractBackground />
+    <AppSidebarProvider>
+      <div className={cn(APP_STAGE_CLASS, "relative flex min-h-[100dvh] flex-col text-foreground")}>
+        <AppAbstractBackground />
 
-      {sidebarVisible ? (
-        <AppChromeHeader
-          layout="surface"
-          className="sticky top-0 z-20 grid shrink-0 grid-cols-[1fr_auto] md:grid-cols-[16rem_minmax(0,1fr)]"
-        >
-          <div className="flex min-h-[4.25rem] items-center gap-3 px-3 sm:min-h-[4.75rem] sm:px-4">
+        {sidebarVisible ? (
+          <AppChromeHeader
+            layout="surface"
+            className={cn(
+              "sticky top-0 z-20 grid shrink-0 grid-cols-[1fr_auto]",
+              APP_CHROME_HEADER_SIDEBAR_GRID_CLASS,
+            )}
+          >
+          <div className="flex min-h-[4.25rem] shrink-0 items-center gap-3 overflow-visible px-3 sm:min-h-[4.75rem] sm:px-4">
             <AppChromeBrand brandName={labels.brandName} />
           </div>
           <div className="flex min-h-[4.25rem] flex-wrap items-center justify-end gap-2 px-3 sm:min-h-[4.75rem] sm:gap-3 sm:px-4 md:px-6 lg:px-8">
@@ -120,7 +125,14 @@ export function AppChrome({
       )}
 
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-        {sidebarVisible ? <AppChromeSidebar activeId={resolvedActiveId} /> : null}
+        {sidebarVisible ? (
+          <AppChromeSidebar
+            activeId={resolvedActiveId}
+            messageCount={messageCount}
+            showMentorDot={showMentorDot}
+            isAdmin={isAdmin}
+          />
+        ) : null}
         <main
           id="main-content"
           className={cn(
@@ -175,7 +187,8 @@ export function AppChrome({
           labels={labels}
         />
       ) : null}
-    </div>
+      </div>
+    </AppSidebarProvider>
   );
 }
 
@@ -222,15 +235,7 @@ export function withMobileChrome(
   );
 }
 
-export const mobileStoryParameters = {
-  ...patternStoryParameters,
-  layout: "fullscreen" as const,
-  viewport: {
-    defaultViewport: "mobile1",
-  },
-};
-
-export const screenStoryParameters = {
-  ...patternStoryParameters,
-  layout: "fullscreen" as const,
-};
+export {
+  mobileStoryParameters,
+  screenStoryParameters,
+} from "./pattern-story-frame";

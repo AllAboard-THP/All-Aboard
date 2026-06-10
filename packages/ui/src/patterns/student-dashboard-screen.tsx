@@ -4,14 +4,9 @@ import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
-  BookOpen,
-  Calendar,
   Compass,
-  GraduationCap,
-  LayoutDashboard,
   Library,
   LogOut,
-  MessageSquare,
   Settings,
   Sparkles,
   Users,
@@ -42,8 +37,10 @@ import {
   AppChromeFooter,
   AppChromeHeader,
 } from "./app-chrome-shell";
-import { AppSidebar } from "./app-sidebar";
+import { AppChromeSidebar } from "./app-chrome-sidebar";
+import { AppSidebarProvider } from "./app-sidebar-provider";
 import {
+  APP_CHROME_HEADER_SIDEBAR_GRID_CLASS,
   APP_GLASS_CARD_CLASS,
   APP_STAGE_CLASS,
   LANDING_EDGE_PADDING_CLASS,
@@ -54,12 +51,7 @@ import {
 } from "./student-dashboard-labels";
 import { AppAbstractBackground } from "./app-abstract-background";
 
-type SidebarItem = {
-  id: string;
-  label: string;
-  icon: LucideIcon;
-  active?: boolean;
-};
+export type StudentDashboardVariant = "standalone" | "content";
 
 function DashboardStage({ children }: { children: ReactNode }) {
   return (
@@ -149,9 +141,12 @@ function StudentDashboardTopHeader({
   return (
     <AppChromeHeader
       layout="surface"
-      className="sticky top-0 z-20 grid shrink-0 grid-cols-[1fr_auto] md:grid-cols-[16rem_minmax(0,1fr)]"
+      className={cn(
+        "sticky top-0 z-20 grid shrink-0 grid-cols-[1fr_auto]",
+        APP_CHROME_HEADER_SIDEBAR_GRID_CLASS,
+      )}
     >
-      <div className="flex min-h-[4.25rem] items-center gap-3 px-3 sm:min-h-[4.75rem] sm:px-4">
+      <div className="flex min-h-[4.25rem] shrink-0 items-center gap-3 overflow-visible px-3 sm:min-h-[4.75rem] sm:px-4">
         <AppChromeBrand brandName={labels.brandName} />
       </div>
       <div className="flex min-h-[4.25rem] flex-wrap items-center justify-end gap-2 px-3 sm:min-h-[4.75rem] sm:gap-3 sm:px-4 md:px-6 lg:px-8">
@@ -163,40 +158,6 @@ function StudentDashboardTopHeader({
         />
       </div>
     </AppChromeHeader>
-  );
-}
-
-function StudentDashboardSidebar({
-  labels,
-  onDemoClick,
-}: {
-  labels: StudentDashboardLabels;
-  onDemoClick: () => void;
-}) {
-  const navigationItems: SidebarItem[] = [
-    { id: "dashboard", label: labels.sidebar.dashboard, icon: LayoutDashboard, active: true },
-    { id: "subjects", label: labels.sidebar.subjects, icon: Compass },
-    { id: "resources", label: labels.sidebar.resources, icon: Library },
-    { id: "events", label: labels.sidebar.events, icon: Calendar },
-  ];
-
-  const communityItems: SidebarItem[] = [
-    { id: "feed", label: labels.sidebar.feed, icon: Users },
-    { id: "messages", label: labels.sidebar.messages, icon: MessageSquare },
-    { id: "mentor", label: labels.sidebar.mentor, icon: GraduationCap },
-    { id: "profile", label: labels.sidebar.profile, icon: BookOpen },
-  ];
-
-  return (
-    <AppSidebar
-      labels={{
-        navigationGroup: labels.sidebar.navigationGroup,
-        communityGroup: labels.sidebar.communityGroup,
-      }}
-      navigationItems={navigationItems}
-      communityItems={communityItems}
-      onItemClick={() => onDemoClick()}
-    />
   );
 }
 
@@ -361,8 +322,6 @@ function StudentDashboardFooter({
   );
 }
 
-export type StudentDashboardVariant = "standalone" | "content";
-
 function StudentDashboardMain({
   labels,
   fixture,
@@ -507,26 +466,28 @@ export function StudentDashboardScreen({
 
   return (
     <DashboardStage>
-      <StudentDashboardTopHeader
-        labels={labels}
-        fixture={fixture}
-        headerEnd={headerEnd}
-        onDemoClick={handleDemoClick}
-      />
+      <AppSidebarProvider>
+        <StudentDashboardTopHeader
+          labels={labels}
+          fixture={fixture}
+          headerEnd={headerEnd}
+          onDemoClick={handleDemoClick}
+        />
 
-      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-        <StudentDashboardSidebar labels={labels} onDemoClick={handleDemoClick} />
+        <div className="flex min-h-0 flex-1 flex-col md:flex-row">
+          <AppChromeSidebar activeId="dashboard" />
 
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          <StudentDashboardMain
-            labels={labels}
-            fixture={fixture}
-            onDemoClick={handleDemoClick}
-          />
-        </main>
-      </div>
+          <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
+            <StudentDashboardMain
+              labels={labels}
+              fixture={fixture}
+              onDemoClick={handleDemoClick}
+            />
+          </main>
+        </div>
 
-      <StudentDashboardFooter labels={labels} onDemoClick={handleDemoClick} />
+        <StudentDashboardFooter labels={labels} onDemoClick={handleDemoClick} />
+      </AppSidebarProvider>
     </DashboardStage>
   );
 }

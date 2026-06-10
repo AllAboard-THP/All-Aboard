@@ -8,7 +8,7 @@ import {
 } from "./pattern-story-frame";
 
 const meta = {
-  title: "Patterns/Mobile",
+  title: "Mobile/BottomNav",
   parameters: patternStoryParameters,
   tags: ["autodocs"],
 } satisfies Meta;
