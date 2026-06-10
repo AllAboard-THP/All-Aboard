@@ -1,132 +1,132 @@
-# AppShell — navigation applicative (#25)
+# AppShell — application navigation (#25)
 
-**Issue** : [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25)  
-**Statut** : livré + chrome verre canonique (2026-06)  
-**Parcours MOC** : [moc-parcours-utilisateur.md](../moc-parcours-utilisateur.md)  
-**Règle agent** : [.cursor/rules/app-chrome-shell.mdc](../../.cursor/rules/app-chrome-shell.mdc)
+**Issue:** [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25)  
+**Status:** shipped + canonical glass chrome (2026-06)  
+**MOC journeys:** [product/user-journeys.md](../product/user-journeys.md)  
+**Agent rule:** [.cursor/rules/app-chrome-shell.mdc](../../.cursor/rules/app-chrome-shell.mdc)
 
 ---
 
-## Règle absolue — header & footer
+## Absolute rule — header & footer
 
-Les versions **header / footer verre** (`landing-shell-chrome`, brand agrandi, fond mesh `AppAbstractBackground`) sont **canoniques** pour tout le MVP :
+**Glass header / footer** versions (`landing-shell-chrome`, enlarged brand, `AppAbstractBackground` mesh) are **canonical** for the entire MVP:
 
-- **Existantes** : feed, explore, mentor, landing auth, dashboard démo, Storybook patterns.
-- **Futures** : toute nouvelle page **doit** hériter d’un shell parent — **jamais** de header/footer recopiés à la main.
+- **Existing:** feed, explore, mentor, landing auth, demo dashboard, Storybook patterns.
+- **Future:** every new page **must** inherit from a parent shell — **never** hand-copied header/footer.
 
-| Type de page | Shell | Application |
-|--------------|-------|-------------|
-| Produit connecté | `AppShell` | Automatique via `app/[locale]/(app)/layout.tsx` |
+| Page type | Shell | Application |
+|-----------|-------|-------------|
+| Connected product | `AppShell` | Automatic via `app/[locale]/(app)/layout.tsx` |
 | Marketing / auth | `LandingPageShell` | `LandingPublicHeader` + `AppFooter` |
-| Dashboard sidebar | `StudentDashboardScreen` | Même chrome via `AppChromeHeader` / `AppChromeFooter` |
-| Hors shell | `health`, API | Pas de chrome produit |
+| Sidebar dashboard | `StudentDashboardScreen` | Same chrome via `AppChromeHeader` / `AppChromeFooter` |
+| Outside shell | `health`, API | No product chrome |
 
-**Source de vérité code** :
+**Code source of truth:**
 
-- Constantes : `packages/ui/src/patterns/landing-layout.ts` (`APP_SHELL_*`, `APP_CHROME_BRAND_*`)
-- Composants : `packages/ui/src/patterns/app-chrome-shell.tsx`
-- CSS : `packages/ui/src/styles/globals.css` (`.landing-shell-chrome`, `.app-stage`)
+- Constants: `packages/ui/src/patterns/landing-layout.ts` (`APP_SHELL_*`, `APP_CHROME_BRAND_*`)
+- Components: `packages/ui/src/patterns/app-chrome-shell.tsx`
+- CSS: `packages/ui/src/styles/globals.css` (`.landing-shell-chrome`, `.app-stage`)
 
-**Interdit** : `landing-chrome` ad hoc, tailles logo/texte custom, fond opaque local par page.
-
----
-
-## Rôle
-
-`AppShell` fournit le **chrome** persistant (header + footer + mesh) pour les pages produit. Le contenu page reste dans `<main id="main-content">`.
+**Forbidden:** ad hoc `landing-chrome`, custom logo/text sizes, local opaque page background.
 
 ---
 
-## Structure routes
+## Role
+
+`AppShell` provides persistent **chrome** (header + footer + mesh) for product pages. Page content stays in `<main id="main-content">`.
+
+---
+
+## Route structure
 
 ```text
 apps/web/app/
-├── layout.tsx                      # racine : Providers, globals.css
-├── health/page.tsx                 # hors shell (pas de nav produit)
+├── layout.tsx                      # root: Providers, globals.css
+├── health/page.tsx                 # outside shell (no product nav)
 ├── [locale]/
 │   ├── (public)/                   # landing, auth — LandingPageShell
 │   │   └── layout.tsx
-│   ├── (app)/                      # produit — AppShell + sidebar automatiques
+│   ├── (app)/                      # product — AppShell + sidebar automatic
 │   │   ├── layout.tsx              # <AppShell>{children}</AppShell>
 │   │   ├── feed/…
-│   │   ├── dashboard/demo/         # dashboard (contenu seul)
+│   │   ├── dashboard/demo/         # dashboard (content only)
 │   │   └── …
-│   └── (public)/                   # landing, legal, auth — sans sidebar
+│   └── (public)/                   # landing, legal, auth — no sidebar
 ```
 
 ---
 
-## Composants
+## Components
 
-| Fichier | Rôle |
-|---------|------|
-| `components/features/app-shell.tsx` | Server : compose `AppShellLayout` |
-| `components/features/app-shell-layout.tsx` | Client : header/footer + sidebar conditionnelle |
-| `components/features/app-shell-sidebar.tsx` | Client : `AppSidebar` + liens i18n + panneau contextuel |
-| `lib/app-shell-sidebar.ts` | Exclusions routes ; réexport résolution active/contexte |
-| `packages/ui/…/app-sidebar.tsx` | Sidebar drawer (rail + tiroirs + contexte) |
-| `packages/ui/…/app-sidebar-nav.ts` | Routes canoniques, `resolveAppSidebarContext`, liens contextuels |
-| `packages/ui/…/app-sidebar-provider.tsx` | État expand/collapse + `--app-sidebar-width` |
+| File | Role |
+|------|------|
+| `components/features/app-shell.tsx` | Server: composes `AppShellLayout` |
+| `components/features/app-shell-layout.tsx` | Client: header/footer + conditional sidebar |
+| `components/features/app-shell-sidebar.tsx` | Client: `AppSidebar` + i18n links + context panel |
+| `lib/app-shell-sidebar.ts` | Route exclusions; re-export active/context resolution |
+| `packages/ui/…/app-sidebar.tsx` | Sidebar drawer (rail + drawers + context) |
+| `packages/ui/…/app-sidebar-nav.ts` | Canonical routes, `resolveAppSidebarContext`, context links |
+| `packages/ui/…/app-sidebar-provider.tsx` | Expand/collapse state + `--app-sidebar-width` |
 
 ---
 
 ## Sidebar drawer (2026-06)
 
-La sidebar applicative est un **tiroir interne** à trois niveaux :
+Application sidebar is an internal **drawer** with three levels:
 
-1. **Rail repliable** — ~4rem (icônes) ↔ ~18rem (labels) ; persistance `localStorage` via `AppSidebarProvider`.
-2. **Tiroirs verticaux** — sections Navigation / Communauté / Admin (accordéon ; la section active s’ouvre au changement de route).
-3. **Panneau contextuel** — sous-liens propres à la page (ex. Entraide → « Nouvelle demande », Admin → Users / Modération).
+1. **Collapsible rail** — ~4rem (icons) ↔ ~18rem (labels); `localStorage` persistence via `AppSidebarProvider`.
+2. **Vertical drawers** — Navigation / Community / Admin sections (accordion; active section opens on route change).
+3. **Context panel** — page-specific sub-links (e.g. Help → "New request", Admin → Users / Moderation).
 
-**Tokens** (`landing-layout.ts`) :
+**Tokens** (`landing-layout.ts`):
 
 - `APP_SIDEBAR_WIDTH_COLLAPSED` / `APP_SIDEBAR_WIDTH_EXPANDED`
-- `APP_SIDEBAR_GRID_CLASS` — header synchronisé via `--app-sidebar-width`
+- `APP_SIDEBAR_GRID_CLASS` — header synced via `--app-sidebar-width`
 
-**Mobile** (`< md`) : sidebar masquée en colonne ; bouton menu → `Sheet` gauche avec drawer forcé expanded.
+**Mobile** (`< md`): sidebar hidden in column; menu button → left `Sheet` with drawer forced expanded.
 
-**Ajouter un lien contextuel** :
+**Add a context link:**
 
-1. Déclarer dans `APP_SIDEBAR_CONTEXT` (`app-sidebar-nav.ts`).
-2. Ajouter les clés i18n sous `studentDashboard.sidebar.context.*` (`apps/web/messages/{fr,en}.json` + `student-dashboard-labels.ts` pour Storybook).
-3. Vérifier `isAppSidebarItemActive` si la route parente change.
+1. Declare in `APP_SIDEBAR_CONTEXT` (`app-sidebar-nav.ts`).
+2. Add i18n keys under `studentDashboard.sidebar.context.*` (`apps/web/messages/{fr,en}.json` + `student-dashboard-labels.ts` for Storybook).
+3. Check `isAppSidebarItemActive` if parent route changes.
 
-**Storybook** : `Patterns/AppSidebar` — états collapsed/expanded, badges, admin.
-
----
-
-## Nouvelle page produit — checklist
-
-1. Créer la route sous `app/[locale]/(app)/…` — **ne pas** ajouter de `<header>` / `<footer>` dans la page.
-2. Contenu uniquement dans le `<main>` rendu par `AppShell`.
-3. Si entrée nav globale → ajouter dans `APP_SHELL_NAV`.
-4. Si layout spécial (sidebar pleine hauteur) → wrapper feature avec `StudentDashboardScreen` ou composer `AppChromeHeader` / `AppChromeFooter` depuis `@allaboard/ui/patterns/app-chrome-shell`.
-5. `pnpm --filter web test` + `pnpm verify` avant PR.
+**Storybook:** `Patterns/AppSidebar` — collapsed/expanded states, badges, admin.
 
 ---
 
-## Accessibilité
+## New product page — checklist
 
-- `<header>` (landmark banner)
-- `<nav aria-label="Navigation principale">`
-- `<main id="main-content">` unique
-- Focus visible via styles `Button` (`focus-visible:ring-*`)
-- Lien actif : `aria-current="page"`
-
-Tests : `apps/web/tests/app-shell.test.tsx`, `app-shell-nav.test.tsx`.
+1. Create route under `app/[locale]/(app)/…` — **do not** add `<header>` / `<footer>` in page.
+2. Content only in `<main>` rendered by `AppShell`.
+3. If global nav entry → add to `APP_SHELL_NAV`.
+4. If special layout (full-height sidebar) → feature wrapper with `StudentDashboardScreen` or compose `AppChromeHeader` / `AppChromeFooter` from `@allaboard/ui/patterns/app-chrome-shell`.
+5. `pnpm --filter web test` + `pnpm verify` before PR.
 
 ---
 
-## Étendre le shell
+## Accessibility
 
-**Auth / zone connectée** : slot `headerActions` dans `AppShell` (évolution produit).
+- `<header>` (banner landmark)
+- `<nav aria-label="Main navigation">`
+- Single `<main id="main-content">`
+- Visible focus via `Button` styles (`focus-visible:ring-*`)
+- Active link: `aria-current="page"`
 
-**Ne pas** mettre les routes API ou health sous `(app)`.
+Tests: `apps/web/tests/app-shell.test.tsx`, `app-shell-nav.test.tsx`.
 
 ---
 
-## Hors scope #25 (livré ensuite)
+## Extend the shell
 
-- Données réelles feed / détail → [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26)
-- Alert / Skeleton dans `@allaboard/ui` → [PR #59](https://github.com/AllAboard-THP/All-Aboard/pull/59)
-- Migration dashboard sous `(app)/` avec route group dédié — backlog technique
+**Auth / connected zone:** `headerActions` slot in `AppShell` (product evolution).
+
+**Do not** put API routes or health under `(app)`.
+
+---
+
+## Out of #25 scope (shipped later)
+
+- Real feed / detail data → [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26)
+- Alert / Skeleton in `@allaboard/ui` → [PR #59](https://github.com/AllAboard-THP/All-Aboard/pull/59)
+- Dashboard migration under `(app)/` with dedicated route group — technical backlog

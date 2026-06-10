@@ -1,19 +1,19 @@
-# Plan d'initialisation Turborepo — MVP All-Aboard
+# Turborepo bootstrap — All-Aboard MVP
 
-**État** : le **bootstrap monorepo** est **complété** dans le dépôt (pnpm, Turborepo, `apps/web`, `apps/api`, `packages/types`, configs partagées, CI, Dockerfiles). La **timeline** des phases et l’état MVP sont dans [README.md](README.md). Le couplage Web/API, TanStack et le journal de smoke sont dans [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md).
+**Status:** monorepo bootstrap is **complete** in this repository (pnpm, Turborepo, `apps/web`, `apps/api`, `packages/types`, shared configs, CI, Dockerfiles). MVP phase timeline and repository state: [README.md](../README.md). Web/API coupling, TanStack, and the smoke journal: [web-api-integration.md](web-api-integration.md).
 
-**Archive** (ancien plan pas-à-pas, checklists historiques — ne pas suivre les `[ ]` comme vérité actuelle) : [archive/plan-initialisation-turborepo-mvp-2026-01.md](archive/plan-initialisation-turborepo-mvp-2026-01.md).
+**Archive** (historical step-by-step plan — do not treat unchecked `[ ]` items as current truth): [archive/plan-initialisation-turborepo-mvp-2026-01.md](../archive/plan-initialisation-turborepo-mvp-2026-01.md).
 
-## Structure actuelle (référence)
+## Current layout
 
-- Apps : `apps/web` (Next App Router), `apps/api` (Fastify) ; packages `packages/types`, configs ESLint/TypeScript.
-- Infra : `infra/docker/Dockerfile.web`, `Dockerfile.api`, `Dockerfile.agent`, `Dockerfile.indexer` ; build context racine monorepo.
-- Déploiement : conventions [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md), faits instance [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md).
-- Protocole contributeurs : [AGENTS.md](../AGENTS.md) (`pnpm verify` avant PR).
+- Apps: `apps/web` (Next App Router), `apps/api` (Fastify); packages `packages/types`, shared ESLint/TypeScript configs.
+- Infra: `infra/docker/Dockerfile.web`, `Dockerfile.api`, `Dockerfile.agent`, `Dockerfile.indexer`; monorepo root build context.
+- Deployment: [environment-variables.md](../deployment/environment-variables.md), instance facts [dokploy-instance.md](../deployment/dokploy-instance.md).
+- Contributor protocol: [AGENTS.md](../../AGENTS.md) (`pnpm verify` before PR).
 
-## Liens
+## Links
 
-- [README — documentation canonique (timeline)](README.md)
-- [Map of content — rôles et sources](map-of-content.md)
-- [Plan opérationnel Web / API / données](plan-mise-en-place-web-api-donnees.md)
-- [Matrice déploiement](matrice-deploiement-dokploy-coolify.md)
+- [README — canonical documentation](../README.md)
+- [Documentation index](../INDEX.md)
+- [Web / API / data integration guide](web-api-integration.md)
+- [Deployment environment matrix](../deployment/environment-variables.md)

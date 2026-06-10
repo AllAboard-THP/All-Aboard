@@ -1,26 +1,26 @@
-# #82 — Notifications mentor (MVP)
+# #82 — Mentor notifications (MVP)
 
-Issue : [#82](https://github.com/AllAboard-THP/All-Aboard/issues/82) · Epic : [#78](https://github.com/AllAboard-THP/All-Aboard/issues/78)
+Issue: [#82](https://github.com/AllAboard-THP/All-Aboard/issues/82) · Epic: [#78](https://github.com/AllAboard-THP/All-Aboard/issues/78)
 
-## Décision MVP (Option A)
+## MVP decision (Option A)
 
-Enrichir `GET /mentor/feed` avec métadonnées de réponses et signalisation UI — **sans** table `notifications` ni polling dédié (Option B reportée).
+Enrich `GET /mentor/feed` with response metadata and UI signaling — **without** a `notifications` table or dedicated polling (Option B deferred).
 
-| Champ | Règle |
-|-------|--------|
-| `responseCount` | Nombre de réponses sur la demande |
-| `lastResponseAt` | ISO de la dernière réponse, ou `null` |
-| `hasUnreadForMentor` | `responseCount > 0` et dernière réponse **non** écrite par le mentor connecté (JWT `sub`) |
+| Field | Rule |
+|-------|------|
+| `responseCount` | Number of responses on the request |
+| `lastResponseAt` | ISO timestamp of latest response, or `null` |
+| `hasUnreadForMentor` | `responseCount > 0` and latest response **not** written by the logged-in mentor (JWT `sub`) |
 
 ## Auth
 
-`GET /mentor/feed` exige JWT mentor (`401` sans token, `403` si rôle student).
+`GET /mentor/feed` requires mentor JWT (`401` without token, `403` for student role).
 
 ## UI
 
-- Badge sur cartes feed mentor si `hasUnreadForMentor`
-- Badge agrégé sur lien **Mentor** dans la navigation (somme des unread)
+- Badge on mentor feed cards when `hasUnreadForMentor`
+- Aggregate badge on **Mentor** nav link (sum of unread)
 
-## Hors scope
+## Out of scope
 
-WebSocket, table `notifications`, marquage lu persistant.
+WebSocket, `notifications` table, persistent read marking.

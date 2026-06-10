@@ -24,7 +24,7 @@ export const helpRequestStatusEnum = pgEnum("help_request_status", [
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").notNull().unique(),
-  /** Null for OAuth-only accounts (ADR 0004). */
+  /** Null for OAuth-only accounts (ADR 0006). */
   passwordHash: text("password_hash"),
   role: userRoleEnum("role").notNull(),
   fullName: text("full_name"),

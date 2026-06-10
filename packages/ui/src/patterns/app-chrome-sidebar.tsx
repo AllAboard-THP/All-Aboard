@@ -24,6 +24,7 @@ function buildLabelMap(labels: StudentDashboardLabels): AppSidebarLabelMap {
   return {
     navigationGroup: s.navigationGroup,
     communityGroup: s.communityGroup,
+    mentorGroup: s.mentorGroup,
     adminGroup: s.adminGroup,
     expandSidebar: s.expandSidebar,
     collapseSidebar: s.collapseSidebar,
@@ -33,11 +34,14 @@ function buildLabelMap(labels: StudentDashboardLabels): AppSidebarLabelMap {
     subjects: s.subjects,
     resources: s.resources,
     events: s.events,
+    newRequest: s.newRequest,
     feed: s.feed,
     messages: s.messages,
     mentor: s.mentor,
     profile: s.profile,
-    admin: s.admin,
+    admin: s.adminOverview,
+    adminUsers: s.adminUsers,
+    adminModeration: s.adminModeration,
     "context.dashboard.title": s.context.dashboard.title,
     "context.dashboard.description": s.context.dashboard.description,
     "context.dashboard.demo": s.context.dashboard.demo,
@@ -47,8 +51,13 @@ function buildLabelMap(labels: StudentDashboardLabels): AppSidebarLabelMap {
     "context.resources.all": s.context.resources.all,
     "context.events.title": s.context.events.title,
     "context.events.all": s.context.events.all,
+    "context.newRequest.title": s.context.newRequest.title,
+    "context.newRequest.description": s.context.newRequest.description,
+    "context.newRequest.create": s.context.newRequest.create,
+    "context.newRequest.backToFeed": s.context.newRequest.backToFeed,
     "context.feed.title": s.context.feed.title,
     "context.feed.description": s.context.feed.description,
+    "context.feed.browse": s.context.feed.browse,
     "context.feed.newRequest": s.context.feed.newRequest,
     "context.feed.backToFeed": s.context.feed.backToFeed,
     "context.messages.title": s.context.messages.title,
@@ -72,6 +81,7 @@ export function AppChromeSidebar({
   mockPathname,
   messageCount = 0,
   showMentorDot = false,
+  isMentor = false,
   isAdmin = false,
 }: {
   activeId?: AppSidebarNavId;
@@ -79,6 +89,7 @@ export function AppChromeSidebar({
   mockPathname?: string;
   messageCount?: number;
   showMentorDot?: boolean;
+  isMentor?: boolean;
   isAdmin?: boolean;
 }) {
   const locale = useStorybookLocale();
@@ -92,19 +103,21 @@ export function AppChromeSidebar({
   const resolved = useMemo(
     () =>
       resolveAppSidebarContext(pathname, {
+        isMentor,
         isAdmin,
         labelMap,
       }),
-    [pathname, isAdmin, labelMap],
+    [pathname, isMentor, isAdmin, labelMap],
   );
 
   const sections = useMemo(
     () =>
       buildAppSidebarSections(labelMap, {
         activeId: resolved.activeId,
+        showMentorSection: resolved.showMentorSection,
         showAdminSection: resolved.showAdminSection,
       }),
-    [labelMap, resolved.activeId, resolved.showAdminSection],
+    [labelMap, resolved.activeId, resolved.showMentorSection, resolved.showAdminSection],
   );
 
   const badges: Partial<Record<AppSidebarNavId, number>> =
@@ -115,6 +128,7 @@ export function AppChromeSidebar({
       labels={{
         navigationGroup: labelMap.navigationGroup,
         communityGroup: labelMap.communityGroup,
+        mentorGroup: labelMap.mentorGroup,
         adminGroup: labelMap.adminGroup,
         expandSidebar: labelMap.expandSidebar,
         collapseSidebar: labelMap.collapseSidebar,

@@ -1,155 +1,155 @@
-# Matrice de deploiement - Dokploy / Coolify
+# Deployment matrix — Dokploy / Coolify
 
-**Documentation canonique** (timeline MVP, TanStack, auth) : [README.md](README.md).
+**Canonical documentation** (MVP timeline, TanStack, auth): [README.md](../README.md).
 
-## Objectif
+## Purpose
 
-Standardiser le deploiement par service de All-Aboard dans Dokploy ou Coolify, avec une convention unique pour:
+Standardize All-Aboard per-service deployment in Dokploy or Coolify with a single convention for:
 
-- Dockerfile cible,
-- contexte de build,
-- port runtime,
-- variables d'environnement,
-- healthcheck et strategie de deploiement.
+- target Dockerfile,
+- build context,
+- runtime port,
+- environment variables,
+- healthcheck and deployment strategy.
 
-## Convention globale
+## Global convention
 
-- **1 service deployable = 1 Dockerfile = 1 ressource Dokploy/Coolify**
-- Build prefere en CI puis deploiement de l'image (recommande pour la prod).
-- Nommage ressources: `allaboard-<service>-<env>` (ex: `allaboard-api-staging`).
-- Environnements separes: `dev`, `staging`, `prod`.
+- **1 deployable service = 1 Dockerfile = 1 Dokploy/Coolify resource**
+- Prefer CI build then image deploy (recommended for prod).
+- Resource naming: `allaboard-<service>-<env>` (e.g. `allaboard-api-staging`).
+- Separate environments: `dev`, `staging`, `prod`.
 
-## Instance Dokploy de référence (All-Aboard)
+## Reference Dokploy instance (All-Aboard)
 
-**Source canonique des faits** (domaines, branches, `API_URL` interne, statut Agent/Indexer) : **[deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md)**. Ne pas dupliquer ici les tableaux d’URLs par environnement.
+**Canonical source of facts** (domains, branches, internal `API_URL`, Agent/Indexer status): **[dokploy-instance.md](dokploy-instance.md)**. Do not duplicate per-environment URL tables here.
 
-**Rappel flux feed** : le SSR utilise `API_URL` **interne** ; le client home utilise le **BFF** Next `GET /api/feed` (pas de `NEXT_PUBLIC_API_URL` ni CORS navigateur → Fastify pour ce flux). Détail : [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md).
+**Feed flow reminder:** SSR uses **internal** `API_URL`; home client uses Next **BFF** `GET /api/feed` (no `NEXT_PUBLIC_API_URL` or browser CORS → Fastify for this flow). Detail: [web-api-integration.md](../guides/web-api-integration.md).
 
-Points encore à harmoniser **côté instance** (pas dans cette matrice) : branches Agent/Indexer vs Web/API en prod — voir fiche instance.
+Items still to harmonize **on the instance** (not in this matrix): Agent/Indexer branches vs Web/API in prod — see instance sheet.
 
-## Matrice service -> deploiement
+## Service → deployment matrix
 
-| Service | Dossier app | Dockerfile | Port | Base Directory (Dokploy/Coolify) | Build Context | Type de service |
+| Service | App folder | Dockerfile | Port | Base Directory (Dokploy/Coolify) | Build Context | Service type |
 |---|---|---|---:|---|---|---|
-| Web | `apps/web` | `infra/docker/Dockerfile.web` | 3000 | `/` | repo racine | HTTP public |
-| API | `apps/api` | `infra/docker/Dockerfile.api` | 4000 | `/` | repo racine | HTTP public dedie (`api*.allaboard.fr`) + appels internes SSR (`API_URL`) |
-| Agent | `apps/agent` | `infra/docker/Dockerfile.agent` | 4100 | `/` | repo racine | Worker/API interne |
-| Indexer | `apps/indexer` | `infra/docker/Dockerfile.indexer` | 4200 (optionnel) | `/` | repo racine | Worker (souvent non expose) |
-| Storybook (catalogue UI) | `apps/storybook` | `infra/docker/Dockerfile.storybook` | 8080 | `/` | repo racine | HTTP interne ou public (doc DS, hors prod web) |
+| Web | `apps/web` | `infra/docker/Dockerfile.web` | 3000 | `/` | repo root | Public HTTP |
+| API | `apps/api` | `infra/docker/Dockerfile.api` | 4000 | `/` | repo root | Public HTTP (`api*.allaboard.fr`) + internal SSR calls (`API_URL`) |
+| Agent | `apps/agent` | `infra/docker/Dockerfile.agent` | 4100 | `/` | repo root | Internal worker/API |
+| Indexer | `apps/indexer` | `infra/docker/Dockerfile.indexer` | 4200 (optional) | `/` | repo root | Worker (often not exposed) |
+| Storybook (UI catalogue) | `apps/storybook` | `infra/docker/Dockerfile.storybook` | 8080 | `/` | repo root | Internal or public HTTP (DS doc, not prod web) |
 
-## Variables d'environnement par service
+## Environment variables per service
 
-### Variables communes (tous services Node)
+### Common variables (all Node services)
 
-| Variable | Exemple | Web | API | Agent | Indexer | Obligatoire |
+| Variable | Example | Web | API | Agent | Indexer | Required |
 |---|---|:---:|:---:|:---:|:---:|:---:|
-| `NODE_ENV` | `production` | x | x | x | x | Oui |
-| `LOG_LEVEL` | `info` | x | x | x | x | Oui |
-| `PORT` | `3000` | x | x | x | x | Oui |
-| `APP_ENV` | `staging` | x | x | x | x | Oui |
-| `SENTRY_DSN` | `https://...` | x | x | x | x | Recommande |
+| `NODE_ENV` | `production` | x | x | x | x | Yes |
+| `LOG_LEVEL` | `info` | x | x | x | x | Yes |
+| `PORT` | `3000` | x | x | x | x | Yes |
+| `APP_ENV` | `staging` | x | x | x | x | Yes |
+| `SENTRY_DSN` | `https://...` | x | x | x | x | Recommended |
 
-### Variables data/cache
+### Data / cache variables
 
-| Variable | Web | API | Agent | Indexer | Obligatoire |
+| Variable | Web | API | Agent | Indexer | Required |
 |---|:---:|:---:|:---:|:---:|:---:|
-| `DATABASE_URL` |  | x | x | x | Oui (hors web pur) |
-| `REDIS_URL` |  | x | x | x | Recommande |
-| `STORAGE_BUCKET` |  | x | x |  | Recommande |
-| `STORAGE_ENDPOINT` |  | x | x |  | Recommande |
-| `STORAGE_ACCESS_KEY` |  | x | x |  | Oui si utilise |
-| `STORAGE_SECRET_KEY` |  | x | x |  | Oui si utilise |
+| `DATABASE_URL` |  | x | x | x | Yes (except pure web) |
+| `REDIS_URL` |  | x | x | x | Recommended |
+| `STORAGE_BUCKET` |  | x | x |  | Recommended |
+| `STORAGE_ENDPOINT` |  | x | x |  | Recommended |
+| `STORAGE_ACCESS_KEY` |  | x | x |  | Yes if used |
+| `STORAGE_SECRET_KEY` |  | x | x |  | Yes if used |
 
-### Variables auth/securite
+### Auth / security variables
 
-Ces variables concernent **Phase 2** (auth sur l’API) ; voir [ADR 0001](adr/0001-authentication-strategy.md) et [README canonique](README.md).
+These variables concern **Phase 2** (API auth); see [ADR 0001](../adr/0001-authentication-strategy.md) and [canonical README](../README.md).
 
-| Variable | Web | API | Agent | Indexer | Obligatoire |
+| Variable | Web | API | Agent | Indexer | Required |
 |---|:---:|:---:|:---:|:---:|:---:|
-| `JWT_SECRET` |  | x | x |  | Oui (API avec auth JWT — min. 32 caractères) |
-| `GOOGLE_CLIENT_ID` |  | x |  |  | Oui si OAuth Google actif (ADR 0004) |
-| `GOOGLE_CLIENT_SECRET` |  | x |  |  | Oui si OAuth Google actif |
-| `OAUTH_GOOGLE_CALLBACK_URL` |  | x |  |  | Oui si OAuth — URI BFF `/api/auth/google/callback` |
-| `WEB_APP_URL` |  | x |  |  | Oui si OAuth — origine web (redirect post-login) |
-| `MVP_LOGIN_PASSWORD` |  | x |  |  | Oui en dev/MVP (login `POST /auth/login` ; à remplacer avant prod large) |
-| `SESSION_SECRET` | x | x |  |  | Oui si session |
-| `CORS_ALLOWED_ORIGINS` |  | x |  |  | Oui si le **navigateur** appelle l’API en direct ; **N/A** tant que le flux passe par le BFF Next (voir plan opérationnel) |
-| `RATE_LIMIT_ENABLED` |  | x |  |  | Recommande |
+| `JWT_SECRET` |  | x | x |  | Yes (API with JWT auth — min. 32 characters) |
+| `GOOGLE_CLIENT_ID` |  | x |  |  | Yes when Google OAuth active ([ADR 0006](../adr/0006-oauth-google-sso.md)) |
+| `GOOGLE_CLIENT_SECRET` |  | x |  |  | Yes when OAuth active |
+| `OAUTH_GOOGLE_CALLBACK_URL` |  | x |  |  | Yes when OAuth — BFF URI `/api/auth/google/callback` |
+| `WEB_APP_URL` |  | x |  |  | Yes when OAuth — web origin (post-login redirect) |
+| `MVP_LOGIN_PASSWORD` |  | x |  |  | Yes in dev/MVP (`POST /auth/login`; replace before broad prod) |
+| `SESSION_SECRET` | x | x |  |  | Yes if session |
+| `CORS_ALLOWED_ORIGINS` |  | x |  |  | Yes if **browser** calls API directly; **N/A** while flow goes through Next BFF (see integration guide) |
+| `RATE_LIMIT_ENABLED` |  | x |  |  | Recommended |
 
-### Variables blockchain/indexation
+### Blockchain / indexing variables
 
-| Variable | Web | API | Agent | Indexer (legacy) | Obligatoire |
+| Variable | Web | API | Agent | Indexer (legacy) | Required |
 |---|:---:|:---:|:---:|:---:|:---:|
 | `INTUITION_RPC_URL` |  | x |  |  | SDK publish (post-stub #67) |
-| `INTUITION_API_KEY` |  | x |  |  | Selon provider |
-| `INTUITION_GRAPHQL_URL` |  | x |  |  | Lecture graphe (spike #67) |
+| `INTUITION_API_KEY` |  | x |  |  | Per provider |
+| `INTUITION_GRAPHQL_URL` |  | x |  |  | Graph read (spike #67) |
 | `INTUITION_NETWORK_ID` |  | x |  |  | Testnet / mainnet |
-| `INTUITION_PUBLISHER_ENABLED` |  | x |  |  | Défaut `true` ; `false` pour désactiver poll |
-| `INTUITION_PUBLISHER_POLL_MS` |  | x |  |  | Défaut `5000` |
-| `INDEXER_START_BLOCK` |  |  |  | x | **Legacy** — ne pas réactiver |
+| `INTUITION_PUBLISHER_ENABLED` |  | x |  |  | Default `true`; `false` to disable poll |
+| `INTUITION_PUBLISHER_POLL_MS` |  | x |  |  | Default `5000` |
+| `INDEXER_START_BLOCK` |  |  |  | x | **Legacy** — do not reactivate |
 | `INDEXER_CONFIRMATIONS` |  |  |  | x | **Legacy** |
 
-## Configuration Dokploy (par service)
+## Dokploy configuration (per service)
 
-1. Creer une ressource **Application** (ou Docker Compose si besoin multi-service groupe).
-2. Source: repository Git.
+1. Create an **Application** resource (or Docker Compose if grouped multi-service needed).
+2. Source: Git repository.
 3. Build type: **Dockerfile**.
-4. `Base Directory`: `/` (si Dockerfile reference le monorepo racine).
+4. `Base Directory`: `/` (if Dockerfile references monorepo root).
 5. Dockerfile path: `infra/docker/Dockerfile.<service>`.
-6. Definir env vars par service.
-7. Configurer domaine + port + healthcheck.
-8. Activer limites CPU/RAM et logs.
+6. Set env vars per service.
+7. Configure domain + port + healthcheck.
+8. Enable CPU/RAM limits and logs.
 
-Note prod:
-- Dokploy recommande de preferer build+publish en CI pour eviter la surcharge de build sur le serveur.
+Prod note:
+- Dokploy recommends preferring CI build+publish to avoid build load on the server.
 
-## Configuration Coolify (par service)
+## Coolify configuration (per service)
 
-1. Creer une ressource Application depuis Git.
+1. Create Application resource from Git.
 2. Build pack: **Dockerfile**.
 3. `Base Directory`: `/`.
 4. Dockerfile: `infra/docker/Dockerfile.<service>`.
-5. Renseigner port runtime du service.
-6. Ajouter env vars dans l'onglet dedie.
-7. Configurer domaine/publication selon nature du service.
+5. Set service runtime port.
+6. Add env vars in dedicated tab.
+7. Configure domain/publication per service nature.
 
 Notes:
-- Garder `SOURCE_COMMIT` desactive si vous voulez maximiser le cache Docker.
-- Utiliser pre/post deployment commands uniquement pour actions simples et idempotentes.
+- Keep `SOURCE_COMMIT` disabled if maximizing Docker cache.
+- Use pre/post deployment commands only for simple idempotent actions.
 
-## Healthchecks recommandes
+## Recommended healthchecks
 
-| Service | Endpoint / Check | Frequence | Timeout |
+| Service | Endpoint / Check | Interval | Timeout |
 |---|---|---|---|
 | Web | `GET /health` | 30s | 3s |
 | API | `GET /health` | 15s | 3s |
-| Agent | `GET /health` ou check queue | 30s | 5s |
-| Indexer | check bloc courant (custom) | 60s | 5s |
+| Agent | `GET /health` or queue check | 30s | 5s |
+| Indexer | current block check (custom) | 60s | 5s |
 
-## Strategie CI/CD recommandee
+## Recommended CI/CD strategy
 
-1. CI valide monorepo:
+1. CI validates monorepo:
    - `turbo run lint typecheck test build`
-2. CI construit les images:
+2. CI builds images:
    - `web`, `api`, `agent`, `indexer`
-3. CI publie les images (registry).
-4. Dokploy/Coolify deploie par service a partir de l'image/tag.
-5. Rollback par service possible via tag precedent.
+3. CI publishes images (registry).
+4. Dokploy/Coolify deploys per service from image/tag.
+5. Per-service rollback possible via previous tag.
 
-## Mapping des tags images
+## Image tag mapping
 
-| Service | Nom image | Tag recommande |
+| Service | Image name | Recommended tag |
 |---|---|---|
 | Web | `ghcr.io/all-aboard/web` | `sha-<commit>` + `staging`/`prod` |
 | API | `ghcr.io/all-aboard/api` | `sha-<commit>` + `staging`/`prod` |
 | Agent | `ghcr.io/all-aboard/agent` | `sha-<commit>` + `staging`/`prod` |
 | Indexer | `ghcr.io/all-aboard/indexer` | `sha-<commit>` + `staging`/`prod` |
 
-## Checklist de readiness avant deploiement
+## Pre-deployment readiness checklist
 
-- Dockerfile service build localement.
-- Variables d'environnement completees et segmentees par environnement.
-- Endpoint healthcheck disponible.
-- Logs JSON actives.
-- Service non expose publiquement si non necessaire (agent/indexer).
-- Strategie de rollback validee.
+- Service Dockerfile builds locally.
+- Environment variables complete and segmented per environment.
+- Healthcheck endpoint available.
+- JSON logs enabled.
+- Service not publicly exposed if unnecessary (agent/indexer).
+- Rollback strategy validated.

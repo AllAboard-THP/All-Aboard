@@ -10,9 +10,9 @@ import {
   MessageSquare,
   Plus,
   Shield,
-  Users,
   UserCog,
   Gavel,
+  Users,
 } from "lucide-react";
 
 import type { AppSidebarItem } from "./app-sidebar";
@@ -24,13 +24,16 @@ export type AppSidebarNavId =
   | "subjects"
   | "resources"
   | "events"
+  | "newRequest"
   | "feed"
   | "messages"
-  | "mentor"
   | "profile"
-  | "admin";
+  | "mentor"
+  | "admin"
+  | "adminUsers"
+  | "adminModeration";
 
-export type AppSidebarSectionId = "navigation" | "community" | "admin";
+export type AppSidebarSectionId = "navigation" | "community" | "mentor" | "admin";
 
 export type AppSidebarNavDef = {
   id: AppSidebarNavId;
@@ -48,6 +51,7 @@ export type AppSidebarSection = {
 export type AppSidebarSectionLabelKey =
   | "navigationGroup"
   | "communityGroup"
+  | "mentorGroup"
   | "adminGroup";
 
 export type AppSidebarContextLinkDef = {
@@ -64,20 +68,35 @@ export type AppSidebarContextDef = {
   links: AppSidebarContextLinkDef[];
 };
 
-/** Canonical sidebar routes — shared by web AppShell and Storybook AppChrome. */
+/** Student + mentor/admin base routes — mentor items live in APP_SIDEBAR_MENTOR_NAV. */
 export const APP_SIDEBAR_NAV: AppSidebarNavDef[] = [
   { id: "dashboard", href: "/dashboard/demo", icon: LayoutDashboard, group: "navigation" },
   { id: "subjects", href: "/explore", icon: Compass, group: "navigation" },
   { id: "resources", href: "/resources", icon: Library, group: "navigation" },
   { id: "events", href: "/events", icon: Calendar, group: "navigation" },
+  { id: "newRequest", href: "/help/new", icon: Plus, group: "community" },
   { id: "feed", href: "/feed", icon: Users, group: "community" },
   { id: "messages", href: "/messages", icon: MessageSquare, group: "community" },
-  { id: "mentor", href: "/mentor", icon: GraduationCap, group: "community" },
   { id: "profile", href: "/profile", icon: BookOpen, group: "community" },
 ];
 
+/** Visible when role is mentor or admin. */
+export const APP_SIDEBAR_MENTOR_NAV: AppSidebarNavDef[] = [
+  { id: "mentor", href: "/mentor", icon: GraduationCap, group: "mentor" },
+];
+
+/** Visible when role is admin. Order matters for active-route resolution (specific paths first). */
 export const APP_SIDEBAR_ADMIN_NAV: AppSidebarNavDef[] = [
+  { id: "adminUsers", href: "/admin/users", icon: UserCog, group: "admin" },
+  { id: "adminModeration", href: "/admin/moderation", icon: Gavel, group: "admin" },
   { id: "admin", href: "/admin", icon: Shield, group: "admin" },
+];
+
+/** All defs for active-route matching (role-agnostic). */
+export const APP_SIDEBAR_ALL_NAV: AppSidebarNavDef[] = [
+  ...APP_SIDEBAR_NAV,
+  ...APP_SIDEBAR_MENTOR_NAV,
+  ...APP_SIDEBAR_ADMIN_NAV,
 ];
 
 export const APP_SIDEBAR_CONTEXT: Partial<Record<AppSidebarNavId, AppSidebarContextDef>> = {
@@ -102,13 +121,22 @@ export const APP_SIDEBAR_CONTEXT: Partial<Record<AppSidebarNavId, AppSidebarCont
     titleKey: "context.events.title",
     links: [{ id: "all", href: "/events", labelKey: "context.events.all" }],
   },
+  newRequest: {
+    navId: "newRequest",
+    titleKey: "context.newRequest.title",
+    descriptionKey: "context.newRequest.description",
+    links: [
+      { id: "create", href: "/help/new", labelKey: "context.newRequest.create", icon: Plus },
+      { id: "feed", href: "/feed", labelKey: "context.newRequest.backToFeed", icon: ArrowLeft },
+    ],
+  },
   feed: {
     navId: "feed",
     titleKey: "context.feed.title",
     descriptionKey: "context.feed.description",
     links: [
+      { id: "feed", href: "/feed", labelKey: "context.feed.browse" },
       { id: "new", href: "/help/new", labelKey: "context.feed.newRequest", icon: Plus },
-      { id: "feed", href: "/feed", labelKey: "context.feed.backToFeed", icon: ArrowLeft },
     ],
   },
   messages: {
@@ -139,11 +167,29 @@ export const APP_SIDEBAR_CONTEXT: Partial<Record<AppSidebarNavId, AppSidebarCont
       { id: "moderation", href: "/admin/moderation", labelKey: "context.admin.moderation", icon: Gavel },
     ],
   },
+  adminUsers: {
+    navId: "adminUsers",
+    titleKey: "context.admin.title",
+    links: [{ id: "users", href: "/admin/users", labelKey: "context.admin.users", icon: UserCog }],
+  },
+  adminModeration: {
+    navId: "adminModeration",
+    titleKey: "context.admin.title",
+    links: [
+      {
+        id: "moderation",
+        href: "/admin/moderation",
+        labelKey: "context.admin.moderation",
+        icon: Gavel,
+      },
+    ],
+  },
 };
 
 export type AppSidebarLabelMap = {
   navigationGroup: string;
   communityGroup: string;
+  mentorGroup: string;
   adminGroup: string;
   expandSidebar: string;
   collapseSidebar: string;
@@ -169,8 +215,14 @@ export type AppSidebarContextPanelData = {
 export type AppSidebarResolvedContext = {
   activeId?: AppSidebarNavId;
   openSectionIds: AppSidebarSectionId[];
+  showMentorSection: boolean;
   showAdminSection: boolean;
   context?: AppSidebarContextPanelData;
+};
+
+export type AppSidebarRoleOptions = {
+  isMentor?: boolean;
+  isAdmin?: boolean;
 };
 
 export function normalizeAppSidebarPathname(pathname: string): string {
@@ -192,13 +244,15 @@ export function isAppSidebarItemActive(pathname: string | null, href: string): b
 
   const path = normalizeAppSidebarPathname(pathname);
 
+  if (href === "/help/new") {
+    return path === "/help/new" || path.startsWith("/help/new/");
+  }
+
   if (href === "/feed") {
     return (
       path === "/feed" ||
       path.startsWith("/feed/") ||
-      path.startsWith("/requests/") ||
-      path === "/help/new" ||
-      path.startsWith("/help/new/")
+      path.startsWith("/requests/")
     );
   }
 
@@ -214,8 +268,16 @@ export function isAppSidebarItemActive(pathname: string | null, href: string): b
     return path === "/profile" || path.startsWith("/profile/");
   }
 
+  if (href === "/admin/users") {
+    return path === "/admin/users" || path.startsWith("/admin/users/");
+  }
+
+  if (href === "/admin/moderation") {
+    return path === "/admin/moderation" || path.startsWith("/admin/moderation/");
+  }
+
   if (href === "/admin") {
-    return path === "/admin" || path.startsWith("/admin/");
+    return path === "/admin";
   }
 
   return path === href || path.startsWith(`${href}/`);
@@ -226,9 +288,7 @@ export function resolveAppSidebarActiveId(pathname: string | null): AppSidebarNa
     return undefined;
   }
 
-  const allNav = [...APP_SIDEBAR_NAV, ...APP_SIDEBAR_ADMIN_NAV];
-
-  for (const def of allNav) {
+  for (const def of APP_SIDEBAR_ALL_NAV) {
     if (isAppSidebarItemActive(pathname, def.href)) {
       return def.id;
     }
@@ -237,16 +297,18 @@ export function resolveAppSidebarActiveId(pathname: string | null): AppSidebarNa
   return undefined;
 }
 
-function resolveOpenSectionIds(activeId?: AppSidebarNavId): AppSidebarSectionId[] {
-  if (!activeId) {
-    return ["navigation"];
+function resolveOpenSectionIds(options: {
+  showMentorSection: boolean;
+  showAdminSection: boolean;
+}): AppSidebarSectionId[] {
+  const sections: AppSidebarSectionId[] = ["navigation", "community"];
+  if (options.showMentorSection) {
+    sections.push("mentor");
   }
-
-  const def =
-    APP_SIDEBAR_NAV.find((item) => item.id === activeId) ??
-    APP_SIDEBAR_ADMIN_NAV.find((item) => item.id === activeId);
-
-  return def ? [def.group] : ["navigation"];
+  if (options.showAdminSection) {
+    sections.push("admin");
+  }
+  return sections;
 }
 
 function resolveContextLinks(
@@ -278,20 +340,32 @@ function resolveContextLinks(
   };
 }
 
+export function resolveAppSidebarRoleFlags(options?: AppSidebarRoleOptions): {
+  showMentorSection: boolean;
+  showAdminSection: boolean;
+} {
+  const isAdmin = Boolean(options?.isAdmin);
+  const isMentor = Boolean(options?.isMentor) || isAdmin;
+
+  return {
+    showMentorSection: isMentor,
+    showAdminSection: isAdmin,
+  };
+}
+
 export function resolveAppSidebarContext(
   pathname: string | null,
-  options?: {
-    isAdmin?: boolean;
+  options?: AppSidebarRoleOptions & {
     labelMap?: AppSidebarLabelMap;
   },
 ): AppSidebarResolvedContext {
-  const path = pathname ? normalizeAppSidebarPathname(pathname) : "";
   const activeId = resolveAppSidebarActiveId(pathname);
-  const showAdminSection = Boolean(options?.isAdmin) || path.startsWith("/admin");
+  const { showMentorSection, showAdminSection } = resolveAppSidebarRoleFlags(options);
 
   return {
     activeId,
-    openSectionIds: resolveOpenSectionIds(activeId),
+    openSectionIds: resolveOpenSectionIds({ showMentorSection, showAdminSection }),
+    showMentorSection,
     showAdminSection,
     context: resolveContextLinks(pathname, activeId, options?.labelMap),
   };
@@ -301,6 +375,7 @@ export function buildAppSidebarSections(
   labels: AppSidebarLabelMap,
   options?: {
     activeId?: AppSidebarNavId;
+    showMentorSection?: boolean;
     showAdminSection?: boolean;
   },
 ): AppSidebarSection[] {
@@ -312,7 +387,11 @@ export function buildAppSidebarSections(
     active: options?.activeId === def.id,
   });
 
-  const sections: { id: AppSidebarSectionId; labelKey: AppSidebarSectionLabelKey; defs: AppSidebarNavDef[] }[] = [
+  const sections: {
+    id: AppSidebarSectionId;
+    labelKey: AppSidebarSectionLabelKey;
+    defs: AppSidebarNavDef[];
+  }[] = [
     {
       id: "navigation",
       labelKey: "navigationGroup",
@@ -324,6 +403,14 @@ export function buildAppSidebarSections(
       defs: APP_SIDEBAR_NAV.filter((item) => item.group === "community"),
     },
   ];
+
+  if (options?.showMentorSection) {
+    sections.push({
+      id: "mentor",
+      labelKey: "mentorGroup",
+      defs: APP_SIDEBAR_MENTOR_NAV,
+    });
+  }
 
   if (options?.showAdminSection) {
     sections.push({
@@ -391,11 +478,14 @@ export const APP_SIDEBAR_ACTIVE_ID_PATH: Record<AppSidebarNavId, string> = {
   subjects: "/explore",
   resources: "/resources",
   events: "/events",
+  newRequest: "/help/new",
   feed: "/feed",
   messages: "/messages",
-  mentor: "/mentor",
   profile: "/profile",
+  mentor: "/mentor",
   admin: "/admin",
+  adminUsers: "/admin/users",
+  adminModeration: "/admin/moderation",
 };
 
 export function resolveAppSidebarPathname(

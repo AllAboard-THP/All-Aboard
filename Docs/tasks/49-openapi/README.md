@@ -1,66 +1,66 @@
-# Tâche #49 — OpenAPI specification
+# Task #49 — OpenAPI specification
 
-**Issue** : https://github.com/AllAboard-THP/All-Aboard/issues/49
+**Issue:** https://github.com/AllAboard-THP/All-Aboard/issues/49
 
-## Objectif
+## Goal
 
-Documenter le contrat API Phase 2 de façon versionnée (OpenAPI 3.1), avec une UI Swagger en dev/staging, sans exposer `/docs` en production publique.
+Document the Phase 2 API contract in a versioned way (OpenAPI 3.1), with Swagger UI in dev/staging, without exposing `/docs` on public production.
 
-## Décision (spike)
+## Decision (spike)
 
-### Options comparées
+### Options compared
 
-| Option | Avantages | Inconvénients |
-|--------|-----------|---------------|
-| **`@fastify/swagger` + `@fastify/swagger-ui` (généré depuis routes)** | Spec auto depuis schémas Fastify ; `/docs` interactif | Dérive possible vs `packages/types` ; effort schémas JSON sur chaque route |
-| **Spec OpenAPI maintenue à la main (`apps/api/openapi.yaml`)** | Contrôle explicite ; review diff Git facile ; alignée sur le plan opérationnel | Duplication avec `packages/types` (acceptée MVP) |
-| **Génération depuis Zod/schemas partagés** | Single source of truth | Setup monorepo lourd ; Zod 4 + Fastify 5 pas encore standardisé dans le dépôt |
+| Option | Pros | Cons |
+|--------|------|------|
+| **`@fastify/swagger` + `@fastify/swagger-ui` (generated from routes)** | Spec auto from Fastify schemas; interactive `/docs` | Possible drift vs `packages/types`; JSON schema effort per route |
+| **Hand-maintained OpenAPI spec (`apps/api/openapi.yaml`)** | Explicit control; easy Git diff review; aligned with integration guide | Duplication with `packages/types` (accepted for MVP) |
+| **Generation from shared Zod/schemas** | Single source of truth | Heavy monorepo setup; Zod 4 + Fastify 5 not yet standardised in repo |
 
-### Recommandation retenue — **hybride statique**
+### Chosen recommendation — **static hybrid**
 
-1. **Source versionnée** : [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml) — contrat Phase 2 (`/health`, `/feed`, `/auth/*`, `/help-requests/*`, `/mentor/feed`), schémas alignés sur [`packages/types/src/index.ts`](../../../packages/types/src/index.ts).
-2. **UI dev/staging** : [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) en mode **`static`** + [`@fastify/swagger-ui`](https://github.com/fastify/fastify-swagger-ui) sur **`GET /docs`** — voir [`apps/api/src/openapi.ts`](../../../apps/api/src/openapi.ts).
-3. **Pas de codegen web** pour l’instant — le BFF Next reste la consommation navigateur ; codegen client **reporté**.
-4. **CI / review** : changement endpoint = **api + types + `openapi.yaml` + tests** dans la même PR (règle existante [Docs/README.md](../../README.md)).
+1. **Versioned source:** [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml) — Phase 2 contract (`/health`, `/feed`, `/auth/*`, `/help-requests/*`, `/mentor/feed`), schemas aligned with [`packages/types/src/index.ts`](../../../packages/types/src/index.ts).
+2. **Dev/staging UI:** [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) in **`static`** mode + [`@fastify/swagger-ui`](https://github.com/fastify/fastify-swagger-ui) on **`GET /docs`** — see [`apps/api/src/openapi.ts`](../../../apps/api/src/openapi.ts).
+3. **No web codegen for now** — Next BFF remains browser consumption; client codegen **deferred**.
+4. **CI / review:** endpoint change = **api + types + `openapi.yaml` + tests** in same PR (existing rule [Docs/README.md](../../README.md)).
 
-### Questions ouvertes (issue #49) — tranchées
+### Open questions (issue #49) — resolved
 
-| Question | Décision MVP |
+| Question | MVP decision |
 |----------|--------------|
-| Périmètre v1 | Tous les endpoints Phase 2 listés ci-dessus |
-| Publication `/docs` | **Dev + staging** (`APP_ENV` ≠ `production`) ; override `OPENAPI_DOCS=true\|false` |
-| Prod publique | `/docs` **désactivé** sans ADR sécurité dédiée |
-| Consommation | Doc développeur + smoke manuel ; pas de codegen |
+| v1 scope | All Phase 2 endpoints listed above |
+| `/docs` publication | **Dev + staging** (`APP_ENV` ≠ `production`); override `OPENAPI_DOCS=true\|false` |
+| Public prod | `/docs` **disabled** without dedicated security ADR |
+| Consumption | Developer doc + manual smoke; no codegen |
 
-### Évolution possible (post-MVP)
+### Possible evolution (post-MVP)
 
-- Extraire schémas Zod partagés (`packages/types` ou `packages/api-schemas`) et générer YAML en CI.
-- Passer `@fastify/swagger` en mode **dynamic** une fois les schémas route alignés — avec test de non-régression contre le YAML.
-- ADR si exposition Swagger en prod (auth, rate limit, désactivation write).
+- Extract shared Zod schemas (`packages/types` or `packages/api-schemas`) and generate YAML in CI.
+- Switch `@fastify/swagger` to **dynamic** mode once route schemas align — with non-regression test against YAML.
+- ADR if Swagger exposed in prod (auth, rate limit, write disable).
 
-## Implémentation livrée
+## Shipped implementation
 
-| Fichier | Rôle |
-|---------|------|
-| [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml) | Spec OpenAPI 3.1 Phase 2 |
-| [`apps/api/src/openapi.ts`](../../../apps/api/src/openapi.ts) | Enregistrement conditionnel Swagger UI |
-| [`apps/api/src/app.ts`](../../../apps/api/src/app.ts) | `buildApp()` async — docs avant routes |
-| [`apps/api/src/app.test.ts`](../../../apps/api/src/app.test.ts) | Tests spec `/feed` + garde `/docs` prod |
+| File | Role |
+|------|------|
+| [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml) | OpenAPI 3.1 Phase 2 spec |
+| [`apps/api/src/openapi.ts`](../../../apps/api/src/openapi.ts) | Conditional Swagger UI registration |
+| [`apps/api/src/app.ts`](../../../apps/api/src/app.ts) | Async `buildApp()` — docs before routes |
+| [`apps/api/src/app.test.ts`](../../../apps/api/src/app.test.ts) | Tests spec `/feed` + prod `/docs` guard |
 
-### Variables d’environnement
+### Environment variables
 
-| Variable | Service | Rôle |
+| Variable | Service | Role |
 |----------|---------|------|
-| `APP_ENV` | API | Si `production` → pas de `/docs` (défaut staging/dev : docs actifs) |
-| `OPENAPI_DOCS` | API | Override explicite : `true` / `false` |
+| `APP_ENV` | API | If `production` → no `/docs` (default staging/dev: docs active) |
+| `OPENAPI_DOCS` | API | Explicit override: `true` / `false` |
 
-### Vérification locale
+### Local verification
 
 ```bash
 # Terminal 1 — API
 cd apps/api && pnpm dev
 
-# Navigateur
+# Browser
 open http://localhost:4000/docs
 ```
 
@@ -68,18 +68,18 @@ open http://localhost:4000/docs
 pnpm --filter api test
 ```
 
-## Critères de clôture #49
+## Closure criteria #49
 
-- [x] Spike doc (ce README)
-- [x] Spec minimale versionnée (`openapi.yaml`)
+- [x] Spike doc (this README)
+- [x] Minimal versioned spec (`openapi.yaml`)
 - [x] Swagger UI dev/staging (`/docs`)
-- [x] Tests Vitest (spec + garde prod)
-- [x] `pnpm verify` vert
+- [x] Vitest tests (spec + prod guard)
+- [x] `pnpm verify` green
 
-**Clôture issue** : commenter sur #49 avec lien vers ce dossier + merge PR ; passer le statut Project **Done**.
+**Close issue:** comment on #49 with link to this folder + merge PR; set Project status **Done**.
 
-## Doc canonique (lecture)
+## Canonical docs (reading)
 
-- [Plan opérationnel — Contrats API](../../plan-mise-en-place-web-api-donnees.md)
+- [Operational plan — API contracts](../../guides/web-api-integration.md)
 - [packages/types](../../../packages/types/src/index.ts)
 - [ADR 0001 auth](../../adr/0001-authentication-strategy.md)

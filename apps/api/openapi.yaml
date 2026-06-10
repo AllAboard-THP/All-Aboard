@@ -3,7 +3,7 @@ info:
   title: All-Aboard API
   description: |
     Contrat HTTP Phase 2 MVP (feed, auth JWT, demandes d'aide, mentor feed).
-    Source de vérité types : `packages/types`. Doc opérationnelle : `Docs/plan-mise-en-place-web-api-donnees.md`.
+    Source de vérité types : `packages/types`. Doc opérationnelle : `Docs/guides/web-api-integration.md`.
   version: 0.10.0
   contact:
     name: All-Aboard THP

@@ -1,45 +1,45 @@
-# API parité Rails — Phase 7 (suggest-tags + ai_summary)
+# Rails API parity — Phase 7 (suggest-tags + ai_summary)
 
-**PR** : [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104)  
-**OpenAPI** : `0.10.0` — [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml)  
-**Prérequis** : [Phase 1](../api-rails-parity-phase1/README.md) (`ai_summary` colonne, `status resolved`)  
-**Référence Rails** : `posts#suggest_tags`, `GeneratePostSummaryJob` (`apps/thp-final`)
+**PR:** [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104)  
+**OpenAPI:** `0.10.0` — [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml)  
+**Prerequisite:** [Phase 1](../api-rails-parity-phase1/README.md) (`ai_summary` column, `status resolved`)  
+**Rails reference:** `posts#suggest_tags`, `GeneratePostSummaryJob` (`apps/thp-final`)
 
-## Objectif
+## Goal
 
-Proposer des tags à la rédaction et générer un résumé IA quand une demande passe à `resolved`, via proxy `apps/agent` (stub sans clé LLM ; LLM optionnel plus tard).
+Suggest tags while drafting and generate an AI summary when a request moves to `resolved`, via `apps/agent` proxy (stub without LLM key; optional LLM later).
 
 ---
 
 ## C.1 Suggest tags
 
-| Couche | Endpoint | Comportement |
-|--------|----------|--------------|
+| Layer | Endpoint | Behaviour |
+|-------|----------|-----------|
 | Agent | `POST /tags/suggest` | Body `{ title?, body? }` → `{ tags: string[] }` (2–5 tags, lowercase) |
-| API | `POST /help-requests/suggest-tags` | JWT requis ; proxy `AGENT_URL` + fallback stub local |
+| API | `POST /help-requests/suggest-tags` | JWT required; proxies `AGENT_URL` + local stub fallback |
 
-**Stub agent** (sans `ANTHROPIC_API_KEY`) : heuristique mots-clés (mots > 4 lettres, stopwords filtrés) — suffisant dev/CI.
+**Agent stub** (without `ANTHROPIC_API_KEY`): keyword heuristic (words > 4 letters, stopwords filtered) — sufficient for dev/CI.
 
 ### Modules
 
-| Fichier | Rôle |
-|---------|------|
-| [`apps/agent/src/tag-suggest.ts`](../../../apps/agent/src/tag-suggest.ts) | Heuristique / futur LLM |
+| File | Role |
+|------|------|
+| [`apps/agent/src/tag-suggest.ts`](../../../apps/agent/src/tag-suggest.ts) | Heuristic / future LLM |
 | [`apps/agent/src/app.ts`](../../../apps/agent/src/app.ts) | `POST /tags/suggest` |
-| [`apps/api/src/agent/tag-suggestion.ts`](../../../apps/api/src/agent/tag-suggestion.ts) | Proxy agent |
-| [`apps/api/src/routes/suggest-tags.ts`](../../../apps/api/src/routes/suggest-tags.ts) | Route API |
+| [`apps/api/src/agent/tag-suggestion.ts`](../../../apps/api/src/agent/tag-suggestion.ts) | Agent proxy |
+| [`apps/api/src/routes/suggest-tags.ts`](../../../apps/api/src/routes/suggest-tags.ts) | API route |
 
 ### Types
 
-`SuggestTagsBody`, `SuggestTagsResponse`, `AgentTagsSuggestBody`, `AgentTagsSuggestResponse` dans [`packages/types`](../../../packages/types/src/index.ts).
+`SuggestTagsBody`, `SuggestTagsResponse`, `AgentTagsSuggestBody`, `AgentTagsSuggestResponse` in [`packages/types`](../../../packages/types/src/index.ts).
 
 ---
 
-## C.2 Résumé IA à la résolution
+## C.2 AI summary on resolution
 
-**Déclencheur** : `PATCH /help-requests/:id` quand `status` passe à `resolved` (équivalent Rails `after_update_commit`).
+**Trigger:** `PATCH /help-requests/:id` when `status` becomes `resolved` (Rails `after_update_commit` equivalent).
 
-**Pipeline (outbox, ADR 0004)** :
+**Pipeline (outbox, ADR 0004):**
 
 ```mermaid
 flowchart LR
@@ -54,29 +54,29 @@ flowchart LR
   Agent --> DB
 ```
 
-| Fichier | Rôle |
-|---------|------|
+| File | Role |
+|------|------|
 | [`apps/api/src/intuition/outbox.ts`](../../../apps/api/src/intuition/outbox.ts) | `enqueueHelpRequestSummaryRequested` |
-| [`apps/api/src/services/ai-summary-worker.ts`](../../../apps/api/src/services/ai-summary-worker.ts) | Poll outbox, appelle agent, `UPDATE ai_summary` |
-| [`apps/api/src/index.ts`](../../../apps/api/src/index.ts) | Démarre worker si `AI_SUMMARY_ENABLED=true` |
-| [`apps/agent/src/summary-generate.ts`](../../../apps/agent/src/summary-generate.ts) | Stub « Problème / Solution » |
-| [`apps/api/src/agent/summary.ts`](../../../apps/api/src/agent/summary.ts) | Proxy agent |
+| [`apps/api/src/services/ai-summary-worker.ts`](../../../apps/api/src/services/ai-summary-worker.ts) | Poll outbox, call agent, `UPDATE ai_summary` |
+| [`apps/api/src/index.ts`](../../../apps/api/src/index.ts) | Starts worker when `AI_SUMMARY_ENABLED=true` |
+| [`apps/agent/src/summary-generate.ts`](../../../apps/agent/src/summary-generate.ts) | Stub "Problem / Solution" |
+| [`apps/api/src/agent/summary.ts`](../../../apps/api/src/agent/summary.ts) | Agent proxy |
 
-**Idempotence** : pas de re-enqueue si `ai_summary` déjà rempli ; `onConflictDoNothing` sur outbox.
+**Idempotence:** no re-enqueue if `ai_summary` already set; `onConflictDoNothing` on outbox.
 
 ---
 
-## Variables d’environnement
+## Environment variables
 
-| Variable | Service | Rôle |
+| Variable | Service | Role |
 |----------|---------|------|
-| `AGENT_URL` | API | Base URL agent (tags + summary) |
-| `AI_SUMMARY_ENABLED` | API | Active le poll worker (défaut : off) |
-| `ANTHROPIC_API_KEY` | Agent | LLM futur (stub si absent) |
+| `AGENT_URL` | API | Agent base URL (tags + summary) |
+| `AI_SUMMARY_ENABLED` | API | Enables poll worker (default: off) |
+| `ANTHROPIC_API_KEY` | Agent | Future LLM (stub if absent) |
 
 ---
 
-## Vérification
+## Verification
 
 ```bash
 pnpm --filter @allaboard/types build
@@ -84,14 +84,14 @@ pnpm --filter agent test
 pnpm --filter api test
 ```
 
-Tests API : suggest-tags stub ; `PATCH` → `resolved` → ligne outbox ; `processPendingSummaryEvents` remplit `ai_summary`.
+API tests: suggest-tags stub; `PATCH` → `resolved` → outbox row; `processPendingSummaryEvents` fills `ai_summary`.
 
-## Suite
+## Next
 
-Hub : [api-rails-parity](../api-rails-parity/README.md)
+Hub: [api-rails-parity](../api-rails-parity/README.md)
 
-## Fichiers
+## Files
 
-| Fichier | Rôle |
-|---------|------|
-| `README.md` | Ce fichier |
+| File | Role |
+|------|------|
+| `README.md` | This file |

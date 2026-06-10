@@ -9,6 +9,7 @@ export type StudentDashboardLabels = {
   sidebar: {
     navigationGroup: string;
     communityGroup: string;
+    mentorGroup: string;
     adminGroup: string;
     expandSidebar: string;
     collapseSidebar: string;
@@ -18,11 +19,14 @@ export type StudentDashboardLabels = {
     subjects: string;
     resources: string;
     events: string;
+    newRequest: string;
     feed: string;
     messages: string;
     mentor: string;
     profile: string;
-    admin: string;
+    adminOverview: string;
+    adminUsers: string;
+    adminModeration: string;
     settings: string;
     signOut: string;
     context: {
@@ -30,7 +34,14 @@ export type StudentDashboardLabels = {
       subjects: { title: string; explore: string };
       resources: { title: string; all: string };
       events: { title: string; all: string };
-      feed: { title: string; description: string; newRequest: string; backToFeed: string };
+      newRequest: { title: string; description: string; create: string; backToFeed: string };
+      feed: {
+        title: string;
+        description: string;
+        browse: string;
+        newRequest: string;
+        backToFeed: string;
+      };
       messages: { title: string; inbox: string };
       mentor: { title: string; space: string; demo: string };
       profile: { title: string; view: string };
@@ -79,6 +90,7 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
   sidebar: {
     navigationGroup: "Navigation",
     communityGroup: "Communauté",
+    mentorGroup: "Mentorat",
     adminGroup: "Administration",
     expandSidebar: "Déplier la barre latérale",
     collapseSidebar: "Replier la barre latérale",
@@ -88,11 +100,14 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
     subjects: "Matières",
     resources: "Ressources",
     events: "Événements",
+    newRequest: "Nouvelle demande",
     feed: "Entraide",
     messages: "Messages",
     mentor: "Espace mentor",
     profile: "Mon profil",
-    admin: "Administration",
+    adminOverview: "Vue d'ensemble",
+    adminUsers: "Utilisateurs",
+    adminModeration: "Modération",
     settings: "Paramètres",
     signOut: "Déconnexion",
     context: {
@@ -104,9 +119,16 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
       subjects: { title: "Matières", explore: "Explorer les matières" },
       resources: { title: "Ressources", all: "Toutes les ressources" },
       events: { title: "Événements", all: "Agenda complet" },
+      newRequest: {
+        title: "Nouvelle demande",
+        description: "Publie une question pour l'entraide.",
+        create: "Créer une demande",
+        backToFeed: "Retour au fil",
+      },
       feed: {
         title: "Entraide",
         description: "Publie une demande ou retrouve le fil.",
+        browse: "Parcourir le fil",
         newRequest: "Nouvelle demande",
         backToFeed: "Retour au fil",
       },
@@ -162,6 +184,7 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
   sidebar: {
     navigationGroup: "Navigation",
     communityGroup: "Community",
+    mentorGroup: "Mentoring",
     adminGroup: "Administration",
     expandSidebar: "Expand sidebar",
     collapseSidebar: "Collapse sidebar",
@@ -171,11 +194,14 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
     subjects: "Subjects",
     resources: "Resources",
     events: "Events",
+    newRequest: "New request",
     feed: "Peer help",
     messages: "Messages",
     mentor: "Mentor space",
     profile: "My profile",
-    admin: "Administration",
+    adminOverview: "Overview",
+    adminUsers: "Users",
+    adminModeration: "Moderation",
     settings: "Settings",
     signOut: "Sign out",
     context: {
@@ -187,9 +213,16 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
       subjects: { title: "Subjects", explore: "Explore subjects" },
       resources: { title: "Resources", all: "All resources" },
       events: { title: "Events", all: "Full calendar" },
+      newRequest: {
+        title: "New request",
+        description: "Post a question for peer help.",
+        create: "Create a request",
+        backToFeed: "Back to feed",
+      },
       feed: {
         title: "Peer help",
         description: "Post a request or browse the feed.",
+        browse: "Browse feed",
         newRequest: "New request",
         backToFeed: "Back to feed",
       },

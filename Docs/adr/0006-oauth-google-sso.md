@@ -1,55 +1,55 @@
-# ADR 0004 — Connexion Google (OAuth 2.0)
+# ADR 0006 — Google sign-in (OAuth 2.0)
 
-## Statut
+## Status
 
-Accepté — 2026-06-09.
+Accepted — 2026-06-09.
 
-## Contexte
+## Context
 
-L’[ADR 0001](0001-authentication-strategy.md) pose JWT + cookie httpOnly relayé par le BFF Next. L’[ADR 0003](0003-authentication-users-production.md) couvre email/mot de passe ; le SSO THP était reporté. La carte Connexion landing requiert « Continuer avec Google ».
+[ADR 0001](0001-authentication-strategy.md) establishes JWT + httpOnly cookie relayed by the Next BFF. [ADR 0003](0003-authentication-users-production.md) covers email/password; THP SSO was deferred. The landing login card requires "Continue with Google".
 
-## Décision
+## Decision
 
-1. **Flux OAuth 2.0 authorization code + PKCE** côté API Fastify (endpoints Google officiels, config via `@fastify/oauth2` `GOOGLE_CONFIGURATION`).
-2. **Callback same-origin web** : l’URI enregistrée dans Google Cloud Console pointe vers le BFF `GET /api/auth/google/callback` ; le BFF relaie vers l’API et propage `Set-Cookie` (pattern ADR 0001 inchangé).
-3. **State CSRF** : JWT signé (`JWT_SECRET`) embarquant `code_verifier` PKCE — pas de cookie OAuth cross-domaine API/web.
-4. **Table `oauth_accounts`** : liaison `(provider, provider_account_id)` → `users.id`.
-5. **`users.password_hash` nullable** : comptes OAuth-only sans mot de passe local.
-6. **Premier login Google** : création auto (`role: student`) ; si `cguAcceptedAt` absent → redirect `/onboarding` (profil minimal + acceptation CGU via `POST /legal/accept`).
-7. **Email existant** : liaison du compte Google au user existant (pas de doublon).
-8. **Pas NextAuth** : l’API reste seule source du JWT `access_token`.
+1. **OAuth 2.0 authorization code + PKCE flow** on the Fastify API (official Google endpoints, config via `@fastify/oauth2` `GOOGLE_CONFIGURATION`).
+2. **Same-origin web callback**: URI registered in Google Cloud Console points to BFF `GET /api/auth/google/callback`; BFF relays to API and propagates `Set-Cookie` (ADR 0001 pattern unchanged).
+3. **CSRF state**: JWT signed (`JWT_SECRET`) embedding PKCE `code_verifier` — no cross-domain API/web OAuth cookie.
+4. **`oauth_accounts` table**: link `(provider, provider_account_id)` → `users.id`.
+5. **Nullable `users.password_hash`**: OAuth-only accounts without local password.
+6. **First Google login**: auto-create (`role: student`); if `cguAcceptedAt` missing → redirect `/onboarding` (minimal profile + legal acceptance via `POST /legal/accept`).
+7. **Existing email**: link Google account to existing user (no duplicate).
+8. **No NextAuth**: API remains sole source of `access_token` JWT.
 
-## Variables d’environnement (API)
+## Environment variables (API)
 
 | Variable | Description |
 |----------|-------------|
-| `GOOGLE_CLIENT_ID` | Client OAuth 2.0 Web (Google Cloud Console) |
-| `GOOGLE_CLIENT_SECRET` | Secret associé |
-| `OAUTH_GOOGLE_CALLBACK_URL` | URI callback **BFF** (ex. `http://localhost:3000/api/auth/google/callback`) |
-| `WEB_APP_URL` | Origine web pour redirects post-login (ex. `http://localhost:3000`) |
+| `GOOGLE_CLIENT_ID` | OAuth 2.0 Web client (Google Cloud Console) |
+| `GOOGLE_CLIENT_SECRET` | Associated secret |
+| `OAUTH_GOOGLE_CALLBACK_URL` | **BFF** callback URI (e.g. `http://localhost:3000/api/auth/google/callback`) |
+| `WEB_APP_URL` | Web origin for post-login redirects (e.g. `http://localhost:3000`) |
 
-Sans ces variables, `GET /auth/google` répond `503 oauth_not_configured`.
+Without these variables, `GET /auth/google` responds `503 oauth_not_configured`.
 
 ## Runbook — Google Cloud Console
 
-1. [Google Cloud Console](https://console.cloud.google.com/) → projet All-Aboard.
-2. **APIs & Services → OAuth consent screen** : External (ou Internal si Workspace), scopes `openid`, `email`, `profile`.
+1. [Google Cloud Console](https://console.cloud.google.com/) → All-Aboard project.
+2. **APIs & Services → OAuth consent screen**: External (or Internal if Workspace), scopes `openid`, `email`, `profile`.
 3. **Credentials → Create credentials → OAuth client ID → Web application**.
-4. **Authorized JavaScript origins** : `http://localhost:3000`, URLs web staging/prod.
-5. **Authorized redirect URIs** (exact match) :
+4. **Authorized JavaScript origins**: `http://localhost:3000`, web staging/prod URLs.
+5. **Authorized redirect URIs** (exact match):
    - `http://localhost:3000/api/auth/google/callback`
-   - `https://<domaine-web>/api/auth/google/callback` par environnement
-6. Copier Client ID et Client Secret dans Dokploy / `.env` API.
+   - `https://<web-domain>/api/auth/google/callback` per environment
+6. Copy Client ID and Client Secret to Dokploy / API `.env`.
 
-## Conséquences
+## Consequences
 
 - Migration `0012_oauth_accounts.sql`.
-- Routes API : `GET /auth/google`, `GET /auth/google/callback`.
-- Routes BFF : `GET /api/auth/google`, `GET /api/auth/google/callback`.
-- UI : bouton branding Google sur la carte Connexion ; page `/onboarding` pour nouveaux comptes OAuth.
+- API routes: `GET /auth/google`, `GET /auth/google/callback`.
+- BFF routes: `GET /api/auth/google`, `GET /api/auth/google/callback`.
+- UI: Google branding button on login card; `/onboarding` page for new OAuth accounts.
 
-## Liens
+## Links
 
 - [ADR 0001](0001-authentication-strategy.md)
 - [ADR 0003](0003-authentication-users-production.md)
-- [Matrice déploiement](../matrice-deploiement-dokploy-coolify.md)
+- [Deployment matrix](../deployment/environment-variables.md)

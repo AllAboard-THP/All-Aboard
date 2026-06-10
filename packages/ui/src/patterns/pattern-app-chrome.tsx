@@ -130,6 +130,7 @@ export function AppChrome({
             activeId={resolvedActiveId}
             messageCount={messageCount}
             showMentorDot={showMentorDot}
+            isMentor={isMentor || isAdmin}
             isAdmin={isAdmin}
           />
         ) : null}

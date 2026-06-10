@@ -2,6 +2,7 @@ import { routing } from "@/i18n/routing";
 
 export {
   APP_SIDEBAR_NAV,
+  buildAppSidebarSections,
   isAppSidebarItemActive,
   normalizeAppSidebarPathname,
   resolveAppSidebarActiveId,

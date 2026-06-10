@@ -1,31 +1,31 @@
-# Phase 2b — Réponses & communauté (MOC)
+# Phase 2b — Responses & community (MOC)
 
-**Issue epic** : [#78](https://github.com/AllAboard-THP/All-Aboard/issues/78) — **clôturée** (toutes les sous-tâches #79–#83 livrées).
+**Epic issue:** [#78](https://github.com/AllAboard-THP/All-Aboard/issues/78) — **closed** (all sub-tasks #79–#83 shipped).
 
-Combler l’écart MOC vs MVP sur le fil de réponses aux demandes d’aide ([moc-parcours-utilisateur.md](../../moc-parcours-utilisateur.md)).
+Close the MOC vs MVP gap on help-request response threads ([product/user-journeys.md](../../product/user-journeys.md)).
 
-## Sous-tâches
+## Sub-tasks
 
-| Issue | Scope | Statut | PR |
+| Issue | Scope | Status | PR |
 |-------|--------|--------|-----|
-| [#79](https://github.com/AllAboard-THP/All-Aboard/issues/79) | API + DB `responses` + `POST` authentifié | ✅ | [#84](https://github.com/AllAboard-THP/All-Aboard/pull/84) |
+| [#79](https://github.com/AllAboard-THP/All-Aboard/issues/79) | API + DB `responses` + authenticated `POST` | ✅ | [#84](https://github.com/AllAboard-THP/All-Aboard/pull/84) |
 | [#80](https://github.com/AllAboard-THP/All-Aboard/issues/80) | BFF + TanStack mutation | ✅ | [#84](https://github.com/AllAboard-THP/All-Aboard/pull/84) |
-| [#81](https://github.com/AllAboard-THP/All-Aboard/issues/81) | UI thread détail | ✅ | [#84](https://github.com/AllAboard-THP/All-Aboard/pull/84) |
-| [#82](https://github.com/AllAboard-THP/All-Aboard/issues/82) | Notifications mentor | ✅ | [#87](https://github.com/AllAboard-THP/All-Aboard/pull/87) |
-| [#83](https://github.com/AllAboard-THP/All-Aboard/issues/83) | Filtrage réponses par certification | ✅ | [#88](https://github.com/AllAboard-THP/All-Aboard/pull/88) |
+| [#81](https://github.com/AllAboard-THP/All-Aboard/issues/81) | Detail thread UI | ✅ | [#84](https://github.com/AllAboard-THP/All-Aboard/pull/84) |
+| [#82](https://github.com/AllAboard-THP/All-Aboard/issues/82) | Mentor notifications | ✅ | [#87](https://github.com/AllAboard-THP/All-Aboard/pull/87) |
+| [#83](https://github.com/AllAboard-THP/All-Aboard/issues/83) | Certification response filtering | ✅ | [#88](https://github.com/AllAboard-THP/All-Aboard/pull/88) |
 
-Doc détaillée par lot : [#82 mentor notifications](../82-mentor-notifications/README.md) · [#83 filtrage certifications](../83-response-filtering/README.md) (livré avec PR #88).
+Per-batch detail: [#82 mentor notifications](../82-mentor-notifications/README.md) · [#83 certification filtering](../83-response-filtering/README.md) (shipped with PR #88).
 
-## Livraison — thread réponses (#79–#81, PR #84)
+## Delivery — response thread (#79–#81, PR #84)
 
-- Migration `0002_responses` — table `responses` (FK `help_request_id`, cascade delete).
-- `GET /help-requests/:id` — peupler `responses[]` (ordre `created_at`).
-- `POST /help-requests/:id/responses` — JWT, corps `{ body }`.
+- Migration `0002_responses` — `responses` table (FK `help_request_id`, cascade delete).
+- `GET /help-requests/:id` — populate `responses[]` (`created_at` order).
+- `POST /help-requests/:id/responses` — JWT, body `{ body }`.
 - BFF `POST /api/help-requests/[id]/responses`.
-- Page `/requests/[id]` — liste réponses + formulaire (login inline + TanStack invalidation).
+- Page `/requests/[id]` — response list + form (inline login + TanStack invalidation).
 - OpenAPI + types `CreateResponseBody` / `CreateResponseResponse`.
 
-### Fichiers (#79–#81)
+### Files (#79–#81)
 
 - `apps/api/src/db/schema.ts`, `apps/api/drizzle/0002_responses.sql`
 - `apps/api/src/app.ts`, `apps/api/openapi.yaml`
@@ -35,38 +35,38 @@ Doc détaillée par lot : [#82 mentor notifications](../82-mentor-notifications/
 
 ### Tests (#79–#81)
 
-- `apps/api/src/app.test.ts` — création réponse + détail peuplé
-- `apps/web/tests/bff-phase2.test.ts` — relay BFF POST responses
+- `apps/api/src/app.test.ts` — response creation + populated detail
+- `apps/web/tests/bff-phase2.test.ts` — BFF POST responses relay
 
-## Livraison — notifications mentor (#82, PR #87)
+## Delivery — mentor notifications (#82, PR #87)
 
-MOC étapes 6–7 : après publication taguée, le mentor voit une **signalisation** sur le dashboard.
+MOC steps 6–7: after tagged publication, mentor sees **signalling** on dashboard.
 
-- `GET /mentor/feed` — JWT mentor ; champs `responseCount`, `lastResponseAt`, `hasUnreadForMentor`.
-- BFF `GET /api/mentor/feed` — relais Bearer cookie.
-- UI `/mentor` — badge carte feed ; badge agrégé lien **Mentor** dans `app-shell-nav.tsx`.
-- Types `MentorFeedItem` + OpenAPI alignés.
+- `GET /mentor/feed` — mentor JWT; fields `responseCount`, `lastResponseAt`, `hasUnreadForMentor`.
+- BFF `GET /api/mentor/feed` — Bearer cookie relay.
+- UI `/mentor` — feed card badge; aggregate badge on **Mentor** link in `app-shell-nav.tsx`.
+- Types `MentorFeedItem` + OpenAPI aligned.
 
-Voir [82-mentor-notifications/README.md](../82-mentor-notifications/README.md).
+See [82-mentor-notifications/README.md](../82-mentor-notifications/README.md).
 
-## Livraison — filtrage certifications (#83, PR #88)
+## Delivery — certification filtering (#83, PR #88)
 
-MOC étape 8 : filtrer les réponses selon certifications / pertinence.
+MOC step 8: filter responses by certifications / relevance.
 
 - Migration `0003_user_certifications.sql` — `users.certification_tags` (`text[]`).
-- `GET /help-requests/:id?filterByCertifications=true` — mentor JWT ; métadonnées `certificationFilter`.
-- BFF relaie le query ; toggle mentor sur fiche demande (`help-request-detail-client.tsx`).
+- `GET /help-requests/:id?filterByCertifications=true` — mentor JWT; `certificationFilter` metadata.
+- BFF relays query; mentor toggle on request detail (`help-request-detail-client.tsx`).
 
-Voir [83-response-filtering/README.md](../83-response-filtering/README.md) (ajouté dans PR #88).
+See [83-response-filtering/README.md](../83-response-filtering/README.md) (added in PR #88).
 
-## Hors scope (hors epic #78)
+## Out of scope (outside epic #78)
 
-- Réponse finale étudiant (workflow statut).
-- Table `notifications` dédiée, WebSocket, marquage lu persistant (#82 Option B).
-- Scoring Intuition / filtre sur `GET /mentor/feed` (#83 reporté).
+- Student final answer (status workflow).
+- Dedicated `notifications` table, WebSocket, persistent read marking (#82 Option B).
+- Intuition scoring / filter on `GET /mentor/feed` (#83 deferred).
 
-## Smoke manuel (régression Phase 2b)
+## Manual smoke (Phase 2b regression)
 
-1. `alice@dev.local` — dashboard `/mentor` : badge si réponse non-mentor sur une demande taguée.
-2. Fiche demande mentor — toggle « Filtrer par certifications » (après merge PR #88) : réponses hors tags masquées, demandeur toujours visible.
-3. `bob@dev.local` — poster une réponse sur `/requests/[id]`, thread visible sans filtre mentor.
+1. `alice@dev.local` — dashboard `/mentor`: badge if non-mentor response on tagged request.
+2. Mentor request detail — "Filter by certifications" toggle (after PR #88 merge): responses outside tags hidden, requester always visible.
+3. `bob@dev.local` — post response on `/requests/[id]`, thread visible without mentor filter.

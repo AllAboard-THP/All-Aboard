@@ -1,28 +1,28 @@
-# Index — documentation Intuition
+# Intuition documentation index
 
-Index structuré des pages de la documentation **Intuition**, pour navigation humaine et repères agents.
+Structured index of **Intuition** documentation pages, for human navigation and agent reference.
 
-- **Site** : [https://www.docs.intuition.systems/docs](https://www.docs.intuition.systems/docs)
-- **Sources utilisées pour cet index** : contenu de la page d’introduction (`/docs`), fichier [`llms.txt`](https://www.docs.intuition.systems/llms.txt) (résumé orienté LLM), variantes `docs.intuition.systems` équivalentes pour les chemins.
-- **Index machine complet** (contenu étendu) : [llms-full.txt](https://docs.intuition.systems/llms-full.txt), [llms-medium.txt](https://docs.intuition.systems/llms-medium.txt) — utiles pour ingestion RAG ou contexte large.
+- **Site:** [https://www.docs.intuition.systems/docs](https://www.docs.intuition.systems/docs)
+- **Sources used for this index:** introduction page content (`/docs`), [`llms.txt`](https://www.docs.intuition.systems/llms.txt) file (LLM-oriented summary), equivalent `docs.intuition.systems` variants for paths.
+- **Full machine index** (extended content): [llms-full.txt](https://docs.intuition.systems/llms-full.txt), [llms-medium.txt](https://docs.intuition.systems/llms-medium.txt) — useful for RAG ingestion or large context.
 
-Les URL ci-dessous utilisent le hôte **`https://www.docs.intuition.systems`** ; si une URL 404, essayer `https://docs.intuition.systems` (même chemin).
+URLs below use host **`https://www.docs.intuition.systems`**; if a URL 404s, try `https://docs.intuition.systems` (same path).
 
 ---
 
-## Racine et méta
+## Root and meta
 
-| Titre | URL |
+| Title | URL |
 | --- | --- |
-| Introduction (page d’accueil docs) | [https://www.docs.intuition.systems/docs](https://www.docs.intuition.systems/docs) |
-| llms.txt (index concis) | [https://www.docs.intuition.systems/llms.txt](https://www.docs.intuition.systems/llms.txt) |
-| Fichier llms packagé (ex. sur la page intro) | voir liens « For AI Agents » sur la page d’intro — chemins sous `/assets/files/` |
+| Introduction (docs home) | [https://www.docs.intuition.systems/docs](https://www.docs.intuition.systems/docs) |
+| llms.txt (concise index) | [https://www.docs.intuition.systems/llms.txt](https://www.docs.intuition.systems/llms.txt) |
+| Packaged llms file (e.g. on intro page) | see "For AI Agents" links on intro page — paths under `/assets/files/` |
 
 ---
 
-## Démarrage rapide (Quick Start)
+## Quick Start
 
-| Titre | URL |
+| Title | URL |
 | --- | --- |
 | Choose Your Path | […/docs/getting-started/choose-your-path](https://www.docs.intuition.systems/docs/getting-started/choose-your-path) |
 | SDK Quick Start (Using the SDK) | […/docs/quick-start/using-the-sdk](https://www.docs.intuition.systems/docs/quick-start/using-the-sdk) |
@@ -32,26 +32,26 @@ Les URL ci-dessous utilisent le hôte **`https://www.docs.intuition.systems`** ;
 
 ---
 
-## Concepts et architecture (Getting Started + Concepts)
+## Concepts and architecture (Getting Started + Concepts)
 
-| Titre | URL |
+| Title | URL |
 | --- | --- |
 | Overview | […/docs/getting-started/overview](https://www.docs.intuition.systems/docs/getting-started/overview) |
 | Architecture | […/docs/getting-started/architecture](https://www.docs.intuition.systems/docs/getting-started/architecture) |
-| Developer stack (lien depuis la page intro) | […/docs/getting-started/developer-stack](https://www.docs.intuition.systems/docs/getting-started/developer-stack) |
-| Primitives — vue d’ensemble | […/docs/intuition-concepts/primitives](https://www.docs.intuition.systems/docs/intuition-concepts/primitives) |
-| Atoms — fondamentaux | […/docs/intuition-concepts/primitives/Atoms/fundamentals](https://www.docs.intuition.systems/docs/intuition-concepts/primitives/Atoms/fundamentals) |
-| Triples — fondamentaux | […/docs/intuition-concepts/primitives/Triples/fundamentals](https://www.docs.intuition.systems/docs/intuition-concepts/primitives/Triples/fundamentals) |
-| Signals — fondamentaux | […/docs/intuition-concepts/primitives/Signals/fundamentals](https://www.docs.intuition.systems/docs/intuition-concepts/primitives/Signals/fundamentals) |
-| Économie — dossier (lien intro) | […/docs/intuition-concepts/economics](https://www.docs.intuition.systems/docs/intuition-concepts/economics) |
+| Developer stack (link from intro page) | […/docs/getting-started/developer-stack](https://www.docs.intuition.systems/docs/getting-started/developer-stack) |
+| Primitives — overview | […/docs/intuition-concepts/primitives](https://www.docs.intuition.systems/docs/intuition-concepts/primitives) |
+| Atoms — fundamentals | […/docs/intuition-concepts/primitives/Atoms/fundamentals](https://www.docs.intuition.systems/docs/intuition-concepts/primitives/Atoms/fundamentals) |
+| Triples — fundamentals | […/docs/intuition-concepts/primitives/Triples/fundamentals](https://www.docs.intuition.systems/docs/intuition-concepts/primitives/Triples/fundamentals) |
+| Signals — fundamentals | […/docs/intuition-concepts/primitives/Signals/fundamentals](https://www.docs.intuition.systems/docs/intuition-concepts/primitives/Signals/fundamentals) |
+| Economics — folder (intro link) | […/docs/intuition-concepts/economics](https://www.docs.intuition.systems/docs/intuition-concepts/economics) |
 | Bonding Curves | […/docs/intuition-concepts/economics/bonding-curves](https://www.docs.intuition.systems/docs/intuition-concepts/economics/bonding-curves) |
 | Fees & Rewards | […/docs/intuition-concepts/economics/fees-and-rewards](https://www.docs.intuition.systems/docs/intuition-concepts/economics/fees-and-rewards) |
 
 ---
 
-## Outils développeur (SDK, GraphQL, contrats, protocole)
+## Developer tools (SDK, GraphQL, contracts, protocol)
 
-| Titre | URL |
+| Title | URL |
 | --- | --- |
 | SDK — quick start / overview | […/docs/intuition-sdk/quick-start](https://www.docs.intuition.systems/docs/intuition-sdk/quick-start) |
 | GraphQL API — overview | […/docs/graphql-api/overview](https://www.docs.intuition.systems/docs/graphql-api/overview) |
@@ -61,9 +61,9 @@ Les URL ci-dessous utilisent le hôte **`https://www.docs.intuition.systems`** ;
 
 ---
 
-## Tutoriels
+## Tutorials
 
-| Titre | URL |
+| Title | URL |
 | --- | --- |
 | Tutorials — overview | […/docs/tutorials/overview](https://www.docs.intuition.systems/docs/tutorials/overview) |
 | Reputation System | […/docs/tutorials/reputation-system](https://www.docs.intuition.systems/docs/tutorials/reputation-system) |
@@ -78,18 +78,18 @@ Les URL ci-dessous utilisent le hôte **`https://www.docs.intuition.systems`** ;
 
 ---
 
-## Réseau et infrastructure
+## Network and infrastructure
 
-| Titre | URL |
+| Title | URL |
 | --- | --- |
 | Intuition Network | […/docs/intuition-network](https://www.docs.intuition.systems/docs/intuition-network) |
 | Intuition Node — overview | […/docs/intuition-node/overview](https://www.docs.intuition.systems/docs/intuition-node/overview) |
 
 ---
 
-## Ressources et optionnel
+## Resources and optional
 
-| Titre | URL |
+| Title | URL |
 | --- | --- |
 | FAQ | […/docs/resources/faq](https://www.docs.intuition.systems/docs/resources/faq) |
 | Glossary | […/docs/resources/glossary](https://www.docs.intuition.systems/docs/resources/glossary) |
@@ -101,12 +101,12 @@ Les URL ci-dessous utilisent le hôte **`https://www.docs.intuition.systems`** ;
 
 ---
 
-## Notes pour le monorepo All-Aboard
+## Notes for All-Aboard monorepo
 
-- La doc décrit la **couche d’indexation Rust (subnet)** et les **endpoints GraphQL** comme interface principale de lecture sur le graphe ; voir [Intuition Network](https://www.docs.intuition.systems/docs/intuition-network) et [GraphQL API](https://www.docs.intuition.systems/docs/graphql-api/overview).
-- **All-Aboard consomme cet indexer** — pas de `apps/indexer` maison. Publication métier → SDK/contrats ; lecture enrichie → GraphQL. Décision : [ADR 0004](adr/0004-agent-indexer-architecture.md).
-- Pour une liste exhaustive avec corps de page, privilégier **`llms-full.txt`** plutôt que de crawler le site (sitemap non fiable au moment de la génération de cet index).
+- Docs describe the **Rust indexing layer (subnet)** and **GraphQL endpoints** as main graph read interface; see [Intuition Network](https://www.docs.intuition.systems/docs/intuition-network) and [GraphQL API](https://www.docs.intuition.systems/docs/graphql-api/overview).
+- **All-Aboard consumes this indexer** — no in-house `apps/indexer`. Business publish → SDK/contracts; enriched read → GraphQL. Decision: [ADR 0004](../adr/0004-agent-indexer-architecture.md).
+- For exhaustive list with page bodies, prefer **`llms-full.txt`** rather than crawling the site (sitemap unreliable when this index was generated).
 
 ---
 
-*Généré à partir de la page d’introduction et de `llms.txt` Intuition (mai 2026).*
+*Generated from Intuition introduction page and `llms.txt` (May 2026).*

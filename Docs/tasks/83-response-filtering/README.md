@@ -1,35 +1,35 @@
-# #83 — Filtrage réponses par certification (MVP)
+# #83 — Certification-based response filtering (MVP)
 
-Issue : [#83](https://github.com/AllAboard-THP/All-Aboard/issues/83) · Epic : [#78](https://github.com/AllAboard-THP/All-Aboard/issues/78)
+Issue: [#83](https://github.com/AllAboard-THP/All-Aboard/issues/83) · Epic: [#78](https://github.com/AllAboard-THP/All-Aboard/issues/78)
 
-## Modèle données
+## Data model
 
-Colonne `users.certification_tags` (`text[]`, défaut `{}`). Seed dev : Alice (`alice@dev.local`) reçoit `react`, `typescript`, `rails`.
+Column `users.certification_tags` (`text[]`, default `{}`). Dev seed: Alice (`alice@dev.local`) gets `react`, `typescript`, `rails`.
 
-## Règle filtre (MOC étape 8)
+## Filter rule (MOC step 8)
 
-Sur `GET /help-requests/:id?filterByCertifications=true` (JWT **mentor** uniquement) :
+On `GET /help-requests/:id?filterByCertifications=true` (**mentor** JWT only):
 
-- Conserver une réponse si l’auteur est le **demandeur** (`help_requests.author_id`), ou
-- Si l’auteur a au moins un tag de certification en commun avec `help_requests.tags` (comparaison insensible à la casse).
+- Keep a response if the author is the **requester** (`help_requests.author_id`), or
+- If the author shares at least one certification tag with `help_requests.tags` (case-insensitive comparison).
 
-Réponse inclut `certificationFilter: { applied, totalCount, visibleCount }`.
+Response includes `certificationFilter: { applied, totalCount, visibleCount }`.
 
 ## Auth
 
-| Cas | Code |
-|-----|------|
-| Filtre sans JWT | `401` |
-| Filtre avec rôle student | `403` |
-| Sans query (public) | toutes les réponses |
+| Case | Code |
+|------|------|
+| Filter without JWT | `401` |
+| Filter with student role | `403` |
+| No query param (public) | all responses |
 
 ## Web
 
-- Toggle mentor sur la fiche demande (`mentor-cert-filter-toggle`), activé par défaut pour les mentors connectés.
-- BFF `GET /api/help-requests/[id]` relaie le query + cookie Bearer.
+- Mentor toggle on request detail (`mentor-cert-filter-toggle`), enabled by default for logged-in mentors.
+- BFF `GET /api/help-requests/[id]` relays query + Bearer cookie.
 
-## Hors scope
+## Out of scope
 
-- Scoring Intuition GraphQL (#67)
-- Filtre sur `GET /mentor/feed` (option reportée)
-- Table `user_certifications` normalisée (tags `text[]` suffisent au MVP)
+- Intuition GraphQL scoring (#67)
+- Filter on `GET /mentor/feed` (deferred option)
+- Normalized `user_certifications` table (`text[]` tags sufficient for MVP)

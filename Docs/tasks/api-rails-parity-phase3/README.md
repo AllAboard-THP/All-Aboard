@@ -1,46 +1,46 @@
-# API parité Rails — Phase 3 (auth & profils)
+# Rails API parity — Phase 3 (auth & profiles)
 
-**Branche** : `feat/api-rails-parity-phase3`  
-**OpenAPI** : `0.5.0` — [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml)  
-**Prérequis** : [Phase 2](../api-rails-parity-phase2/README.md)
+**Branch:** `feat/api-rails-parity-phase3`  
+**OpenAPI:** `0.5.0` — [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml)  
+**Prerequisite:** [Phase 2](../api-rails-parity-phase2/README.md)
 
-## Objectif
+## Goal
 
-Compléter l’auth et les profils utilisateur (parité blocs Rails : inscription, déconnexion, profil, CGU, profil public).
+Complete auth and user profiles (Rails blocks parity: registration, logout, profile, legal, public profile).
 
 ## Migration `0007_api_rails_phase3_users_auth.sql`
 
-- Colonnes `users` : `full_name`, `headline`, `bio`, `avatar_url`, `education_level`, `cgu_accepted_at`, `notify_on_comment`, `notify_on_message`, `updated_at`
-- Enum `user_role` : valeur `admin`
-- Table `mentor_subjects` (compétences / matières mentor)
+- `users` columns: `full_name`, `headline`, `bio`, `avatar_url`, `education_level`, `cgu_accepted_at`, `notify_on_comment`, `notify_on_message`, `updated_at`
+- Enum `user_role`: `admin` value
+- Table `mentor_subjects` (mentor skills / subjects)
 
 ## Endpoints
 
 | Route | Auth | Description |
 |-------|------|-------------|
-| `POST /auth/register` | — | Inscription (argon2, `acceptCgu: true`) |
-| `POST /auth/logout` | — | Efface le cookie `access_token` |
-| `GET /auth/me` | JWT | Profil enrichi (DB) |
-| `PATCH /users/me` | JWT | Profil + `subjectIds` + prefs notif |
-| `POST /legal/accept` | JWT | Timestamp CGU |
-| `GET /users/:id` | public | Profil public + `?tab=posts\|responses` |
+| `POST /auth/register` | — | Registration (argon2, `acceptCgu: true`) |
+| `POST /auth/logout` | — | Clears `access_token` cookie |
+| `GET /auth/me` | JWT | Enriched profile (DB) |
+| `PATCH /users/me` | JWT | Profile + `subjectIds` + notification prefs |
+| `POST /legal/accept` | JWT | Legal acceptance timestamp |
+| `GET /users/:id` | public | Public profile + `?tab=posts\|responses` |
 
-## Modules code
+## Code modules
 
-| Fichier | Rôle |
-|---------|------|
+| File | Role |
+|------|------|
 | [`apps/api/src/routes/auth.ts`](../../../apps/api/src/routes/auth.ts) | Login, register, logout, me |
-| [`apps/api/src/routes/users.ts`](../../../apps/api/src/routes/users.ts) | PATCH profil, GET public |
-| [`apps/api/src/routes/legal.ts`](../../../apps/api/src/routes/legal.ts) | Acceptation CGU |
-| [`apps/api/src/services/user-profile.ts`](../../../apps/api/src/services/user-profile.ts) | Agrégation profil |
+| [`apps/api/src/routes/users.ts`](../../../apps/api/src/routes/users.ts) | PATCH profile, GET public |
+| [`apps/api/src/routes/legal.ts`](../../../apps/api/src/routes/legal.ts) | Legal acceptance |
+| [`apps/api/src/services/user-profile.ts`](../../../apps/api/src/services/user-profile.ts) | Profile aggregation |
 
 ## Types
 
-[`packages/types`](../../../packages/types/src/index.ts) : `UserProfile`, `RegisterBody`, `AuthMeResponse` enrichi, `PublicUserResponse`, etc.
+[`packages/types`](../../../packages/types/src/index.ts): `UserProfile`, `RegisterBody`, enriched `AuthMeResponse`, `PublicUserResponse`, etc.
 
-## BFF web (`apps/web/app/api`)
+## Web BFF (`apps/web/app/api`)
 
-Proxies Next.js (même origine) :
+Next.js proxies (same origin):
 
 | BFF | Fastify |
 |-----|---------|
@@ -50,9 +50,9 @@ Proxies Next.js (même origine) :
 | `POST /api/legal/accept` | `POST /legal/accept` |
 | `GET /api/users/:id` | `GET /users/:id` |
 
-Helper : [`apps/web/lib/bff-relay.ts`](../../../apps/web/lib/bff-relay.ts).
+Helper: [`apps/web/lib/bff-relay.ts`](../../../apps/web/lib/bff-relay.ts).
 
-## Vérification
+## Verification
 
 ```bash
 pnpm --filter api test
@@ -60,13 +60,13 @@ pnpm --filter web test
 pnpm verify
 ```
 
-## Suite
+## Next
 
-**Phase 4** : [api-rails-parity-phase4](../api-rails-parity-phase4/README.md)  
-Hub : [api-rails-parity](../api-rails-parity/README.md)
+**Phase 4:** [api-rails-parity-phase4](../api-rails-parity-phase4/README.md)  
+Hub: [api-rails-parity](../api-rails-parity/README.md)
 
-## Fichiers
+## Files
 
-| Fichier | Rôle |
-|---------|------|
-| `README.md` | Ce fichier |
+| File | Role |
+|------|------|
+| `README.md` | This file |

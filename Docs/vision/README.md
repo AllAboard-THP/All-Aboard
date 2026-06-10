@@ -1,10 +1,10 @@
-# Vision long terme (hors MVP strict)
+# Long-term vision
 
-Documents d’**atelier** : cible produit / technique, **pas** la description ligne à ligne du code actuel (`apps/*`).
+Workshop documents for **target product / technical direction** — not a line-by-line description of current `apps/*` code.
 
-| Document | Contenu |
+| Document | Content |
 |----------|---------|
-| [proposition-stack-technique-monorepo-2026.md](../proposition-stack-technique-monorepo-2026.md) | Stack v1+ (GraphQL, Prisma, packages auth, etc.). |
-| [dataflow-architecture.md](../dataflow-architecture.md) | Dataflow multi-canal cible. |
+| [technical-stack-proposal-2026.md](technical-stack-proposal-2026.md) | v1+ stack (GraphQL, Prisma, shared packages) |
+| [../architecture/dataflow.md](../architecture/dataflow.md) | Multi-channel target dataflow |
 
-**Timeline et état du dépôt** : toujours [README.md](../README.md) en premier.
+**Current MVP timeline and repository state:** always start with [../README.md](../README.md).

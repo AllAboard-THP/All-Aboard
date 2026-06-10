@@ -66,9 +66,9 @@ body:
       description: URLs vers Docs/ sur branche Dev
       value: |
         - [README MVP](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/README.md)
-        - [Plan Web/API](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/plan-mise-en-place-web-api-donnees.md)
+        - [Plan Web/API](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/guides/web-api-integration.md)
       placeholder: |
-        - [Parcours MOC](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/moc-parcours-utilisateur.md)
+        - [Parcours MOC](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/product/user-journeys.md)
         - Issue parente #...
   - type: textarea
     id: acceptance

@@ -1,53 +1,53 @@
-# Guide contributeur — design system
+# Contributor guide — design system
 
-**Audience** : développeur ou agent qui ajoute ou modifie l’UI partagée.  
-**Prérequis** : [architecture.md](architecture.md) · Node **22+** · pnpm **9**.
+**Audience:** developer or agent adding or modifying shared UI.  
+**Prerequisites:** [architecture.md](architecture.md) · Node **22+** · pnpm **9**.
 
 ---
 
-## 1. Ajouter une primitive shadcn
+## 1. Add a shadcn primitive
 
-Toujours depuis `apps/web` (monorepo shadcn v4) :
+Always from `apps/web` (shadcn v4 monorepo):
 
 ```bash
 cd apps/web
 pnpm dlx shadcn@latest add <component>
 ```
 
-- Fichiers générés : `packages/ui/src/components/<component>.tsx`
-- Vérifier `apps/web/components.json` et `packages/ui/components.json` (déjà alignés en #24).
+- Generated files: `packages/ui/src/components/<component>.tsx`
+- Check `apps/web/components.json` and `packages/ui/components.json` (already aligned in #24).
 
-**Après ajout** :
+**After adding:**
 
 ```bash
-# Story colocalisée (manuelle ou générée)
+# Colocated story (manual or generated)
 # packages/ui/src/components/<component>.stories.tsx
 
-pnpm --filter @allaboard/ui test          # si tests ajoutés
+pnpm --filter @allaboard/ui test          # if tests added
 pnpm build:storybook
 pnpm verify:commit
 ```
 
 ---
 
-## 2. Écrire une story Storybook
+## 2. Write a Storybook story
 
-- Emplacement : `packages/ui/src/**/*.stories.tsx` (à côté du composant).
-- Preview global : fond sombre + `className="dark"` — voir `apps/storybook/.storybook/preview.tsx`.
-- Tokens documentés : `packages/ui/src/foundations/tokens.stories.tsx`.
+- Location: `packages/ui/src/**/*.stories.tsx` (next to component).
+- Global preview: dark background + `className="dark"` — see `apps/storybook/.storybook/preview.tsx`.
+- Documented tokens: `packages/ui/src/foundations/tokens.stories.tsx`.
 
-**Checklist story** :
+**Story checklist:**
 
-- [ ] Titre et `tags` cohérents avec les stories existantes (Button, Card, …)
-- [ ] Variantes visibles (default, destructive, disabled, …)
-- [ ] `pnpm build:storybook` vert
-- [ ] Sidebar SB : entrée visible après build
+- [ ] Title and `tags` consistent with existing stories (Button, Card, …)
+- [ ] Visible variants (default, destructive, disabled, …)
+- [ ] `pnpm build:storybook` green
+- [ ] SB sidebar: entry visible after build
 
-Skills agents utiles : `.agents/skills/storybook-story-writing`, `storybook`.
+Useful agent skills: `.agents/skills/storybook-story-writing`, `storybook`.
 
 ---
 
-## 3. Consommer un composant dans `apps/web`
+## 3. Consume a component in `apps/web`
 
 ```tsx
 import { Button } from "@allaboard/ui/components/button";
@@ -59,52 +59,52 @@ import {
 } from "@allaboard/ui/components/card";
 ```
 
-- CSS : déjà branché via `apps/web/app/layout.tsx` → `./globals.css` (`@import` + `@source`).
-- **Ne pas** réimporter les primitives dans `components/features/` — une seule source.
+- CSS: already wired via `apps/web/app/layout.tsx` → `./globals.css` (`@import` + `@source`).
+- **Do not** re-import primitives in `components/features/` — single source.
 
-Composants **métier** (feed, formulaires, shell) : `apps/web/components/features/`.  
-Blocks shadcn « page » : `apps/web/components/blocks/`.
-
----
-
-## 4. Modifier les tokens
-
-- Fichier unique : `packages/ui/src/styles/globals.css`
-- Format : variables `:root` + mapping `@theme inline` (Tailwind v4).
-- Re-vérifier : `pnpm storybook`, `pnpm --filter web build`, pas de classes purgées en prod.
+**Business** components (feed, forms, shell): `apps/web/components/features/`.  
+shadcn "page" blocks: `apps/web/components/blocks/`.
 
 ---
 
-## 5. Scripts utiles (racine)
+## 4. Modify tokens
 
-| Commande | Usage |
+- Single file: `packages/ui/src/styles/globals.css`
+- Format: `:root` variables + `@theme inline` mapping (Tailwind v4).
+- Re-check: `pnpm storybook`, `pnpm --filter web build`, no purged classes in prod.
+
+---
+
+## 5. Useful scripts (root)
+
+| Command | Usage |
 |----------|--------|
 | `pnpm storybook` | Dev catalogue (port **6006**) |
-| `pnpm build:storybook` | Build static |
-| `pnpm dev:ui` | Alias Turbo → Storybook seul |
-| `pnpm --filter @allaboard/ui test` | Tests package UI |
-| `pnpm --filter web test` | Tests app (dont AppShell) |
+| `pnpm build:storybook` | Static build |
+| `pnpm dev:ui` | Turbo alias → Storybook only |
+| `pnpm --filter @allaboard/ui test` | UI package tests |
+| `pnpm --filter web test` | App tests (including AppShell) |
 
 ---
 
-## 6. Avant une PR touchant UI / SB
+## 6. Before a PR touching UI / SB
 
-1. `pnpm verify` (ou au minimum `verify:commit` + `verify:push` si SB touché).
-2. `./scripts/graphify-update.sh` si structure packages/ui ou features web change.
-3. Vérifier qu’aucun fichier hors frontières (ESLint boundaries — voir [verification-and-ci.md](verification-and-ci.md)).
-4. PR : mentionner si job CI **`storybook`** doit tourner (chemins `packages/ui/**`, `apps/storybook/**`).
+1. `pnpm verify` (or at minimum `verify:commit` + `verify:push` if SB touched).
+2. `./scripts/graphify-update.sh` if `packages/ui` structure or web features change.
+3. Verify no files outside boundaries (ESLint boundaries — see [verification-and-ci.md](verification-and-ci.md)).
+4. PR: mention if CI **`storybook`** job must run (paths `packages/ui/**`, `apps/storybook/**`).
 
 ---
 
-## 7. Skills agents (`.agents/skills/`)
+## 7. Agent skills (`.agents/skills/`)
 
-| Priorité | Skill | Usage |
+| Priority | Skill | Usage |
 |----------|-------|-------|
-| Haute | `shadcn` | CLI, `components.json` |
-| Haute | `turborepo-monorepo` | turbo, cache, filtres |
-| Moyenne | `storybook` | config SB 10 |
-| Moyenne | `tailwind-design-system` | tokens, thème |
-| Moyenne | `design-system-patterns` | frontières primitives / features |
-| Moyenne | `storybook-story-writing` | qualité stories |
+| High | `shadcn` | CLI, `components.json` |
+| High | `turborepo-monorepo` | turbo, cache, filters |
+| Medium | `storybook` | SB 10 config |
+| Medium | `tailwind-design-system` | tokens, theme |
+| Medium | `design-system-patterns` | primitive / feature boundaries |
+| Medium | `storybook-story-writing` | story quality |
 
-Audit manuel recommandé avant exécution automatique (supply chain).
+Manual audit recommended before automatic execution (supply chain).

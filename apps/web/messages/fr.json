@@ -83,6 +83,7 @@
     "sidebar": {
       "navigationGroup": "Navigation",
       "communityGroup": "Communauté",
+      "mentorGroup": "Mentorat",
       "adminGroup": "Administration",
       "expandSidebar": "Déplier la barre latérale",
       "collapseSidebar": "Replier la barre latérale",
@@ -92,11 +93,14 @@
       "subjects": "Matières",
       "resources": "Ressources",
       "events": "Événements",
+      "newRequest": "Nouvelle demande",
       "feed": "Entraide",
       "messages": "Messages",
       "mentor": "Espace mentor",
       "profile": "Mon profil",
-      "admin": "Administration",
+      "adminOverview": "Vue d'ensemble",
+      "adminUsers": "Utilisateurs",
+      "adminModeration": "Modération",
       "settings": "Paramètres",
       "signOut": "Déconnexion",
       "context": {
@@ -117,9 +121,16 @@
           "title": "Événements",
           "all": "Agenda complet"
         },
+        "newRequest": {
+          "title": "Nouvelle demande",
+          "description": "Publie une question pour l'entraide.",
+          "create": "Créer une demande",
+          "backToFeed": "Retour au fil"
+        },
         "feed": {
           "title": "Entraide",
           "description": "Publie une demande ou retrouve le fil.",
+          "browse": "Parcourir le fil",
           "newRequest": "Nouvelle demande",
           "backToFeed": "Retour au fil"
         },

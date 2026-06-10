@@ -1,69 +1,69 @@
 # Runbook — Dokploy dev (Phase 2)
 
-Checklist **manuelle** après merge du code Phase 2 sur la branche **`Dev`**. Ne pas commiter de secrets dans ce dépôt.
+**Manual checklist** after Phase 2 code merge on branch **`Dev`**. Do not commit secrets in this repository.
 
-Références : [plan opérationnel Web/API](plan-mise-en-place-web-api-donnees.md), [fiche instance Dokploy](deploiement-dokploy-instance-allaboard.md), [ADR auth](adr/0001-authentication-strategy.md).
+References: [Web/API integration guide](../../guides/web-api-integration.md), [Dokploy instance sheet](../dokploy-instance.md), [auth ADR](../../adr/0001-authentication-strategy.md).
 
 ---
 
-## 1. Postgres (env dev)
+## 1. Postgres (dev env)
 
-- [ ] Service Postgres **running** dans le projet Dokploy dev
-- [ ] Noter hôte interne, port `5432`, utilisateur, mot de passe, base (UI uniquement — fiche **Postgres**, onglet **General**)
-- [ ] Construire `DATABASE_URL` **hors Dokploy** (bloc-notes, gestionnaire MDP) — **pas de champ `DATABASE_URL` sur la fiche Postgres** ; la chaîne se **colle à l’étape 2** sur le service **API** → **Environment**
+- [ ] Postgres service **running** in Dokploy dev project
+- [ ] Note internal host, port `5432`, user, password, database (UI only — **Postgres** sheet, **General** tab)
+- [ ] Build `DATABASE_URL` **outside Dokploy** (notes app, password manager) — **no `DATABASE_URL` field on Postgres sheet**; paste the string at **step 2** on **API** service → **Environment**
 
 ```text
-postgresql://<USER>:<PASSWORD>@<HOST_INTERNE>:5432/<DATABASE>
+postgresql://<USER>:<PASSWORD>@<INTERNAL_HOST>:5432/<DATABASE>
 ```
 
 ---
 
-## 2. Variables service **API** (dev)
+## 2. **API** service variables (dev)
 
-| Variable | Obligatoire | Note |
-|----------|-------------|------|
-| `DATABASE_URL` | Oui | Chaîne Postgres interne |
-| `JWT_SECRET` | Oui | ≥ 32 caractères |
-| `MVP_LOGIN_PASSWORD` | Oui | Mot de passe partagé équipe pour `/help/new` |
-| `PORT` | Oui | `4000` |
-| `NODE_ENV` | Oui | `production` (image Docker) |
-| `APP_ENV` | Recommandé | `dev` |
+| Variable | Required | Note |
+|----------|----------|------|
+| `DATABASE_URL` | Yes | Internal Postgres connection string |
+| `JWT_SECRET` | Yes | ≥ 32 characters |
+| `MVP_LOGIN_PASSWORD` | Yes | Shared team password for `/help/new` |
+| `PORT` | Yes | `4000` |
+| `NODE_ENV` | Yes | `production` (Docker image) |
+| `APP_ENV` | Recommended | `dev` |
 
-- [ ] Sauvegarder → **redéployer l’API**
-- [ ] Logs : migrations OK, pas d’erreur connexion DB
-
----
-
-## 3. Variables service **Web** (dev)
-
-| Variable | Obligatoire | Note |
-|----------|-------------|------|
-| `API_URL` | Oui | `http://<NOM_INTERNE_SERVICE_API>:4000` (HTTP interne, pas `https://api-dev…`) |
-| `PORT` | Oui | `3000` |
-
-- [ ] Sauvegarder → **redéployer le Web**
+- [ ] Save → **redeploy API**
+- [ ] Logs: migrations OK, no DB connection error
 
 ---
 
-## 4. Smoke automatisé
+## 3. **Web** service variables (dev)
 
-**Base** (sans secret local) :
+| Variable | Required | Note |
+|----------|----------|------|
+| `API_URL` | Yes | `http://<INTERNAL_API_SERVICE_NAME>:4000` (internal HTTP, not `https://api-dev…`) |
+| `PORT` | Yes | `3000` |
+
+- [ ] Save → **redeploy Web**
+
+---
+
+## 4. Automated smoke
+
+**Base** (no local secret):
 
 ```bash
 pnpm smoke:dev
 ```
 
-Attendu : exit code `0` — `GET /health`, `GET /feed` (API), `GET /api/feed` (BFF).
+Expected: exit code `0` — `GET /health`, `GET /feed` (API), `GET /api/feed` (BFF).
 
-**Complet** (auth + création + détail) — mot de passe **identique** à la variable `MVP_LOGIN_PASSWORD` du service API Dokploy dev :
+**Full** (auth + create + detail) — password **identical** to API service `MVP_LOGIN_PASSWORD` in Dokploy dev:
 
 ```bash
-MVP_LOGIN_PASSWORD='<secret-dokploy>' pnpm smoke:dev
+MVP_LOGIN_PASSWORD='<dokploy-secret>' pnpm smoke:dev
 ```
 
-Attendu : en plus login, `POST /help-requests`, `GET /help-requests/:id`.
+Expected: additionally login, `POST /help-requests`, `GET /help-requests/:id`.
 
-Local :
+Local:
 
 ```bash
 BASE_WEB=http://127.0.0.1:3000 BASE_API=http://127.0.0.1:4000 MVP_LOGIN_PASSWORD=... pnpm smoke:dev
@@ -71,37 +71,37 @@ BASE_WEB=http://127.0.0.1:3000 BASE_API=http://127.0.0.1:4000 MVP_LOGIN_PASSWORD
 
 ---
 
-## 5. Smoke navigateur (parcours Bob)
+## 5. Browser smoke (Bob journey)
 
-- [ ] `https://dev.allaboard.fr` — feed produit (« Feed communautaire »), liens `/requests/[id]`
-- [ ] `https://dev.allaboard.fr/help/new` — login + création → redirect détail
-- [ ] Même titre deux fois → message doublon + lien demande existante
-- [ ] `https://dev.allaboard.fr/mentor` — login `alice` → liste tags ; `bob` → refus non-mentor
-- [ ] Rafraîchir feed (TanStack) après création
+- [ ] `https://dev.allaboard.fr` — product feed ("Feed communautaire"), `/requests/[id]` links
+- [ ] `https://dev.allaboard.fr/help/new` — login + create → detail redirect
+- [ ] Same title twice → duplicate message + link to existing request
+- [ ] `https://dev.allaboard.fr/mentor` — login `alice` → tag list; `bob` → non-mentor denied
+- [ ] Refresh feed (TanStack) after create
 
 ---
 
-## 6. Journal et pilotage
+## 6. Journal and tracking
 
-- [ ] Ajouter une ligne dans le *Journal* de [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) (date, URLs, résultat)
-- [ ] **ADR #18** : validation équipe (commentaire PR ou issue GitHub — pas de secret dans le repo)
-- [ ] Mettre à jour le board GitHub (#33, epic Backend) si utilisé
+- [ ] Add a line to the *Journal* in [guides/web-api-integration.md](../../guides/web-api-integration.md) (date, URLs, result)
+- [ ] **ADR #18**: team validation (PR comment or GitHub issue — no secrets in repo)
+- [ ] Update GitHub board (#33, Backend epic) if used
 
-Template journal :
+Journal template:
 
 ```text
-| YYYY-MM-DD | Dokploy dev (Phase 2) | smoke: pnpm smoke:dev OK ; /help/new ; vars DATABASE_URL/JWT/MVP_LOGIN OK |
+| YYYY-MM-DD | Dokploy dev (Phase 2) | smoke: pnpm smoke:dev OK; /help/new; vars DATABASE_URL/JWT/MVP_LOGIN OK |
 ```
 
 ---
 
-## Dépannage rapide
+## Quick troubleshooting
 
-| Symptôme | Action |
-|----------|--------|
-| **`502` / `error code: 502`** sur `https://api-dev.allaboard.fr/*` (Cloudflare) | Conteneur API **down** ou crash au boot — logs **runtime** API (pas build). Cause fréquente post-Phase 2 : **`JWT_SECRET` absent** (`NODE_ENV=production` dans l’image) → poser toutes les vars §2 → **Save** → **Redeploy** |
-| `database_unavailable` sur `/feed` | Vérifier `DATABASE_URL` + Postgres + redéploy API |
-| Feed site `fetch failed`, API publique OK | Corriger `API_URL` Web (nom interne) + redéploy Web |
-| Login échoue | `MVP_LOGIN_PASSWORD` sur **API** uniquement |
-| Vars modifiées mais comportement inchangé | **Redeploy** obligatoire après Save Environment |
-| Code ancien (pas d’auth) | Vérifier branche `Dev` + dernier deploy |
+| Symptom | Action |
+|---------|--------|
+| **`502` / `error code: 502`** on `https://api-dev.allaboard.fr/*` (Cloudflare) | API container **down** or boot crash — **runtime** API logs (not build). Frequent post-Phase 2 cause: **missing `JWT_SECRET`** (`NODE_ENV=production` in image) → set all §2 vars → **Save** → **Redeploy** |
+| `database_unavailable` on `/feed` | Check `DATABASE_URL` + Postgres + redeploy API |
+| Site feed `fetch failed`, public API OK | Fix Web `API_URL` (internal name) + redeploy Web |
+| Login fails | `MVP_LOGIN_PASSWORD` on **API** only |
+| Vars changed but behavior unchanged | **Redeploy** required after Save Environment |
+| Old code (no auth) | Check `Dev` branch + latest deploy |

@@ -1,95 +1,95 @@
-# MOC - Parcours utilisateur All-Aboard
+# MOC — All-Aboard user journeys
 
-**Implémentation** : ordre des travaux techniques (web, API, auth, TanStack Query) — [README documentation canonique](README.md).
+**Implementation:** technical work order (web, API, auth, TanStack Query) — [canonical documentation README](../README.md).
 
-## Objectif
+## Purpose
 
-Décrire le parcours principal d'une demande d'aide sur All-Aboard, depuis sa création par un etudiant jusqu'a la reponse finale via IA, pair, ou mentor.
+Describe the main help-request journey on All-Aboard, from student creation through final response via AI, peer, or mentor.
 
-## Acteurs
+## Actors
 
-- **Bob (etudiant)**: cree une demande, explore le feed, consomme et publie des reponses.
-- **Alice (mentor)**: recoit des notifications ciblees, traite les demandes, publie des reponses expertes.
-- **Bob 4242 (autre etudiant)**: peut repondre a une demande dans le feed.
-- **Rubberduck (IA)**: propose une aide rapide quand la demande est jugee simple.
+- **Bob (student):** creates requests, explores the feed, consumes and publishes responses.
+- **Alice (mentor):** receives targeted notifications, handles requests, publishes expert responses.
+- **Bob 4242 (another student):** can respond to a request in the feed.
+- **Rubberduck (AI):** offers quick help when the request is judged simple.
 
-## Parcours utilisateur (version MOC)
+## User journey (MOC version)
 
-1. L'etudiant cree une **demande d'aide** ou explore le **feed resolu / ressource**.
-2. Le systeme verifie si la demande existe deja.
-3. Si oui, l'utilisateur est redirige vers un post deja existant.
-4. Si non, le systeme evalue si une IA peut aider rapidement.
-5. Si oui, l'utilisateur est redirige vers le **Rubberduck**.
-6. Si non, la demande est publiee avec tags (mentor / domaine) puis notifie les mentors.
-7. En parallele, la demande apparait dans le feed communautaire, ou d'autres etudiants peuvent repondre.
-8. Les reponses sont filtrees selon les certifications/pertinence.
-9. L'etudiant consomme les reponses pertinentes puis publie sa reponse finale.
-10. Le mentor peut aussi repondre apres consultation de son dashboard.
+1. The student creates a **help request** or explores the **resolved feed / resources**.
+2. The system checks if the request already exists.
+3. If yes, the user is redirected to an existing post.
+4. If no, the system evaluates whether AI can help quickly.
+5. If yes, the user is redirected to **Rubberduck**.
+6. If no, the request is published with tags (mentor / domain) and mentors are notified.
+7. In parallel, the request appears in the community feed where other students can respond.
+8. Responses are filtered by certifications / relevance.
+9. The student consumes relevant responses then publishes their final response.
+10. The mentor can also respond after consulting their dashboard.
 
-## Diagramme Mermaid
+## Mermaid diagram
 
 ```mermaid
 flowchart TD
-    Bob["Bob<br/>etudiant"]
+    Bob["Bob<br/>student"]
     Alice["Alice<br/>mentor"]
     Bob2["Bob 4242"]
-    IA["Rubberduck (IA)"]
+    IA["Rubberduck (AI)"]
 
-    Demande["Demande d'aide"]
-    Check["Verifier si la demande est deja couverte"]
-    Existe{"Existe ?"}
-    Redirect["Redirection vers le post d'un autre etudiant"]
+    Demande["Help request"]
+    Check["Check if request already covered"]
+    Existe{"Exists?"}
+    Redirect["Redirect to another student's post"]
 
-    AideIA{"Une IA peut aider facilement ?"}
-    Publish["Publication tag (mentor / domaine)"]
-    FeedRes["Feed resolu / ressource"]
+    AideIA{"Can AI help easily?"}
+    Publish["Publish with tags (mentor / domain)"]
+    FeedRes["Resolved feed / resource"]
     Notif["Notification"]
-    Dash["Dashboard mentor"]
-    Req["Redirection sur la requete"]
-    RepMentor["Reponse mentor"]
+    Dash["Mentor dashboard"]
+    Req["Redirect to request"]
+    RepMentor["Mentor response"]
 
-    FeedDem["Feed de la demande d'aide"]
-    Filtre["Filtrer selon les certifications"]
-    Conso["Consommer les reponses pertinentes"]
-    RepEtu["Repondre"]
+    FeedDem["Help request feed"]
+    Filtre["Filter by certifications"]
+    Conso["Consume relevant responses"]
+    RepEtu["Respond"]
 
-    Bob -->|Ecrire| Demande
-    Bob -->|Exploration| FeedRes
+    Bob -->|Write| Demande
+    Bob -->|Explore| FeedRes
 
     Demande --> Check --> Existe
-    Existe -->|oui| Redirect
-    Existe -->|non| AideIA
-    AideIA -->|oui| IA
-    AideIA -->|non| Publish
+    Existe -->|yes| Redirect
+    Existe -->|no| AideIA
+    AideIA -->|yes| IA
+    AideIA -->|no| Publish
 
-    Publish -->|apparait sur| FeedRes
+    Publish -->|appears on| FeedRes
     Publish --> Notif
-    Alice -->|recevoir| Notif
+    Alice -->|receive| Notif
     Notif --> Dash --> Req --> RepMentor
 
     Publish --> FeedDem
-    Bob2 -->|Repond aussi| FeedDem
-    RepMentor -. "apres qq heures" .-> FeedDem
+    Bob2 -->|also responds| FeedDem
+    RepMentor -. "after a few hours" .-> FeedDem
 
     FeedDem --> Filtre --> Conso --> RepEtu
 ```
 
-## Notes de cadrage MOC
+## MOC framing notes
 
-- Cette version est volontairement simple et orientee flux produit.
-- Les etapes de moderation, SLA, scoring qualite et anti-spam pourront etre ajoutees ensuite.
-- Les termes affiches reprennent au plus proche ceux du schema source.
-- **Etapes 6–7 (livré #82)** : apres publication taguée, `GET /mentor/feed` (JWT mentor) expose `hasUnreadForMentor` ; badges sur dashboard `/mentor` et lien navigation Mentor. Doc : [tasks/82-mentor-notifications/README.md](tasks/82-mentor-notifications/README.md).
-- **Etape 8 (livré #83, PR #88)** : filtre mentor sur fiche demande — `users.certification_tags`, overlap avec `help_requests.tags`, demandeur toujours visible. Doc : [tasks/83-response-filtering/README.md](tasks/83-response-filtering/README.md).
-- **Epic Phase 2b** : hub [tasks/78-phase2b-responses/README.md](tasks/78-phase2b-responses/README.md) (PRs #84, #87, #88).
-- **API parité Rails — Phase 1 (livré, API)** : feed enrichi (`GET /feed` : filtres `subject`/`tag`/`q`, pagination, widget `unanswered`), catalogue `GET /subjects`, création/édition demande (body, code, matière, urgent), `POST …/help-mentor`, mentor feed étendu (`mentorHelpRequested`). Doc : [tasks/api-rails-parity-phase1/README.md](tasks/api-rails-parity-phase1/README.md) ; contrat : [plan opérationnel](plan-mise-en-place-web-api-donnees.md#parité-rails-thp-final--api).
-- **API parité Rails — Phase 2 (livré, API)** : likes/bookmarks (toggle + compteurs), `GET /me/help-requests` / `GET /me/bookmarks`, édition/suppression réponses. Doc : [tasks/api-rails-parity-phase2/README.md](tasks/api-rails-parity-phase2/README.md).
-- **API parité Rails — Phase 3 (livré, API)** : `POST /auth/register`, profils `PATCH /users/me`, CGU, profil public `GET /users/:id`. Doc : [tasks/api-rails-parity-phase3/README.md](tasks/api-rails-parity-phase3/README.md).
-- **API parité Rails — Phase 4 (livré, API)** : resources, subject requests, mentor dashboard + approve. Doc : [tasks/api-rails-parity-phase4/README.md](tasks/api-rails-parity-phase4/README.md).
-- **API parité Rails — Phase 5 (livré, API)** : messagerie REST (conversations, messages, read). Doc : [tasks/api-rails-parity-phase5/README.md](tasks/api-rails-parity-phase5/README.md).
-- **API parité Rails — Phase 5b (PR #104, API)** : WebSocket `GET /conversations/:id/ws`, push temps réel. Doc : [tasks/api-rails-parity-phase5b/README.md](tasks/api-rails-parity-phase5b/README.md).
-- **API parité Rails — Phase 6 (livré, API)** : admin modération, denylist, rôles. Doc : [tasks/api-rails-parity-phase6/README.md](tasks/api-rails-parity-phase6/README.md).
-- **API parité Rails — Lot A (PR #104, API)** : soft delete `DELETE /help-requests/:id`, `POST /mentor/resources/:id/reject`. Doc : [tasks/api-parity-delete-reject/README.md](tasks/api-parity-delete-reject/README.md).
-- **API parité Rails — Phase 7 (PR #104, API)** : `POST /help-requests/suggest-tags`, résumé `ai_summary` à la résolution. Doc : [tasks/api-rails-parity-phase7/README.md](tasks/api-rails-parity-phase7/README.md).
-- **Hub doc parité** : [tasks/api-rails-parity/README.md](tasks/api-rails-parity/README.md) ; contrat : [plan opérationnel](plan-mise-en-place-web-api-donnees.md#parité-rails-thp-final--api).
-- Voir aussi la vue technique: [MOC - Dataflow et architecture](dataflow-architecture.md).
+- This version is intentionally simple and product-flow oriented.
+- Moderation, SLA, quality scoring, and anti-spam steps can be added later.
+- Display terms follow the source schema as closely as possible.
+- **Steps 6–7 (shipped #82):** after tagged publication, `GET /mentor/feed` (mentor JWT) exposes `hasUnreadForMentor`; badges on `/mentor` dashboard and Mentor nav link. Doc: [tasks/82-mentor-notifications/README.md](../tasks/82-mentor-notifications/README.md).
+- **Step 8 (shipped #83, PR #88):** mentor filter on request detail — `users.certification_tags`, overlap with `help_requests.tags`, requester always visible. Doc: [tasks/83-response-filtering/README.md](../tasks/83-response-filtering/README.md).
+- **Phase 2b epic:** hub [tasks/78-phase2b-responses/README.md](../tasks/78-phase2b-responses/README.md) (PRs #84, #87, #88).
+- **Rails API parity — Phase 1 (shipped, API):** enriched feed (`GET /feed`: `subject`/`tag`/`q` filters, pagination, `unanswered` widget), `GET /subjects` catalogue, request create/edit (body, code, subject, urgent), `POST …/help-mentor`, extended mentor feed (`mentorHelpRequested`). Doc: [tasks/api-rails-parity-phase1/README.md](../tasks/api-rails-parity-phase1/README.md); contract: [integration guide](../guides/web-api-integration.md#rails-parity-thp-final--api).
+- **Rails API parity — Phase 2 (shipped, API):** likes/bookmarks (toggle + counters), `GET /me/help-requests` / `GET /me/bookmarks`, response edit/delete. Doc: [tasks/api-rails-parity-phase2/README.md](../tasks/api-rails-parity-phase2/README.md).
+- **Rails API parity — Phase 3 (shipped, API):** `POST /auth/register`, `PATCH /users/me` profiles, legal, public profile `GET /users/:id`. Doc: [tasks/api-rails-parity-phase3/README.md](../tasks/api-rails-parity-phase3/README.md).
+- **Rails API parity — Phase 4 (shipped, API):** resources, subject requests, mentor dashboard + approve. Doc: [tasks/api-rails-parity-phase4/README.md](../tasks/api-rails-parity-phase4/README.md).
+- **Rails API parity — Phase 5 (shipped, API):** REST messaging (conversations, messages, read). Doc: [tasks/api-rails-parity-phase5/README.md](../tasks/api-rails-parity-phase5/README.md).
+- **Rails API parity — Phase 5b (PR #104, API):** WebSocket `GET /conversations/:id/ws`, real-time push. Doc: [tasks/api-rails-parity-phase5b/README.md](../tasks/api-rails-parity-phase5b/README.md).
+- **Rails API parity — Phase 6 (shipped, API):** admin moderation, denylist, roles. Doc: [tasks/api-rails-parity-phase6/README.md](../tasks/api-rails-parity-phase6/README.md).
+- **Rails API parity — Lot A (PR #104, API):** soft delete `DELETE /help-requests/:id`, `POST /mentor/resources/:id/reject`. Doc: [tasks/api-parity-delete-reject/README.md](../tasks/api-parity-delete-reject/README.md).
+- **Rails API parity — Phase 7 (PR #104, API):** `POST /help-requests/suggest-tags`, `ai_summary` on resolution. Doc: [tasks/api-rails-parity-phase7/README.md](../tasks/api-rails-parity-phase7/README.md).
+- **Parity doc hub:** [tasks/api-rails-parity/README.md](../tasks/api-rails-parity/README.md); contract: [integration guide](../guides/web-api-integration.md#rails-parity-thp-final--api).
+- See also technical view: [Dataflow & architecture](../architecture/dataflow.md).

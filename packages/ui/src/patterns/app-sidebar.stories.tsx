@@ -21,19 +21,22 @@ function SidebarDemoInner({
   expanded = true,
   messageCount = 0,
   showMentorDot = false,
+  isMentor = false,
   isAdmin = false,
 }: {
   activeId?: AppSidebarNavId;
   expanded?: boolean;
   messageCount?: number;
   showMentorDot?: boolean;
+  isMentor?: boolean;
   isAdmin?: boolean;
 }) {
   const { setExpanded } = useAppSidebar();
   const pathname = APP_SIDEBAR_ACTIVE_ID_PATH[activeId ?? "feed"];
-  const resolved = resolveAppSidebarContext(pathname, { isAdmin, labelMap });
+  const resolved = resolveAppSidebarContext(pathname, { isMentor, isAdmin, labelMap });
   const sections = buildAppSidebarSections(labelMap, {
     activeId: resolved.activeId,
+    showMentorSection: resolved.showMentorSection,
     showAdminSection: resolved.showAdminSection,
   });
 
@@ -44,21 +47,22 @@ function SidebarDemoInner({
   return (
     <div className="app-stage relative flex min-h-[32rem] md:min-h-[40rem]">
       <AppSidebar
-          labels={{
-            navigationGroup: labelMap.navigationGroup,
-            communityGroup: labelMap.communityGroup,
-            adminGroup: labelMap.adminGroup,
-            expandSidebar: labelMap.expandSidebar,
-            collapseSidebar: labelMap.collapseSidebar,
-          }}
-          sections={sections}
-          context={resolved.context}
-          activeId={resolved.activeId}
-          openSectionIds={resolved.openSectionIds}
-          badges={messageCount > 0 ? { messages: messageCount } : undefined}
-          mentorDot={showMentorDot}
-          onItemClick={(id) => legacyDemoToast(id)}
-          className="!flex"
+        labels={{
+          navigationGroup: labelMap.navigationGroup,
+          communityGroup: labelMap.communityGroup,
+          mentorGroup: labelMap.mentorGroup,
+          adminGroup: labelMap.adminGroup,
+          expandSidebar: labelMap.expandSidebar,
+          collapseSidebar: labelMap.collapseSidebar,
+        }}
+        sections={sections}
+        context={resolved.context}
+        activeId={resolved.activeId}
+        openSectionIds={resolved.openSectionIds}
+        badges={messageCount > 0 ? { messages: messageCount } : undefined}
+        mentorDot={showMentorDot}
+        onItemClick={(id) => legacyDemoToast(id)}
+        className="!flex"
       />
     </div>
   );
@@ -81,6 +85,7 @@ const meta = {
     expanded: true,
     messageCount: 0,
     showMentorDot: false,
+    isMentor: false,
     isAdmin: false,
   },
   argTypes: {
@@ -91,11 +96,14 @@ const meta = {
         "subjects",
         "resources",
         "events",
+        "newRequest",
         "feed",
         "messages",
-        "mentor",
         "profile",
+        "mentor",
         "admin",
+        "adminUsers",
+        "adminModeration",
       ],
     },
   },
@@ -105,26 +113,30 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const ExpandedFeed: Story = {
-  args: { activeId: "feed", expanded: true },
+export const StudentFeed: Story = {
+  name: "StudentFeed",
+  args: { activeId: "feed", isMentor: false, isAdmin: false },
+};
+
+export const StudentNewRequest: Story = {
+  name: "StudentNewRequest",
+  args: { activeId: "newRequest", isMentor: false, isAdmin: false },
+};
+
+export const MentorFeed: Story = {
+  name: "MentorFeed",
+  args: { activeId: "mentor", isMentor: true, isAdmin: false, showMentorDot: true },
+};
+
+export const AdminUsers: Story = {
+  name: "AdminUsers",
+  args: { activeId: "adminUsers", isMentor: true, isAdmin: true },
 };
 
 export const CollapsedRail: Story = {
-  args: { activeId: "feed", expanded: false },
+  args: { activeId: "feed", expanded: false, isMentor: true, isAdmin: true },
 };
 
 export const MessagesWithBadge: Story = {
   args: { activeId: "messages", messageCount: 3 },
-};
-
-export const MentorWithDot: Story = {
-  args: { activeId: "mentor", showMentorDot: true },
-};
-
-export const AdminSection: Story = {
-  args: { activeId: "admin", isAdmin: true },
-};
-
-export const DashboardContext: Story = {
-  args: { activeId: "dashboard" },
 };

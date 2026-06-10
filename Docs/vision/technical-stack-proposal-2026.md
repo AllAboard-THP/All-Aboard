@@ -1,98 +1,98 @@
-# Proposition stack technique - Monorepo Turborepo (2026)
+# Technical stack proposal — Turborepo monorepo (2026)
 
-## Statut du document
+## Document status
 
-Ce fichier décrit une **vision cible** (v1 et au-delà) : GraphQL, Prisma, packages transverses (`auth`, `api-client`, etc.). Il **ne décrit pas** l’état actuel du dépôt (`apps/api` en **Fastify REST** sans Prisma ni GraphQL au MVP).
+This file describes a **target vision** (v1 and beyond): GraphQL, Prisma, cross-cutting packages (`auth`, `api-client`, etc.). It **does not describe** current repo state (`apps/api` is **Fastify REST** without Prisma or GraphQL at MVP).
 
-- **Ordre d’implémentation et MVP réel** : [README documentation canonique](README.md) (Phases 0 à 4 + TanStack). **Index vision** : [vision/README.md](vision/README.md).
-- **Parcours produit** : [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md).
+- **Implementation order and real MVP:** [canonical documentation README](../README.md) (Phases 0–4 + TanStack). **Vision index:** [vision/README.md](../vision/README.md).
+- **Product journeys:** [product/user-journeys.md](../product/user-journeys.md).
 
-## Contexte
+## Context
 
-A partir de la documentation existante (`parcours utilisateur` + `dataflow architecture`), All-Aboard cible:
+From existing documentation (`user journeys` + `dataflow architecture`), All-Aboard targets:
 
-- une app mobile React Native,
-- une app web React,
-- un backend Node/GraphQL + agent IA,
-- un stockage media,
-- une base Postgres/Supabase,
-- un indexeur et des integrations blockchain (Intuition).
+- a React Native mobile app,
+- a React web app,
+- a Node/GraphQL backend + AI agent,
+- media storage,
+- a Postgres/Supabase database,
+- an indexer and blockchain integrations (Intuition).
 
-Objectif: proposer une stack moderne, maintenable, scalable, avec un monorepo Turborepo orienté produit et livraison rapide.
+Goal: propose a modern, maintainable, scalable stack with a product-oriented Turborepo monorepo for fast delivery.
 
-## Choix de stack recommandes (2026)
+## Recommended stack choices (2026)
 
-### Runtime et langage
+### Runtime and language
 
-- **Node.js 22 LTS (Maintenance LTS, EOL 2027)** pour la stabilite serveur et tooling.
-- **TypeScript strict** partout (apps, packages, scripts, infra).
-- **pnpm workspaces** pour la gestion des dependances monorepo.
+- **Node.js 22 LTS (Maintenance LTS, EOL 2027)** for server stability and tooling.
+- **Strict TypeScript** everywhere (apps, packages, scripts, infra).
+- **pnpm workspaces** for monorepo dependency management.
 
-### Orchestration monorepo
+### Monorepo orchestration
 
-- **Turborepo** pour:
-  - cache local/remote des taches,
-  - pipelines de build/test/lint,
-  - parallelisation CI.
-- Regle cle: dependencies internes en `workspace:*` et packages bien decoupes par responsabilite.
+- **Turborepo** for:
+  - local/remote task cache,
+  - build/test/lint pipelines,
+  - CI parallelisation.
+- Key rule: internal dependencies as `workspace:*` and packages well split by responsibility.
 
-### Strategie de deploiement (Dokploy / Coolify)
+### Deployment strategy (Dokploy / Coolify)
 
-- Deploiement **par service** via **Dockerfile** (pas de buildpack auto pour la prod critique).
-- Un service deployable = un Dockerfile dedie:
+- **Per-service** deploy via **Dockerfile** (no auto buildpack for critical prod).
+- One deployable service = one dedicated Dockerfile:
   - `web`,
   - `api`,
   - `agent`,
-  - `indexer` (si expose/deploye separement).
-- Dokploy et Coolify supportent ce mode via:
-  - source Git,
-  - build Dockerfile,
-  - variables d'environnement par service,
-  - domaines/ports et logs par service.
-- Consequence architecture: il faut des apps independantes, buildables de maniere isolee depuis le monorepo.
+  - `indexer` (if exposed/deployed separately).
+- Dokploy and Coolify support this mode via:
+  - Git source,
+  - Dockerfile build,
+  - env vars per service,
+  - domains/ports and logs per service.
+- Architecture consequence: independent apps, buildable in isolation from monorepo.
 
 ### Frontend
 
-- **Web**: Next.js (React) + App Router.
-- **Données côté client (MVP)** : introduire **`@tanstack/react-query`** lorsque les appels client à l’API se multiplient (invalidation, cache) — **Phase 3** dans [README.md](README.md) ; **pas** de TanStack Router obligatoire tant que Next gère le routage.
-- **Mobile**: Expo (React Native).
-- **UI partagee**:
-  - `react-native` + `react-native-web` pour composants cross-platform,
-  - `tamagui` ou `nativewind` (selon preference design system),
-  - package dedie design tokens.
+- **Web:** Next.js (React) + App Router.
+- **Client data (MVP):** introduce **`@tanstack/react-query`** when client API calls multiply (invalidation, cache) — **Phase 3** in [README.md](../README.md); **no** mandatory TanStack Router while Next handles routing.
+- **Mobile:** Expo (React Native).
+- **Shared UI:**
+  - `react-native` + `react-native-web` for cross-platform components,
+  - `tamagui` or `nativewind` (per design system preference),
+  - dedicated design tokens package.
 
-### Backend et data
+### Backend and data
 
-- **API BFF**: Node.js + GraphQL (Yoga ou Apollo Server) + endpoints REST ciblés si necessaire.
-- **Base de donnees**: Postgres via Supabase.
-- **ORM**: Prisma pour modele type-safe et migrations versionnees.
-- **Cache**: Redis (Upstash ou Redis managé) pour feed, sessions, rate limits, dedup.
-- **Stockage media**: S3-compatible (R2/Supabase Storage selon cout et latence).
+- **API BFF:** Node.js + GraphQL (Yoga or Apollo Server) + targeted REST endpoints if needed.
+- **Database:** Postgres via Supabase.
+- **ORM:** Prisma for type-safe model and versioned migrations.
+- **Cache:** Redis (Upstash or managed Redis) for feed, sessions, rate limits, dedup.
+- **Media storage:** S3-compatible (R2/Supabase Storage per cost and latency).
 
-### Agent IA et pipeline asynchrone
+### AI agent and async pipeline
 
-- **Service agent** separe (Node/Workers selon charge) dans une app dediee.
-- **Queue**: BullMQ (Redis) ou service managé (QStash/Cloud Tasks) pour jobs robustes.
-- **Eventing interne**: pattern outbox + retries pour publication indexeur/blockchain.
+- **Separate agent service** (Node/Workers per load) in dedicated app.
+- **Queue:** BullMQ (Redis) or managed service (QStash/Cloud Tasks) for robust jobs.
+- **Internal eventing:** outbox pattern + retries for indexer/blockchain publish.
 
-### Indexeur et blockchain
+### Indexer and blockchain
 
-- **Indexer** isole dans `apps/indexer` (workers cron + consumers).
-- Couche d'abstraction blockchain dans `packages/blockchain` pour eviter les appels chain directs depuis l'UI.
-- Contract/API clients versionnes et testes (fixtures + replay).
+- **Indexer** isolated in `apps/indexer` (cron workers + consumers).
+- Blockchain abstraction layer in `packages/blockchain` to avoid direct chain calls from UI.
+- Versioned, tested contract/API clients (fixtures + replay).
 
-### Qualite, securite, observabilite
+### Quality, security, observability
 
-- **Lint/format**: ESLint + Prettier + TypeScript strict.
-- **Tests**:
-  - unitaires: Vitest,
-  - integration API: Vitest + Testcontainers,
-  - e2e web: Playwright,
-  - e2e mobile critique: Detox (ou Maestro pour smoke).
-- **Observabilite**: OpenTelemetry + Sentry + logs structures (pino).
-- **Securite**: secret manager, CSP, rate limiting, schema validation (zod), SAST/Dependabot.
+- **Lint/format:** ESLint + Prettier + strict TypeScript.
+- **Tests:**
+  - unit: Vitest,
+  - API integration: Vitest + Testcontainers,
+  - web e2e: Playwright,
+  - critical mobile e2e: Detox (or Maestro for smoke).
+- **Observability:** OpenTelemetry + Sentry + structured logs (pino).
+- **Security:** secret manager, CSP, rate limiting, schema validation (zod), SAST/Dependabot.
 
-## Architecture monorepo recommandee (complete)
+## Recommended monorepo architecture (full)
 
 ```text
 all-aboard/
@@ -113,7 +113,7 @@ all-aboard/
       lib/
       assets/
       package.json
-    api/                          # BFF GraphQL + REST cible
+    api/                          # BFF GraphQL + target REST
       src/
         modules/
           auth/
@@ -133,7 +133,7 @@ all-aboard/
         migrations/
       tests/
       package.json
-    agent/                        # Service IA / orchestration
+    agent/                        # AI / orchestration service
       src/
         core/
         providers/
@@ -143,7 +143,7 @@ all-aboard/
         workflows/
       tests/
       package.json
-    indexer/                      # Indexation blockchain/data layer
+    indexer/                      # Blockchain/data layer indexing
       src/
         adapters/
         consumers/
@@ -151,60 +151,60 @@ all-aboard/
         schedulers/
       tests/
       package.json
-    workers/                      # jobs/cron/event handlers (optionnel)
+    workers/                      # jobs/cron/event handlers (optional)
       src/
       package.json
 
   packages/
-    ui/                           # Composants partages web/mobile
+    ui/                           # Shared web/mobile components
       src/
       package.json
     design-tokens/                # tokens, themes, primitives
       src/
       package.json
-    config-eslint/                # config ESLint partagee
+    config-eslint/                # shared ESLint config
       index.js
       package.json
-    config-typescript/            # tsconfig de base + refs
+    config-typescript/            # base tsconfig + refs
       base.json
       node.json
       react.json
       package.json
-    config-jest-vitest/           # presets de test partages
+    config-jest-vitest/           # shared test presets
       src/
       package.json
-    types/                        # types metier transverses
+    types/                        # cross-cutting business types
       src/
       package.json
-    validation/                   # schemas zod et validateurs
+    validation/                   # zod schemas and validators
       src/
       package.json
-    api-client/                   # SDK interne pour apps
+    api-client/                   # internal SDK for apps
       src/
       package.json
-    db/                           # client prisma, repositories, seeds
+    db/                           # prisma client, repositories, seeds
       src/
       prisma/
       package.json
-    cache/                        # acces redis + strategies cache
+    cache/                        # redis access + cache strategies
       src/
       package.json
-    storage/                      # abstraction media storage
+    storage/                      # media storage abstraction
       src/
       package.json
     blockchain/                   # sdk/contracts/index adapters
       src/
       package.json
-    analytics/                    # tracking events produit
+    analytics/                    # product event tracking
       src/
       package.json
-    feature-flags/                # wrappers flags env/provider
+    feature-flags/                # env/provider flag wrappers
       src/
       package.json
     observability/                # logger/tracing metrics wrappers
       src/
       package.json
-    auth/                         # auth shared logic (JWT, sessions)
+    auth/                         # shared auth logic (JWT, sessions)
       src/
       package.json
 
@@ -215,13 +215,13 @@ all-aboard/
       Dockerfile.agent
       Dockerfile.indexer
       .dockerignore
-    terraform/                    # ou pulumi/
+    terraform/                    # or pulumi/
       envs/
         dev/
         staging/
         prod/
       modules/
-    k8s/                          # si orchestration kubernetes
+    k8s/                          # if kubernetes orchestration
     scripts/
       bootstrap.sh
       migrate.sh
@@ -254,29 +254,29 @@ all-aboard/
   .env.example
 ```
 
-## Bonnes pratiques de structuration (2026++)
+## Structuring best practices (2026++)
 
-- **Separer deployable vs reusable**: `apps/*` deployables, `packages/*` bibliotheques.
-- **Installer les deps la ou elles sont utilisees** (pas au root sauf outils repo).
-- **Exports explicites** dans chaque package (`exports` field), pas de barrels globaux massifs.
-- **TypeScript project references** (`composite: true`) pour builds incrementaux.
-- **Boundary rules** (eslint): UI ne depend pas de `db`, backend seul appelle `db`.
-- **API contracts d'abord**: schemas zod + types partages + tests de contrat.
-- **Remote cache Turborepo en CI** pour accelerer pipeline.
-- **ADR systematique** pour chaque decision technique majeure.
-- **Images Docker construites en CI** puis deploiement sur Dokploy/Coolify (eviter la surcharge build sur serveur de prod).
+- **Separate deployable vs reusable:** `apps/*` deployable, `packages/*` libraries.
+- **Install deps where used** (not at root except repo tools).
+- **Explicit exports** in each package (`exports` field), no massive global barrels.
+- **TypeScript project references** (`composite: true`) for incremental builds.
+- **Boundary rules** (eslint): UI must not depend on `db`, only backend calls `db`.
+- **API contracts first:** zod schemas + shared types + contract tests.
+- **Turborepo remote cache in CI** to speed pipeline.
+- **Systematic ADR** for each major technical decision.
+- **Docker images built in CI** then deploy on Dokploy/Coolify (avoid prod server build overload).
 
-## Impacts sur l'initialisation du monorepo
+## Impact on monorepo bootstrap
 
-Le choix Dokploy/Coolify + Dockerfile par service change legerement l'initialisation:
+Dokploy/Coolify + Dockerfile per service choice slightly changes bootstrap:
 
-1. Prevoir les Dockerfiles des le debut dans `infra/docker/`.
-2. Definir des scripts de build cibles par app (ex: `build:web`, `build:api`).
-3. Garder des artefacts de build predictibles (pour cache Turbo + images reproductibles).
-4. Eviter les couplages forts entre services pour permettre un deploiement independant.
-5. Centraliser la logique commune dans `packages/*` sans rendre un service dependant d'un runtime non necessaire.
+1. Plan Dockerfiles from the start in `infra/docker/`.
+2. Define per-app build scripts (e.g. `build:web`, `build:api`).
+3. Keep predictable build artefacts (for Turbo cache + reproducible images).
+4. Avoid strong service coupling to allow independent deploy.
+5. Centralise common logic in `packages/*` without making a service depend on unnecessary runtime.
 
-## Proposition de `turbo.json` (base)
+## Proposed `turbo.json` (base)
 
 ```json
 {
@@ -306,26 +306,26 @@ Le choix Dokploy/Coolify + Dockerfile par service change legerement l'initialisa
 }
 ```
 
-## Environnements et governance
+## Environments and governance
 
-- **Environnements**: `dev`, `staging`, `prod` strictement separes.
-- **Branching**: trunk-based + feature flags pour reduire les branches longues.
-- **CI gate minimal**: lint + typecheck + tests unitaires + tests integration API.
-- **Release**: Changesets pour versioning des packages internes/exposes.
+- **Environments:** `dev`, `staging`, `prod` strictly separated.
+- **Branching:** trunk-based + feature flags to reduce long branches.
+- **Minimal CI gate:** lint + typecheck + unit tests + API integration tests.
+- **Release:** Changesets for internal/exposed package versioning.
 
-## Plan de mise en place (ordre conseille)
+## Rollout plan (recommended order)
 
-Ordre **long terme** (aligné sur cette proposition). Pour le **MVP dans le dépôt** (Fastify, phases 0–3, TanStack Query au bon moment), suivre [README.md](README.md).
+**Long-term** order (aligned with this proposal). For **MVP in repo** (Fastify, phases 0–3, TanStack Query at right time), follow [README.md](../README.md).
 
-1. Initialiser monorepo (`pnpm`, `turbo`, `apps` + `packages` de base).
-2. Poser standards transverses (TypeScript refs, ESLint, test tooling).
-3. Monter `apps/api` + `packages/db` + migrations initiales.
-4. Monter `apps/web` et `apps/mobile` avec `packages/ui`.
-5. Integrer `apps/agent`, `apps/indexer`, puis observabilite et CI complete.
+1. Initialise monorepo (`pnpm`, `turbo`, base `apps` + `packages`).
+2. Set cross-cutting standards (TypeScript refs, ESLint, test tooling).
+3. Stand up `apps/api` + `packages/db` + initial migrations.
+4. Stand up `apps/web` and `apps/mobile` with `packages/ui`.
+5. Integrate `apps/agent`, `apps/indexer`, then observability and full CI.
 
-## References utilisees (web)
+## References used (web)
 
-- [Documentation canonique All-Aboard — timeline MVP](README.md)
+- [All-Aboard canonical documentation — MVP timeline](../README.md)
 - [Turborepo Workspaces Guide](https://turbo.build/docs/guides/workspaces)
 - [Turborepo - Managing Dependencies](https://turbo.build/docs/crafting-your-repository/managing-dependencies)
 - [TypeScript Project References](https://www.typescriptlang.org/docs/handbook/project-references.html)

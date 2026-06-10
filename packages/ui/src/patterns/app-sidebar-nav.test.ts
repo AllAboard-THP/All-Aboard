@@ -1,10 +1,12 @@
 import { describe, it, expect } from "vitest";
 
 import {
+  buildAppSidebarSections,
   isAppSidebarItemActive,
   normalizeAppSidebarPathname,
   resolveAppSidebarActiveId,
   resolveAppSidebarContext,
+  resolveAppSidebarRoleFlags,
 } from "@allaboard/ui/patterns/app-sidebar-nav";
 
 describe("app-sidebar-nav", () => {
@@ -13,26 +15,87 @@ describe("app-sidebar-nav", () => {
     expect(normalizeAppSidebarPathname("/fr")).toBe("/");
   });
 
-  it("marks feed, help and request routes active under feed", () => {
+  it("marks feed and request routes active under feed", () => {
     expect(isAppSidebarItemActive("/feed", "/feed")).toBe(true);
     expect(isAppSidebarItemActive("/requests/abc", "/feed")).toBe(true);
-    expect(isAppSidebarItemActive("/help/new", "/feed")).toBe(true);
+    expect(isAppSidebarItemActive("/help/new", "/feed")).toBe(false);
     expect(isAppSidebarItemActive("/profile", "/feed")).toBe(false);
   });
 
-  it("marks admin routes active under admin", () => {
-    expect(isAppSidebarItemActive("/admin", "/admin")).toBe(true);
-    expect(isAppSidebarItemActive("/admin/users", "/admin")).toBe(true);
-    expect(isAppSidebarItemActive("/admin/moderation", "/admin")).toBe(true);
+  it("marks help/new active under newRequest", () => {
+    expect(isAppSidebarItemActive("/help/new", "/help/new")).toBe(true);
+    expect(resolveAppSidebarActiveId("/help/new")).toBe("newRequest");
   });
 
-  it("resolves active id and admin section from pathname", () => {
-    expect(resolveAppSidebarActiveId("/help/new")).toBe("feed");
-    expect(resolveAppSidebarActiveId("/admin/users")).toBe("admin");
+  it("marks admin sub-routes with specific nav ids", () => {
+    expect(isAppSidebarItemActive("/admin", "/admin")).toBe(true);
+    expect(isAppSidebarItemActive("/admin/users", "/admin")).toBe(false);
+    expect(isAppSidebarItemActive("/admin/users", "/admin/users")).toBe(true);
+    expect(isAppSidebarItemActive("/admin/moderation", "/admin/moderation")).toBe(true);
+    expect(resolveAppSidebarActiveId("/admin/users")).toBe("adminUsers");
+    expect(resolveAppSidebarActiveId("/admin/moderation")).toBe("adminModeration");
+  });
 
-    const adminContext = resolveAppSidebarContext("/admin/users", { isAdmin: true });
-    expect(adminContext.activeId).toBe("admin");
-    expect(adminContext.showAdminSection).toBe(true);
-    expect(adminContext.openSectionIds).toContain("admin");
+  it("resolves student sidebar without mentor or admin sections", () => {
+    const student = resolveAppSidebarContext("/feed", { isMentor: false, isAdmin: false });
+    expect(student.showMentorSection).toBe(false);
+    expect(student.showAdminSection).toBe(false);
+    expect(student.openSectionIds).toEqual(["navigation", "community"]);
+  });
+
+  it("resolves mentor sidebar with mentor section only", () => {
+    const mentor = resolveAppSidebarContext("/mentor", { isMentor: true, isAdmin: false });
+    expect(mentor.showMentorSection).toBe(true);
+    expect(mentor.showAdminSection).toBe(false);
+    expect(mentor.openSectionIds).toEqual(["navigation", "community", "mentor"]);
+  });
+
+  it("resolves admin sidebar with mentor and admin sections", () => {
+    const admin = resolveAppSidebarContext("/admin/users", { isAdmin: true });
+    expect(admin.activeId).toBe("adminUsers");
+    expect(admin.showMentorSection).toBe(true);
+    expect(admin.showAdminSection).toBe(true);
+    expect(admin.openSectionIds).toEqual(["navigation", "community", "mentor", "admin"]);
+  });
+
+  it("builds student sections with eight navigation+community items", () => {
+    const labels = {
+      navigationGroup: "Nav",
+      communityGroup: "Comm",
+      mentorGroup: "Mentor",
+      adminGroup: "Admin",
+      expandSidebar: "Expand",
+      collapseSidebar: "Collapse",
+      openMenu: "Open",
+      closeMenu: "Close",
+      dashboard: "Dashboard",
+      subjects: "Subjects",
+      resources: "Resources",
+      events: "Events",
+      newRequest: "New",
+      feed: "Feed",
+      messages: "Messages",
+      profile: "Profile",
+      mentor: "Mentor",
+      admin: "Overview",
+      adminUsers: "Users",
+      adminModeration: "Moderation",
+    };
+
+    const sections = buildAppSidebarSections(labels, {
+      showMentorSection: false,
+      showAdminSection: false,
+    });
+
+    expect(sections).toHaveLength(2);
+    expect(sections[0]?.items).toHaveLength(4);
+    expect(sections[1]?.items).toHaveLength(4);
+  });
+
+  it("grants admin role mentor section access", () => {
+    expect(resolveAppSidebarRoleFlags({ isAdmin: true })).toEqual({
+      showMentorSection: true,
+      showAdminSection: true,
+    });
   });
 });

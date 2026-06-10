@@ -1,76 +1,79 @@
-# Documentation All-Aboard — point d'entrée canonique
+# All-Aboard documentation
 
-Référence **architecture et produit** du dépôt. Le **pilotage des tâches** (backlog, kanban, roadmap, deps) vit sur le [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3) — ne pas dupliquer ici.
+Canonical **architecture and product** reference for this repository.
 
-**Cartographie** : [map-of-content.md](map-of-content.md) · **Doc par issue** : [tasks/README.md](tasks/README.md) · **Pilotage** : [.github/PROJECT.md](../.github/PROJECT.md)
+> **Task tracking** (backlog, kanban, roadmap, dependencies) lives on [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3) — do not duplicate it here.
 
-**Priorité en cas de doute** : cohérence d'ingénierie (contrat API, SSR/BFF) — [Principes](#principes-pour-limiter-le-rework) et [plan opérationnel](plan-mise-en-place-web-api-donnees.md).
+| Resource | Description |
+|----------|-------------|
+| [INDEX.md](INDEX.md) | Topic → canonical source map |
+| [tasks/](tasks/README.md) | Per-issue working notes (`Docs/tasks/<NN>-slug/`) |
+| [.github/PROJECT.md](../.github/PROJECT.md) | Kanban workflow and project fields |
 
-**Livré** (2026-05-12) : feed SSR `API_URL`, TanStack home, BFF `/api/feed` — [journal](plan-mise-en-place-web-api-donnees.md). **Extension 2026-05-20** : Phase 2 MVP (Postgres, auth JWT, création demande, BFF, ADR 0001) — même plan et [ADR](adr/0001-authentication-strategy.md).
-
----
-
-## Hiérarchie des documents
-
-| Document | Rôle |
-|----------|------|
-| **Ce README** | Phases MVP, état code, principes transverses. |
-| [map-of-content.md](map-of-content.md) | MoC : sujet → source canonique. |
-| [tasks/README.md](tasks/README.md) | Doc **par issue** (`Docs/tasks/<NN>-slug/`). |
-| [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Web ↔ API : env, `/feed`, chemins code, journal smoke. |
-| [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md) | Checklist manuelle Dokploy **dev** (Postgres, secrets, smoke). |
-| [adr/](adr/) | Décisions d'architecture ; ex. [0001-authentication-strategy.md](adr/0001-authentication-strategy.md), [0002 design system](adr/0002-design-system-monorepo.md). |
-| [design-system/](design-system/README.md) | **Hub DS** (Diátaxis) : architecture, guide contributeur, CI, AppShell, journal. |
-| [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | Parcours produit (MOC). |
-| [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md) | Variables déploiement (générique). |
-| [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md) | Faits instance Dokploy. |
-| [vision/README.md](vision/README.md) | Stack / dataflow cible (hors MVP code). |
-| [plan-initialisation-turborepo-mvp.md](plan-initialisation-turborepo-mvp.md) | Stub bootstrap ; [archive](archive/plan-initialisation-turborepo-mvp-2026-01.md). |
-
-**Tâches & priorités** : [GitHub Project](https://github.com/orgs/AllAboard-THP/projects/3) — pas de liste détaillée dans `Docs/`.
+**When in doubt**, prioritize engineering consistency (API contract, SSR/BFF) — see [Principles](#engineering-principles) and [Web ↔ API integration](guides/web-api-integration.md).
 
 ---
 
-## Principes pour limiter le rework
+## Documentation map
 
-1. **Contrat partagé** : `packages/types` + API ; une PR transverse = api + types + web + tests.
-2. **SSR** via `API_URL` interne ; feed client via **BFF** `/api/feed` (same-origin).
-3. **TanStack Query** : couche client ; socle livré avec le feed ([plan opérationnel](plan-mise-en-place-web-api-donnees.md)).
-4. **`NEXT_PUBLIC_*`** uniquement si le navigateur appelle l'API en direct.
-
----
-
-## Timeline (phases)
-
-| Phase | État | Référence travail |
-|-------|------|-------------------|
-| 0 — Socle monorepo, Web/API, Dokploy | Livré | plan opérationnel (journal) |
-| 1 — Feed SSR + types | Livré | idem |
-| 2 — Auth + parcours demande d'aide | **Livré** (MVP dépôt ; durcissement / staging à suivre) | [ADR 0001](adr/0001-authentication-strategy.md), [MOC](moc-parcours-utilisateur.md), epic [#13](https://github.com/AllAboard-THP/All-Aboard/issues/13) |
-| 3 — TanStack hors home | **Livré** (feed, détail, mutations création) | [#36](https://github.com/AllAboard-THP/All-Aboard/issues/36) |
-| 4 — Design system + shell navigation | **Livré** (dépôt) | [design-system/](design-system/README.md), [#24](https://github.com/AllAboard-THP/All-Aboard/issues/24), [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25) |
-| 5 — Agent / Indexer | Backlog | [#37](https://github.com/AllAboard-THP/All-Aboard/issues/37), [vision](vision/README.md) |
+```
+Docs/
+├── README.md              ← you are here
+├── INDEX.md               ← canonical source index
+├── architecture/          ← target dataflow & system views
+├── product/               ← user journeys (MOC)
+├── guides/                ← how-to: Web/API, monorepo bootstrap
+├── deployment/            ← env vars, Dokploy, runbooks, staging
+├── adr/                   ← accepted architecture decisions
+├── design-system/         ← @allaboard/ui contributor hub
+├── branding/              ← marketing hero assets
+├── tasks/                 ← per-issue working docs
+├── integrations/          ← third-party doc indexes (Intuition)
+└── vision/                ← long-term stack proposals (not current code)
+```
 
 ---
 
-## État technique du dépôt
+## MVP phase timeline
 
-| Zone | État |
-|------|------|
-| `apps/api` | Fastify : socle MVP + **parité Rails phases 1–7** (feed, social, auth/profils, resources, chat REST+WS, admin, soft delete, suggest-tags, `ai_summary` outbox) ; `apps/agent` pour tags/summary ; hub doc [api-rails-parity](tasks/api-rails-parity/README.md) ; OpenAPI [`openapi.yaml`](../apps/api/openapi.yaml) **0.10.0**. |
-| `apps/web` | SSR feed ; BFF ; `/help/new` ; **AppShell** (`app/(app)/`, nav MOC) — [app-shell.md](design-system/app-shell.md) ; `@allaboard/ui` + features/blocks. |
-| `packages/ui` + `apps/storybook` | Design system + catalogue SB — [design-system/README.md](design-system/README.md). |
-| Auth | JWT (cookie `access_token` + relais BFF Bearer) — [ADR 0001](adr/0001-authentication-strategy.md), users hash — [ADR 0003](adr/0003-authentication-users-production.md). |
-| TanStack | Socle + `useQuery` feed/détail, `useMutation` création — [#36](https://github.com/AllAboard-THP/All-Aboard/issues/36). |
-| `apps/thp-final` | Rails historique — hors MVP JS sauf décision explicite. |
+| Phase | Status | Reference |
+|-------|--------|-----------|
+| 0 — Monorepo, Web/API, Dokploy | ✅ Shipped | [integration guide](guides/web-api-integration.md) journal |
+| 1 — SSR feed + shared types | ✅ Shipped | idem |
+| 2 — Auth + help-request flow | ✅ Shipped (repo MVP; staging hardening ongoing) | [ADR 0001](adr/0001-authentication-strategy.md), [user journeys](product/user-journeys.md), epic [#13](https://github.com/AllAboard-THP/All-Aboard/issues/13) |
+| 3 — TanStack beyond home | ✅ Shipped | [#36](https://github.com/AllAboard-THP/All-Aboard/issues/36) |
+| 4 — Design system + AppShell | ✅ Shipped | [design-system/](design-system/README.md), [#24](https://github.com/AllAboard-THP/All-Aboard/issues/24), [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25) |
+| 5 — Agent / Intuition indexer | 📋 Backlog | [#37](https://github.com/AllAboard-THP/All-Aboard/issues/37), [vision/](vision/README.md) |
 
 ---
 
-## Règles contributeurs
+## Repository technical state
 
-1. Évolution **transverse** Web/API : lire ce README + plan opérationnel ; mettre à jour le *Journal* si smoke/contrat change.
-2. Évolution **une tâche** : doc dans `Docs/tasks/<NN>-slug/` ; lien dans l'issue GitHub.
-3. Décision archi **validée** : `Docs/adr/` (brouillon dans `tasks/`).
-4. Phase **terminée** : mettre à jour le tableau ci-dessus (date en tête de section si besoin).
+| Area | State |
+|------|-------|
+| `apps/api` | Fastify MVP + **Rails parity phases 1–7** (feed, social, auth/profiles, resources, REST+WS chat, admin, soft delete, suggest-tags, `ai_summary` outbox); `apps/agent` for tags/summary; hub [api-rails-parity](tasks/api-rails-parity/README.md); OpenAPI [`openapi.yaml`](../apps/api/openapi.yaml) **0.10.0** |
+| `apps/web` | SSR feed; BFF; `/help/new`; **AppShell** (`app/(app)/`) — [app-shell.md](design-system/app-shell.md); `@allaboard/ui` + features/blocks |
+| `packages/ui` + `apps/storybook` | Design system + Storybook catalogue — [design-system/README.md](design-system/README.md) |
+| Auth | JWT (`access_token` cookie + BFF Bearer relay) — [ADR 0001](adr/0001-authentication-strategy.md); production users — [ADR 0003](adr/0003-authentication-users-production.md); Google OAuth — [ADR 0006](adr/0006-oauth-google-sso.md) |
+| TanStack Query | Feed/detail queries + create mutation — [#36](https://github.com/AllAboard-THP/All-Aboard/issues/36) |
+| `apps/thp-final` | Historical Rails app — outside JS MVP unless explicitly decided |
 
-**Mise à jour** : 2026-06-04 (parité Rails API documentée phases 1–7).
+---
+
+## Engineering principles
+
+1. **Shared contract** — `packages/types` + API; a cross-cutting PR touches api + types + web + tests.
+2. **SSR** uses internal `API_URL`; client feed refresh uses **BFF** `GET /api/feed` (same-origin).
+3. **TanStack Query** is the client data layer; foundation shipped with the feed ([integration guide](guides/web-api-integration.md)).
+4. **`NEXT_PUBLIC_*`** only when the browser calls the API directly.
+
+---
+
+## Contributor rules
+
+1. **Cross-cutting Web/API change** — read this README + [integration guide](guides/web-api-integration.md); update the *Journal* when smoke/contract changes.
+2. **Single-issue work** — notes in `Docs/tasks/<NN>-slug/`; link from the GitHub issue.
+3. **Accepted architecture decision** — `Docs/adr/` (drafts may stay in `tasks/` until PR merge).
+4. **Completed phase** — update the timeline table above (add date in section header if useful).
+
+**Last updated:** 2026-06-10

@@ -1,21 +1,21 @@
 # Architecture — design system monorepo
 
-**Audience** : développeurs et agents qui doivent comprendre *où* placer du code UI.  
-**Décision formelle** : [ADR 0002](../adr/0002-design-system-monorepo.md).
+**Audience:** developers and agents who need to understand *where* to place UI code.  
+**Formal decision:** [ADR 0002](../adr/0002-design-system-monorepo.md).
 
 ---
 
-## Vue d’ensemble
+## Overview
 
 ```mermaid
 flowchart TB
   subgraph packages["packages/"]
     UI["@allaboard/ui<br/>tokens + primitives + stories"]
-    TYPES["@allaboard/types<br/>contrats API — hors DS"]
+    TYPES["@allaboard/types<br/>API contracts — outside DS"]
   end
 
   subgraph apps["apps/"]
-    SB["@allaboard/storybook<br/>config SB 10.4"]
+    SB["@allaboard/storybook<br/>SB 10.4 config"]
     WEB["apps/web<br/>Next 15 + BFF + features"]
   end
 
@@ -25,77 +25,77 @@ flowchart TB
   SB -.->|"scan *.stories"| UI
 ```
 
-Séparation **totale** : le design system ne vit pas dans l’app Next déployée ; Storybook n’est pas dans l’image Docker `web`.
+**Total separation:** design system does not live in deployed Next app; Storybook is not in Docker `web` image.
 
 ---
 
-## Responsabilités par couche
+## Responsibilities by layer
 
-| Couche | Package / app | Contient | N’y mettre surtout pas |
-|--------|---------------|--------|----------------------|
-| Design system | `packages/ui` | `globals.css`, tokens `@theme inline`, primitives shadcn, `*.stories.tsx`, Vitest (`cn`, Button) | Types métier, routes, BFF, config Storybook |
-| Catalogue | `apps/storybook` | `.storybook/main.ts`, `preview.tsx`, PostCSS réexport | Composants métier, pages Next |
-| Produit | `apps/web` | `app/`, `components/features/`, `components/blocks/`, API routes | `components/ui/` (régression), primitives dupliquées |
-| Contrats | `packages/types` | `FeedResponse`, etc. | Styles, composants visuels |
+| Layer | Package / app | Contains | Do not put here |
+|--------|---------------|----------|-----------------|
+| Design system | `packages/ui` | `globals.css`, `@theme inline` tokens, shadcn primitives, `*.stories.tsx`, Vitest (`cn`, Button) | Business types, routes, BFF, Storybook config |
+| Catalogue | `apps/storybook` | `.storybook/main.ts`, `preview.tsx`, PostCSS re-export | Business components, Next pages |
+| Product | `apps/web` | `app/`, `components/features/`, `components/blocks/`, API routes | `components/ui/` (regression), duplicated primitives |
+| Contracts | `packages/types` | `FeedResponse`, etc. | Styles, visual components |
 
 ---
 
-## Règle de placement (arbre de décision)
+## Placement rule (decision tree)
 
 ```mermaid
 flowchart TD
-  Q{"Quel code ?"}
+  Q{"What code?"}
   Q -->|"Button, Card, tokens, Alert"| UI["packages/ui"]
-  Q -->|"Story du composant UI"| UI
-  Q -->|"Config Storybook, addons"| SB["apps/storybook"]
-  Q -->|"Page Next, layout, BFF"| WEB["apps/web"]
-  Q -->|"HomeContent, formulaires métier"| FEAT["apps/web/components/features/"]
-  Q -->|"Types API partagés"| TYPES["packages/types"]
+  Q -->|"Component story"| UI
+  Q -->|"Storybook config, addons"| SB["apps/storybook"]
+  Q -->|"Next page, layout, BFF"| WEB["apps/web"]
+  Q -->|"HomeContent, business forms"| FEAT["apps/web/components/features/"]
+  Q -->|"Shared API types"| TYPES["packages/types"]
 ```
 
 ---
 
-## Tailwind v4 et consommation web
+## Tailwind v4 and web consumption
 
-- **Source de tokens** : `packages/ui/src/styles/globals.css` (`@import "tailwindcss"`, `@theme inline`).
-- **Web** : `apps/web/app/globals.css` importe le CSS UI et déclare `@source` vers `packages/ui` et les dossiers web (purge correcte en prod).
-- **Next** : `transpilePackages: ["@allaboard/ui"]` dans `next.config.ts`.
-- **Pas** de `tailwind.config` exporté par le package UI (anti-pattern v4).
+- **Token source:** `packages/ui/src/styles/globals.css` (`@import "tailwindcss"`, `@theme inline`).
+- **Web:** `apps/web/app/globals.css` imports UI CSS and declares `@source` towards `packages/ui` and web folders (correct prod purge).
+- **Next:** `transpilePackages: ["@allaboard/ui"]` in `next.config.ts`.
+- **No** `tailwind.config` exported by UI package (v4 anti-pattern).
 
 ---
 
 ## Storybook 10.4
 
-- Framework : `@storybook/react-vite`.
-- Stories : glob `packages/ui/src/**/*.stories.@(ts|tsx)`.
-- Addons installés : `docs`, `a11y`, `themes` (pas de paquets `addon-essentials` / `addon-interactions` séparés en 10.4 — inclus dans le core).
-- Build : `pnpm build:storybook` → `apps/storybook/storybook-static/`.
-- **Déploiement** : image nginx statique — `infra/docker/Dockerfile.storybook` (port **8080**), hors image `web`.
+- Framework: `@storybook/react-vite`.
+- Stories: glob `packages/ui/src/**/*.stories.@(ts|tsx)`.
+- Installed addons: `docs`, `a11y`, `themes` (no separate `addon-essentials` / `addon-interactions` packages in 10.4 — included in core).
+- Build: `pnpm build:storybook` → `apps/storybook/storybook-static/`.
+- **Deploy:** static nginx image — `infra/docker/Dockerfile.storybook` (port **8080**), outside `web` image.
 
 ---
 
-## Turbo et cache
+## Turbo and cache
 
-- Tâche racine `build` : inputs excluent `**/*.stories.*` pour ne pas invalider le build Next.
-- Tâche `build:storybook` : outputs `storybook-static/**`.
-- `pnpm dev` MVP exclut `thp-final` ; `pnpm dev:ui` lance Storybook seul.
+- Root `build` task: inputs exclude `**/*.stories.*` to avoid invalidating Next build.
+- `build:storybook` task: outputs `storybook-static/**`.
+- `pnpm dev` MVP excludes `thp-final`; `pnpm dev:ui` runs Storybook only.
 
 ---
 
 ## AppShell (#25)
 
-- Route group `app/(app)/` : chrome commun (header + nav).
-- `/health` reste **hors** `(app)`.
-- `MarketingPageShell` : contenu centré **à l’intérieur** des pages (home, help) — voir [app-shell.md](app-shell.md).
+- Route group `app/(app)/`: shared chrome (header + nav).
+- `/health` stays **outside** `(app)`.
+- `MarketingPageShell`: centred content **inside** pages (home, help) — see [app-shell.md](app-shell.md).
 
 ---
 
-## Anti-patterns documentés
+## Documented anti-patterns
 
-| Anti-pattern | Pourquoi c’est rejeté |
-|--------------|----------------------|
-| Storybook dans `apps/web` | Deps doc en prod, coupling build |
-| `components/ui/` dans web | Contourne le package partagé |
-| `@allaboard/types` dans `ui` | Mélange contrats API et présentation |
-| Import `apps/storybook` depuis web | Frontière prod/doc cassée |
-| Merge wholesale branche `feature/ui-tailwind-foundation` | Mélange Tailwind v3/v4 |
+| Anti-pattern | Why rejected |
+|--------------|--------------|
+| Storybook in `apps/web` | Doc deps in prod, build coupling |
+| `components/ui/` in web | Bypasses shared package |
+| `@allaboard/types` in `ui` | Mixes API contracts and presentation |
+| Import `apps/storybook` from web | Broken prod/doc boundary |
+| Wholesale merge `feature/ui-tailwind-foundation` branch | Mixes Tailwind v3/v4 |

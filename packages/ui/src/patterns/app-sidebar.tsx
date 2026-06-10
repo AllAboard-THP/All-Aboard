@@ -27,6 +27,7 @@ import type {
 export type AppSidebarLabels = {
   navigationGroup: string;
   communityGroup: string;
+  mentorGroup: string;
   adminGroup: string;
   expandSidebar: string;
   collapseSidebar: string;
@@ -72,6 +73,7 @@ export type AppSidebarProps = {
 function sectionLabel(labels: AppSidebarLabels, section: AppSidebarSection): string {
   if (section.labelKey === "navigationGroup") return labels.navigationGroup;
   if (section.labelKey === "communityGroup") return labels.communityGroup;
+  if (section.labelKey === "mentorGroup") return labels.mentorGroup;
   return labels.adminGroup;
 }
 

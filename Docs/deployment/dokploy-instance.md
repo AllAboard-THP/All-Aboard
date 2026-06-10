@@ -1,212 +1,212 @@
-# Deploiement Dokploy — instance All-Aboard (reference)
+# Dokploy deployment — All-Aboard instance (reference)
 
-Ce document decrit la configuration **effective** du projet All-Aboard sur Dokploy, telle qu’observable via l’API Dokploy (MCP `user-dokploy-allaboard-mcp`). Il complete la [matrice theorique](matrice-deploiement-dokploy-coolify.md) (conventions, **tables de variables par type** — ne pas les recopier ici).
+This document describes the **effective** All-Aboard project configuration on Dokploy, as observable via the Dokploy API (MCP `user-dokploy-allaboard-mcp`). It complements the [theoretical matrix](environment-variables.md) (conventions, **variable tables by type** — do not duplicate them here).
 
-**Timeline produit / stack applicative** (ordre des phases, TanStack, auth) : [README documentation — canonique](README.md).
+**Product timeline / application stack** (phase order, TanStack, auth): [canonical documentation README](../README.md).
 
-**Mise a jour** : 2026-06-03 (#69 — CI build Agent + doc retrait Indexer legacy ; `apps/agent` scaffold merge #66). 2026-05-29 (staging : MVP Phase 2 + auth ADR 0003 — `DEV_SEED_PASSWORD`, pas de `MVP_LOGIN_PASSWORD` ; smoke complet 2026-05-29). **2026-05-20** : domaines `allaboard.fr` + API dediees ; Agent/Indexer **desactives** ; post-merge PR #9 Phase 1 — smoke feed OK. Detail smoke : [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) (journal) ; runbooks : [dev Phase 2](runbook-dokploy-dev-phase2.md), [staging Phase 2](runbook-dokploy-staging-phase2.md).
+**Last updated:** 2026-06-03 (#69 — Agent CI build + legacy Indexer removal doc; `apps/agent` scaffold merge #66). 2026-05-29 (staging: MVP Phase 2 + ADR 0003 auth — `DEV_SEED_PASSWORD`, no `MVP_LOGIN_PASSWORD`; full smoke 2026-05-29). **2026-05-20:** `allaboard.fr` domains + dedicated API; Agent/Indexer **disabled**; post-merge PR #9 Phase 1 — feed smoke OK. Smoke detail: [guides/web-api-integration.md](../guides/web-api-integration.md) (journal); runbooks: [dev Phase 2](runbooks/dev-phase2.md), [staging Phase 2](runbooks/staging-phase2.md).
 
-**Secrets** : mots de passe base de donnees, cles API et tokens GitHub se configurent **uniquement** dans Dokploy. Ne jamais les commiter dans ce depot.
+**Secrets:** database passwords, API keys and GitHub tokens are configured **only** in Dokploy. Never commit them in this repo.
 
 ---
 
-## Projet et environnements
+## Project and environments
 
-| Element | Valeur |
+| Element | Value |
 |--------|--------|
-| Projet Dokploy | `AllAboard monorepo website` |
-| Depots Git | `AllAboard-THP/All-Aboard` (integration GitHub App Dokploy) |
-| Environnements | `production`, `staging`, `dev` |
+| Dokploy project | `AllAboard monorepo website` |
+| Git repos | `AllAboard-THP/All-Aboard` (Dokploy GitHub App integration) |
+| Environments | `production`, `staging`, `dev` |
 
-Chaque environnement contient typiquement :
+Each environment typically contains:
 
-- quatre **ressources application** : Web, API, Agent, Indexer (Agent **pret au build** depuis #66 — toujours **desactive** en instance jusqu’a validation ops ; Indexer = **placeholder legacy** — ne pas reactiver, voir section Agent et Indexer) ;
-- une base **Postgres** managée par Dokploy.
+- four **application resources**: Web, API, Agent, Indexer (Agent **ready to build** since #66 — still **disabled** on instance until ops validation; Indexer = **legacy placeholder** — do not reactivate, see Agent and Indexer section);
+- one **Postgres** database managed by Dokploy.
 
 ---
 
-## Build Docker (commun a tous les services Node)
+## Docker build (common to all Node services)
 
-| Parametre | Valeur |
+| Parameter | Value |
 |-----------|--------|
 | `buildType` | `dockerfile` |
-| `buildPath` | `/` (racine du monorepo) |
+| `buildPath` | `/` (monorepo root) |
 | `dockerContextPath` | `.` |
-| Sous-modules Git | desactives (`enableSubmodules: false`) |
-| Declenchement | **Web + API** : `push` sur la branche configuree, `autoDeploy: true`. **Agent** : `autoDeploy: false` — deploiement manuel apres validation CI (#69). **Indexer (legacy)** : `autoDeploy: false` — **ne pas reactiver**. |
+| Git submodules | disabled (`enableSubmodules: false`) |
+| Trigger | **Web + API**: `push` on configured branch, `autoDeploy: true`. **Agent**: `autoDeploy: false` — manual deploy after CI validation (#69). **Indexer (legacy)**: `autoDeploy: false` — **do not reactivate**. |
 
-Dockerfiles utilises (chemins relatifs a la racine du repo) :
+Dockerfiles used (paths relative to repo root):
 
 | Application | Dockerfile | Notes |
 |-------------|------------|-------|
 | Web | `infra/docker/Dockerfile.web` | — |
 | API | `infra/docker/Dockerfile.api` | — |
-| Agent | `infra/docker/Dockerfile.agent` | `apps/agent` — CI build + smoke `/health` (#69) |
-| Indexer | `infra/docker/Dockerfile.indexer` | **Legacy** — pas de `apps/indexer` ; ne pas build / reactiver |
+| Agent | `infra/docker/Dockerfile.agent` | `apps/agent` — CI build + `/health` smoke (#69) |
+| Indexer | `infra/docker/Dockerfile.indexer` | **Legacy** — no `apps/indexer`; do not build / reactivate |
 
 ---
 
-## Branches Git par environnement (etat observe)
+## Git branches per environment (observed state)
 
-Strategie **Web + API** : aligner la branche Dokploy sur la branche Git de release de l’environnement.
+**Web + API** strategy: align Dokploy branch with environment release Git branch.
 
-| Environnement | Web | API |
+| Environment | Web | API |
 |----------------|-----|-----|
 | production | `main` | `main` |
 | staging | `staging` | `staging` |
 | dev | `Dev` | `Dev` |
 
-**Agent** : branches configurees sur `Dev` dans l’instance observee, y compris sous `production`. A ajuster lors de la **reactivation** Agent : aligner sur Web/API (pas `Dev` en prod).
+**Agent:** branches configured on `Dev` in observed instance, including under `production`. Adjust on **Agent reactivation**: align with Web/API (not `Dev` in prod).
 
-**Indexer (legacy)** : ressource Dokploy historique — **ne pas reactiver** ; preferer suppression de l’application dans le projet Dokploy (voir section Agent et Indexer).
+**Indexer (legacy):** historical Dokploy resource — **do not reactivate**; prefer deleting application from Dokploy project (see Agent and Indexer section).
 
 ---
 
-## Domaines publics (Traefik / Dokploy)
+## Public domains (Traefik / Dokploy)
 
-Chaque environnement a un **hote Web** et un **hote API** distincts sous `allaboard.fr` (releve MCP `application-one`, champs `domains[].host` et `port`).
+Each environment has a distinct **Web host** and **API host** under `allaboard.fr` (MCP `application-one` survey, `domains[].host` and `port` fields).
 
-| Environnement | Web (`host`) | Port conteneur Web | API (`host`) | Port conteneur API |
+| Environment | Web (`host`) | Web container port | API (`host`) | API container port |
 |----------------|--------------|-------------------|--------------|-------------------|
 | production | `allaboard.fr` | 3000 | `api.allaboard.fr` | 4000 |
 | staging | `staging.allaboard.fr` | 3000 | `api-staging.allaboard.fr` | 4000 |
 | dev | `dev.allaboard.fr` | 3000 | `api-dev.allaboard.fr` | 4000 |
 
-**URLs publiques canoniques** (a utiliser dans la doc produit, clients mobiles, CORS, webhooks ; preferer **HTTPS** une fois les certificats actives dans Dokploy pour chaque domaine) :
+**Canonical public URLs** (use in product doc, mobile clients, CORS, webhooks; prefer **HTTPS** once certificates active in Dokploy per domain):
 
-| Environnement | Site | API (origine) |
+| Environment | Site | API (origin) |
 |----------------|------|----------------|
 | production | `https://allaboard.fr` | `https://api.allaboard.fr` |
 | staging | `https://staging.allaboard.fr` | `https://api-staging.allaboard.fr` |
 | dev | `https://dev.allaboard.fr` | `https://api-dev.allaboard.fr` |
 
-Exemples de chemins API (meme contrat qu’en local, detail dans [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md)) :
+Example API paths (same contract as local, detail in [guides/web-api-integration.md](../guides/web-api-integration.md)):
 
 - `GET /health`, `GET /feed` (public)
-- `POST /auth/login`, `POST /help-requests` (JWT sur creation ; login MVP)
-- Smoke : `pnpm smoke:dev` — [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md)
+- `POST /auth/login`, `POST /help-requests` (JWT on create; MVP login)
+- Smoke: `pnpm smoke:dev` — [deployment/runbooks/dev-phase2.md](runbooks/dev-phase2.md)
 
-URLs dev : `https://api-dev.allaboard.fr/health`, `https://dev.allaboard.fr/api/feed`, `https://dev.allaboard.fr/help/new`.
+Dev URLs: `https://api-dev.allaboard.fr/health`, `https://dev.allaboard.fr/api/feed`, `https://dev.allaboard.fr/help/new`.
 
-**Note TLS** : les objets domaine Dokploy peuvent encore indiquer `https: false` selon l’etat de la terminaison ; l’objectif operationnel reste le **HTTPS** partout (Let’s Encrypt ou certificat manage dans l’UI domaine).
+**TLS note:** Dokploy domain objects may still show `https: false` depending on termination state; operational goal remains **HTTPS** everywhere (Let's Encrypt or managed cert in domain UI).
 
 ---
 
-## Appel Web vers API (`API_URL` — reseau interne)
+## Web to API call (`API_URL` — internal network)
 
-Pour le **SSR Next.js** (serveur dans le conteneur Web), `API_URL` doit en general pointer vers le **nom DNS interne** du service API sur le reseau Docker Dokploy, port **4000**, par exemple :
+For **Next.js SSR** (server in Web container), `API_URL` should generally point to **internal DNS name** of API service on Dokploy Docker network, port **4000**, e.g.:
 
 ```text
-http://<nom-interne-du-service-api>:4000
+http://<internal-api-service-name>:4000
 ```
 
-Le prefixe exact (`app-…` ou nom long type `allaboard-monorepo-website-api-…`) est attribue par Dokploy. Apres un redeploiement ou un renommage, mettre a jour la variable **Web** dans Dokploy pour rester aligne sur le service API du **meme environnement**.
+Exact prefix (`app-…` or long name like `allaboard-monorepo-website-api-…`) is assigned by Dokploy. After redeploy or rename, update **Web** variable in Dokploy to stay aligned with API service in **same environment**.
 
-Variables d’environnement **Web** (cles, sans valeurs) : `API_URL`, `NODE_ENV`, `APP_ENV`, `LOG_LEVEL`.
+**Web** environment variable keys (no values): `API_URL`, `NODE_ENV`, `APP_ENV`, `LOG_LEVEL`.
 
-**Double exposition** : aujourd’hui l’API est joignable **publiquement** via les domaines `api*.allaboard.fr` **et** en **interne** pour le Web. C’est voulu : interne = latence et simplicite SSR ; public = navigateur, mobile, partenaires, `CORS_ALLOWED_ORIGINS` cote Fastify.
+**Dual exposure:** today API is reachable **publicly** via `api*.allaboard.fr` domains **and** **internally** for Web. Intentional: internal = latency and SSR simplicity; public = browser, mobile, partners, `CORS_ALLOWED_ORIGINS` on Fastify.
 
-Pour du **fetch navigateur** same-origin, on peut alternativement exposer des rewrites Next (`/api/...`) ; sinon le client appelle directement `https://api-staging.allaboard.fr` (avec CORS configure sur l’API).
+For **browser same-origin fetch**, alternatively expose Next rewrites (`/api/...`); otherwise client calls `https://api-staging.allaboard.fr` directly (with CORS configured on API).
 
 ---
 
-## API (service Fastify)
+## API (Fastify service)
 
-Cles d’environnement typiques : `NODE_ENV`, `APP_ENV`, `LOG_LEVEL`, `PORT=4000`. Grille `CORS_*` et secrets : [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md).
+Typical environment keys: `NODE_ENV`, `APP_ENV`, `LOG_LEVEL`, `PORT=4000`. `CORS_*` grid and secrets: [deployment/environment-variables.md](environment-variables.md).
 
-**Phase 2 (obligatoire sur l’API dev)** — sans ces variables le conteneur peut crasher au demarrage (`502` derriere Cloudflare) :
+**Phase 2 (required on dev API)** — without these variables container may crash at startup (`502` behind Cloudflare):
 
 | Variable | Role |
 |----------|------|
-| `DATABASE_URL` | Postgres interne (hote service Postgres dev, port 5432) |
-| `JWT_SECRET` | Min. 32 caracteres (`NODE_ENV=production` dans l’image Docker) |
-| `MVP_LOGIN_PASSWORD` | Dev/CI uniquement (fallback login sans DB) — **pas** staging/prod |
+| `DATABASE_URL` | Internal Postgres (dev Postgres service host, port 5432) |
+| `JWT_SECRET` | Min. 32 characters (`NODE_ENV=production` in Docker image) |
+| `MVP_LOGIN_PASSWORD` | Dev/CI only (fallback login without DB) — **not** staging/prod |
 | `DEV_SEED_PASSWORD` | Seed `bob@dev.local` / `alice@dev.local` (ADR 0003) — staging + dev |
 
-Procedure : [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md). Auth : [ADR 0001](adr/0001-authentication-strategy.md).
+Procedure: [deployment/runbooks/dev-phase2.md](runbooks/dev-phase2.md). Auth: [ADR 0001](../adr/0001-authentication-strategy.md).
 
-**Exposition** : domaine Traefik dedie par environnement (tableau *Domaines publics* ci-dessus). Pour le **SSR Web → API interne**, pas besoin de CORS. Pour un **fetch navigateur** vers `https://api-*.allaboard.fr`, configurer `CORS_ALLOWED_ORIGINS` (voir matrice). Le flux feed **home** actuel passe par le BFF Next — voir [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md).
+**Exposure:** dedicated Traefik domain per environment (table above). For **Web SSR → internal API**, no CORS needed. For **browser fetch** to `https://api-*.allaboard.fr`, configure `CORS_ALLOWED_ORIGINS` (see matrix). Current home feed flow goes through Next BFF — see [guides/web-api-integration.md](../guides/web-api-integration.md).
 
 ---
 
 ## Postgres (Dokploy)
 
-- Une instance **Postgres** par environnement (service separe dans le projet).
-- Image utilisee sur l’instance de reference : **PostgreSQL 18**.
-- Base et utilisateur dedies (noms affiches dans l’UI : ex. base `allaboard`).
-- Hote pour les autres services du meme projet : nom interne du service Postgres (visible dans Dokploy), port **5432**.
+- One **Postgres** instance per environment (separate service in project).
+- Image on reference instance: **PostgreSQL 18**.
+- Dedicated database and user (names shown in UI: e.g. database `allaboard`).
+- Host for other services in same project: internal Postgres service name (visible in Dokploy), port **5432**.
 
-`DATABASE_URL` pour Agent / Indexer doit utiliser cet hote interne et les identifiants definis dans l’UI (ne pas les dupliquer ici).
+`DATABASE_URL` for Agent / Indexer must use this internal host and credentials defined in UI (do not duplicate here).
 
 ---
 
-## Agent et Indexer
+## Agent and Indexer
 
-### Agent All-Aboard (`apps/agent`)
+### All-Aboard Agent (`apps/agent`)
 
-Le package [`apps/agent`](../apps/agent/README.md) est **present dans le monorepo** (scaffold #66) : `GET /health`, stub `POST /routing/evaluate`, image [`infra/docker/Dockerfile.agent`](../infra/docker/Dockerfile.agent).
+Package [`apps/agent`](../apps/agent/README.md) is **present in monorepo** (scaffold #66): `GET /health`, stub `POST /routing/evaluate`, image [`infra/docker/Dockerfile.agent`](../infra/docker/Dockerfile.agent).
 
-**Statut instance (2026-06-03)** : application Dokploy **Agent** toujours **desactivee** (`enabled: false`, `autoDeploy: false`, conteneur arrete) — gate CI #69 livre ; **production** reste en pause jusqu’a validation humaine explicite.
+**Instance status (2026-06-03):** Dokploy **Agent** application still **disabled** (`enabled: false`, `autoDeploy: false`, container stopped) — CI gate #69 shipped; **production** remains paused until explicit human validation.
 
-**CI (#69)** : job GitHub Actions `agent` (paths-filter `apps/agent/**`, `infra/docker/Dockerfile.agent`, …) — build Docker + smoke `GET /health` sur port **4100**. Detail : [Docs/tasks/69-agent-ci-dokploy/README.md](tasks/69-agent-ci-dokploy/README.md).
+**CI (#69):** GitHub Actions `agent` job (paths-filter `apps/agent/**`, `infra/docker/Dockerfile.agent`, …) — Docker build + `GET /health` smoke on port **4100**. Detail: [Docs/tasks/69-agent-ci-dokploy/README.md](../tasks/69-agent-ci-dokploy/README.md).
 
-**Procedure de reactivation Agent** (dev / staging — apres CI vert sur la branche cible) :
+**Agent reactivation procedure** (dev / staging — after green CI on target branch):
 
-1. Dokploy → environnement cible → application **Agent** → `enabled: true`.
-2. Branch Git : aligner sur **Web/API** de l’environnement (`Dev` / `staging` / `main` — pas `Dev` en production).
-3. Variables : `PORT=4100`, `NODE_ENV=production`, `APP_ENV`, `LOG_LEVEL` — grille [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md). Pas de domaine Traefik public — **service interne** uniquement.
-4. Cote **API** : definir `AGENT_URL` vers le nom DNS interne du service Agent (ex. `http://<service-agent>:4100`) une fois l’integration handoff #68 deployee.
-5. Lancer un **deploiement manuel** ; conserver `autoDeploy: false` tant que l’integration n’est pas validee end-to-end.
-6. Smoke reseau interne : `GET http://<service-agent>:4100/health` → `{ "status": "ok" }`.
+1. Dokploy → target environment → **Agent** application → `enabled: true`.
+2. Git branch: align with environment **Web/API** (`Dev` / `staging` / `main` — not `Dev` in production).
+3. Variables: `PORT=4100`, `NODE_ENV=production`, `APP_ENV`, `LOG_LEVEL` — grid [deployment/environment-variables.md](environment-variables.md). No public Traefik domain — **internal service** only.
+4. On **API** side: set `AGENT_URL` to internal Agent service DNS name (e.g. `http://<agent-service>:4100`) once handoff integration #68 deployed.
+5. Run **manual** deploy; keep `autoDeploy: false` until end-to-end integration validated.
+6. Internal network smoke: `GET http://<agent-service>:4100/health` → `{ "status": "ok" }`.
 
-**Production** : ne pas reactiver tant qu’ops + produit n’ont pas valide le handoff agent (#68) et la charge attendue.
+**Production:** do not reactivate until ops + product validate agent handoff (#68) and expected load.
 
-### Indexer placeholder (legacy — ne pas reactiver)
+### Indexer placeholder (legacy — do not reactivate)
 
-Les applications Dokploy **Indexer** existent encore dans les trois environnements (Dockerfile `infra/docker/Dockerfile.indexer`, variables `INDEXER_*`, port **4200**).
+Dokploy **Indexer** applications still exist in all three environments (Dockerfile `infra/docker/Dockerfile.indexer`, `INDEXER_*` variables, port **4200**).
 
-**Decision architecture (ADR 0004)** : All-Aboard **n’implemente pas** `apps/indexer`. L’indexation graphe est assuree par l’**indexer reseau Intuition** (subnet + GraphQL) ; All-Aboard publie via le **bridge outbox** (#67) dans `apps/api`.
+**Architecture decision (ADR 0004):** All-Aboard **does not implement** `apps/indexer`. Graph indexing is handled by **Intuition network indexer** (subnet + GraphQL); All-Aboard publishes via **outbox bridge** (#67) in `apps/api`.
 
 | Element | Action |
 |---------|--------|
-| `infra/docker/Dockerfile.indexer` | Artefact bootstrap historique — **ne pas build** en CI ni Dokploy |
-| Service Dokploy « Indexer » | **Ne pas reactiver** (`enabled: false`) ; **recommande** : supprimer la ressource du projet |
-| Indexer Intuition | Infra externe — hors Dokploy All-Aboard |
+| `infra/docker/Dockerfile.indexer` | Historical bootstrap artefact — **do not build** in CI or Dokploy |
+| Dokploy "Indexer" service | **Do not reactivate** (`enabled: false`); **recommended**: delete resource from project |
+| Intuition indexer | External infra — outside All-Aboard Dokploy |
 
-**Statut operationnel** : identique a mai 2026 — `enabled: false`, `autoDeploy: false`, conteneurs arretes. Le build echouerait faute de package `apps/indexer` ; laisser desactive ou supprimer evite le bruit dashboard.
+**Operational status:** same as May 2026 — `enabled: false`, `autoDeploy: false`, containers stopped. Build would fail without `apps/indexer` package; leaving disabled or deleting avoids dashboard noise.
 
-**Ne pas confondre** : « Indexer Dokploy All-Aboard » (legacy) ≠ « Indexer Intuition » (reseau blockchain documente dans [ADR 0004](adr/0004-agent-indexer-architecture.md)).
-
----
-
-## Postgres : acces operationnel
-
-- Sauvegardes : configurer selon la politique Dokploy (backups du service Postgres).
-- Rotation des mots de passe : uniquement via l’UI ou l’API Dokploy, puis mettre a jour `DATABASE_URL` sur les services qui consomment la base.
+**Do not confuse:** "All-Aboard Dokploy Indexer" (legacy) ≠ "Intuition Indexer" (blockchain network documented in [ADR 0004](../adr/0004-agent-indexer-architecture.md)).
 
 ---
 
-## Synthese statut services (reference MCP)
+## Postgres: operational access
 
-| Environnement | Web | API | Agent | Indexer |
+- Backups: configure per Dokploy policy (Postgres service backups).
+- Password rotation: only via Dokploy UI or API, then update `DATABASE_URL` on consuming services.
+
+---
+
+## Service status summary (MCP reference)
+
+| Environment | Web | API | Agent | Indexer |
 |----------------|-----|-----|-------|---------|
-| production | deploye OK | deploye OK | **desactive** (CI #69 OK ; reactiver manuellement apres validation) | **legacy — ne pas reactiver** |
-| staging | deploye OK (MVP Phase 2, commit `d9ca975` ; Web redeploy manuel 2026-05-27 si build auto en erreur) | deploye OK (vars Phase 2 — 2026-05-25 ; PR #54) | **desactive** (pret build Agent) | **legacy — ne pas reactiver** |
-| dev | deploye OK | deploye OK (Phase 2 : vars Postgres + JWT) | **desactive** (pret build Agent) | **legacy — ne pas reactiver** |
+| production | deployed OK | deployed OK | **disabled** (CI #69 OK; reactivate manually after validation) | **legacy — do not reactivate** |
+| staging | deployed OK (MVP Phase 2, commit `d9ca975`; Web manual redeploy 2026-05-27 if auto build fails) | deployed OK (Phase 2 vars — 2026-05-25; PR #54) | **disabled** (Agent build ready) | **legacy — do not reactivate** |
+| dev | deployed OK | deployed OK (Phase 2: Postgres + JWT vars) | **disabled** (Agent build ready) | **legacy — do not reactivate** |
 
-**Dev (2026-05-25)** : MVP parcours Bob validé — journal [plan opérationnel](plan-mise-en-place-web-api-donnees.md), [runbook dev](runbook-dokploy-dev-phase2.md).
+**Dev (2026-05-25):** Bob journey MVP validated — journal [integration guide](../guides/web-api-integration.md), [dev runbook](runbooks/dev-phase2.md).
 
-**Staging (2026-05-29)** : MVP Phase 2 + auth ADR 0003 (`DEV_SEED_PASSWORD`, comptes seed OK) — [runbook staging](runbook-dokploy-staging-phase2.md). Healthchecks : `GET …/health`, `GET …/feed` (UUID), BFF `/api/feed`, `POST …/auth/login` → 401 si invalides, 200 avec email seed si valides.
+**Staging (2026-05-29):** MVP Phase 2 + ADR 0003 auth (`DEV_SEED_PASSWORD`, seed accounts OK) — [staging runbook](runbooks/staging-phase2.md). Healthchecks: `GET …/health`, `GET …/feed` (UUID), BFF `/api/feed`, `POST …/auth/login` → 401 if invalid, 200 with seed email if valid.
 
-Dernier etat connu : **Agent** — code + CI Docker livres (#66, #69) ; instance Dokploy encore en pause. **Indexer** — placeholder legacy sans `apps/indexer` ; ne pas reactiver (ADR 0004).
+Last known state: **Agent** — code + Docker CI shipped (#66, #69); Dokploy instance still paused. **Indexer** — legacy placeholder without `apps/indexer`; do not reactivate (ADR 0004).
 
 ---
 
-## Maintenance documentaire
+## Document maintenance
 
-Pour realigner ce fichier avec la realite :
+To realign this file with reality:
 
-1. Utiliser le MCP Dokploy All-Aboard (`project-all`, puis `application-one` / `postgres-one` par identifiant).
-2. Mettre a jour domaines, branches et statuts sans copier de secrets.
+1. Use Dokploy All-Aboard MCP (`project-all`, then `application-one` / `postgres-one` per id).
+2. Update domains, branches and statuses without copying secrets.
 
-**Attention** : certaines reponses API Dokploy (ex. apres `application-stop`) peuvent contenir des champs sensibles (`env` complet, metadonnees GitHub). Ne pas coller ces JSON dans le depot ni dans des tickets publics.
+**Warning:** some Dokploy API responses (e.g. after `application-stop`) may contain sensitive fields (full `env`, GitHub metadata). Do not paste these JSON blobs in repo or public tickets.

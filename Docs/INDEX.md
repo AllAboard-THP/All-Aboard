@@ -1,68 +1,59 @@
-# Map of content (MoC) — documentation All-Aboard
+# Documentation index
 
-**Objectif** : une **source canonique** par sujet ; pas de doublon avec le [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3).
+One **canonical source** per topic. Task backlog and priorities: [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3).
 
-**Mise à jour** : 2026-06-04 (API parité Rails phases 1–7 + lots A / 5b / 7 documentées).
-
----
-
-## 1. Inventaire `Docs/`
-
-| Fichier / dossier | Rôle |
-|-------------------|------|
-| [README.md](README.md) | Phases MVP, état code, principes transverses. |
-| [map-of-content.md](map-of-content.md) | **Ce fichier**. |
-| [tasks/](tasks/README.md) | Doc **par issue** — `Docs/tasks/<NN>-slug/`. |
-| [adr/](adr/) | ADR validés ; ex. [0001](adr/0001-authentication-strategy.md), [0002 design system](adr/0002-design-system-monorepo.md). |
-| [design-system/](design-system/README.md) | **Hub DS** : architecture, guide contributeur, CI, AppShell, journal livraisons. |
-| [branding/](branding/README.md) | Concepts visuels marketing (hero, métaphore voyage) — brouillons hors prod. |
-| [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | Web ↔ API transverse : env, `/feed`, journal, smoke `pnpm smoke:dev`. |
-| [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md) | Checklist manuelle Dokploy **dev** (Postgres, secrets API/Web, smoke). |
-| [To-do.md](To-do.md) | **Stub** → Project GitHub (plus de checklist locale). |
-| [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | Parcours produit. |
-| [matrice-deploiement-dokploy-coolify.md](matrice-deploiement-dokploy-coolify.md) | Variables déploiement génériques. |
-| [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md) | Faits instance Dokploy. |
-| [vision/](vision/README.md) | Stack / dataflow cible. |
-| [plan-initialisation-turborepo-mvp.md](plan-initialisation-turborepo-mvp.md) + [archive/](archive/) | Bootstrap historique. |
-
-Hors `Docs/` : [AGENTS.md](../AGENTS.md), [.github/PROJECT.md](../.github/PROJECT.md), [README.md](../README.md) racine.
+**Last updated:** 2026-06-10
 
 ---
 
-## 2. Sujet → source canonique
+## Quick links
 
-| Sujet | Canonique | Autres fichiers |
-|-------|-----------|-----------------|
-| Backlog, priorités, deps, roadmap, checklist staging | [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3) | To-do.md = lien ; pas de liste dans Docs/ |
-| Workflow kanban / champs Project | [.github/PROJECT.md](../.github/PROJECT.md) | — |
-| Doc notes d'**une** tâche en cours | `Docs/tasks/<NN>-slug/` | Issue GitHub liée |
-| ADR validé | `Docs/adr/` | Brouillon dans `tasks/` |
-| Phases MVP, état code, principes | [README.md](README.md) | — |
-| Contrat `/feed`, env, journal smoke | [plan-mise-en-place-web-api-donnees.md](plan-mise-en-place-web-api-donnees.md) | — |
-| Runbook Dokploy dev Phase 2 (vars, smoke HTTPS) | [runbook-dokploy-dev-phase2.md](runbook-dokploy-dev-phase2.md) | Plan opérationnel (section Smoke) ; fiche instance |
-| Auth JWT / BFF / login MVP | [adr/0001-authentication-strategy.md](adr/0001-authentication-strategy.md) | README Phase 2, matrice `JWT_SECRET` / `MVP_LOGIN_PASSWORD`, plan opérationnel |
-| Design system (`@allaboard/ui`, Storybook, frontières web) | [design-system/README.md](design-system/README.md) | [ADR 0002](adr/0002-design-system-monorepo.md), [AGENTS.md](../AGENTS.md), [tasks/24](tasks/24-design-system-monorepo/), [tasks/25](tasks/25-app-shell-navigation/) |
-| Branding / concepts visuels | [branding/README.md](branding/README.md) | — |
-| AppShell / navigation web | [design-system/app-shell.md](design-system/app-shell.md) | [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25), [moc-parcours](moc-parcours-utilisateur.md) |
-| Variables déploiement | [matrice](matrice-deploiement-dokploy-coolify.md) | [instance](deploiement-dokploy-instance-allaboard.md) |
-| Parcours produit | [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md) | Notes API parité Rails phases 1–7 |
-| API parité Rails (`thp-final` → Fastify) | Hub [tasks/api-rails-parity/](tasks/api-rails-parity/README.md) ; phases [1](tasks/api-rails-parity-phase1/README.md)–[7](tasks/api-rails-parity-phase7/README.md), [5b](tasks/api-rails-parity-phase5b/README.md), [lot A](tasks/api-parity-delete-reject/README.md) | [plan opérationnel § Parité](plan-mise-en-place-web-api-donnees.md#parité-rails-thp-final--api), `apps/thp-final` (référence UX) |
-| Vision long terme | [vision/README.md](vision/README.md) | — |
+| I need to… | Go to |
+|------------|-------|
+| Understand MVP phases and repo state | [README.md](README.md) |
+| Wire Web ↔ API (env, `/feed`, smoke journal) | [guides/web-api-integration.md](guides/web-api-integration.md) |
+| Deploy or configure Dokploy | [deployment/](deployment/README.md) |
+| Contribute UI / Storybook | [design-system/README.md](design-system/README.md) |
+| Read an architecture decision | [adr/README.md](adr/README.md) |
+| Find notes for a GitHub issue | [tasks/README.md](tasks/README.md) |
 
 ---
 
-## 3. Règles de maintenance
+## Topic → canonical source
 
-1. **Nouvelle tâche avec doc** : créer `Docs/tasks/<NN>-slug/` ; une ligne dans [tasks/README.md](tasks/README.md) index ; lien dans l'issue.
-2. **Contrat Web/API ou smoke** : [plan-mise-en-place](plan-mise-en-place-web-api-donnees.md) + code ; pas dans `tasks/` sauf spike lié à une issue.
-3. **Dokploy / domaines** : [instance](deploiement-dokploy-instance-allaboard.md) puis journal plan si impact smoke.
-4. **Phase terminée** : tableau phases dans [README.md](README.md) uniquement.
-5. **Ne pas** recréer listes de tâches ou inventaires d'issues dans `Docs/` — le Project est la vérité.
-6. **Nouvelle variable d'environnement** (tous services) : ajouter ou mettre à jour la **matrice** ; l'instance ne liste pas les secrets.
+| Topic | Canonical | Also see |
+|-------|-----------|----------|
+| Backlog, priorities, roadmap | [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3) | [backlog.md](backlog.md) (stub) |
+| Kanban workflow / project fields | [.github/PROJECT.md](../.github/PROJECT.md) | — |
+| Per-issue working notes | `Docs/tasks/<NN>-slug/` | Linked GitHub issue |
+| Accepted ADR | [adr/](adr/README.md) | Draft in `tasks/` until merge |
+| MVP phases, principles, code state | [README.md](README.md) | — |
+| Web ↔ API contract, smoke journal | [guides/web-api-integration.md](guides/web-api-integration.md) | — |
+| Environment variables (all services) | [deployment/environment-variables.md](deployment/environment-variables.md) | [dokploy-instance.md](deployment/dokploy-instance.md) |
+| Dokploy instance facts (domains, internal URLs) | [deployment/dokploy-instance.md](deployment/dokploy-instance.md) | Runbooks |
+| Dokploy dev runbook (Phase 2) | [deployment/runbooks/dev-phase2.md](deployment/runbooks/dev-phase2.md) | Integration guide |
+| Dokploy staging runbook | [deployment/runbooks/staging-phase2.md](deployment/runbooks/staging-phase2.md) | [staging checklist](deployment/staging-promotion-checklist.md) |
+| Dev → staging promotion | [deployment/staging-promotion-checklist.md](deployment/staging-promotion-checklist.md) | [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31) |
+| JWT / BFF / MVP login | [adr/0001-authentication-strategy.md](adr/0001-authentication-strategy.md) | README, env matrix |
+| Production users (argon2 hash) | [adr/0003-authentication-users-production.md](adr/0003-authentication-users-production.md) | Staging checklist |
+| Google OAuth SSO | [adr/0006-oauth-google-sso.md](adr/0006-oauth-google-sso.md) | `GOOGLE_*` in env matrix |
+| Design system (`@allaboard/ui`, Storybook) | [design-system/README.md](design-system/README.md) | [ADR 0002](adr/0002-design-system-monorepo.md) |
+| AppShell / web navigation | [design-system/app-shell.md](design-system/app-shell.md) | [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25) |
+| Branding / hero assets | [branding/README.md](branding/README.md) | `.cursor/rules/branding-hero-4k.mdc` |
+| i18n web FR/EN | [adr/0005-i18n-web-next-intl.md](adr/0005-i18n-web-next-intl.md) | [tasks/75-i18n-web](tasks/75-i18n-web/) |
+| Agent / Rubberduck / Intuition | [adr/0004-agent-indexer-architecture.md](adr/0004-agent-indexer-architecture.md) | [tasks/37](tasks/37-agent-indexer/), [67](tasks/67-intuition-bridge/), [68](tasks/68-agent-handoff/), [69](tasks/69-agent-ci-dokploy/) |
+| Intuition external docs index | [integrations/intuition-docs-index.md](integrations/intuition-docs-index.md) | ADR 0004 |
+| Product user journeys (MOC) | [product/user-journeys.md](product/user-journeys.md) | Rails parity notes |
+| Rails → Fastify API parity | [tasks/api-rails-parity/](tasks/api-rails-parity/README.md) | Phases [1](tasks/api-rails-parity-phase1/README.md)–[7](tasks/api-rails-parity-phase7/README.md) |
+| Long-term stack / dataflow vision | [vision/README.md](vision/README.md) | [architecture/dataflow.md](architecture/dataflow.md) |
 
 ---
 
-## Liens rapides
+## Maintenance rules
 
-- [README](README.md) · [tasks/](tasks/README.md) · [Project #3](https://github.com/orgs/AllAboard-THP/projects/3) · [Plan Web/API](plan-mise-en-place-web-api-donnees.md)
-- [Runbook Dokploy dev Phase 2](runbook-dokploy-dev-phase2.md) · [ADR auth 0001](adr/0001-authentication-strategy.md) · [Design system hub](design-system/README.md)
+1. New task with docs → create `Docs/tasks/<NN>-slug/` + one line in [tasks/README.md](tasks/README.md).
+2. Web/API contract or smoke change → [guides/web-api-integration.md](guides/web-api-integration.md) + code; not in `tasks/` unless issue-specific spike.
+3. New env variable → [deployment/environment-variables.md](deployment/environment-variables.md).
+4. Completed MVP phase → timeline in [README.md](README.md) only.
+5. Do **not** recreate issue backlogs in `Docs/` — the GitHub Project is the source of truth.
+6. New ADR → unique incrementing number; update [adr/README.md](adr/README.md) and this index.

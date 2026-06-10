@@ -1,35 +1,35 @@
-# MOC - Dataflow et architecture All-Aboard
+# Dataflow & architecture — All-Aboard
 
-**Documentation canonique** (timeline : MVP actuel vs phases, TanStack) : [README.md](README.md). Index vision (stack cible, dataflow) : [vision/README.md](vision/README.md). Ce MOC décrit la **cible** multi-services ; le dépôt suit d’abord **Next + Fastify REST** (Phases 0–1), puis auth et client data selon la timeline.
+**Canonical documentation** (timeline: current MVP vs phases, TanStack): [README.md](../README.md). Vision index (target stack, dataflow): [vision/README.md](../vision/README.md). This MOC describes the **target** multi-service view; the repository currently follows **Next + Fastify REST** (Phases 0–1), then auth and client data per the timeline.
 
-## Objectif
+## Purpose
 
-Documenter la vue d'architecture technique de All-Aboard (monorepo Truborepo), les composants principaux, et les flux de donnees entre applications, backend, indexeur et blockchain.
+Document the technical architecture view of All-Aboard (Turborepo monorepo), main components, and data flows between applications, backend, indexer, and blockchain.
 
-## Perimetre
+## Scope
 
-- Applications clientes: mobile (React Native) et web (React).
-- Backend: GraphQL, API Node, Agent.
-- Stockage: base Postgres (Supabase), stockage media (audio/image), cache.
-- Infra data: indexeur et couche blockchain.
+- Client applications: mobile (React Native) and web (React).
+- Backend: GraphQL, Node API, Agent.
+- Storage: Postgres database (Supabase), media storage (audio/image), cache.
+- Data infra: indexer and blockchain layer.
 
-## Diagramme Mermaid (dataflow)
+## Mermaid diagram (dataflow)
 
 ```mermaid
 flowchart TB
-    subgraph AA["All Aboard (monorepo : truborepo)"]
-        Mobile["App mobile<br/>React Native"]
-        Web["App web<br/>React"]
+    subgraph AA["All Aboard (monorepo: turborepo)"]
+        Mobile["Mobile app<br/>React Native"]
+        Web["Web app<br/>React"]
         Cache["Cache"]
 
         subgraph Server["Server"]
             GQL["GraphQL"]
-            API["API : Node"]
+            API["API: Node"]
             Agent["Agent"]
         end
 
-        Media["Stockage<br/>audio / image"]
-        DB["Database<br/>Postgres : Supabase"]
+        Media["Storage<br/>audio / image"]
+        DB["Database<br/>Postgres: Supabase"]
     end
 
     subgraph Chain["Blockchain"]
@@ -61,18 +61,18 @@ flowchart TB
     Indexer -->|query data| Mobile
 ```
 
-## Lecture rapide des flux
+## Quick flow reading
 
-1. Les apps mobile et web consomment les services backend via GraphQL/API.
-2. Le backend s'appuie sur un cache, une base Postgres (Supabase) et un stockage media.
-3. Les donnees utiles sont publiees vers la couche Intuition (blockchain/data layer).
-4. L'indexeur maintient un index pour accelerer la consultation/aggregation des donnees.
-5. Les clients recuperent ensuite des donnees a la fois via le backend et les flux indexes.
+1. Mobile and web apps consume backend services via GraphQL/API.
+2. Backend relies on cache, Postgres (Supabase), and media storage.
+3. Useful data is published to the Intuition layer (blockchain/data layer).
+4. The indexer maintains an index to speed up data consultation/aggregation.
+5. Clients then retrieve data via both backend and indexed flows.
 
-## Hypotheses MOC
+## MOC assumptions
 
-- Le diagramme se concentre sur la circulation de la donnee, pas sur la securite/auth (implémentée en **Phase 2** — [README.md](README.md)).
-- Les directions de fleches sont simplifiees pour une lecture produit/technique mixte.
-- Les details protocolaires (events, jobs, batch) seront precises dans une version technique detaillee.
-- **MVP court terme** : la brique « API : Node » peut être **REST Fastify** ; l’illustration GraphQL reste valable pour la **cible** documentée dans [proposition-stack-technique-monorepo-2026.md](proposition-stack-technique-monorepo-2026.md).
-- **Indexer (sous-graphe Blockchain)** : indexer du **réseau Intuition** (subnet + GraphQL) — pas un service `apps/indexer` All-Aboard. All-Aboard **publie** via un bridge (outbox → SDK) ; voir [ADR 0004](adr/0004-agent-indexer-architecture.md).
+- The diagram focuses on data circulation, not security/auth (implemented in **Phase 2** — [README.md](../README.md)).
+- Arrow directions are simplified for mixed product/technical reading.
+- Protocol details (events, jobs, batch) will be specified in a detailed technical version.
+- **Short-term MVP**: the "API: Node" block may be **Fastify REST**; the GraphQL illustration remains valid for the **target** documented in [vision/technical-stack-proposal-2026.md](../vision/technical-stack-proposal-2026.md).
+- **Indexer (Blockchain subgraph)**: **Intuition network** indexer (subnet + GraphQL) — not an All-Aboard `apps/indexer` service. All-Aboard **publishes** via a bridge (outbox → SDK); see [ADR 0004](../adr/0004-agent-indexer-architecture.md).
