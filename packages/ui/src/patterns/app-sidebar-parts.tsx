@@ -179,10 +179,8 @@ export function AppSidebarRailItem({
     item.active ? "dashboard-nav-active font-medium text-primary" : "text-muted-foreground",
   );
 
-  const stopToggleWhenExpanded = (event: MouseEvent) => {
-    if (expanded) {
-      event.stopPropagation();
-    }
+  const stopShellToggle = (event: MouseEvent) => {
+    event.stopPropagation();
   };
 
   const content = (
@@ -219,7 +217,7 @@ export function AppSidebarRailItem({
         title={expanded ? undefined : item.label}
         aria-current={item.active ? "page" : undefined}
         aria-label={expanded ? undefined : item.label}
-        onClick={stopToggleWhenExpanded}
+        onClick={stopShellToggle}
       >
         {content}
       </LinkComponent>
@@ -234,7 +232,7 @@ export function AppSidebarRailItem({
       title={expanded ? undefined : item.label}
       aria-label={expanded ? undefined : item.label}
       onClick={(event) => {
-        stopToggleWhenExpanded(event);
+        stopShellToggle(event);
         onItemClick?.(item.id);
       }}
     >

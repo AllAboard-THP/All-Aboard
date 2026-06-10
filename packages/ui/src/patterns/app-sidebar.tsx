@@ -159,6 +159,8 @@ export function AppSidebar({
           : APP_SIDEBAR_WIDTH_COLLAPSED,
       }}
       data-sidebar-expanded={expanded ? "true" : "false"}
+      aria-expanded={expanded}
+      title={expanded ? labels.collapseSidebar : labels.expandSidebar}
       onClick={handleShellClick}
     >
       <nav
