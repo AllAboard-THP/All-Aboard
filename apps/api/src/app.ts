@@ -7,6 +7,10 @@ import type pg from "pg";
 import { createDb, createPool } from "./db/client.js";
 import type { AppDatabase } from "./db/client.js";
 import {
+  createAgentModerationEvaluator,
+  type EvaluateModerationFn,
+} from "./agent/moderation.js";
+import {
   createAgentRoutingEvaluator,
   type EvaluateRoutingFn,
 } from "./agent/routing.js";
@@ -33,6 +37,8 @@ export type BuildAppOptions = {
   pool?: pg.Pool | null;
   /** Injecté en tests (#68) ; défaut : client HTTP vers `AGENT_URL` + fallback. */
   evaluateRouting?: EvaluateRoutingFn;
+  /** Injecté en tests ; défaut : proxy `POST /moderation/evaluate` + fallback conservateur. */
+  evaluateModeration?: EvaluateModerationFn;
   suggestTags?: SuggestTagsFn;
 };
 
@@ -42,6 +48,8 @@ export async function buildApp(options?: BuildAppOptions) {
   const db: AppDatabase | null = pool ? createDb(pool) : null;
   const evaluateRouting =
     options?.evaluateRouting ?? createAgentRoutingEvaluator();
+  const evaluateModeration =
+    options?.evaluateModeration ?? createAgentModerationEvaluator();
   const suggestTags = options?.suggestTags;
 
   const app = Fastify({ logger: false });
@@ -80,7 +88,7 @@ export async function buildApp(options?: BuildAppOptions) {
 
   registerFeedRoutes(app, db);
   registerSubjectRoutes(app, db);
-  registerHelpRequestRoutes(app, db, evaluateRouting);
+  registerHelpRequestRoutes(app, db, evaluateRouting, evaluateModeration);
   registerSuggestTagsRoutes(app, db, suggestTags);
   registerSocialRoutes(app, db);
   registerMeRoutes(app, db);

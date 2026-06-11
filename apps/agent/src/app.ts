@@ -1,10 +1,16 @@
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import { z } from "zod";
 import type {
+  AgentModerationEvaluateResponse,
   AgentRoutingEvaluateResponse,
   AgentSummaryGenerateResponse,
   AgentTagsSuggestResponse,
 } from "@allaboard/types";
+import {
+  evaluateModeration,
+  moderationEvaluateBodySchema,
+  type ModerationEvaluateDeps,
+} from "./moderation-evaluate.js";
 import {
   generateSummaryFallback,
   summaryGenerateBodySchema,
@@ -28,8 +34,13 @@ function invalidBody(reply: FastifyReply) {
   return reply.status(400).send({ error: "invalid_body" as const });
 }
 
-export async function buildApp() {
+export type BuildAppOptions = {
+  moderation?: ModerationEvaluateDeps;
+};
+
+export async function buildApp(options?: BuildAppOptions) {
   const app = Fastify({ logger: false });
+  const moderationDeps = options?.moderation ?? {};
 
   app.get("/health", async () => ({ status: "ok" as const }));
 
@@ -86,6 +97,22 @@ export async function buildApp() {
       return reply
         .status(200)
         .send({ summary } satisfies AgentSummaryGenerateResponse);
+    },
+  );
+
+  app.post(
+    "/moderation/evaluate",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const parsed = moderationEvaluateBodySchema.safeParse(request.body);
+      if (!parsed.success) return invalidBody(reply);
+
+      const flagged = await evaluateModeration(
+        parsed.data.content,
+        moderationDeps,
+      );
+      return reply
+        .status(200)
+        .send({ flagged } satisfies AgentModerationEvaluateResponse);
     },
   );
 

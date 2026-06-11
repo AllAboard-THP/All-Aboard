@@ -9,6 +9,7 @@ import type {
 } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import { helpRequests, responses, subjects, users } from "../db/schema.js";
+import type { EvaluateModerationFn } from "../agent/moderation.js";
 import type { EvaluateRoutingFn } from "../agent/routing.js";
 import {
   enqueueHelpRequestCreated,
@@ -65,6 +66,7 @@ export function registerHelpRequestRoutes(
   app: FastifyInstance,
   db: AppDatabase | null,
   evaluateRouting: EvaluateRoutingFn,
+  evaluateModeration: EvaluateModerationFn,
 ) {
   app.get(
     "/help-requests/:id",
@@ -225,6 +227,7 @@ export function registerHelpRequestRoutes(
           body,
           parsed.data.codeSnippet,
         ]),
+        evaluateModeration,
       );
       const now = new Date();
       const inserted = await db
@@ -329,6 +332,7 @@ export function registerHelpRequestRoutes(
       const flagged = await contentShouldBeFlagged(
         db,
         moderationContentFromFields([nextTitle, nextBody, nextCodeSnippet]),
+        evaluateModeration,
       );
 
       const updated = await db
@@ -459,6 +463,7 @@ export function registerHelpRequestRoutes(
       const flagged = await contentShouldBeFlagged(
         db,
         moderationContentFromFields([body, parsed.data.codeSnippet]),
+        evaluateModeration,
       );
       const inserted = await db
         .insert(responses)
@@ -526,6 +531,7 @@ export function registerHelpRequestRoutes(
       const flagged = await contentShouldBeFlagged(
         db,
         moderationContentFromFields([nextBody, nextCodeSnippet]),
+        evaluateModeration,
       );
       const updated = await db
         .update(responses)

@@ -10,8 +10,13 @@ Service HTTP **interne** : l’**agent All-Aboard** évalue les demandes et déc
 |-------|-------------|
 | `GET /health` | Healthcheck Dokploy / CI (`{ "status": "ok" }`) |
 | `POST /routing/evaluate` | Stub de routage : `{ suggestRubberduckRedirect, reason? }` (titre ≤ 6 mots, aligné heuristique API Phase 2) |
+| `POST /tags/suggest` | Suggestion de tags (heuristique ; LLM si `ANTHROPIC_API_KEY`) |
+| `POST /summary/generate` | Résumé « Problème / Solution » (stub ; LLM futur) |
+| `POST /moderation/evaluate` | Second avis Claude après hit regex/denylist API — `{ flagged }` (stub conservateur sans clé) |
 
-Types partagés : `@allaboard/types` (`AgentRoutingEvaluate*`).
+Types partagés : `@allaboard/types` (`AgentRoutingEvaluate*`, `AgentModerationEvaluate*`, etc.).
+
+**Modération** : l’API n’appelle cet endpoint que si regex/denylist a déjà matché. Sans `ANTHROPIC_API_KEY`, réponse `flagged: true` (aligné Rails quand Claude ne répond pas).
 
 Pas de route « respond » : répondre à l’utilisateur sur Rubberduck relève du **produit externe**.
 
