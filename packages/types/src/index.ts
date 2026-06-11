@@ -596,6 +596,16 @@ export type AgentRoutingEvaluateResponse = {
   reason?: string;
 };
 
+/** Corps `POST /moderation/evaluate` (`apps/agent`, interne). */
+export type AgentModerationEvaluateBody = {
+  content: string;
+};
+
+/** Réponse `POST /moderation/evaluate` — second avis Claude après hit regex/denylist. */
+export type AgentModerationEvaluateResponse = {
+  flagged: boolean;
+};
+
 /** Payload outbox `help_request.created` (bridge Intuition #67). */
 export type HelpRequestCreatedOutboxPayload = {
   id: string;

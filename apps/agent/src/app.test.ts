@@ -104,4 +104,48 @@ describe("agent", () => {
     expect(JSON.parse(res.payload)).toEqual({ error: "invalid_body" });
     await app.close();
   });
+
+  it("POST /moderation/evaluate returns flagged=true without API key", async () => {
+    const app = await buildApp({ moderation: { anthropicApiKey: "" } });
+    const res = await app.inject({
+      method: "POST",
+      url: "/moderation/evaluate",
+      payload: { content: "putain ce hook ne marche pas" },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(JSON.parse(res.payload)).toEqual({ flagged: true });
+    await app.close();
+  });
+
+  it("POST /moderation/evaluate uses Anthropic when API key present", async () => {
+    const fetchFn = (async () =>
+      ({
+        ok: true,
+        json: async () => ({ content: [{ text: "NON" }] }),
+      }) as Response) as typeof fetch;
+
+    const app = await buildApp({
+      moderation: { anthropicApiKey: "test-key", fetchFn },
+    });
+    const res = await app.inject({
+      method: "POST",
+      url: "/moderation/evaluate",
+      payload: { content: "mon useEffect ne se déclenche pas" },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(JSON.parse(res.payload)).toEqual({ flagged: false });
+    await app.close();
+  });
+
+  it("POST /moderation/evaluate returns 400 for invalid body", async () => {
+    const app = await buildApp();
+    const res = await app.inject({
+      method: "POST",
+      url: "/moderation/evaluate",
+      payload: { content: "" },
+    });
+    expect(res.statusCode).toBe(400);
+    expect(JSON.parse(res.payload)).toEqual({ error: "invalid_body" });
+    await app.close();
+  });
 });

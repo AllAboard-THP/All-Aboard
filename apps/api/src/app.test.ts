@@ -1754,6 +1754,39 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       expect(feed2.items.some((i) => i.id === created.item.id)).toBe(true);
     });
 
+    it("does not flag help-request when agent clears regex false positive", async () => {
+      const modApp = await buildApp({
+        pool,
+        evaluateModeration: async () => false,
+      });
+      try {
+        const bobToken = modApp.jwt.sign({
+          sub: "bob@dev.local",
+          role: "student",
+        });
+        const title = `Cleared moderation ${Date.now()}`;
+        const createRes = await modApp.inject({
+          method: "POST",
+          url: "/help-requests",
+          headers: { authorization: `Bearer ${bobToken}` },
+          payload: { title, body: "what the fuck is going on" },
+        });
+        expect(createRes.statusCode).toBe(201);
+        const created = JSON.parse(createRes.payload) as {
+          item: { id: string; flaggedForModeration?: boolean };
+        };
+        expect(created.item.flaggedForModeration).toBe(false);
+
+        const feedRes = await modApp.inject({ method: "GET", url: "/feed" });
+        const feed = JSON.parse(feedRes.payload) as {
+          items: Array<{ id: string }>;
+        };
+        expect(feed.items.some((i) => i.id === created.item.id)).toBe(true);
+      } finally {
+        await modApp.close();
+      }
+    });
+
     it("GET /admin/dashboard returns 403 for student and 200 for admin", async () => {
       const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
       const forbidden = await app.inject({

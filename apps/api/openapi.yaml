@@ -4,7 +4,11 @@ info:
   description: |
     Contrat HTTP Phase 2 MVP (feed, auth JWT, demandes d'aide, mentor feed).
     Source de vérité types : `packages/types`. Doc opérationnelle : `Docs/plan-mise-en-place-web-api-donnees.md`.
-  version: 0.10.0
+
+    Modération contenu (help-requests / réponses) : regex locale + denylist admin ;
+    si détection locale, second avis via `apps/agent` `POST /moderation/evaluate` (Claude).
+    Variable API `MODERATION_CLAUDE_ENABLED` (défaut activé) ; fallback conservateur si agent indisponible.
+  version: 0.11.0
   contact:
     name: All-Aboard THP
     url: https://github.com/AllAboard-THP/All-Aboard
@@ -428,6 +432,9 @@ paths:
       operationId: postHelpRequests
       tags: [help-requests]
       summary: Créer une demande d'aide
+      description: |
+        Applique la modération (regex + denylist, puis second avis agent si hit).
+        Contenu flaggé : masqué du fil public jusqu'à approbation admin.
       security:
         - bearerAuth: []
       requestBody:
@@ -2126,6 +2133,9 @@ components:
           format: date-time
         flaggedForModeration:
           type: boolean
+          description: |
+            True si modération requise (regex/denylist + second avis Claude via agent).
+            Masque l'entrée du fil public tant qu'un admin n'a pas approuvé.
         deletedAt:
           type: string
           format: date-time
@@ -2197,6 +2207,9 @@ components:
           type: string
         flaggedForModeration:
           type: boolean
+          description: |
+            True si modération requise (regex/denylist + second avis Claude via agent).
+            Masque l'entrée du fil public tant qu'un admin n'a pas approuvé.
 
     FeedResponse:
       type: object

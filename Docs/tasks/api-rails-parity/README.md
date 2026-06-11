@@ -1,7 +1,7 @@
 # API parité Rails — hub (phases 1–7 + lots A / 5b / 7)
 
 **Référence produit** : maquette `apps/thp-final` (Rails/Turbo, **lecture seule** — pas de port de code).  
-**Contrat HTTP** : [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml) (version courante **0.10.0**).  
+**Contrat HTTP** : [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml) (version courante **0.11.0**).  
 **Plan opérationnel** : [§ Parité Rails](../../plan-mise-en-place-web-api-donnees.md#parité-rails-thp-final--api).  
 **Scope** : `apps/api`, `apps/agent`, `packages/types`, migrations Drizzle — **pas** `apps/web` (BFF/UI en parallèle).
 
@@ -31,6 +31,7 @@ Aligner progressivement l’API Fastify MVP sur les parcours et endpoints de la 
 | **A** | Soft delete post + reject resource mentor | 0.8.1 | `0011_api_soft_delete_help_requests.sql` | [api-parity-delete-reject](../api-parity-delete-reject/README.md) | PR [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104) |
 | **5b** | Chat temps réel WebSocket | 0.9.0 | `@fastify/websocket` | [phase5b](../api-rails-parity-phase5b/README.md) | PR [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104) |
 | **7** | Suggest-tags + `ai_summary` à la résolution | 0.10.0 | outbox + `apps/agent` | [phase7](../api-rails-parity-phase7/README.md) | PR [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104) |
+| **Modération Claude** | Second avis agent après regex/denylist | 0.11.0 | `apps/agent` + proxy API | [api-claude-moderation](../api-claude-moderation/README.md) | en cours |
 
 ---
 
@@ -45,7 +46,7 @@ Aligner progressivement l’API Fastify MVP sur les parcours et endpoints de la 
 | Resources, mentor | `apps/api/src/routes/{resources,subject-requests,mentor}.ts` |
 | Chat REST + WS | `apps/api/src/routes/{conversations,conversations-ws}.ts` |
 | Admin | `apps/api/src/routes/admin.ts` |
-| Agent (tags, summary) | `apps/agent/src/{tag-suggest,summary-generate}.ts` ; proxy `apps/api/src/agent/` |
+| Agent (tags, summary, modération) | `apps/agent/src/{tag-suggest,summary-generate,moderation-evaluate}.ts` ; proxy `apps/api/src/agent/` |
 
 ---
 
@@ -67,7 +68,6 @@ Appliquer les migrations sur l’environnement cible avant smoke (`pnpm --filter
 - BFF / pages Next (`apps/web`) — consommation ou relais à ajouter par écran
 - Phase 3b (confirmation email, reset password)
 - Events Ticketmaster (`apps/thp-final`)
-- Modération Claude (phase 6 = regex + denylist)
 - Redis pub/sub multi-instance pour WebSocket (note doc 5b uniquement)
 
 ## Fichiers

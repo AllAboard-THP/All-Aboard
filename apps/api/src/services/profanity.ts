@@ -1,8 +1,12 @@
 import { eq } from "drizzle-orm";
 import type { AppDatabase } from "../db/client.js";
 import { denylistPatterns } from "../db/schema.js";
+import {
+  createAgentModerationEvaluator,
+  type EvaluateModerationFn,
+} from "../agent/moderation.js";
 
-/** Aligné thp-final `AiModerationService` — regex local uniquement (pas d'appel Claude). */
+/** Aligné thp-final `AiModerationService` — regex local + second avis agent si match. */
 const BANNED_REGEX =
   /\b(connard|connasse|enculé|putain|salope|pute|fdp|ntm|nique|fuck|shit|bitch|asshole|nigger|cunt)\b/i;
 
@@ -36,7 +40,14 @@ export async function loadActiveDenylistPatterns(
     .where(eq(denylistPatterns.active, true));
 }
 
-export async function contentShouldBeFlagged(
+export function isModerationClaudeEnabled(): boolean {
+  const raw = process.env.MODERATION_CLAUDE_ENABLED?.trim().toLowerCase();
+  if (raw === "false" || raw === "0" || raw === "no") return false;
+  return true;
+}
+
+/** Première passe locale (regex + denylist) — aligné `AiModerationService#fallback_check`. */
+export async function matchesLocalModerationRules(
   db: AppDatabase,
   content: string,
 ): Promise<boolean> {
@@ -46,6 +57,25 @@ export async function contentShouldBeFlagged(
 
   const patterns = await loadActiveDenylistPatterns(db);
   return patterns.some((row) => matchesPattern(row.pattern, trimmed));
+}
+
+export async function contentShouldBeFlagged(
+  db: AppDatabase,
+  content: string,
+  evaluateModeration?: EvaluateModerationFn,
+): Promise<boolean> {
+  const trimmed = content.trim();
+  if (!trimmed) return false;
+
+  const localHit = await matchesLocalModerationRules(db, trimmed);
+  if (!localHit) return false;
+
+  if (!isModerationClaudeEnabled()) {
+    return true;
+  }
+
+  const evaluate = evaluateModeration ?? createAgentModerationEvaluator();
+  return evaluate(trimmed);
 }
 
 /** Concatène les champs texte d'une demande ou réponse pour modération. */
