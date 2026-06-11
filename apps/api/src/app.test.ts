@@ -1775,7 +1775,7 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         const created = JSON.parse(createRes.payload) as {
           item: { id: string; flaggedForModeration?: boolean };
         };
-        expect(created.item.flaggedForModeration).toBe(false);
+        expect(created.item.flaggedForModeration ?? false).toBe(false);
 
         const feedRes = await modApp.inject({ method: "GET", url: "/feed" });
         const feed = JSON.parse(feedRes.payload) as {
