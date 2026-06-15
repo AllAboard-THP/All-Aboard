@@ -22,14 +22,10 @@ vi.mock("@simplewebauthn/server", () => ({
 
 import pg from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { buildApp } from "../../app";
+import { ensureMigrated } from "../../test/ensure-migrated.js";
 import { insertPasskey } from "./credentials";
 import { users } from "../../db/schema";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 function clientDataJson(challenge: string): string {
   return Buffer.from(JSON.stringify({ challenge, type: "webauthn.create" })).toString(
@@ -56,9 +52,7 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
 
     pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
     const db = drizzle(pool);
-    await migrate(db, {
-      migrationsFolder: path.join(__dirname, "../../../drizzle"),
-    });
+    await ensureMigrated(process.env.DATABASE_URL!);
     app = await buildApp({ pool });
   });
 
