@@ -112,6 +112,15 @@ export function userAuthorIdKeys(user: AuthenticatedUser): string[] {
   return [user.id, user.email, shortName];
 }
 
+/** Keys stored in help_requests/responses.author_id for a users row. */
+export function authorIdKeysFromRow(user: {
+  id: string;
+  email: string;
+}): string[] {
+  const shortName = user.email.split("@")[0];
+  return [user.id, user.email, shortName];
+}
+
 export function getJwtUser(request: { user: unknown }): JwtUser {
   return request.user as JwtUser;
 }

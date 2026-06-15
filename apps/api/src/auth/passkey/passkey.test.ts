@@ -57,14 +57,14 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
     pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
     const db = drizzle(pool);
     await migrate(db, {
-      migrationsFolder: path.join(__dirname, "../../drizzle"),
+      migrationsFolder: path.join(__dirname, "../../../drizzle"),
     });
     app = await buildApp({ pool });
   });
 
   afterEach(async () => {
-    await app.close();
-    await pool.end();
+    if (app) await app.close();
+    if (pool) await pool.end();
   });
 
   it("POST /auth/passkey/register/options returns options when CGU accepted", async () => {

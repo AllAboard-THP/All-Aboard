@@ -29,7 +29,7 @@ test.describe("parcours création demande", () => {
 
     await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
     await expect(page.getByTestId("responses-empty")).toBeVisible();
-    await expect(page.getByText("Auteur : bob@dev.local")).toBeVisible();
+    await expect(page.getByText(/^Auteur : [0-9a-f-]{36}$/i)).toBeVisible();
   });
 
   test("retour feed après création et refresh client", async ({ page }) => {

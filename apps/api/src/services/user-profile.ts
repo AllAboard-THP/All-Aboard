@@ -1,6 +1,7 @@
 import { and, count, eq, inArray, isNull } from "drizzle-orm";
 import type { SubjectSummary } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
+import { authorIdKeysFromRow } from "../lib/auth-helpers.js";
 import { isUuid } from "../auth/passkey/config.js";
 import {
   helpRequests,
@@ -98,14 +99,15 @@ export async function syncMentorSubjects(
 
 export async function countUserPosts(
   db: AppDatabase,
-  authorEmail: string,
+  user: { id: string; email: string },
 ): Promise<number> {
+  const keys = authorIdKeysFromRow(user);
   const rows = await db
     .select({ value: count() })
     .from(helpRequests)
     .where(
       and(
-        eq(helpRequests.authorId, authorEmail),
+        inArray(helpRequests.authorId, keys),
         isNull(helpRequests.deletedAt),
         eq(helpRequests.flaggedForModeration, false),
       ),
@@ -115,11 +117,12 @@ export async function countUserPosts(
 
 export async function countUserResponses(
   db: AppDatabase,
-  authorEmail: string,
+  user: { id: string; email: string },
 ): Promise<number> {
+  const keys = authorIdKeysFromRow(user);
   const rows = await db
     .select({ value: count() })
     .from(responses)
-    .where(eq(responses.authorId, authorEmail));
+    .where(inArray(responses.authorId, keys));
   return Number(rows[0]?.value ?? 0);
 }
