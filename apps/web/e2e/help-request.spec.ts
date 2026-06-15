@@ -8,14 +8,23 @@ function e2eTitle(label: string): string {
   return `Demande E2E Playwright ${label} avec titre assez long ${Date.now()}`;
 }
 
+async function loginAsBob(page: import("@playwright/test").Page) {
+  const res = await page.request.post("/api/auth/login", {
+    data: { email: "bob@dev.local", password: loginPassword },
+  });
+  expect(res.ok()).toBeTruthy();
+}
+
 async function createHelpRequest(page: import("@playwright/test").Page, title: string) {
+  await loginAsBob(page);
   await page.goto("/help/new");
   await expect(page.getByText("Publier une demande d'aide")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Publier" })).toBeVisible({
+    timeout: 15_000,
+  });
 
-  await page.getByLabel("Email").fill("bob@dev.local");
-  await page.getByLabel("Mot de passe", { exact: true }).fill(loginPassword);
   await page.getByLabel("Titre de la demande").fill(title);
-  await page.getByRole("button", { name: "Connexion et publier" }).click();
+  await page.getByRole("button", { name: "Publier" }).click();
 
   await expect(page).toHaveURL(/\/requests\/[0-9a-f-]+/, { timeout: 30_000 });
 }
@@ -55,5 +64,25 @@ test.describe("parcours création demande", () => {
 
     await page.goto(detailUrl);
     await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
+  });
+});
+
+test.describe("pages passkey", () => {
+  test("login page renders passkey CTA", async ({ page }) => {
+    await page.goto("/login");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Se connecter avec une passkey" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Utiliser une passkey" }),
+    ).toBeVisible();
+  });
+
+  test("register page renders passkey form", async ({ page }) => {
+    await page.goto("/register");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Créer un compte" }),
+    ).toBeVisible();
+    await expect(page.getByLabel("Nom complet")).toBeVisible();
   });
 });

@@ -9,6 +9,11 @@ import type {
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@allaboard/ui/components/alert";
 import { Button } from "@allaboard/ui/components/button";
 import {
   Card,
@@ -17,9 +22,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@allaboard/ui/components/card";
-import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
 import { Textarea } from "@allaboard/ui/components/textarea";
+import { Link } from "@/i18n/navigation";
 import {
   ApiRequestError,
   mapApiError,
@@ -53,23 +58,10 @@ async function fetchDetail(
   return (await res.json()) as HelpRequestDetailResponse;
 }
 
-async function loginAndRespond(input: {
-  email: string;
-  password: string;
+async function createResponse(input: {
   body: string;
   requestId: string;
 }): Promise<CreateResponseResponse> {
-  const loginRes = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ email: input.email, password: input.password }),
-  });
-  if (!loginRes.ok) {
-    const text = await loginRes.text();
-    throwFromApiResponse(loginRes.status, text);
-  }
-
   const createRes = await fetch(
     `/api/help-requests/${encodeURIComponent(input.requestId)}/responses`,
     {
@@ -92,8 +84,6 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
   const tErrors = useTranslations("errors");
   const tCommon = useTranslations("common");
   const queryClient = useQueryClient();
-  const [email, setEmail] = useState("alice@dev.local");
-  const [password, setPassword] = useState("");
   const [body, setBody] = useState("");
   const [filterByCertifications, setFilterByCertifications] = useState(false);
 
@@ -104,6 +94,8 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
   });
 
   const isMentor = authQuery.data?.role === "mentor";
+  const isAuthenticated = Boolean(authQuery.data);
+  const loginHref = `/login?returnTo=${encodeURIComponent(`/requests/${requestId}`)}`;
 
   useEffect(() => {
     if (isMentor) {
@@ -119,10 +111,9 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
   });
 
   const mutation = useMutation({
-    mutationFn: loginAndRespond,
+    mutationFn: createResponse,
     onSuccess: async () => {
       setBody("");
-      setPassword("");
       await queryClient.invalidateQueries({ queryKey: ["help-request", requestId] });
     },
   });
@@ -137,7 +128,8 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
       : 0;
 
   function submit() {
-    mutation.mutate({ email, password, body, requestId });
+    if (!isAuthenticated) return;
+    mutation.mutate({ body, requestId });
   }
 
   const errorMessage =
@@ -227,49 +219,44 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
         <h2 className="mb-3 text-lg font-semibold text-foreground">
           {t("replySection")}
         </h2>
-        <Card data-testid="response-form">
-          <CardContent className="grid gap-4 pt-6">
-            <div className="grid gap-2">
-              <Label htmlFor="response-email">{tForm("email")}</Label>
-              <Input
-                id="response-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="username"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="response-password">{tForm("password")}</Label>
-              <Input
-                id="response-password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="response-body">{t("replyBody")}</Label>
-              <Textarea
-                id="response-body"
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                rows={4}
-              />
-            </div>
-            {errorMessage ? (
-              <p className="m-0 text-sm text-destructive">{errorMessage}</p>
-            ) : null}
-            <Button
-              type="button"
-              disabled={mutation.isPending || !body.trim() || !password}
-              onClick={() => submit()}
-            >
-              {mutation.isPending ? tCommon("sending") : t("replySubmit")}
-            </Button>
-          </CardContent>
-        </Card>
+        {!isAuthenticated && !authQuery.isPending ? (
+          <Alert data-testid="reply-login-required">
+            <AlertTitle>{tForm("loginRequiredTitle")}</AlertTitle>
+            <AlertDescription>
+              {tForm.rich("loginRequiredDescription", {
+                link: () => (
+                  <Link href={loginHref} className="text-primary underline">
+                    {tForm("loginRequiredLink")}
+                  </Link>
+                ),
+              })}
+            </AlertDescription>
+          </Alert>
+        ) : (
+          <Card data-testid="response-form">
+            <CardContent className="grid gap-4 pt-6">
+              <div className="grid gap-2">
+                <Label htmlFor="response-body">{t("replyBody")}</Label>
+                <Textarea
+                  id="response-body"
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  rows={4}
+                />
+              </div>
+              {errorMessage ? (
+                <p className="m-0 text-sm text-destructive">{errorMessage}</p>
+              ) : null}
+              <Button
+                type="button"
+                disabled={mutation.isPending || !body.trim()}
+                onClick={() => submit()}
+              >
+                {mutation.isPending ? tCommon("sending") : t("replySubmit")}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </section>
     </>
   );

@@ -27,7 +27,30 @@
     "userNotFound": "Utilisateur introuvable.",
     "invalidRegex": "Expression régulière invalide.",
     "contentModeration": "Contenu signalé pour modération.",
+    "cguRequired": "Vous devez accepter les conditions d'utilisation.",
+    "challengeExpired": "La session passkey a expiré. Réessayez.",
+    "verificationFailed": "La vérification passkey a échoué. Réessayez.",
     "unknown": "Une erreur inattendue s'est produite."
+  },
+  "auth": {
+    "loginEyebrow": "Connexion",
+    "loginTitle": "Se connecter avec une passkey",
+    "loginDescription": "Utilisez la biométrie ou le code de votre appareil — sans mot de passe.",
+    "loginHint": "Votre navigateur peut proposer une passkey enregistrée. Sinon, utilisez le bouton ci-dessous.",
+    "loginSubmit": "Utiliser une passkey",
+    "registerEyebrow": "Inscription",
+    "registerTitle": "Créer un compte",
+    "registerDescription": "Choisissez un nom d'affichage et enregistrez une passkey sur cet appareil.",
+    "registerSubmit": "Créer ma passkey",
+    "fullName": "Nom complet",
+    "emailOptional": "Email (optionnel, pour les notifications)",
+    "acceptCgu": "J'accepte les conditions générales d'utilisation",
+    "hasAccount": "Déjà un compte ?",
+    "loginLink": "Se connecter",
+    "noAccount": "Pas encore de compte ?",
+    "registerLink": "S'inscrire",
+    "backHome": "Retour accueil",
+    "webauthnFailed": "Impossible d'utiliser la passkey sur cet appareil."
   },
   "nav": {
     "ariaLabel": "Navigation principale",
@@ -89,19 +112,21 @@
   "helpNew": {
     "eyebrow": "Nouvelle demande",
     "title": "Publier une demande d'aide",
-    "description": "Connexion MVP (ADR 0001), puis envoi vers l'API via le BFF",
+    "description": "Connectez-vous avec une passkey, puis publiez via le BFF",
     "backHome": "Retour accueil"
   },
   "helpForm": {
-    "email": "Email",
-    "password": "Mot de passe",
     "title": "Titre de la demande",
     "tags": "Tags (optionnel, séparés par virgule)",
     "tagsPlaceholder": "mentor, rails",
     "duplicate": "Doublon détecté (MOC).",
     "viewExisting": "Voir la demande existante",
     "rubberduckHandoff": "Handoff Rubberduck : votre demande est publiée. Configurez RUBBERDUCK_URL pour activer la redirection externe.",
-    "submit": "Connexion et publier"
+    "submit": "Publier",
+    "submitSignIn": "Se connecter pour publier",
+    "loginRequiredTitle": "Connexion requise",
+    "loginRequiredDescription": "Connectez-vous avec une passkey via <link></link> pour publier.",
+    "loginRequiredLink": "la page de connexion"
   },
   "helpRequest": {
     "eyebrow": "Demande d'aide",
@@ -113,13 +138,14 @@
     "responsesEmptyDescription": "Les réponses de la communauté et des mentors apparaîtront ici.",
     "replySection": "Répondre",
     "replyBody": "Votre réponse",
-    "replySubmit": "Connexion et répondre",
+    "replySubmit": "Publier la réponse",
     "certFilter": "Filtrer les réponses par certifications",
     "certHidden": "{count, plural, one {# réponse masquée} other {# réponses masquées}} (hors certifications ou demandeur)."
   },
   "mentor": {
     "loginRequiredTitle": "Connexion requise",
-    "loginRequiredDescription": "Connectez-vous via <link></link> pour accéder au dashboard mentor.",
+    "loginRequiredDescription": "Connectez-vous avec une passkey via <link></link> pour accéder au dashboard mentor.",
+    "loginRequiredLink": "la page de connexion",
     "forbiddenTitle": "Accès réservé aux mentors",
     "forbiddenDescription": "Compte MVP mentor : utilisez l'identifiant <alice>alice</alice> (ou un id listé dans <envVar>MVP_MENTOR_USER_IDS</envVar>).",
     "eyebrow": "Mentor",

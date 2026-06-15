@@ -25,7 +25,6 @@ export const dynamic = "force-dynamic";
 
 export default async function MentorDashboardPage() {
   const t = await getTranslations("mentor");
-  const tNav = await getTranslations("nav");
   const tFeed = await getTranslations("feed");
   const tCommon = await getTranslations("common");
   const locale = (await getLocale()) as AppLocale;
@@ -40,8 +39,8 @@ export default async function MentorDashboardPage() {
           <AlertDescription>
             {t.rich("loginRequiredDescription", {
               link: () => (
-                <Link href="/help/new" className="text-primary underline">
-                  {tNav("newRequest")}
+                <Link href="/login" className="text-primary underline">
+                  {t("loginRequiredLink")}
                 </Link>
               ),
             })}

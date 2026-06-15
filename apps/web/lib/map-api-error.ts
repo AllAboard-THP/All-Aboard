@@ -20,6 +20,9 @@ export type ApiErrorMessageKey =
   | "userNotFound"
   | "invalidRegex"
   | "contentModeration"
+  | "cguRequired"
+  | "challengeExpired"
+  | "verificationFailed"
   | "unknown";
 
 export type ApiErrorBody = {
@@ -64,6 +67,9 @@ const CODE_TO_KEY: Record<string, ApiErrorMessageKey> = {
   user_not_found: "userNotFound",
   invalid_regex: "invalidRegex",
   content_moderation: "contentModeration",
+  cgu_required: "cguRequired",
+  challenge_expired: "challengeExpired",
+  verification_failed: "verificationFailed",
 };
 
 const STATUS_FALLBACK: Partial<Record<number, ApiErrorMessageKey>> = {

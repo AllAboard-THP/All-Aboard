@@ -58,7 +58,7 @@ test.describe("i18n — locale routing", () => {
     });
     await expect(page.getByLabel("Request title")).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Sign in and publish" }),
+      page.getByRole("button", { name: "Sign in to publish" }),
     ).toBeVisible();
   });
 });
@@ -100,10 +100,15 @@ test.describe("i18n — API errors via mapApiError", () => {
     });
 
     await page.goto("/help/new");
-    await page.getByLabel("Email").fill("bob@dev.local");
-    await page.getByLabel("Mot de passe", { exact: true }).fill(loginPassword);
+    await page.request.post("/api/auth/login", {
+      data: { email: "bob@dev.local", password: loginPassword },
+    });
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Publier" })).toBeVisible({
+      timeout: 15_000,
+    });
     await page.getByLabel("Titre de la demande").fill(e2eTitle("mod-fr"));
-    await page.getByRole("button", { name: "Connexion et publier" }).click();
+    await page.getByRole("button", { name: "Publier" }).click();
 
     await expect(
       page.getByText("Contenu signalé pour modération."),
@@ -124,10 +129,15 @@ test.describe("i18n — API errors via mapApiError", () => {
     });
 
     await page.goto("/en/help/new");
-    await page.getByLabel("Email").fill("bob@dev.local");
-    await page.getByLabel("Password", { exact: true }).fill(loginPassword);
+    await page.request.post("/api/auth/login", {
+      data: { email: "bob@dev.local", password: loginPassword },
+    });
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
+      timeout: 15_000,
+    });
     await page.getByLabel("Request title").fill(e2eTitle("mod-en"));
-    await page.getByRole("button", { name: "Sign in and publish" }).click();
+    await page.getByRole("button", { name: "Publish" }).click();
 
     await expect(
       page.getByText("Content flagged for moderation."),
