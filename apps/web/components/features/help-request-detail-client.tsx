@@ -5,6 +5,7 @@ import type {
   AuthMeResponse,
   CreateResponseResponse,
   HelpRequestDetailResponse,
+  Response,
 } from "@allaboard/types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -25,6 +26,10 @@ import {
 import { Label } from "@allaboard/ui/components/label";
 import { Textarea } from "@allaboard/ui/components/textarea";
 import { Link } from "@/i18n/navigation";
+import {
+  deleteResponse,
+  updateResponse,
+} from "@/lib/help-request-client";
 import {
   ApiRequestError,
   mapApiError,
@@ -76,6 +81,181 @@ async function createResponse(input: {
     throwFromApiResponse(createRes.status, createText);
   }
   return JSON.parse(createText) as CreateResponseResponse;
+}
+
+function ResponseItem({
+  response,
+  requestId,
+  currentUserId,
+}: {
+  response: Response;
+  requestId: string;
+  currentUserId: string | undefined;
+}) {
+  const queryClient = useQueryClient();
+  const t = useTranslations("helpRequest");
+  const tErrors = useTranslations("errors");
+  const tCommon = useTranslations("common");
+  const [editing, setEditing] = useState(false);
+  const [editBody, setEditBody] = useState(response.body);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const isAuthor = Boolean(currentUserId) && currentUserId === response.authorId;
+
+  const updateMutation = useMutation({
+    mutationFn: (body: string) =>
+      updateResponse(requestId, response.id, { body }),
+    onSuccess: async () => {
+      setEditing(false);
+      await queryClient.invalidateQueries({ queryKey: ["help-request", requestId] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteResponse(requestId, response.id),
+    onSuccess: async () => {
+      setConfirmDelete(false);
+      await queryClient.invalidateQueries({ queryKey: ["help-request", requestId] });
+    },
+  });
+
+  const mutationError =
+    updateMutation.error instanceof ApiRequestError
+      ? tErrors(
+          mapApiError({
+            status: updateMutation.error.status,
+            body: { error: updateMutation.error.code },
+          }),
+        )
+      : deleteMutation.error instanceof ApiRequestError
+        ? tErrors(
+            mapApiError({
+              status: deleteMutation.error.status,
+              body: { error: deleteMutation.error.code },
+            }),
+          )
+        : null;
+
+  if (!isAuthor) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <p className="m-0 text-sm text-foreground">{response.body}</p>
+          <p className="mt-2 mb-0 text-xs text-muted-foreground">
+            {response.authorId}
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card data-testid="response-item-owned">
+      <CardContent className="grid gap-3 pt-6">
+        {editing ? (
+          <>
+            <Label htmlFor={`response-edit-${response.id}`}>
+              {t("replyBody")}
+            </Label>
+            <Textarea
+              id={`response-edit-${response.id}`}
+              value={editBody}
+              onChange={(e) => setEditBody(e.target.value)}
+              rows={4}
+              data-testid="response-edit-textarea"
+            />
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                size="sm"
+                disabled={updateMutation.isPending || !editBody.trim()}
+                onClick={() => updateMutation.mutate(editBody)}
+                data-testid="response-save-button"
+              >
+                {updateMutation.isPending ? tCommon("sending") : t("responseSave")}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={updateMutation.isPending}
+                onClick={() => {
+                  setEditing(false);
+                  setEditBody(response.body);
+                }}
+              >
+                {t("editCancel")}
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="m-0 text-sm text-foreground">{response.body}</p>
+            <p className="m-0 text-xs text-muted-foreground">
+              {response.authorId}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={deleteMutation.isPending}
+                onClick={() => setEditing(true)}
+                data-testid="response-edit-button"
+              >
+                {t("responseEdit")}
+              </Button>
+              {!confirmDelete ? (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  disabled={deleteMutation.isPending}
+                  onClick={() => setConfirmDelete(true)}
+                  data-testid="response-delete-button"
+                >
+                  {t("responseDelete")}
+                </Button>
+              ) : (
+                <div
+                  className="flex flex-wrap items-center gap-2"
+                  data-testid="response-delete-confirm"
+                >
+                  <span className="text-sm text-foreground">
+                    {t("responseDeleteConfirm")}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    disabled={deleteMutation.isPending}
+                    onClick={() => deleteMutation.mutate()}
+                    data-testid="response-delete-confirm-button"
+                  >
+                    {deleteMutation.isPending
+                      ? tCommon("updating")
+                      : t("responseDelete")}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={deleteMutation.isPending}
+                    onClick={() => setConfirmDelete(false)}
+                  >
+                    {t("editCancel")}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+        {mutationError ? (
+          <p className="m-0 text-sm text-destructive">{mutationError}</p>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
 }
 
 export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
@@ -201,14 +381,11 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
           >
             {responses.map((r) => (
               <li key={r.id} data-testid="response-item">
-                <Card>
-                  <CardContent className="pt-6">
-                    <p className="m-0 text-sm text-foreground">{r.body}</p>
-                    <p className="mt-2 mb-0 text-xs text-muted-foreground">
-                      {r.authorId}
-                    </p>
-                  </CardContent>
-                </Card>
+                <ResponseItem
+                  response={r}
+                  requestId={requestId}
+                  currentUserId={authQuery.data?.userId}
+                />
               </li>
             ))}
           </ul>

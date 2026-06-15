@@ -140,7 +140,22 @@
     "replyBody": "Votre réponse",
     "replySubmit": "Publier la réponse",
     "certFilter": "Filtrer les réponses par certifications",
-    "certHidden": "{count, plural, one {# réponse masquée} other {# réponses masquées}} (hors certifications ou demandeur)."
+    "certHidden": "{count, plural, one {# réponse masquée} other {# réponses masquées}} (hors certifications ou demandeur).",
+    "editLink": "Modifier",
+    "editTitle": "Modifier la demande",
+    "editDescription": "Mettez à jour le titre et les tags de votre demande.",
+    "editSave": "Enregistrer",
+    "editCancel": "Annuler",
+    "editBackToDetail": "Retour à la demande",
+    "editBackToFeed": "Retour au feed",
+    "editForbiddenTitle": "Accès refusé",
+    "editForbiddenDescription": "Seul l'auteur peut modifier cette demande.",
+    "delete": "Supprimer",
+    "deleteConfirm": "Supprimer cette demande ? Cette action est irréversible.",
+    "responseEdit": "Modifier",
+    "responseDelete": "Supprimer",
+    "responseSave": "Enregistrer",
+    "responseDeleteConfirm": "Supprimer cette réponse ?"
   },
   "legal": {
     "gateTitle": "Bienvenue sur All-Aboard",
