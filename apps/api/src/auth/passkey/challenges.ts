@@ -6,7 +6,8 @@ import { challengeTtlMs } from "./config.js";
 export type ChallengeType = "registration" | "authentication";
 
 export type RegistrationChallengeMetadata = {
-  fullName: string;
+  mode?: "add";
+  fullName?: string;
   email?: string;
   acceptCgu?: boolean;
   webauthnUserId: string;
