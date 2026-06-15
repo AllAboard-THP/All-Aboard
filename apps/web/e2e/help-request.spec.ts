@@ -32,7 +32,7 @@ test.describe("parcours création demande", () => {
     await expect(page.getByText(/^Auteur : [0-9a-f-]{36}$/i)).toBeVisible();
   });
 
-  test("retour feed après création et refresh client", async ({ page }) => {
+  test("retour feed après création et recherche filtrée", async ({ page }) => {
     const title = e2eTitle("feed");
     await createHelpRequest(page, title);
     const detailUrl = page.url();
@@ -43,11 +43,15 @@ test.describe("parcours création demande", () => {
       page.getByRole("heading", { level: 1, name: "Feed communautaire" }),
     ).toBeVisible();
 
-    // SSR feed peut être en cache (revalidate 60s) ; le client BFF est à jour.
-    await page.getByRole("button", { name: "Rafraîchir le feed" }).click();
-    await expect(page.getByText(/useQuery : [1-9]\d* entrée/)).toBeVisible({
-      timeout: 15_000,
-    });
+    // SSR feed may be briefly cached; search forces a fresh filtered fetch.
+    const searchTerm = title.slice(0, 40);
+    await page.getByRole("searchbox", { name: "Rechercher dans le feed" }).fill(searchTerm);
+    await page.getByRole("button", { name: "Rechercher" }).click();
+    await expect(page).toHaveURL(/\?q=/);
+
+    await expect(
+      page.getByTestId("feed-ssr-list").getByRole("link", { name: title }),
+    ).toBeVisible({ timeout: 15_000 });
 
     await page.goto(detailUrl);
     await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
