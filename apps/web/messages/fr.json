@@ -55,9 +55,21 @@
   "nav": {
     "ariaLabel": "Navigation principale",
     "feed": "Feed",
+    "explore": "Explorer",
     "newRequest": "Nouvelle demande",
     "mentor": "Mentor",
     "mentorUnreadAria": "{count, plural, one {# demande avec nouvelles réponses} other {# demandes avec nouvelles réponses}}"
+  },
+  "userMenu": {
+    "ariaLabel": "Menu utilisateur — {name}",
+    "profile": "Mon profil",
+    "myPosts": "Mes demandes",
+    "myBookmarks": "Mes sauvegardes",
+    "mentor": "Espace mentor",
+    "logout": "Déconnexion",
+    "logoutPending": "Déconnexion…",
+    "login": "Se connecter",
+    "register": "S'inscrire"
   },
   "locale": {
     "label": "Langue",

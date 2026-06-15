@@ -17,6 +17,14 @@ vi.mock("@/components/features/app-shell-nav", () => ({
   AppShellNav: () => <nav aria-label="Navigation principale">Nav</nav>,
 }));
 
+vi.mock("@/components/features/app-shell-user-menu", () => ({
+  AppShellUserMenu: () => <div data-testid="app-shell-user-menu">User menu</div>,
+}));
+
+vi.mock("@/components/features/app-shell-auth-actions", () => ({
+  AppShellAuthActions: () => <div data-testid="app-shell-auth-actions">Auth</div>,
+}));
+
 vi.mock("@/components/features/locale-switcher", () => ({
   LocaleSwitcher: () => <div data-testid="locale-switcher">Locale</div>,
 }));
@@ -50,6 +58,7 @@ describe("AppShell", () => {
     expect(screen.getByRole("navigation", { name: "Navigation principale" })).toBeTruthy();
     expect(screen.getByRole("main").getAttribute("id")).toBe("main-content");
     expect(screen.getByTestId("locale-switcher")).toBeTruthy();
+    expect(screen.getByTestId("app-shell-auth-actions")).toBeTruthy();
     expect(screen.getByText("Contenu page")).toBeTruthy();
   });
 });
