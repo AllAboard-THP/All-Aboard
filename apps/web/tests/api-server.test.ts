@@ -4,6 +4,7 @@ import {
   parseFeedResponse,
   parseHelpRequestDetailResponse,
   parseMentorFeedResponse,
+  parsePublicUserResponse,
   parseSubjectsResponse,
 } from "@/lib/api-server";
 
@@ -179,6 +180,30 @@ describe("parseMentorFeedResponse", () => {
         ],
       }),
     ).toThrow("item shape");
+  });
+});
+
+describe("parsePublicUserResponse", () => {
+  it("accepts posts tab payload", () => {
+    const data = {
+      profile: {
+        id: "uuid-bob",
+        role: "student",
+        displayName: "Bob Dev",
+        stats: { postsCount: 1, responsesCount: 0 },
+      },
+      tab: "posts",
+      items: [
+        {
+          id: "hr-1",
+          title: "Help",
+          authorId: "uuid-bob",
+          createdAt: "2020-01-01T00:00:00.000Z",
+        },
+      ],
+      pagination: { page: 1, limit: 10, total: 1 },
+    };
+    expect(parsePublicUserResponse(data)).toEqual(data);
   });
 });
 

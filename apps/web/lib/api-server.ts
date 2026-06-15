@@ -5,6 +5,7 @@ import type {
   HelpRequestDetailResponse,
   MentorFeedItem,
   MentorFeedResponse,
+  PublicUserResponse,
   Response,
   Subject,
   SubjectsResponse,
@@ -15,6 +16,11 @@ import {
   FEED_DEFAULT_LIMIT,
   type FeedPageParams,
 } from "@/lib/feed-search-params";
+import {
+  buildPublicUserQueryString,
+  PUBLIC_USER_DEFAULT_LIMIT,
+  type PublicUserPageParams,
+} from "@/lib/user-search-params";
 
 const DEFAULT_API_URL = "http://127.0.0.1:4000";
 
@@ -256,6 +262,46 @@ export type FetchAuthMeResult =
   | { ok: true; data: AuthMeResponse }
   | { ok: false; error: string; status?: number };
 
+export type FetchPublicUserResult =
+  | { ok: true; data: PublicUserResponse }
+  | { ok: false; error: string; status?: number };
+
+function isPublicUserResponse(value: unknown): value is PublicUserResponse {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  if (typeof o.profile !== "object" || o.profile === null) return false;
+  const profile = o.profile as Record<string, unknown>;
+  if (
+    typeof profile.id !== "string" ||
+    typeof profile.displayName !== "string" ||
+    typeof profile.role !== "string"
+  ) {
+    return false;
+  }
+  if (o.tab !== "posts" && o.tab !== "responses") return false;
+  if (!Array.isArray(o.items)) return false;
+  if (typeof o.pagination !== "object" || o.pagination === null) return false;
+  const pagination = o.pagination as Record<string, unknown>;
+  return (
+    typeof pagination.page === "number" &&
+    typeof pagination.limit === "number" &&
+    typeof pagination.total === "number"
+  );
+}
+
+export function parsePublicUserResponse(data: unknown): PublicUserResponse {
+  if (!isPublicUserResponse(data)) {
+    throw new Error("Invalid public user payload");
+  }
+  if (data.tab === "posts" && !data.items.every(isHelpRequest)) {
+    throw new Error("Invalid public user posts");
+  }
+  if (data.tab === "responses" && !data.items.every(isResponse)) {
+    throw new Error("Invalid public user responses");
+  }
+  return data;
+}
+
 async function fetchJson(url: string, init?: RequestInit): Promise<{
   ok: boolean;
   status: number;
@@ -422,6 +468,42 @@ export async function fetchAuthMe(
       return { ok: true, data: parseAuthMeResponse(json) };
     } catch (e) {
       const message = e instanceof Error ? e.message : "Invalid auth/me";
+      return { ok: false, error: message, status };
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Network error";
+    return { ok: false, error: message };
+  }
+}
+
+export async function fetchPublicUser(
+  userId: string,
+  params?: PublicUserPageParams,
+): Promise<FetchPublicUserResult> {
+  const query = buildPublicUserQueryString(
+    params ?? { tab: "posts", page: 1, limit: PUBLIC_USER_DEFAULT_LIMIT },
+  );
+  const url = `${getApiBaseUrl()}/users/${encodeURIComponent(userId)}${query}`;
+  try {
+    const { ok, status, json } = await fetchJson(url, { cache: "no-store" });
+    if (status === 404) {
+      return { ok: false, error: "not_found", status: 404 };
+    }
+    if (!ok) {
+      const err =
+        typeof json === "object" &&
+        json !== null &&
+        "error" in json &&
+        typeof (json as { error: unknown }).error === "string"
+          ? (json as { error: string }).error
+          : `Public user HTTP ${status}`;
+      return { ok: false, error: err, status };
+    }
+    try {
+      return { ok: true, data: parsePublicUserResponse(json) };
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Invalid public user payload";
       return { ok: false, error: message, status };
     }
   } catch (e) {

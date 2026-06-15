@@ -15,6 +15,7 @@ import {
 } from "../auth/passkey/login.js";
 import {
   createPasskeyRegistrationOptions,
+  createPasskeyRegistrationOptionsForExistingUser,
   passkeyRegisterOptionsBodySchema,
   verifyPasskeyRegistration,
 } from "../auth/passkey/register.js";
@@ -36,6 +37,35 @@ export function registerPasskeyRoutes(
     if (!db) {
       return reply.code(503).send({ error: "database_unavailable" });
     }
+
+    const authHeader = request.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        await request.jwtVerify();
+        const jwtUser = getJwtUser(request);
+        const authUser = await resolveAuthenticatedUser(
+          db,
+          jwtUser.sub,
+          jwtUser.role,
+        );
+        if (authUser) {
+          const addResult = await createPasskeyRegistrationOptionsForExistingUser(
+            db,
+            authUser.id,
+          );
+          if (addResult === "user_not_found") {
+            return reply.code(404).send({ error: "user_not_found" });
+          }
+          if (addResult === "database_unavailable") {
+            return reply.code(503).send({ error: "database_unavailable" });
+          }
+          return { options: addResult } satisfies PasskeyRegisterOptionsResponse;
+        }
+      } catch {
+        // Invalid or expired token — fall through to signup flow.
+      }
+    }
+
     const parsed = passkeyRegisterOptionsBodySchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.code(400).send({ error: "invalid_body" });

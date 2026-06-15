@@ -6,6 +6,7 @@ import type {
   PasskeyLoginVerifyResponse,
   PasskeyRegisterOptionsBody,
   PasskeyRegisterVerifyResponse,
+  PasskeyCredentialListResponse,
 } from "@allaboard/types";
 
 import { throwFromApiResponse } from "@/lib/map-api-error";
@@ -85,4 +86,62 @@ export async function loginWithPasskey(
   });
 
   return verifyPasskeyLoginResponse(authResponse);
+}
+
+export async function fetchPasskeyCredentials(): Promise<PasskeyCredentialListResponse> {
+  const res = await fetch("/api/auth/passkey/credentials", {
+    credentials: "include",
+    cache: "no-store",
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    throwFromApiResponse(res.status, text);
+  }
+  return JSON.parse(text) as PasskeyCredentialListResponse;
+}
+
+export async function revokePasskeyCredential(id: string): Promise<void> {
+  const res = await fetch(
+    `/api/auth/passkey/credentials/${encodeURIComponent(id)}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    },
+  );
+  if (res.status === 204) return;
+  const text = await res.text();
+  if (!res.ok) {
+    throwFromApiResponse(res.status, text);
+  }
+}
+
+export async function addPasskeyToAccount(): Promise<void> {
+  const optionsRes = await fetch("/api/auth/passkey/register/options", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    credentials: "include",
+    body: "{}",
+  });
+  const optionsText = await optionsRes.text();
+  if (!optionsRes.ok) {
+    throwFromApiResponse(optionsRes.status, optionsText);
+  }
+  const { options } = JSON.parse(optionsText) as { options: unknown };
+
+  const registrationResponse = await startRegistration({
+    optionsJSON: options as Parameters<
+      typeof startRegistration
+    >[0]["optionsJSON"],
+  });
+
+  const verifyRes = await fetch("/api/auth/passkey/register/verify", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(registrationResponse),
+  });
+  const verifyText = await verifyRes.text();
+  if (!verifyRes.ok) {
+    throwFromApiResponse(verifyRes.status, verifyText);
+  }
 }

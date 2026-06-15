@@ -62,6 +62,7 @@ describe("BFF W-P1-01 relays", () => {
 
   describe("passkey BFF", () => {
     it("POST /api/auth/passkey/register/options relays upstream", async () => {
+      mockNoToken();
       fetchMock.mockResolvedValueOnce(
         new Response(JSON.stringify({ options: { challenge: "abc" } }), {
           status: 200,
@@ -83,6 +84,37 @@ describe("BFF W-P1-01 relays", () => {
       expect(fetchMock).toHaveBeenCalledWith(
         "http://api.test:4000/auth/passkey/register/options",
         expect.objectContaining({ method: "POST" }),
+      );
+    });
+
+    it("POST /api/auth/passkey/register/options forwards Bearer when signed in", async () => {
+      mockToken();
+      fetchMock.mockResolvedValueOnce(
+        new Response(JSON.stringify({ options: { challenge: "add" } }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+
+      const req = new Request(
+        "http://localhost/api/auth/passkey/register/options",
+        {
+          method: "POST",
+          body: "{}",
+          headers: { "content-type": "application/json" },
+        },
+      );
+      const res = await passkeyRegisterOptionsPost(req);
+
+      expect(res.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://api.test:4000/auth/passkey/register/options",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            authorization: "Bearer jwt-bob",
+          }),
+        }),
       );
     });
 

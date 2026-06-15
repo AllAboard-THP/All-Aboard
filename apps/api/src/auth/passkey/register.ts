@@ -12,9 +12,11 @@ import { z } from "zod";
 import type { UserRole } from "@allaboard/types";
 import type { AppDatabase } from "../../db/client.js";
 import { users } from "../../db/schema.js";
+import { displayNameFromUser } from "../../lib/user-mappers.js";
 import { consumeChallenge, saveChallenge } from "./challenges.js";
 import {
   insertPasskey,
+  listPasskeysForUser,
 } from "./credentials.js";
 import {
   webauthnOrigins,
@@ -89,6 +91,62 @@ export async function createPasskeyRegistrationOptions(
   return options;
 }
 
+export async function createPasskeyRegistrationOptionsForExistingUser(
+  db: AppDatabase,
+  userId: string,
+): Promise<
+  PublicKeyCredentialCreationOptionsJSON | "user_not_found" | "database_unavailable"
+> {
+  const userRows = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      fullName: users.fullName,
+    })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+  const user = userRows[0];
+  if (!user) return "user_not_found";
+
+  const existingPasskeys = await listPasskeysForUser(db, userId);
+  let webauthnUserId = existingPasskeys[0]?.webauthnUserId;
+  if (!webauthnUserId) {
+    webauthnUserId = randomUUID();
+  }
+
+  const displayName = displayNameFromUser(user);
+
+  const options = await generateRegistrationOptions({
+    rpName: webauthnRpName(),
+    rpID: webauthnRpId(),
+    userName: user.email,
+    userDisplayName: displayName,
+    userID: new TextEncoder().encode(webauthnUserId),
+    attestationType: "none",
+    excludeCredentials: existingPasskeys.map((pk) => ({
+      id: pk.credentialId,
+      transports: pk.transports,
+    })),
+    authenticatorSelection: {
+      residentKey: "required",
+      userVerification: "preferred",
+    },
+  });
+
+  await saveChallenge(db, {
+    challenge: options.challenge,
+    type: "registration",
+    userId,
+    metadata: {
+      mode: "add",
+      webauthnUserId,
+    },
+  });
+
+  return options;
+}
+
 export type PasskeyRegisterVerifyResult =
   | { userId: string; role: UserRole; verified: true }
   | "invalid_body"
@@ -135,6 +193,36 @@ export async function verifyPasskeyRegistration(
 
   if (!verification.verified || !verification.registrationInfo) {
     return "verification_failed";
+  }
+
+  if (
+    challengeRecord.userId &&
+    challengeRecord.metadata?.mode === "add"
+  ) {
+    const userRows = await db
+      .select({ id: users.id, role: users.role })
+      .from(users)
+      .where(eq(users.id, challengeRecord.userId))
+      .limit(1);
+    const user = userRows[0];
+    if (!user) return "verification_failed";
+
+    const { credential, credentialDeviceType, credentialBackedUp, aaguid } =
+      verification.registrationInfo;
+
+    await insertPasskey(db, {
+      userId: user.id,
+      credentialId: credential.id,
+      publicKey: credential.publicKey,
+      counter: credential.counter,
+      transports: credential.transports,
+      deviceType: credentialDeviceType,
+      backedUp: credentialBackedUp,
+      aaguid: aaguid ?? undefined,
+      webauthnUserId: challengeRecord.metadata.webauthnUserId,
+    });
+
+    return { userId: user.id, role: user.role, verified: true };
   }
 
   const metadata = challengeRecord.metadata;
