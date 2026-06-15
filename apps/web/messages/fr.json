@@ -43,6 +43,16 @@
     "fr": "FR",
     "en": "EN"
   },
+  "explore": {
+    "title": "Explorer",
+    "description": "Découvrez les demandes d'aide par matière. Choisissez un sujet pour filtrer le feed.",
+    "sectionAria": "Catalogue des matières",
+    "loadErrorTitle": "Impossible de charger les matières",
+    "emptyTitle": "Aucune matière disponible",
+    "emptyDescription": "Le catalogue des matières sera bientôt disponible.",
+    "postsCount": "{count, plural, one {# requête} other {# requêtes}}",
+    "cardLinkAria": "Voir les requêtes pour {name}"
+  },
   "feed": {
     "title": "Feed communautaire",
     "description": "Parcourez les demandes d'aide publiées par la communauté. Posez la vôtre ou consultez une demande pour voir les réponses.",
