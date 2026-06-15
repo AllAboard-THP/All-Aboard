@@ -104,6 +104,9 @@ test.describe("i18n — API errors via mapApiError", () => {
       data: { email: "bob@dev.local", password: loginPassword },
     });
     await page.reload();
+    await expect(page.getByRole("button", { name: "Publier" })).toBeVisible({
+      timeout: 15_000,
+    });
     await page.getByLabel("Titre de la demande").fill(e2eTitle("mod-fr"));
     await page.getByRole("button", { name: "Publier" }).click();
 
@@ -130,6 +133,9 @@ test.describe("i18n — API errors via mapApiError", () => {
       data: { email: "bob@dev.local", password: loginPassword },
     });
     await page.reload();
+    await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
+      timeout: 15_000,
+    });
     await page.getByLabel("Request title").fill(e2eTitle("mod-en"));
     await page.getByRole("button", { name: "Publish" }).click();
 

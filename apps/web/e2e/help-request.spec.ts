@@ -19,6 +19,9 @@ async function createHelpRequest(page: import("@playwright/test").Page, title: s
   await loginAsBob(page);
   await page.goto("/help/new");
   await expect(page.getByText("Publier une demande d'aide")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Publier" })).toBeVisible({
+    timeout: 15_000,
+  });
 
   await page.getByLabel("Titre de la demande").fill(title);
   await page.getByRole("button", { name: "Publier" }).click();

@@ -110,6 +110,7 @@ export function HelpRequestForm() {
   });
 
   function submit() {
+    if (authQuery.isPending) return;
     if (!authQuery.data) {
       router.push(`/login?returnTo=${encodeURIComponent("/help/new")}`);
       return;
@@ -192,7 +193,7 @@ export function HelpRequestForm() {
       ) : null}
       <Button
         type="button"
-        disabled={mutation.isPending || !title.trim()}
+        disabled={mutation.isPending || authQuery.isPending || !title.trim()}
         onClick={() => submit()}
         className="mt-1 w-full"
       >

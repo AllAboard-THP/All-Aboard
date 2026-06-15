@@ -5,7 +5,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@allaboard/ui/components/card";
 import { PasskeyRegisterForm } from "@/components/features/passkey-register-form";
 import { MarketingPageShell } from "@/components/features/marketing-page-shell";
@@ -28,7 +27,7 @@ export default async function RegisterPage({ searchParams }: Props) {
           <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
             {t("registerEyebrow")}
           </p>
-          <CardTitle className="text-2xl">{t("registerTitle")}</CardTitle>
+          <h1 className="text-2xl leading-none font-semibold">{t("registerTitle")}</h1>
           <CardDescription>{t("registerDescription")}</CardDescription>
         </CardHeader>
         <CardContent>

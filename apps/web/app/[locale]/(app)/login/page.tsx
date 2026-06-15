@@ -5,7 +5,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@allaboard/ui/components/card";
 import { PasskeyLoginForm } from "@/components/features/passkey-login-form";
 import { MarketingPageShell } from "@/components/features/marketing-page-shell";
@@ -28,7 +27,7 @@ export default async function LoginPage({ searchParams }: Props) {
           <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
             {t("loginEyebrow")}
           </p>
-          <CardTitle className="text-2xl">{t("loginTitle")}</CardTitle>
+          <h1 className="text-2xl leading-none font-semibold">{t("loginTitle")}</h1>
           <CardDescription>{t("loginDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
