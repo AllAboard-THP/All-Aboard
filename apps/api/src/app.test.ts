@@ -249,6 +249,9 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
     let pool: pg.Pool;
     let db: ReturnType<typeof drizzle>;
     let app: Awaited<ReturnType<typeof buildApp>>;
+    let bobUserId: string;
+    let aliceUserId: string;
+    let charlieUserId: string;
 
     beforeAll(async () => {
       pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
@@ -262,6 +265,34 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       }
       await seedSubjects(db, defaultSeedSubjects());
       await seedMentorSubjectsForAlice(db);
+      await seedUsers(db, [
+        {
+          email: "charlie@dev.local",
+          role: "student",
+          password: seedPassword,
+          fullName: "Charlie Student",
+        },
+      ]);
+
+      const bobRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "bob@dev.local"))
+        .limit(1);
+      const aliceRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "alice@dev.local"))
+        .limit(1);
+      const charlieRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "charlie@dev.local"))
+        .limit(1);
+      bobUserId = bobRows[0]!.id;
+      aliceUserId = aliceRows[0]!.id;
+      charlieUserId = charlieRows[0]!.id;
+
       app = await buildApp({ pool });
     });
 
@@ -394,7 +425,7 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         item: { id: string; title: string; authorId: string };
       };
       expect(body.item.title).toBe(title);
-      expect(body.item.authorId).toBe("bob");
+      expect(body.item.authorId).toBe(bobUserId);
     });
 
     it("POST /help-requests enqueues help_request.created outbox event", async () => {
@@ -423,7 +454,7 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       };
       expect(payload.id).toBe(body.item.id);
       expect(payload.title).toBe(title);
-      expect(payload.authorId).toBe("bob");
+      expect(payload.authorId).toBe(bobUserId);
       expect(payload.tags).toEqual(["typescript"]);
     });
 
@@ -664,7 +695,7 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       };
       expect(posted.item.helpRequestId).toBe(created.item.id);
       expect(posted.item.body).toBe(responseBody);
-      expect(posted.item.authorId).toBe("alice@dev.local");
+      expect(posted.item.authorId).toBe(aliceUserId);
 
       const detailRes = await app.inject({
         method: "GET",
@@ -677,7 +708,7 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       expect(detail.responses).toHaveLength(1);
       expect(detail.responses[0]?.id).toBe(posted.item.id);
       expect(detail.responses[0]?.body).toBe(responseBody);
-      expect(detail.responses[0]?.authorId).toBe("alice@dev.local");
+      expect(detail.responses[0]?.authorId).toBe(aliceUserId);
     });
 
     it("GET /help-requests/:id?filterByCertifications=true returns 401 without token", async () => {
@@ -774,9 +805,9 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       });
       expect(filtered.responses).toHaveLength(2);
       const authors = filtered.responses.map((r) => r.authorId);
-      expect(authors).toContain("alice@dev.local");
-      expect(authors).toContain("bob@dev.local");
-      expect(authors).not.toContain("charlie@dev.local");
+      expect(authors).toContain(aliceUserId);
+      expect(authors).toContain(bobUserId);
+      expect(authors).not.toContain(charlieUserId);
     });
 
     it("GET /auth/me returns role for mentor alice@dev.local on login", async () => {

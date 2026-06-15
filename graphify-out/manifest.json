@@ -10,8 +10,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tsconfig.json": {
-    "mtime": 1779983505.1325731,
-    "ast_hash": "69492edcf35d186f5ac618112ef053a5",
+    "mtime": 1781527222.1842809,
+    "ast_hash": "8c3ed93c330ad49d1efdee38dcc6d73a",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/vitest.config.ts": {
@@ -50,8 +50,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/e2e/help-request.spec.ts": {
-    "mtime": 1779983505.1325731,
-    "ast_hash": "d553f583bb94e57e176bc42c46b2f494",
+    "mtime": 1781527590.3042111,
+    "ast_hash": "c3b0aef7aed342a56c29d771e5f16841",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/e2e/mentor-notifications.spec.ts": {
@@ -275,8 +275,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.test.ts": {
-    "mtime": 1781525080.0057557,
-    "ast_hash": "a3e9a38755cfd7680bfb31440838dab9",
+    "mtime": 1781527590.3042111,
+    "ast_hash": "5fb72f279fe3e1962d8a1c4a9fd843b2",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/index.ts": {
@@ -1005,8 +1005,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/auth-helpers.ts": {
-    "mtime": 1781524816.7218068,
-    "ast_hash": "e5fbd5d1b1cc65e90be24a1e5afb2cd5",
+    "mtime": 1781527576.7242117,
+    "ast_hash": "c671bc7955c75ab9a63fe62984f55c5b",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/schemas.ts": {
@@ -1080,8 +1080,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/services/user-profile.ts": {
-    "mtime": 1781524842.3218007,
-    "ast_hash": "5b18dcecc52d924eb4be5cf504b47940",
+    "mtime": 1781527578.896212,
+    "ast_hash": "583da39396725a3c699e801c57366e67",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/auth/session.ts": {
@@ -1100,8 +1100,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/users.ts": {
-    "mtime": 1781524886.4977963,
-    "ast_hash": "1e5fa3ef5bcedfad5e220d45aef400c3",
+    "mtime": 1781527580.4482121,
+    "ast_hash": "d1e63c36e5c08689ea4cba8b7e5b3b0b",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/legal.ts": {
@@ -1355,8 +1355,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/auth/passkey/passkey.test.ts": {
-    "mtime": 1781525052.2017562,
-    "ast_hash": "9177c6cf94e5ccf5d1c9ac1066224bdf",
+    "mtime": 1781527582.760212,
+    "ast_hash": "e3e6bebefb5db84749d577bce815ed88",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/auth/passkey/config.ts": {
