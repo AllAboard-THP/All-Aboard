@@ -165,8 +165,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/help-request-detail-content.tsx": {
-    "mtime": 1781564794.373144,
-    "ast_hash": "42ace3f1e6e012456926f45bb021a62b",
+    "mtime": 1781565289.1210582,
+    "ast_hash": "6764312f2b770974eff39213e0d2ced4",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/app-shell-nav.tsx": {
@@ -175,8 +175,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/help-request-detail-client.tsx": {
-    "mtime": 1781534460.7067778,
-    "ast_hash": "9d857eb35556cf10faa1f61177622ef8",
+    "mtime": 1781565299.9610536,
+    "ast_hash": "dd33e18aa368bf1b62bf3dbc1484fba5",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/help-request-form.tsx": {
@@ -930,13 +930,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/en.json": {
-    "mtime": 1781564810.3091407,
-    "ast_hash": "3adf3ddc44830c6c58f0fd5a5fd1577b",
+    "mtime": 1781565302.1530528,
+    "ast_hash": "54fd0be7a4cbebce63b0d778e0c68afc",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/fr.json": {
-    "mtime": 1781564808.641141,
-    "ast_hash": "ce6c1f5e38fed44e73af451f1928af06",
+    "mtime": 1781565303.2330523,
+    "ast_hash": "cb9fb48530cda58a595325b7790caacf",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/layout.tsx": {
@@ -1687,6 +1687,31 @@
   "/home/dim/AllAboard/apps/web/lib/social-client.ts": {
     "mtime": 1781564783.3851438,
     "ast_hash": "d024722591c641d5f3713bcac65144fb",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/app/[locale]/(app)/requests/[id]/edit/page.tsx": {
+    "mtime": 1781565286.8890593,
+    "ast_hash": "ee4ce125987a8754a273de568f20618c",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/tests/help-request-crud.test.tsx": {
+    "mtime": 1781565308.1570506,
+    "ast_hash": "84b4c193e400f09fc45fef18f70df947",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/components/features/help-request-owner-actions.tsx": {
+    "mtime": 1781565284.7130601,
+    "ast_hash": "149236c0c154828209dfc8ed08f9d8e7",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/components/features/help-request-edit-form.tsx": {
+    "mtime": 1781565282.2410593,
+    "ast_hash": "43a72e8dd14f80a57ed4bfeeb3c93a16",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/lib/help-request-client.ts": {
+    "mtime": 1781565279.077053,
+    "ast_hash": "84b6c7d2958d29c0f3736d7d3b0234e1",
     "semantic_hash": ""
   }
 }
