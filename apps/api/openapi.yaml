@@ -8,7 +8,7 @@ info:
     Modération contenu (help-requests / réponses) : regex locale + denylist admin ;
     si détection locale, second avis via `apps/agent` `POST /moderation/evaluate` (Claude).
     Variable API `MODERATION_CLAUDE_ENABLED` (défaut activé) ; fallback conservateur si agent indisponible.
-  version: 0.11.0
+  version: 0.12.0
   contact:
     name: All-Aboard THP
     url: https://github.com/AllAboard-THP/All-Aboard
@@ -297,6 +297,207 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
               example:
                 error: unauthorized
+
+  /auth/passkey/register/options:
+    post:
+      operationId: postAuthPasskeyRegisterOptions
+      tags: [auth]
+      summary: Options WebAuthn pour inscription passkey (ADR 0006)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasskeyRegisterOptionsBody"
+      responses:
+        "200":
+          description: Options d'inscription à passer à @simplewebauthn/browser
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PasskeyRegisterOptionsResponse"
+        "400":
+          description: Corps invalide ou CGU non acceptées
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email déjà utilisé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/passkey/register/verify:
+    post:
+      operationId: postAuthPasskeyRegisterVerify
+      tags: [auth]
+      summary: Vérifie attestation passkey et émet JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: RegistrationResponseJSON (@simplewebauthn/browser)
+      responses:
+        "200":
+          description: Compte créé + JWT (cookie)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PasskeyRegisterVerifyResponse"
+        "400":
+          description: Vérification échouée ou challenge expiré
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email déjà utilisé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/passkey/login/options:
+    post:
+      operationId: postAuthPasskeyLoginOptions
+      tags: [auth]
+      summary: Options WebAuthn pour connexion passkey (discoverable)
+      responses:
+        "200":
+          description: Options d'authentification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PasskeyLoginOptionsResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/passkey/login/verify:
+    post:
+      operationId: postAuthPasskeyLoginVerify
+      tags: [auth]
+      summary: Vérifie assertion passkey et émet JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: AuthenticationResponseJSON (@simplewebauthn/browser)
+      responses:
+        "200":
+          description: JWT émis (cookie httpOnly)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PasskeyLoginVerifyResponse"
+        "400":
+          description: Vérification échouée ou challenge expiré
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Passkey inconnue
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/passkey/credentials:
+    get:
+      operationId: getAuthPasskeyCredentials
+      tags: [auth]
+      summary: Liste les passkeys du compte (JWT)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Passkeys enregistrées
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PasskeyCredentialListResponse"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/passkey/credentials/{id}:
+    delete:
+      operationId: deleteAuthPasskeyCredential
+      tags: [auth]
+      summary: Révoque une passkey (JWT)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Passkey révoquée
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Passkey d'un autre utilisateur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Passkey introuvable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Base indisponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /users/me:
     patch:
@@ -2032,7 +2233,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: JWT émis par POST /auth/login (claim sub = userId)
+      description: JWT émis par POST /auth/login ou passkey (claim sub = users.id uuid)
 
   responses:
     Unauthorized:
@@ -2684,8 +2885,109 @@ components:
           const: true
         userId:
           type: string
+          format: uuid
+          description: users.id (JWT sub)
         role:
           $ref: "#/components/schemas/UserRole"
+
+    PasskeyRegisterOptionsBody:
+      type: object
+      required: [fullName]
+      properties:
+        fullName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          maxLength: 256
+        acceptCgu:
+          type: boolean
+          const: true
+
+    PasskeyRegisterOptionsResponse:
+      type: object
+      required: [options]
+      properties:
+        options:
+          type: object
+          additionalProperties: true
+
+    PasskeyRegisterVerifyResponse:
+      type: object
+      required: [ok, verified, userId, role]
+      properties:
+        ok:
+          type: boolean
+          const: true
+        verified:
+          type: boolean
+          const: true
+        userId:
+          type: string
+          format: uuid
+          description: users.id (JWT sub)
+        role:
+          $ref: "#/components/schemas/UserRole"
+
+    PasskeyLoginOptionsResponse:
+      type: object
+      required: [options]
+      properties:
+        options:
+          type: object
+          additionalProperties: true
+
+    PasskeyLoginVerifyResponse:
+      type: object
+      required: [ok, verified, userId, role]
+      properties:
+        ok:
+          type: boolean
+          const: true
+        verified:
+          type: boolean
+          const: true
+        userId:
+          type: string
+          format: uuid
+          description: users.id (JWT sub)
+        role:
+          $ref: "#/components/schemas/UserRole"
+
+    PasskeyCredentialSummary:
+      type: object
+      required: [id, credentialId, backedUp, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        credentialId:
+          type: string
+        deviceType:
+          type: string
+        backedUp:
+          type: boolean
+        transports:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        lastUsedAt:
+          type: string
+          format: date-time
+
+    PasskeyCredentialListResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PasskeyCredentialSummary"
 
     AuthMeResponse:
       type: object
@@ -2693,6 +2995,8 @@ components:
       properties:
         userId:
           type: string
+          format: uuid
+          description: users.id (JWT sub)
         role:
           $ref: "#/components/schemas/UserRole"
         displayName:
@@ -2756,6 +3060,8 @@ components:
           const: true
         userId:
           type: string
+          format: uuid
+          description: users.id (JWT sub)
         role:
           $ref: "#/components/schemas/UserRole"
 

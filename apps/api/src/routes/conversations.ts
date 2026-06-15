@@ -28,7 +28,7 @@ import {
   markConversationReadForUser,
   resolveHelpRequestTopic,
 } from "../services/conversations.js";
-import { loadUserByEmail, loadUserById } from "../services/user-profile.js";
+import { loadUserFromJwtSub, loadUserById } from "../services/user-profile.js";
 
 export function registerConversationRoutes(
   app: FastifyInstance,
@@ -42,7 +42,7 @@ export function registerConversationRoutes(
         return reply.code(503).send({ error: "database_unavailable" });
       }
       const jwtUser = getJwtUser(request);
-      const viewer = await loadUserByEmail(db, jwtUser.sub);
+      const viewer = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!viewer) {
         return reply.code(404).send({ error: "user_not_found" });
       }
@@ -64,7 +64,7 @@ export function registerConversationRoutes(
       }
 
       const jwtUser = getJwtUser(request);
-      const sender = await loadUserByEmail(db, jwtUser.sub);
+      const sender = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!sender) {
         return reply.code(404).send({ error: "user_not_found" });
       }
@@ -134,7 +134,7 @@ export function registerConversationRoutes(
       }
       const { id: conversationId } = request.params as { id: string };
       const jwtUser = getJwtUser(request);
-      const viewer = await loadUserByEmail(db, jwtUser.sub);
+      const viewer = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!viewer) {
         return reply.code(404).send({ error: "user_not_found" });
       }
@@ -183,7 +183,7 @@ export function registerConversationRoutes(
       }
 
       const jwtUser = getJwtUser(request);
-      const sender = await loadUserByEmail(db, jwtUser.sub);
+      const sender = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!sender) {
         return reply.code(404).send({ error: "user_not_found" });
       }
@@ -219,7 +219,7 @@ export function registerConversationRoutes(
       }
       const { id: conversationId } = request.params as { id: string };
       const jwtUser = getJwtUser(request);
-      const viewer = await loadUserByEmail(db, jwtUser.sub);
+      const viewer = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!viewer) {
         return reply.code(404).send({ error: "user_not_found" });
       }

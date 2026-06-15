@@ -1,6 +1,7 @@
 import { and, count, eq, inArray, isNull } from "drizzle-orm";
 import type { SubjectSummary } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
+import { isUuid } from "../auth/passkey/config.js";
 import {
   helpRequests,
   mentorSubjects,
@@ -9,6 +10,22 @@ import {
   users,
 } from "../db/schema.js";
 import { rowToSubjectSummary } from "../lib/user-mappers.js";
+
+const LEGACY_USER_EMAIL: Record<string, string> = {
+  bob: "bob@dev.local",
+  alice: "alice@dev.local",
+};
+
+export async function loadUserFromJwtSub(db: AppDatabase, sub: string) {
+  if (isUuid(sub)) {
+    return loadUserById(db, sub);
+  }
+  let email = sub.trim().toLowerCase();
+  if (!email.includes("@")) {
+    email = LEGACY_USER_EMAIL[email] ?? email;
+  }
+  return loadUserByEmail(db, email);
+}
 
 export async function loadUserByEmail(db: AppDatabase, email: string) {
   const rows = await db

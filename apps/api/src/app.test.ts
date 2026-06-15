@@ -329,11 +329,17 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         userId: string;
         role: string;
       };
-      expect(body).toEqual({
-        ok: true,
-        userId: "bob@dev.local",
-        role: "student",
-      });
+      expect(body.ok).toBe(true);
+      expect(body.role).toBe("student");
+      expect(body.userId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+      );
+      const bobRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "bob@dev.local"))
+        .limit(1);
+      expect(body.userId).toBe(bobRows[0]?.id);
       const setCookie = res.headers["set-cookie"];
       const cookieStr = Array.isArray(setCookie)
         ? setCookie.join("; ")
@@ -802,7 +808,9 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         role: string;
         displayName?: string;
       };
-      expect(me.userId).toBe("alice@dev.local");
+      expect(me.userId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+      );
       expect(me.role).toBe("mentor");
       expect(me.displayName).toBe("Alice Mentor");
     });
@@ -1274,11 +1282,11 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         userId: string;
         role: string;
       };
-      expect(body).toEqual({
-        ok: true,
-        userId: email,
-        role: "student",
-      });
+      expect(body.ok).toBe(true);
+      expect(body.role).toBe("student");
+      expect(body.userId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+      );
       const setCookie = res.headers["set-cookie"];
       const cookieStr = Array.isArray(setCookie)
         ? setCookie.join("; ")

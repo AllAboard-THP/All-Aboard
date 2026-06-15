@@ -16,11 +16,14 @@ import {
   enqueueHelpRequestSummaryRequested,
 } from "../intuition/outbox.js";
 import {
+  authorIdMatchesUser,
   getJwtUser,
   isAdminRole,
   normalizeTitle,
+  resolveAuthenticatedUser,
   responseVisibleUnderCertificationFilter,
   roleFromJwtClaims,
+  userAuthorIdKeys,
 } from "../lib/auth-helpers.js";
 import {
   contentShouldBeFlagged,
@@ -96,11 +99,18 @@ export function registerHelpRequestRoutes(
         return reply.code(404).send({ error: "not_found" });
       }
 
-      let viewerEmail: string | undefined;
+      let viewerAuthorKeys: string[] | undefined;
       let viewerIsAdmin = false;
       if (filterByCertifications) {
         const jwtUser = getJwtUser(request);
-        viewerEmail = jwtUser.sub;
+        const authUser = await resolveAuthenticatedUser(
+          db,
+          jwtUser.sub,
+          jwtUser.role,
+        );
+        if (authUser) {
+          viewerAuthorKeys = userAuthorIdKeys(authUser);
+        }
         viewerIsAdmin = isAdminRole(
           roleFromJwtClaims(jwtUser.sub, jwtUser.role),
         );
@@ -108,7 +118,14 @@ export function registerHelpRequestRoutes(
         try {
           await request.jwtVerify();
           const jwtUser = getJwtUser(request);
-          viewerEmail = jwtUser.sub;
+          const authUser = await resolveAuthenticatedUser(
+            db,
+            jwtUser.sub,
+            jwtUser.role,
+          );
+          if (authUser) {
+            viewerAuthorKeys = userAuthorIdKeys(authUser);
+          }
           viewerIsAdmin = isAdminRole(
             roleFromJwtClaims(jwtUser.sub, jwtUser.role),
           );
@@ -120,7 +137,8 @@ export function registerHelpRequestRoutes(
       if (
         loaded.helpRequest.flaggedForModeration &&
         !viewerIsAdmin &&
-        loaded.helpRequest.authorId !== viewerEmail
+        (!viewerAuthorKeys ||
+          !viewerAuthorKeys.includes(loaded.helpRequest.authorId))
       ) {
         return reply.code(404).send({ error: "not_found" });
       }
@@ -128,7 +146,8 @@ export function registerHelpRequestRoutes(
       if (
         loaded.helpRequest.deletedAt &&
         !viewerIsAdmin &&
-        loaded.helpRequest.authorId !== viewerEmail
+        (!viewerAuthorKeys ||
+          !viewerAuthorKeys.includes(loaded.helpRequest.authorId))
       ) {
         return reply.code(404).send({ error: "not_found" });
       }
@@ -195,7 +214,15 @@ export function registerHelpRequestRoutes(
       if (!parsed.success) {
         return reply.code(400).send({ error: "invalid_body" });
       }
-      const user = getJwtUser(request);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
       const norm = normalizeTitle(parsed.data.title);
       const dup = await db
         .select({ id: helpRequests.id })
@@ -235,7 +262,7 @@ export function registerHelpRequestRoutes(
         .values({
           title,
           body,
-          authorId: user.sub,
+          authorId: authUser.id,
           tags,
           codeSnippet: parsed.data.codeSnippet,
           codeLanguage: parsed.data.codeLanguage ?? "plaintext",
@@ -270,7 +297,7 @@ export function registerHelpRequestRoutes(
       const routing = await evaluateRouting({
         title: parsed.data.title.trim(),
         ...(tags.length ? { tags } : {}),
-        authorId: user.sub,
+        authorId: authUser.id,
       });
       const hints = routing.suggestRubberduckRedirect
         ? { rubberduckEligible: true as const }
@@ -293,13 +320,24 @@ export function registerHelpRequestRoutes(
       }
 
       const { id } = request.params as { id: string };
-      const user = getJwtUser(request);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
       const loaded = await loadHelpRequestRow(db, id);
       if (!loaded) {
         return reply.code(404).send({ error: "not_found" });
       }
-      const role = roleFromJwtClaims(user.sub, user.role);
-      const isAuthor = loaded.helpRequest.authorId === user.sub;
+      const role = roleFromJwtClaims(jwtUser.sub, jwtUser.role);
+      const isAuthor = authorIdMatchesUser(
+        loaded.helpRequest.authorId,
+        authUser,
+      );
       if (!isAuthor && !isAdminRole(role)) {
         return reply.code(403).send({ error: "forbidden" });
       }
@@ -405,12 +443,20 @@ export function registerHelpRequestRoutes(
         return reply.code(503).send({ error: "database_unavailable" });
       }
       const { id } = request.params as { id: string };
-      const user = getJwtUser(request);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
       const loaded = await loadHelpRequestRow(db, id);
       if (!loaded) {
         return reply.code(404).send({ error: "not_found" });
       }
-      if (loaded.helpRequest.authorId !== user.sub) {
+      if (!authorIdMatchesUser(loaded.helpRequest.authorId, authUser)) {
         return reply.code(403).send({ error: "forbidden" });
       }
 
@@ -458,7 +504,15 @@ export function registerHelpRequestRoutes(
       if (helpRows.length === 0) {
         return reply.code(404).send({ error: "not_found" });
       }
-      const user = getJwtUser(request);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
       const body = parsed.data.body.trim();
       const flagged = await contentShouldBeFlagged(
         db,
@@ -470,7 +524,7 @@ export function registerHelpRequestRoutes(
         .values({
           helpRequestId: id,
           body,
-          authorId: user.sub,
+          authorId: authUser.id,
           codeSnippet: parsed.data.codeSnippet,
           codeLanguage: parsed.data.codeLanguage,
           flaggedForModeration: flagged,
@@ -518,8 +572,16 @@ export function registerHelpRequestRoutes(
       if (!row || row.helpRequestId !== id) {
         return reply.code(404).send({ error: "not_found" });
       }
-      const user = getJwtUser(request);
-      if (row.authorId !== user.sub) {
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
+      if (!authorIdMatchesUser(row.authorId, authUser)) {
         return reply.code(403).send({ error: "forbidden" });
       }
       const nextBody =
@@ -565,13 +627,24 @@ export function registerHelpRequestRoutes(
         return reply.code(503).send({ error: "database_unavailable" });
       }
       const { id } = request.params as { id: string };
-      const user = getJwtUser(request);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
       const loaded = await loadHelpRequestRow(db, id);
       if (!loaded || loaded.helpRequest.deletedAt) {
         return reply.code(404).send({ error: "not_found" });
       }
-      const role = roleFromJwtClaims(user.sub, user.role);
-      const isAuthor = loaded.helpRequest.authorId === user.sub;
+      const role = roleFromJwtClaims(jwtUser.sub, jwtUser.role);
+      const isAuthor = authorIdMatchesUser(
+        loaded.helpRequest.authorId,
+        authUser,
+      );
       if (!isAuthor && !isAdminRole(role)) {
         return reply.code(403).send({ error: "forbidden" });
       }
@@ -609,8 +682,16 @@ export function registerHelpRequestRoutes(
       if (!row || row.helpRequestId !== id) {
         return reply.code(404).send({ error: "not_found" });
       }
-      const user = getJwtUser(request);
-      if (row.authorId !== user.sub) {
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
+      if (!authorIdMatchesUser(row.authorId, authUser)) {
         return reply.code(403).send({ error: "forbidden" });
       }
       await db.delete(responses).where(eq(responses.id, responseId));

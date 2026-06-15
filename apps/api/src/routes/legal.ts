@@ -4,7 +4,7 @@ import type { AcceptLegalResponse } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import { users } from "../db/schema.js";
 import { getJwtUser } from "../lib/auth-helpers.js";
-import { loadUserByEmail } from "../services/user-profile.js";
+import { loadUserFromJwtSub } from "../services/user-profile.js";
 
 export function registerLegalRoutes(
   app: FastifyInstance,
@@ -19,7 +19,7 @@ export function registerLegalRoutes(
       }
 
       const jwtUser = getJwtUser(request);
-      const row = await loadUserByEmail(db, jwtUser.sub);
+      const row = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!row) {
         return reply.code(404).send({ error: "user_not_found" });
       }

@@ -7,7 +7,7 @@ import {
   unsubscribeFromConversation,
 } from "../services/chat-broadcast.js";
 import { isConversationParticipant } from "../services/conversations.js";
-import { loadUserByEmail } from "../services/user-profile.js";
+import { loadUserFromJwtSub } from "../services/user-profile.js";
 
 type JwtPayload = { sub: string; role?: string };
 
@@ -46,7 +46,7 @@ export async function registerConversationWsRoutes(
           return;
         }
 
-        const user = await loadUserByEmail(db, payload.sub);
+        const user = await loadUserFromJwtSub(db, payload.sub);
         if (!user) {
           socket.close(4401, "unauthorized");
           return;
