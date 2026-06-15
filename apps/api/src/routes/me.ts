@@ -1,7 +1,11 @@
 import type { FastifyInstance } from "fastify";
 import type { MyHelpRequestsResponse } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
-import { getJwtUser } from "../lib/auth-helpers.js";
+import {
+  getJwtUser,
+  resolveAuthenticatedUser,
+  userAuthorIdKeys,
+} from "../lib/auth-helpers.js";
 import {
   fetchBookmarkedHelpRequests,
   fetchHelpRequestsForAuthor,
@@ -18,8 +22,19 @@ export function registerMeRoutes(
       if (!db) {
         return reply.code(503).send({ error: "database_unavailable" });
       }
-      const user = getJwtUser(request);
-      const items = await fetchHelpRequestsForAuthor(db, user.sub);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
+      const items = await fetchHelpRequestsForAuthor(
+        db,
+        userAuthorIdKeys(authUser),
+      );
       return { items };
     },
   );
@@ -31,8 +46,19 @@ export function registerMeRoutes(
       if (!db) {
         return reply.code(503).send({ error: "database_unavailable" });
       }
-      const user = getJwtUser(request);
-      const items = await fetchBookmarkedHelpRequests(db, user.sub);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
+      const items = await fetchBookmarkedHelpRequests(
+        db,
+        userAuthorIdKeys(authUser),
+      );
       return { items };
     },
   );

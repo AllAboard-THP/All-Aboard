@@ -30,6 +30,7 @@ import { registerSocialRoutes } from "./routes/social.js";
 import { registerSubjectRequestRoutes } from "./routes/subject-requests.js";
 import { registerSubjectRoutes } from "./routes/subjects.js";
 import { registerSuggestTagsRoutes } from "./routes/suggest-tags.js";
+import { registerPasskeyRoutes } from "./routes/passkey.js";
 import { registerUserRoutes } from "./routes/users.js";
 import type { SuggestTagsFn } from "./agent/tag-suggestion.js";
 
@@ -93,6 +94,7 @@ export async function buildApp(options?: BuildAppOptions) {
   registerSocialRoutes(app, db);
   registerMeRoutes(app, db);
   registerAuthRoutes(app, db);
+  registerPasskeyRoutes(app, db);
   registerUserRoutes(app, db);
   registerLegalRoutes(app, db);
   registerResourceRoutes(app, db);

@@ -61,9 +61,10 @@ export async function authenticateWithDatabase(
     .limit(1);
   const user = rows[0];
   if (!user) return "invalid_credentials";
+  if (!user.passwordHash) return "invalid_credentials";
   const ok = await verifyPassword(password, user.passwordHash);
   if (!ok) return "invalid_credentials";
-  return { userId: user.email, role: user.role };
+  return { userId: user.id, role: user.role };
 }
 
 export function authenticateWithMvpFallback(

@@ -4,8 +4,11 @@ import { getApiBaseUrl, parseFeedResponse } from "@/lib/api-server";
 /**
  * BFF for client-side TanStack Query: same-origin fetch avoids browser CORS to Fastify.
  */
-export async function GET() {
-  const url = `${getApiBaseUrl()}/feed`;
+export async function GET(request: Request) {
+  const incoming = new URL(request.url);
+  const qs = incoming.searchParams.toString();
+  const suffix = qs.length > 0 ? `?${qs}` : "";
+  const url = `${getApiBaseUrl()}/feed${suffix}`;
   try {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) {

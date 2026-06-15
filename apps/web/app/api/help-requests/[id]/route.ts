@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getApiBaseUrl, parseHelpRequestDetailResponse } from "@/lib/api-server";
+import { relayAuthenticatedFetch } from "@/lib/bff-relay";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -52,4 +53,25 @@ export async function GET(request: Request, context: RouteContext) {
   } catch {
     return NextResponse.json({ error: "fetch failed" }, { status: 502 });
   }
+}
+
+export async function PATCH(request: Request, context: RouteContext) {
+  const { id } = await context.params;
+  const body = await request.text();
+  return relayAuthenticatedFetch(
+    `/help-requests/${encodeURIComponent(id)}`,
+    {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body,
+    },
+  );
+}
+
+export async function DELETE(_request: Request, context: RouteContext) {
+  const { id } = await context.params;
+  return relayAuthenticatedFetch(
+    `/help-requests/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
 }

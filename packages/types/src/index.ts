@@ -252,6 +252,55 @@ export type RegisterResponse = {
   role: UserRole;
 };
 
+/** Corps JSON pour `POST /auth/passkey/register/options`. */
+export type PasskeyRegisterOptionsBody = {
+  fullName: string;
+  email?: string;
+  acceptCgu?: true;
+};
+
+/** Réponse `POST /auth/passkey/register/options`. */
+export type PasskeyRegisterOptionsResponse = {
+  options: unknown;
+};
+
+/** Réponse `POST /auth/passkey/register/verify`. */
+export type PasskeyRegisterVerifyResponse = {
+  ok: true;
+  verified: true;
+  userId: string;
+  role: UserRole;
+};
+
+/** Réponse `POST /auth/passkey/login/options`. */
+export type PasskeyLoginOptionsResponse = {
+  options: unknown;
+};
+
+/** Réponse `POST /auth/passkey/login/verify`. */
+export type PasskeyLoginVerifyResponse = {
+  ok: true;
+  verified: true;
+  userId: string;
+  role: UserRole;
+};
+
+/** Entrée passkey dans `GET /auth/passkey/credentials`. */
+export type PasskeyCredentialSummary = {
+  id: string;
+  credentialId: string;
+  deviceType?: string;
+  backedUp: boolean;
+  transports?: string[];
+  createdAt: string;
+  lastUsedAt?: string;
+};
+
+/** Réponse `GET /auth/passkey/credentials`. */
+export type PasskeyCredentialListResponse = {
+  items: PasskeyCredentialSummary[];
+};
+
 /** Réponse `POST /auth/logout`. */
 export type LogoutResponse = {
   ok: true;
