@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { eq, inArray, sql } from "drizzle-orm";
+import { eq, inArray, or, sql } from "drizzle-orm";
 import type {
   CreateHelpRequestResponse,
   CreateResponseResponse,
@@ -16,6 +16,7 @@ import {
   enqueueHelpRequestSummaryRequested,
 } from "../intuition/outbox.js";
 import {
+  authorIdKeysFromRow,
   authorIdMatchesUser,
   getJwtUser,
   isAdminRole,
@@ -25,6 +26,7 @@ import {
   roleFromJwtClaims,
   userAuthorIdKeys,
 } from "../lib/auth-helpers.js";
+import { isUuid } from "../auth/passkey/config.js";
 import {
   contentShouldBeFlagged,
   moderationContentFromFields,
@@ -63,6 +65,57 @@ async function subjectExists(
     .where(eq(subjects.id, subjectId))
     .limit(1);
   return rows.length > 0;
+}
+
+const LEGACY_AUTHOR_EMAIL: Record<string, string> = {
+  bob: "bob@dev.local",
+  alice: "alice@dev.local",
+};
+
+async function certificationTagsByAuthorIds(
+  db: AppDatabase,
+  authorIds: string[],
+): Promise<Map<string, string[]>> {
+  const result = new Map<string, string[]>();
+  const unique = [...new Set(authorIds)];
+  if (unique.length === 0) return result;
+
+  const uuidKeys = unique.filter((k) => isUuid(k));
+  const emailKeys = unique.filter((k) => k.includes("@"));
+  const legacyKeys = unique.filter((k) => !isUuid(k) && !k.includes("@"));
+  const legacyEmails = legacyKeys.map(
+    (k) => LEGACY_AUTHOR_EMAIL[k] ?? k,
+  );
+  const emails = [
+    ...new Set([
+      ...emailKeys,
+      ...legacyEmails.filter((e) => e.includes("@")),
+    ]),
+  ];
+
+  const clauses = [];
+  if (uuidKeys.length > 0) clauses.push(inArray(users.id, uuidKeys));
+  if (emails.length > 0) clauses.push(inArray(users.email, emails));
+  if (clauses.length === 0) return result;
+
+  const userRows = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      certificationTags: users.certificationTags,
+    })
+    .from(users)
+    .where(clauses.length === 1 ? clauses[0]! : or(...clauses));
+
+  for (const u of userRows) {
+    const tags = u.certificationTags ?? [];
+    for (const key of authorIdKeysFromRow(u)) {
+      if (unique.includes(key)) {
+        result.set(key, tags);
+      }
+    }
+  }
+  return result;
 }
 
 export function registerHelpRequestRoutes(
@@ -162,27 +215,17 @@ export function registerHelpRequestRoutes(
         ? responseRows
         : responseRows.filter((r) => !r.flaggedForModeration);
       if (filterByCertifications) {
-        const authorEmails = [...new Set(responseRows.map((r) => r.authorId))];
-        const certByEmail = new Map<string, string[]>();
-        if (authorEmails.length > 0) {
-          const userRows = await db
-            .select({
-              email: users.email,
-              certificationTags: users.certificationTags,
-            })
-            .from(users)
-            .where(inArray(users.email, authorEmails));
-          for (const u of userRows) {
-            certByEmail.set(u.email, u.certificationTags ?? []);
-          }
-        }
+        const certByAuthorId = await certificationTagsByAuthorIds(
+          db,
+          responseRows.map((r) => r.authorId),
+        );
         const requestTags = loaded.helpRequest.tags ?? [];
         visibleRows = responseRows.filter((r) =>
           responseVisibleUnderCertificationFilter(
             r.authorId,
             loaded.helpRequest.authorId,
             requestTags,
-            certByEmail.get(r.authorId) ?? [],
+            certByAuthorId.get(r.authorId) ?? [],
           ),
         );
       }
