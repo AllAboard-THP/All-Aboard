@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@allaboard/ui/components/card";
 
+import { PostSocialActions } from "@/components/features/post-social-actions";
 import { Link } from "@/i18n/navigation";
 import {
   feedHref,
@@ -30,6 +31,10 @@ type Props = {
   labels: PostCardLabels;
   /** Shorter layout for sidebar widgets. */
   compact?: boolean;
+  /** Like / bookmark controls (feed, detail, personal lists). */
+  showSocialActions?: boolean;
+  socialLoginReturnPath?: string;
+  defaultBookmarked?: boolean;
 };
 
 function excerpt(body: string | undefined, maxLength: number): string | null {
@@ -39,7 +44,14 @@ function excerpt(body: string | undefined, maxLength: number): string | null {
   return `${trimmed.slice(0, maxLength).trimEnd()}…`;
 }
 
-export function PostCard({ item, labels, compact = false }: Props) {
+export function PostCard({
+  item,
+  labels,
+  compact = false,
+  showSocialActions = false,
+  socialLoginReturnPath,
+  defaultBookmarked,
+}: Props) {
   const bodyPreview = compact ? null : excerpt(item.body, 220);
   const hasTags = Boolean(item.tags && item.tags.length > 0);
   const showStats =
@@ -75,7 +87,7 @@ export function PostCard({ item, labels, compact = false }: Props) {
         </CardDescription>
       </CardHeader>
 
-      {(item.subject || hasTags || bodyPreview || showStats) && (
+      {(item.subject || hasTags || bodyPreview || showStats || showSocialActions) && (
         <CardContent className="flex flex-col gap-3 px-4 pt-0">
           {(item.subject || hasTags) && (
             <div className="flex flex-wrap items-center gap-2">
@@ -119,10 +131,21 @@ export function PostCard({ item, labels, compact = false }: Props) {
               {item.responsesCount !== undefined ? (
                 <span>{labels.responsesCount(item.responsesCount)}</span>
               ) : null}
-              {item.likesCount !== undefined ? (
+              {item.likesCount !== undefined && !showSocialActions ? (
                 <span>{labels.likesCount(item.likesCount)}</span>
               ) : null}
             </p>
+          ) : null}
+
+          {showSocialActions ? (
+            <PostSocialActions
+              helpRequestId={item.id}
+              initialLikesCount={item.likesCount ?? 0}
+              defaultBookmarked={defaultBookmarked}
+              loginReturnPath={
+                socialLoginReturnPath ?? `/requests/${item.id}`
+              }
+            />
           ) : null}
         </CardContent>
       )}

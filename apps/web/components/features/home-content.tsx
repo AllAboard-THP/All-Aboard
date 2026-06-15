@@ -106,7 +106,12 @@ export async function HomeContent({
             >
               {feed!.items.map((item) => (
                 <li key={item.id}>
-                  <PostCard item={item} labels={postCardLabels} />
+                  <PostCard
+                    item={item}
+                    labels={postCardLabels}
+                    showSocialActions
+                    socialLoginReturnPath="/"
+                  />
                 </li>
               ))}
             </ul>

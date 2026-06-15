@@ -16,6 +16,7 @@ import {
 } from "@allaboard/ui/components/card";
 
 import { HelpRequestDetailClient } from "@/components/features/help-request-detail-client";
+import { PostSocialActions } from "@/components/features/post-social-actions";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { formatDateTime } from "@/lib/format-datetime";
@@ -97,6 +98,13 @@ export async function HelpRequestDetailContent({
           </p>
         ) : null}
       </header>
+
+      <PostSocialActions
+        helpRequestId={id}
+        initialLikesCount={item.likesCount ?? 0}
+        loginReturnPath={`/requests/${id}`}
+        className="mb-6"
+      />
 
       <HelpRequestDetailClient initialDetail={detail} requestId={id} />
 
