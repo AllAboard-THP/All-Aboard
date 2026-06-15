@@ -21,6 +21,7 @@ vi.mock("@simplewebauthn/server", () => ({
 }));
 
 import pg from "pg";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { buildApp } from "../../app";
 import { ensureMigrated } from "../../test/ensure-migrated.js";
 import { insertPasskey } from "./credentials";
