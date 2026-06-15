@@ -193,6 +193,8 @@
     "settingsTitle": "Information",
     "settingsDescription": "These fields appear on your public profile.",
     "viewPublicProfile": "View public profile",
+    "myPostsLink": "My requests",
+    "myBookmarksLink": "My bookmarks",
     "fullName": "Full name",
     "headline": "Headline",
     "bio": "Bio",
@@ -242,5 +244,33 @@
       "paginationPrev": "Previous page",
       "paginationNext": "Next page"
     }
+  },
+  "social": {
+    "eyebrow": "Personal",
+    "likeLabel": "Like · {count}",
+    "likeAria": "Like this request — {count, plural, one {# like} other {# likes}}",
+    "bookmarkLabel": "Save",
+    "bookmarkedLabel": "Saved",
+    "bookmarkAddAria": "Add to bookmarks",
+    "bookmarkRemoveAria": "Remove from bookmarks",
+    "loginHint": "Sign in via <link></link> to like or save requests.",
+    "loginLink": "the sign-in page",
+    "loginRequiredTitle": "Sign-in required",
+    "loginRequiredDescription": "Sign in with a passkey via <link></link> to access this page.",
+    "loginRequiredLink": "the sign-in page",
+    "loadErrorTitle": "Unable to load list",
+    "myPostsTitle": "My requests",
+    "myPostsDescription": "All help requests you have published.",
+    "myPostsSectionAria": "My published requests",
+    "myPostsEmptyTitle": "No requests yet",
+    "myPostsEmptyDescription": "You have not published any help requests yet.",
+    "myPostsEmptyCta": "Publish a request",
+    "myBookmarksTitle": "My bookmarks",
+    "myBookmarksDescription": "Requests you saved for later.",
+    "myBookmarksCount": "{count, plural, one {# saved request} other {# saved requests}}",
+    "myBookmarksSectionAria": "Saved requests",
+    "myBookmarksEmptyTitle": "No bookmarks yet",
+    "myBookmarksEmptyDescription": "Click Save on a request to find it here.",
+    "myBookmarksEmptyCta": "Browse the feed"
   }
 }

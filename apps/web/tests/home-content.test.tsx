@@ -63,6 +63,10 @@ vi.mock("@/components/features/unanswered-widget", () => ({
   ),
 }));
 
+vi.mock("@/components/features/post-social-actions", () => ({
+  PostSocialActions: () => <div data-testid="post-social-actions" />,
+}));
+
 afterEach(() => {
   cleanup();
 });

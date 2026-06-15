@@ -69,13 +69,25 @@ export async function ProfileContent({ profile, subjects, locale }: Props) {
               {t("title")}
             </h1>
             <p className="mt-1 mb-0 text-muted-foreground">{t("description")}</p>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
               <Badge variant="secondary">{profile.role}</Badge>
               <Link
                 href={`/users/${profile.userId}`}
                 className="text-sm font-medium text-primary underline"
               >
                 {t("viewPublicProfile")}
+              </Link>
+              <Link
+                href="/me/posts"
+                className="text-sm font-medium text-primary underline"
+              >
+                {t("myPostsLink")}
+              </Link>
+              <Link
+                href="/me/bookmarks"
+                className="text-sm font-medium text-primary underline"
+              >
+                {t("myBookmarksLink")}
               </Link>
             </div>
           </div>

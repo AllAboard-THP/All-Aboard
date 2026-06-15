@@ -4,6 +4,7 @@ import {
   parseFeedResponse,
   parseHelpRequestDetailResponse,
   parseMentorFeedResponse,
+  parseMyHelpRequestsResponse,
   parsePublicUserResponse,
   parseSubjectsResponse,
 } from "@/lib/api-server";
@@ -228,5 +229,25 @@ describe("parseSubjectsResponse", () => {
     expect(() =>
       parseSubjectsResponse({ items: [{ id: "sub-1", name: "JS" }] }),
     ).toThrow("item shape");
+  });
+});
+
+describe("parseMyHelpRequestsResponse", () => {
+  it("accepts valid my list payload", () => {
+    const data = {
+      items: [
+        {
+          id: "1",
+          title: "Mine",
+          authorId: "bob",
+          createdAt: "2020-01-01T00:00:00.000Z",
+        },
+      ],
+    };
+    expect(parseMyHelpRequestsResponse(data)).toEqual(data);
+  });
+
+  it("rejects missing items", () => {
+    expect(() => parseMyHelpRequestsResponse({})).toThrow("items must be an array");
   });
 });

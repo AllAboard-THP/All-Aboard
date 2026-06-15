@@ -19,6 +19,10 @@ vi.mock("@/i18n/navigation", () => ({
   ),
 }));
 
+vi.mock("@/components/features/post-social-actions", () => ({
+  PostSocialActions: () => <div data-testid="post-social-actions" />,
+}));
+
 afterEach(() => {
   cleanup();
 });

@@ -5,6 +5,7 @@ import type {
   HelpRequestDetailResponse,
   MentorFeedItem,
   MentorFeedResponse,
+  MyHelpRequestsResponse,
   PublicUserResponse,
   Response,
   Subject,
@@ -266,6 +267,10 @@ export type FetchPublicUserResult =
   | { ok: true; data: PublicUserResponse }
   | { ok: false; error: string; status?: number };
 
+export type FetchMyListResult =
+  | { ok: true; data: MyHelpRequestsResponse }
+  | { ok: false; error: string; status?: number };
+
 function isPublicUserResponse(value: unknown): value is PublicUserResponse {
   if (typeof value !== "object" || value === null) return false;
   const o = value as Record<string, unknown>;
@@ -300,6 +305,22 @@ export function parsePublicUserResponse(data: unknown): PublicUserResponse {
     throw new Error("Invalid public user responses");
   }
   return data;
+}
+
+export function parseMyHelpRequestsResponse(
+  data: unknown,
+): MyHelpRequestsResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid my list: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!Array.isArray(o.items)) {
+    throw new Error("Invalid my list: items must be an array");
+  }
+  if (!o.items.every(isHelpRequest)) {
+    throw new Error("Invalid my list: item shape");
+  }
+  return { items: o.items };
 }
 
 async function fetchJson(url: string, init?: RequestInit): Promise<{
@@ -510,4 +531,51 @@ export async function fetchPublicUser(
     const message = e instanceof Error ? e.message : "Network error";
     return { ok: false, error: message };
   }
+}
+
+async function fetchMyList(
+  path: "/me/help-requests" | "/me/bookmarks",
+  accessToken: string,
+): Promise<FetchMyListResult> {
+  const url = `${getApiBaseUrl()}${path}`;
+  try {
+    const { ok, status, json } = await fetchJson(url, {
+      headers: { authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    });
+    if (status === 401) {
+      return { ok: false, error: "unauthorized", status: 401 };
+    }
+    if (!ok) {
+      const err =
+        typeof json === "object" &&
+        json !== null &&
+        "error" in json &&
+        typeof (json as { error: unknown }).error === "string"
+          ? (json as { error: string }).error
+          : `My list HTTP ${status}`;
+      return { ok: false, error: err, status };
+    }
+    try {
+      return { ok: true, data: parseMyHelpRequestsResponse(json) };
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Invalid my list payload";
+      return { ok: false, error: message, status };
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Network error";
+    return { ok: false, error: message };
+  }
+}
+
+export async function fetchMyHelpRequests(
+  accessToken: string,
+): Promise<FetchMyListResult> {
+  return fetchMyList("/me/help-requests", accessToken);
+}
+
+export async function fetchMyBookmarks(
+  accessToken: string,
+): Promise<FetchMyListResult> {
+  return fetchMyList("/me/bookmarks", accessToken);
 }

@@ -193,6 +193,8 @@
     "settingsTitle": "Informations",
     "settingsDescription": "Ces champs sont visibles sur votre profil public.",
     "viewPublicProfile": "Voir le profil public",
+    "myPostsLink": "Mes demandes",
+    "myBookmarksLink": "Mes sauvegardes",
     "fullName": "Nom complet",
     "headline": "Accroche",
     "bio": "Biographie",
@@ -242,5 +244,33 @@
       "paginationPrev": "Page précédente",
       "paginationNext": "Page suivante"
     }
+  },
+  "social": {
+    "eyebrow": "Espace perso",
+    "likeLabel": "J'aime · {count}",
+    "likeAria": "Aimer cette demande — {count, plural, one {# like} other {# likes}}",
+    "bookmarkLabel": "Sauvegarder",
+    "bookmarkedLabel": "Sauvegardé",
+    "bookmarkAddAria": "Ajouter aux sauvegardes",
+    "bookmarkRemoveAria": "Retirer des sauvegardes",
+    "loginHint": "Connectez-vous via <link></link> pour aimer ou sauvegarder.",
+    "loginLink": "la page de connexion",
+    "loginRequiredTitle": "Connexion requise",
+    "loginRequiredDescription": "Connectez-vous avec une passkey via <link></link> pour accéder à cette page.",
+    "loginRequiredLink": "la page de connexion",
+    "loadErrorTitle": "Impossible de charger la liste",
+    "myPostsTitle": "Mes demandes",
+    "myPostsDescription": "Toutes les demandes d'aide que vous avez publiées.",
+    "myPostsSectionAria": "Mes demandes publiées",
+    "myPostsEmptyTitle": "Aucune demande publiée",
+    "myPostsEmptyDescription": "Vous n'avez pas encore publié de demande d'aide.",
+    "myPostsEmptyCta": "Publier une demande",
+    "myBookmarksTitle": "Mes sauvegardes",
+    "myBookmarksDescription": "Retrouvez ici les demandes que vous avez mises de côté.",
+    "myBookmarksCount": "{count, plural, one {# demande sauvegardée} other {# demandes sauvegardées}}",
+    "myBookmarksSectionAria": "Demandes sauvegardées",
+    "myBookmarksEmptyTitle": "Aucune sauvegarde",
+    "myBookmarksEmptyDescription": "Cliquez sur « Sauvegarder » sur une demande pour la retrouver ici.",
+    "myBookmarksEmptyCta": "Explorer le feed"
   }
 }
