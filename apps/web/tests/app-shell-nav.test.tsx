@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, within } from "@testing-library/react";
 
 import {
-  APP_SHELL_NAV,
   AppShellNav,
 } from "@/components/features/app-shell-nav";
 import { renderWithI18n } from "./i18n-test-utils";
@@ -37,13 +36,12 @@ describe("AppShellNav", () => {
     usePathname.mockReturnValue("/");
   });
 
-  it("renders three navigation links", () => {
+  it("renders four navigation links", () => {
     renderWithI18n(<AppShellNav />);
     const nav = getPrimaryNav();
-    for (const { navKey } of APP_SHELL_NAV) {
-      const label = navKey === "feed" ? "Feed" : "Nouvelle demande";
-      expect(nav.getByRole("link", { name: label })).toBeTruthy();
-    }
+    expect(nav.getByRole("link", { name: "Feed" })).toBeTruthy();
+    expect(nav.getByRole("link", { name: "Explorer" })).toBeTruthy();
+    expect(nav.getByRole("link", { name: "Nouvelle demande" })).toBeTruthy();
     expect(nav.getByRole("link", { name: "Mentor" })).toBeTruthy();
   });
 
@@ -59,7 +57,19 @@ describe("AppShellNav", () => {
     usePathname.mockReturnValue("/help/new");
     renderWithI18n(<AppShellNav />);
     const nav = getPrimaryNav();
-    expect(nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute("aria-current")).toBe("page");
+    expect(nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute("aria-current")).toBe(
+      "page",
+    );
+    expect(nav.getByRole("link", { name: "Feed" }).getAttribute("aria-current")).toBeNull();
+  });
+
+  it("marks Explorer as current on /explore", () => {
+    usePathname.mockReturnValue("/explore");
+    renderWithI18n(<AppShellNav />);
+    const nav = getPrimaryNav();
+    expect(nav.getByRole("link", { name: "Explorer" }).getAttribute("aria-current")).toBe(
+      "page",
+    );
     expect(nav.getByRole("link", { name: "Feed" }).getAttribute("aria-current")).toBeNull();
   });
 });

@@ -18,6 +18,14 @@ vi.mock("@/components/features/app-shell-nav", () => ({
   AppShellNav: () => <nav aria-label="Navigation principale">Nav</nav>,
 }));
 
+vi.mock("@/components/features/app-shell-user-menu", () => ({
+  AppShellUserMenu: () => <div data-testid="app-shell-user-menu">User menu</div>,
+}));
+
+vi.mock("@/components/features/app-shell-auth-actions", () => ({
+  AppShellAuthActions: () => <div data-testid="app-shell-auth-actions">Auth</div>,
+}));
+
 vi.mock("@/components/features/locale-switcher", () => ({
   LocaleSwitcher: () => <div data-testid="locale-switcher">Locale</div>,
 }));

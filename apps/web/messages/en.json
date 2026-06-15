@@ -55,9 +55,21 @@
   "nav": {
     "ariaLabel": "Main navigation",
     "feed": "Feed",
+    "explore": "Explore",
     "newRequest": "New request",
     "mentor": "Mentor",
     "mentorUnreadAria": "{count, plural, one {# request with new replies} other {# requests with new replies}}"
+  },
+  "userMenu": {
+    "ariaLabel": "User menu — {name}",
+    "profile": "My profile",
+    "myPosts": "My requests",
+    "myBookmarks": "My bookmarks",
+    "mentor": "Mentor space",
+    "logout": "Sign out",
+    "logoutPending": "Signing out…",
+    "login": "Sign in",
+    "register": "Sign up"
   },
   "locale": {
     "label": "Language",
