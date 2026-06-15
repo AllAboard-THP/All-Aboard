@@ -142,6 +142,32 @@
     "certFilter": "Filter replies by certifications",
     "certHidden": "{count, plural, one {# reply hidden} other {# replies hidden}} (outside certifications or requester)."
   },
+  "legal": {
+    "gateTitle": "Welcome to All-Aboard",
+    "gateSubtitle": "One last step before you continue",
+    "gateIntro": "To access All-Aboard, you must read and accept our <cgu>Terms of use</cgu>, our <privacy>Privacy policy</privacy>, and our <mentions>Legal notice</mentions>.",
+    "gateAcceptLabel": "I have read and accept the Terms of use, Privacy policy, and Legal notice of All-Aboard.",
+    "gateSubmit": "Enter All-Aboard",
+    "backHome": "Back to home",
+    "cgu": {
+      "title": "Terms of use",
+      "updatedAt": "Last updated: June 2026",
+      "section1": "All-Aboard is a peer-learning platform. Using the service means you accept these terms.",
+      "section2": "Users agree to behave respectfully and not publish illegal or offensive content."
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "updatedAt": "Last updated: June 2026",
+      "section1": "All-Aboard collects data required to operate your account (identifier, display name, optional email).",
+      "section2": "This data is used for authentication, notifications, and moderation. Contact the team to exercise your rights."
+    },
+    "mentions": {
+      "title": "Legal notice",
+      "updatedAt": "Last updated: June 2026",
+      "section1": "All-Aboard — educational platform under deployment.",
+      "section2": "Hosting and publisher details will be published before broad public launch."
+    }
+  },
   "mentor": {
     "loginRequiredTitle": "Sign-in required",
     "loginRequiredDescription": "Sign in with a passkey via <link></link> to access the mentor dashboard.",

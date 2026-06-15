@@ -1,6 +1,5 @@
 import pg from "pg";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { drizzle } from "drizzle-orm/node-postgres";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,6 +7,7 @@ import { readFileSync } from "node:fs";
 import { parse as parseYaml } from "yaml";
 import { eq } from "drizzle-orm";
 import { buildApp } from "./app";
+import { ensureMigrated } from "./test/ensure-migrated.js";
 import {
   defaultSeedUsers,
   defaultSeedSubjects,
@@ -23,7 +23,6 @@ import {
 import { processPendingSummaryEvents } from "./services/ai-summary-worker";
 import { isOpenApiDocsEnabled } from "./openapi";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 describe("api", () => {
   it("GET /health returns 200", async () => {
     const app = await buildApp({ pool: null });
@@ -256,9 +255,7 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
     beforeAll(async () => {
       pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
       db = drizzle(pool);
-      await migrate(db, {
-        migrationsFolder: path.join(__dirname, "../drizzle"),
-      });
+      await ensureMigrated(process.env.DATABASE_URL!);
       const specs = defaultSeedUsers();
       if (specs.length > 0) {
         await seedUsers(db, specs);

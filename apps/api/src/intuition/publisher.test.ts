@@ -1,16 +1,12 @@
 import pg from "pg";
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { helpRequests, outboxEvents } from "../db/schema.js";
+import { ensureMigrated } from "../test/ensure-migrated.js";
 import { enqueueHelpRequestCreated, HELP_REQUEST_CREATED } from "./outbox.js";
 import { processPendingOutboxEvents } from "./publisher.js";
 import { helpRequestExternalId } from "./sdk-client.js";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe("processPendingOutboxEvents (mocked publish)", () => {
   function mockDb(options: {
@@ -141,9 +137,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
     beforeAll(async () => {
       pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
       db = drizzle(pool);
-      await migrate(db, {
-        migrationsFolder: path.join(__dirname, "../../drizzle"),
-      });
+      await ensureMigrated(process.env.DATABASE_URL!);
     });
 
     afterAll(async () => {

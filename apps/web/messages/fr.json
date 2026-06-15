@@ -142,6 +142,32 @@
     "certFilter": "Filtrer les réponses par certifications",
     "certHidden": "{count, plural, one {# réponse masquée} other {# réponses masquées}} (hors certifications ou demandeur)."
   },
+  "legal": {
+    "gateTitle": "Bienvenue sur All-Aboard",
+    "gateSubtitle": "Avant de continuer, une dernière étape",
+    "gateIntro": "Pour accéder à All-Aboard, vous devez lire et accepter nos <cgu>Conditions générales d'utilisation</cgu>, notre <privacy>Politique de confidentialité</privacy> ainsi que nos <mentions>Mentions légales</mentions>.",
+    "gateAcceptLabel": "J'ai lu et j'accepte les Conditions générales d'utilisation, la Politique de confidentialité et les Mentions légales de All-Aboard.",
+    "gateSubmit": "Accéder à All-Aboard",
+    "backHome": "Retour à l'accueil",
+    "cgu": {
+      "title": "Conditions générales d'utilisation",
+      "updatedAt": "Dernière mise à jour : juin 2026",
+      "section1": "All-Aboard est une plateforme d'entraide étudiante. L'utilisation du service implique l'acceptation des présentes conditions.",
+      "section2": "Les utilisateurs s'engagent à adopter un comportement respectueux et à ne pas publier de contenu illégal ou offensant."
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "updatedAt": "Dernière mise à jour : juin 2026",
+      "section1": "All-Aboard collecte les données nécessaires au fonctionnement du compte (identifiant, nom affiché, email optionnel).",
+      "section2": "Ces données servent à l'authentification, aux notifications et à la modération. Contactez l'équipe pour exercer vos droits."
+    },
+    "mentions": {
+      "title": "Mentions légales",
+      "updatedAt": "Dernière mise à jour : juin 2026",
+      "section1": "All-Aboard — plateforme éducative en cours de déploiement.",
+      "section2": "Hébergement et éditeur : informations complémentaires à publier avant mise en production grand public."
+    }
+  },
   "mentor": {
     "loginRequiredTitle": "Connexion requise",
     "loginRequiredDescription": "Connectez-vous avec une passkey via <link></link> pour accéder au dashboard mentor.",
