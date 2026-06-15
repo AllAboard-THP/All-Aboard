@@ -74,6 +74,18 @@ describe("mapApiError", () => {
     ).toBe("serverError");
   });
 
+  it("maps passkey error codes", () => {
+    expect(
+      mapApiError({ status: 400, body: { error: "cgu_required" } }),
+    ).toBe("cguRequired");
+    expect(
+      mapApiError({ status: 400, body: { error: "challenge_expired" } }),
+    ).toBe("challengeExpired");
+    expect(
+      mapApiError({ status: 400, body: { error: "verification_failed" } }),
+    ).toBe("verificationFailed");
+  });
+
   it("maps moderation code", () => {
     expect(
       mapApiError({ status: 400, body: { error: "content_moderation" } }),

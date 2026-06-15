@@ -14,6 +14,7 @@
   "dependencies": {
     "@allaboard/types": "workspace:*",
     "@allaboard/ui": "workspace:*",
+    "@simplewebauthn/browser": "^13.3.0",
     "@tanstack/react-query": "^5",
     "next": "^15.1.3",
     "next-intl": "^4.13.0",

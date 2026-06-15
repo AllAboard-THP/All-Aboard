@@ -27,7 +27,30 @@
     "userNotFound": "User not found.",
     "invalidRegex": "Invalid regular expression.",
     "contentModeration": "Content flagged for moderation.",
+    "cguRequired": "You must accept the terms of use.",
+    "challengeExpired": "The passkey session expired. Please try again.",
+    "verificationFailed": "Passkey verification failed. Please try again.",
     "unknown": "An unexpected error occurred."
+  },
+  "auth": {
+    "loginEyebrow": "Sign in",
+    "loginTitle": "Sign in with a passkey",
+    "loginDescription": "Use biometrics or your device PIN — no password.",
+    "loginHint": "Your browser may offer a saved passkey. Otherwise, use the button below.",
+    "loginSubmit": "Use a passkey",
+    "registerEyebrow": "Register",
+    "registerTitle": "Create an account",
+    "registerDescription": "Choose a display name and register a passkey on this device.",
+    "registerSubmit": "Create my passkey",
+    "fullName": "Full name",
+    "emailOptional": "Email (optional, for notifications)",
+    "acceptCgu": "I accept the terms of use",
+    "hasAccount": "Already have an account?",
+    "loginLink": "Sign in",
+    "noAccount": "No account yet?",
+    "registerLink": "Register",
+    "backHome": "Back to home",
+    "webauthnFailed": "Unable to use a passkey on this device."
   },
   "nav": {
     "ariaLabel": "Main navigation",
@@ -89,19 +112,21 @@
   "helpNew": {
     "eyebrow": "New request",
     "title": "Publish a help request",
-    "description": "MVP login (ADR 0001), then submit via BFF",
+    "description": "Sign in with a passkey, then publish via the BFF",
     "backHome": "Back to home"
   },
   "helpForm": {
-    "email": "Email",
-    "password": "Password",
     "title": "Request title",
     "tags": "Tags (optional, comma-separated)",
     "tagsPlaceholder": "mentor, rails",
     "duplicate": "Duplicate detected (MOC).",
     "viewExisting": "View existing request",
     "rubberduckHandoff": "Rubberduck handoff: your request is published. Set RUBBERDUCK_URL to enable external redirect.",
-    "submit": "Sign in and publish"
+    "submit": "Publish",
+    "submitSignIn": "Sign in to publish",
+    "loginRequiredTitle": "Sign-in required",
+    "loginRequiredDescription": "Sign in with a passkey via <link></link> to publish.",
+    "loginRequiredLink": "the sign-in page"
   },
   "helpRequest": {
     "eyebrow": "Help request",
@@ -113,13 +138,14 @@
     "responsesEmptyDescription": "Community and mentor replies will appear here.",
     "replySection": "Reply",
     "replyBody": "Your reply",
-    "replySubmit": "Sign in and reply",
+    "replySubmit": "Post reply",
     "certFilter": "Filter replies by certifications",
     "certHidden": "{count, plural, one {# reply hidden} other {# replies hidden}} (outside certifications or requester)."
   },
   "mentor": {
     "loginRequiredTitle": "Sign-in required",
-    "loginRequiredDescription": "Sign in via <link></link> to access the mentor dashboard.",
+    "loginRequiredDescription": "Sign in with a passkey via <link></link> to access the mentor dashboard.",
+    "loginRequiredLink": "the sign-in page",
     "forbiddenTitle": "Mentors only",
     "forbiddenDescription": "MVP mentor account: use identifier <alice>alice</alice> (or an id listed in <envVar>MVP_MENTOR_USER_IDS</envVar>).",
     "eyebrow": "Mentor",
