@@ -66,7 +66,7 @@ Appliquer les migrations sur l’environnement cible avant smoke (`pnpm --filter
 ## Hors scope (confirmé)
 
 - BFF / pages Next (`apps/web`) — consommation ou relais à ajouter par écran
-- Phase 3b (confirmation email, reset password)
+- ~~Phase 3b (confirmation email, reset password)~~ — **annulé** ; voir [ADR 0006](../adr/0006-authentication-passkeys.md) (passkeys)
 - Events Ticketmaster (`apps/thp-final`)
 - Redis pub/sub multi-instance pour WebSocket (note doc 5b uniquement)
 
