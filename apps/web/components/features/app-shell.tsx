@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
+import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 
 import { AppShellNav } from "@/components/features/app-shell-nav";
+import { CguGate } from "@/components/features/cgu-gate";
 import { LocaleSwitcher } from "@/components/features/locale-switcher";
+import { fetchAuthMe } from "@/lib/api-server";
 
 type AppShellProps = {
   children: ReactNode;
@@ -10,6 +13,16 @@ type AppShellProps = {
 
 export async function AppShell({ children }: AppShellProps) {
   const t = await getTranslations("common");
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
+  let requiresCguAcceptance = false;
+
+  if (token) {
+    const meResult = await fetchAuthMe(token);
+    if (meResult.ok && !meResult.data.cguAcceptedAt) {
+      requiresCguAcceptance = true;
+    }
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -27,6 +40,7 @@ export async function AppShell({ children }: AppShellProps) {
       <main id="main-content" className="flex-1">
         {children}
       </main>
+      {requiresCguAcceptance ? <CguGate /> : null}
     </div>
   );
 }
