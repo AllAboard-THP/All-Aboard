@@ -43,6 +43,16 @@
     "fr": "FR",
     "en": "EN"
   },
+  "explore": {
+    "title": "Explore",
+    "description": "Browse help requests by subject. Pick a topic to filter the feed.",
+    "sectionAria": "Subject catalogue",
+    "loadErrorTitle": "Unable to load subjects",
+    "emptyTitle": "No subjects available",
+    "emptyDescription": "The subject catalogue will be available soon.",
+    "postsCount": "{count, plural, one {# request} other {# requests}}",
+    "cardLinkAria": "View requests for {name}"
+  },
   "feed": {
     "title": "Community feed",
     "description": "Browse help requests published by the community. Post your own or open a request to read replies.",
