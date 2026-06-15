@@ -6,7 +6,15 @@ import type {
   MentorFeedItem,
   MentorFeedResponse,
   Response,
+  Subject,
+  SubjectsResponse,
 } from "@allaboard/types";
+
+import {
+  buildFeedQueryString,
+  FEED_DEFAULT_LIMIT,
+  type FeedPageParams,
+} from "@/lib/feed-search-params";
 
 const DEFAULT_API_URL = "http://127.0.0.1:4000";
 
@@ -201,8 +209,39 @@ export function parseAuthMeResponse(data: unknown): AuthMeResponse {
   return result;
 }
 
+function isSubject(value: unknown): value is Subject {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.id === "string" &&
+    typeof o.name === "string" &&
+    typeof o.slug === "string" &&
+    typeof o.icon === "string" &&
+    typeof o.accentColor === "string" &&
+    typeof o.postsCount === "number"
+  );
+}
+
+export function parseSubjectsResponse(data: unknown): SubjectsResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid subjects: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!Array.isArray(o.items)) {
+    throw new Error("Invalid subjects: items must be an array");
+  }
+  if (!o.items.every(isSubject)) {
+    throw new Error("Invalid subjects: item shape");
+  }
+  return { items: o.items };
+}
+
 export type FetchFeedResult =
   | { ok: true; data: FeedResponse }
+  | { ok: false; error: string };
+
+export type FetchSubjectsResult =
+  | { ok: true; data: SubjectsResponse }
   | { ok: false; error: string };
 
 export type FetchHelpRequestResult =
@@ -234,8 +273,12 @@ async function fetchJson(url: string, init?: RequestInit): Promise<{
   return { ok: res.ok, status: res.status, json, text };
 }
 
-export async function fetchFeed(): Promise<FetchFeedResult> {
-  const url = `${getApiBaseUrl()}/feed`;
+export async function fetchFeed(
+  params?: FeedPageParams,
+): Promise<FetchFeedResult> {
+  const resolved = params ?? { page: 1, limit: FEED_DEFAULT_LIMIT };
+  const query = buildFeedQueryString(resolved, { includeWidgets: true });
+  const url = `${getApiBaseUrl()}/feed${query}`;
   try {
     const res = await fetch(url, {
       next: { revalidate: 60 },
@@ -257,6 +300,38 @@ export async function fetchFeed(): Promise<FetchFeedResult> {
       return { ok: true, data: parseFeedResponse(json) };
     } catch (e) {
       const message = e instanceof Error ? e.message : "Invalid feed payload";
+      return { ok: false, error: message };
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Network error";
+    return { ok: false, error: message };
+  }
+}
+
+export async function fetchSubjects(): Promise<FetchSubjectsResult> {
+  const url = `${getApiBaseUrl()}/subjects`;
+  try {
+    const res = await fetch(url, {
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: `Subjects HTTP ${res.status}`,
+      };
+    }
+    const text = await res.text();
+    let json: unknown;
+    try {
+      json = JSON.parse(text) as unknown;
+    } catch {
+      return { ok: false, error: "Subjects response is not JSON" };
+    }
+    try {
+      return { ok: true, data: parseSubjectsResponse(json) };
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Invalid subjects payload";
       return { ok: false, error: message };
     }
   } catch (e) {

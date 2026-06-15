@@ -4,6 +4,7 @@ import {
   parseFeedResponse,
   parseHelpRequestDetailResponse,
   parseMentorFeedResponse,
+  parseSubjectsResponse,
 } from "@/lib/api-server";
 
 describe("parseFeedResponse", () => {
@@ -177,6 +178,30 @@ describe("parseMentorFeedResponse", () => {
           },
         ],
       }),
+    ).toThrow("item shape");
+  });
+});
+
+describe("parseSubjectsResponse", () => {
+  it("accepts valid subjects list", () => {
+    const data = {
+      items: [
+        {
+          id: "sub-1",
+          name: "JavaScript",
+          slug: "javascript",
+          icon: "fa-js",
+          accentColor: "#f7df1e",
+          postsCount: 3,
+        },
+      ],
+    };
+    expect(parseSubjectsResponse(data)).toEqual(data);
+  });
+
+  it("rejects invalid item shape", () => {
+    expect(() =>
+      parseSubjectsResponse({ items: [{ id: "sub-1", name: "JS" }] }),
     ).toThrow("item shape");
   });
 });
