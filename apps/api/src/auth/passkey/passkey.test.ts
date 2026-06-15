@@ -21,7 +21,6 @@ vi.mock("@simplewebauthn/server", () => ({
 }));
 
 import pg from "pg";
-import { drizzle } from "drizzle-orm/node-postgres";
 import { buildApp } from "../../app";
 import { ensureMigrated } from "../../test/ensure-migrated.js";
 import { insertPasskey } from "./credentials";
@@ -51,7 +50,6 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
     process.env.JWT_SECRET = "test-jwt-secret-min-32-characters!!";
 
     pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-    const db = drizzle(pool);
     await ensureMigrated(process.env.DATABASE_URL!);
     app = await buildApp({ pool });
   });
