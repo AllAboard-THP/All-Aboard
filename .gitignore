@@ -57,6 +57,9 @@ ios/
 # Docker
 .docker/
 
+# User-uploaded avatars (local API storage)
+apps/api/data/uploads/
+
 # Test artifacts
 playwright-report/
 test-results/

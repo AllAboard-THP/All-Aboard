@@ -21,6 +21,8 @@ import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
 import { Textarea } from "@allaboard/ui/components/textarea";
 
+import { AuthorProfileLink } from "@/components/features/author-profile-link";
+
 type Props = {
   requestId: string;
   initialDetail: HelpRequestDetailResponse;
@@ -202,7 +204,12 @@ export function HelpRequestDetailClient({ requestId, initialDetail }: Props) {
                   <CardContent className="pt-6">
                     <p className="m-0 text-sm text-foreground">{r.body}</p>
                     <p className="mt-2 mb-0 text-xs text-muted-foreground">
-                      {r.authorId}
+                      <AuthorProfileLink
+                        authorId={r.authorId}
+                        authorProfileId={r.authorProfileId}
+                      >
+                        {r.authorId}
+                      </AuthorProfileLink>
                     </p>
                   </CardContent>
                 </Card>

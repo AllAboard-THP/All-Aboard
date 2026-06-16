@@ -18,6 +18,7 @@ export type LegacyProfile = {
   headline: string;
   educationLevel: string;
   bio: string;
+  avatarUrl?: string;
   postsCount: number;
   repliesCount: number;
   rating: string;

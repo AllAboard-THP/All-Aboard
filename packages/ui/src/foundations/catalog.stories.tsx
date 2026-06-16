@@ -6,9 +6,12 @@ import {
   AlertDescription,
   AlertTitle,
 } from "../components/alert";
+import { AllAboardLogoMark } from "../components/allaboard-logo-mark";
 import { useAlertLabels, useMvpPatternLabels } from "../i18n/storybook-locale";
+import { Avatar, AvatarFallback } from "../components/avatar";
 import { Badge } from "../components/badge";
 import { Button } from "../components/button";
+import { Checkbox } from "../components/checkbox";
 import {
   Card,
   CardContent,
@@ -16,8 +19,23 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/dropdown-menu";
+import { GoogleSignInButton } from "../components/google-sign-in-button";
 import { Input } from "../components/input";
 import { Label } from "../components/label";
+import { LegalCguButton } from "../components/legal-cgu-button";
 import { Separator } from "../components/separator";
 import {
   Select,
@@ -26,8 +44,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../components/sheet";
 import { Skeleton } from "../components/skeleton";
 import { Toaster } from "../components/sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/tabs";
 import { Textarea } from "../components/textarea";
 import { ThemeProvider } from "next-themes";
 import { toast } from "sonner";
@@ -39,7 +65,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Listing des 11 primitives MVP — une entrée par composant dans la sidebar. Pour le détail des variantes, voir aussi **Components/**.",
+          "Listing des 20 primitives MVP — une entrée par composant dans la sidebar. Pour le détail des variantes, voir aussi **Components/**.",
       },
     },
   },
@@ -136,6 +162,15 @@ function ListingCompletStory() {
             "09 Textarea",
             "10 Sonner (Toast)",
             "11 Select",
+            "12 Avatar",
+            "13 Checkbox",
+            "14 Dialog",
+            "15 DropdownMenu",
+            "16 Sheet",
+            "17 Tabs",
+            "18 GoogleSignInButton",
+            "19 LegalCguButton",
+            "20 AllAboardLogoMark",
           ].map((item) => (
             <li key={item}>{item}</li>
           ))}
@@ -237,6 +272,97 @@ function ListingCompletStory() {
             <SelectItem value="rails">Rails</SelectItem>
           </SelectContent>
         </Select>
+      </CatalogSection>
+
+      <CatalogSection index={12} name="Avatar" importPath='@allaboard/ui/components/avatar'>
+        <Avatar size="lg">
+          <AvatarFallback>AA</AvatarFallback>
+        </Avatar>
+      </CatalogSection>
+
+      <CatalogSection index={13} name="Checkbox" importPath='@allaboard/ui/components/checkbox'>
+        <div className="flex items-center gap-2">
+          <Checkbox id="catalog-checkbox" defaultChecked />
+          <Label htmlFor="catalog-checkbox">{catalog.fieldLabel}</Label>
+        </div>
+      </CatalogSection>
+
+      <CatalogSection index={14} name="Dialog" importPath='@allaboard/ui/components/dialog'>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">{catalog.back}</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{catalog.cardTitle}</DialogTitle>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      </CatalogSection>
+
+      <CatalogSection
+        index={15}
+        name="DropdownMenu"
+        importPath='@allaboard/ui/components/dropdown-menu'
+      >
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">{catalog.newRequest}</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>{catalog.feedCardTitle}</DropdownMenuItem>
+            <DropdownMenuItem>{catalog.back}</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </CatalogSection>
+
+      <CatalogSection index={16} name="Sheet" importPath='@allaboard/ui/components/sheet'>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline">{catalog.back}</Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>{catalog.cardTitle}</SheetTitle>
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
+      </CatalogSection>
+
+      <CatalogSection index={17} name="Tabs" importPath='@allaboard/ui/components/tabs'>
+        <Tabs defaultValue="feed">
+          <TabsList>
+            <TabsTrigger value="feed">{catalog.feedCardTitle}</TabsTrigger>
+            <TabsTrigger value="mentor">{catalog.selectMentor}</TabsTrigger>
+          </TabsList>
+          <TabsContent value="feed" className="text-sm text-muted-foreground">
+            {catalog.feedCardDescription}
+          </TabsContent>
+        </Tabs>
+      </CatalogSection>
+
+      <CatalogSection
+        index={18}
+        name="GoogleSignInButton"
+        importPath='@allaboard/ui/components/google-sign-in-button'
+      >
+        <GoogleSignInButton label={catalog.newRequest} />
+      </CatalogSection>
+
+      <CatalogSection
+        index={19}
+        name="LegalCguButton"
+        importPath='@allaboard/ui/components/legal-cgu-button'
+      >
+        <LegalCguButton label={catalog.passwordMvp} />
+      </CatalogSection>
+
+      <CatalogSection
+        index={20}
+        name="AllAboardLogoMark"
+        importPath='@allaboard/ui/components/allaboard-logo-mark'
+      >
+        <AllAboardLogoMark className="size-12" title="All-Aboard" />
       </CatalogSection>
     </div>
   );
@@ -426,4 +552,176 @@ export const SelectCatalog: Story = {
       </div>
     );
   },
+};
+
+export const AvatarCatalog: Story = {
+  name: "12 · Avatar",
+  render: () => (
+    <div className="p-8">
+      <CatalogSection index={12} name="Avatar" importPath='@allaboard/ui/components/avatar'>
+        <Avatar size="lg">
+          <AvatarFallback>IM</AvatarFallback>
+        </Avatar>
+      </CatalogSection>
+    </div>
+  ),
+};
+
+export const CheckboxCatalog: Story = {
+  name: "13 · Checkbox",
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+    return (
+      <div className="p-8">
+        <CatalogSection index={13} name="Checkbox" importPath='@allaboard/ui/components/checkbox'>
+          <Checkbox id="cat-checkbox" defaultChecked />
+          <Label htmlFor="cat-checkbox" className="ml-2">
+            {catalog.fieldLabel}
+          </Label>
+        </CatalogSection>
+      </div>
+    );
+  },
+};
+
+export const DialogCatalog: Story = {
+  name: "14 · Dialog",
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+    return (
+      <div className="p-8">
+        <CatalogSection index={14} name="Dialog" importPath='@allaboard/ui/components/dialog'>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline">{catalog.back}</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{catalog.cardTitle}</DialogTitle>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </CatalogSection>
+      </div>
+    );
+  },
+};
+
+export const DropdownMenuCatalog: Story = {
+  name: "15 · DropdownMenu",
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+    return (
+      <div className="p-8">
+        <CatalogSection
+          index={15}
+          name="DropdownMenu"
+          importPath='@allaboard/ui/components/dropdown-menu'
+        >
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">{catalog.newRequest}</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>{catalog.feedCardTitle}</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CatalogSection>
+      </div>
+    );
+  },
+};
+
+export const SheetCatalog: Story = {
+  name: "16 · Sheet",
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+    return (
+      <div className="p-8">
+        <CatalogSection index={16} name="Sheet" importPath='@allaboard/ui/components/sheet'>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline">{catalog.back}</Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>{catalog.cardTitle}</SheetTitle>
+              </SheetHeader>
+            </SheetContent>
+          </Sheet>
+        </CatalogSection>
+      </div>
+    );
+  },
+};
+
+export const TabsCatalog: Story = {
+  name: "17 · Tabs",
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+    return (
+      <div className="p-8">
+        <CatalogSection index={17} name="Tabs" importPath='@allaboard/ui/components/tabs'>
+          <Tabs defaultValue="a">
+            <TabsList>
+              <TabsTrigger value="a">{catalog.feedCardTitle}</TabsTrigger>
+              <TabsTrigger value="b">{catalog.selectMentor}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="a">{catalog.cardContent}</TabsContent>
+          </Tabs>
+        </CatalogSection>
+      </div>
+    );
+  },
+};
+
+export const GoogleSignInButtonCatalog: Story = {
+  name: "18 · GoogleSignInButton",
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+    return (
+      <div className="p-8">
+        <CatalogSection
+          index={18}
+          name="GoogleSignInButton"
+          importPath='@allaboard/ui/components/google-sign-in-button'
+        >
+          <GoogleSignInButton label={catalog.newRequest} />
+        </CatalogSection>
+      </div>
+    );
+  },
+};
+
+export const LegalCguButtonCatalog: Story = {
+  name: "19 · LegalCguButton",
+  render: () => {
+    const catalog = useMvpPatternLabels().catalog;
+    return (
+      <div className="p-8">
+        <CatalogSection
+          index={19}
+          name="LegalCguButton"
+          importPath='@allaboard/ui/components/legal-cgu-button'
+        >
+          <LegalCguButton label={catalog.passwordMvp} />
+        </CatalogSection>
+      </div>
+    );
+  },
+};
+
+export const AllAboardLogoMarkCatalog: Story = {
+  name: "20 · AllAboardLogoMark",
+  render: () => (
+    <div className="p-8">
+      <CatalogSection
+        index={20}
+        name="AllAboardLogoMark"
+        importPath='@allaboard/ui/components/allaboard-logo-mark'
+      >
+        <AllAboardLogoMark className="size-14" title="All-Aboard" />
+      </CatalogSection>
+    </div>
+  ),
 };

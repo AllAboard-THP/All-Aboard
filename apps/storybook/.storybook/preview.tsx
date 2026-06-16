@@ -52,7 +52,7 @@ const preview: Preview = {
           "Components",
           "Patterns",
           "Screens",
-          ["Auth", "App", "UserDashboard", "MentorDashboard", "Admin", "Legal"],
+          ["Auth", "App", "Help", "UserDashboard", "MentorDashboard", "Admin", "Legal"],
           "Mobile",
           [
             "Screens",

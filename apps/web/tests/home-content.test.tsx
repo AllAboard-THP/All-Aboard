@@ -93,18 +93,19 @@ describe("HomeContent", () => {
     await renderHome({ feed: sampleFeed, feedError: null });
 
     const list = screen.getByTestId("feed-ssr-list");
-    const links = within(list).getAllByRole("link");
+    const titleLinks = within(list).getAllByRole("link", {
+      name: /Aide sur les promesses JS|Comprendre useEffect/,
+    });
 
-    expect(links).toHaveLength(2);
-    expect(links[0]?.getAttribute("href")).toBe("/requests/req-1");
-    expect(links[0]?.textContent).toBe("Aide sur les promesses JS");
-    expect(links[1]?.getAttribute("href")).toBe("/requests/req-2");
+    expect(titleLinks).toHaveLength(2);
+    expect(titleLinks[0]?.getAttribute("href")).toBe("/requests/req-1");
+    expect(titleLinks[1]?.getAttribute("href")).toBe("/requests/req-2");
   });
 
   it("shows item metadata including author, date and tags", async () => {
     await renderHome({ feed: sampleFeed, feedError: null });
 
-    expect(screen.getByText(/Auteur : bob/i)).toBeTruthy();
+    expect(screen.getByRole("link", { name: "bob" })).toBeTruthy();
     expect(screen.getByText(/Tags : javascript, async/i)).toBeTruthy();
   });
 

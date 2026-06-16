@@ -10,13 +10,17 @@ Catalogue **Storybook 10.4** du package `@allaboard/ui` — primitives shadcn v4
 
 | Section | Contenu |
 |---------|---------|
-| **Documentation → Catalog** | **Listing un par un** (01 Alert … 09 Textarea) |
-| **Documentation → Catalog → Patterns** | Patterns 01…06 |
+| **Documentation → Catalog** | **20 primitives** (01 Alert … 20 AllAboardLogoMark) |
+| **Documentation → Catalog → Patterns** | Index des patterns (shell, layout, feed, auth, domaine) |
 | **Foundations** | Tokens, typo, espacements, motion |
 | **Components** | Stories détaillées (variantes, autodocs) |
-| **Patterns** | Compositions alignées sur `apps/web` |
+| **Patterns** | Compositions alignées sur `apps/web` (chrome, feed, auth, sidebar…) |
+| **Screens** | Parcours plein écran (Auth, App, Dashboards, Admin, Legal) |
+| **Mobile** | Variantes mobile (screens + bottom nav) |
 
-**Démarrage rapide** : sidebar **Documentation → Catalog → 01 · Alert**, puis 02, 03…
+**Démarrage rapide** : sidebar **Documentation → Catalog → 00 · Listing complet**, puis **Patterns → LandingShell** ou **AppChromeShell**.
+
+**Locale** : toolbar **Langue** (FR / EN) pour le copy des fixtures.
 
 ## Stack
 
@@ -29,5 +33,5 @@ Catalogue **Storybook 10.4** du package `@allaboard/ui` — primitives shadcn v4
 ```bash
 pnpm storybook          # http://localhost:6006
 pnpm build:storybook    # artefact CI / Docker
-pnpm verify             # avant PR
+pnpm verify             # avant commit
 ```

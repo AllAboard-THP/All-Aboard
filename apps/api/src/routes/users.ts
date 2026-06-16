@@ -97,7 +97,8 @@ export function registerUserRoutes(
       }
 
       const { id } = request.params as { id: string };
-      const row = await loadUserById(db, id);
+      const row =
+        (await loadUserById(db, id)) ?? (await loadUserByEmail(db, id));
       if (!row) {
         return reply.code(404).send({ error: "user_not_found" });
       }

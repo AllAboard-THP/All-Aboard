@@ -2,7 +2,8 @@
 
 import { Mail } from "lucide-react";
 
-import { Avatar, AvatarFallback } from "../components/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/avatar";
+import { Badge } from "../components/badge";
 import { Button } from "../components/button";
 import {
   Tabs,
@@ -27,11 +28,23 @@ export function ProfileHeaderCard({
   profile = legacyProfile,
   labels = legacyLabelsFr,
   showMessageCta = true,
+  avatarUrl,
+  roleBadgeLabel,
+  memberSinceLabel,
+  editButtonLabel,
+  onEditClick,
+  onMessageClick,
   className,
 }: {
   profile?: LegacyProfile;
   labels?: LegacyLabels;
   showMessageCta?: boolean;
+  avatarUrl?: string;
+  roleBadgeLabel?: string;
+  memberSinceLabel?: string;
+  editButtonLabel?: string;
+  onEditClick?: () => void;
+  onMessageClick?: () => void;
   className?: string;
 }) {
   return (
@@ -43,26 +56,51 @@ export function ProfileHeaderCard({
     >
       <div className="flex items-center gap-4">
         <Avatar className="size-20">
+          {avatarUrl ? (
+            <AvatarImage src={avatarUrl} alt={profile.name} />
+          ) : null}
           <AvatarFallback className="text-xl">{profile.initials}</AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-3xl font-bold">{profile.name}</h1>
-          <p className="mb-1 text-sm text-muted-foreground">{profile.headline}</p>
-          <p className="text-xs text-muted-foreground">
-            {labels.profile.levelPrefix} {profile.educationLevel}
-          </p>
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <h1 className="text-3xl font-bold">{profile.name}</h1>
+            {roleBadgeLabel ? (
+              <Badge variant="secondary">{roleBadgeLabel}</Badge>
+            ) : null}
+          </div>
+          {profile.headline ? (
+            <p className="mb-1 text-sm text-muted-foreground">{profile.headline}</p>
+          ) : null}
+          {profile.educationLevel ? (
+            <p className="text-xs text-muted-foreground">
+              {labels.profile.levelPrefix} {profile.educationLevel}
+            </p>
+          ) : null}
+          {memberSinceLabel ? (
+            <p className="mt-1 text-xs text-muted-foreground">{memberSinceLabel}</p>
+          ) : null}
         </div>
       </div>
 
-      {showMessageCta ? (
-        <Button
-          className="rounded-xl"
-          onClick={() => legacyDemoToast(labels.profile.sendMessage)}
-        >
-          <Mail data-icon="inline-start" />
-          {labels.profile.sendMessage}
-        </Button>
-      ) : null}
+      <div className="flex flex-wrap items-center gap-2">
+        {onEditClick && editButtonLabel ? (
+          <Button type="button" variant="outline" onClick={onEditClick}>
+            {editButtonLabel}
+          </Button>
+        ) : null}
+        {showMessageCta ? (
+          <Button
+            className="rounded-xl"
+            onClick={
+              onMessageClick ??
+              (() => legacyDemoToast(labels.profile.sendMessage))
+            }
+          >
+            <Mail data-icon="inline-start" />
+            {labels.profile.sendMessage}
+          </Button>
+        ) : null}
+      </div>
     </div>
   );
 }

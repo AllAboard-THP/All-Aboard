@@ -1,11 +1,12 @@
-import { UserProfileScreen } from "@allaboard/ui/patterns/screens/legacy-screens";
-
+import { ProfilePage } from "@/components/features/profile-page";
 import { initPageLocale } from "@/lib/init-page-locale";
 
 type PageProps = { params: Promise<{ locale: string }> };
 
-export default async function ProfilePage({ params }: PageProps) {
+export const dynamic = "force-dynamic";
+
+export default async function ProfileRoutePage({ params }: PageProps) {
   const { locale } = await params;
   initPageLocale(locale);
-  return <UserProfileScreen />;
+  return <ProfilePage />;
 }

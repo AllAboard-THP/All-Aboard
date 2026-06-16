@@ -74,6 +74,9 @@ export type LegacyLabels = {
     onboardingTitle: string;
     onboardingSubtitle: string;
     onboardingSubmit: string;
+    profileCompleteTitle: string;
+    profileCompleteSubtitle: string;
+    profileCompleteSubmit: string;
     acceptCgu: string;
     acceptCguPrefix: string;
     acceptCguTermsLink: string;
@@ -333,6 +336,10 @@ export const legacyLabelsFr: LegacyLabels = {
     onboardingSubtitle:
       "Quelques informations et l'acceptation des CGU pour terminer ton inscription.",
     onboardingSubmit: "Terminer l'inscription",
+    profileCompleteTitle: "Compléter mon profil",
+    profileCompleteSubtitle:
+      "Tu peux modifier ces informations à tout moment depuis ton espace.",
+    profileCompleteSubmit: "Enregistrer",
     acceptCgu:
       "J'ai lu et j'accepte les conditions générales d'utilisation",
     acceptCguPrefix: "J'ai lu et j'accepte les",
@@ -600,6 +607,10 @@ export const legacyLabelsEn: LegacyLabels = {
     onboardingSubtitle:
       "A few details and accepting the terms to finish signing up.",
     onboardingSubmit: "Finish sign-up",
+    profileCompleteTitle: "Complete your profile",
+    profileCompleteSubtitle:
+      "You can update these details anytime from your profile.",
+    profileCompleteSubmit: "Save profile",
     acceptCgu: "I have read and accept the terms of use",
     acceptCguPrefix: "I have read and accept the",
     acceptCguTermsLink: "terms of use",

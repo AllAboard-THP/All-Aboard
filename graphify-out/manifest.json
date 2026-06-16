@@ -1,6 +1,6 @@
 {
   "/home/toxy/dossierlinux/project/allaboard/apps/web/next.config.ts": {
-    "mtime": 1781113884.4175887,
+    "mtime": 1781596258.4921997,
     "ast_hash": "7737cf16aa0cdcc1ad0535682ab87eef",
     "semantic_hash": ""
   },
@@ -70,13 +70,13 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/messages/en.json": {
-    "mtime": 1781113884.405589,
-    "ast_hash": "8a66d4fc8653fd70c35f045c67908cdf",
+    "mtime": 1781609877.404708,
+    "ast_hash": "3c983c84b4d387ad79a80d8e9f03f8b0",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/messages/fr.json": {
-    "mtime": 1781113884.4015892,
-    "ast_hash": "f4049a31c5ae99927cf1435c1dd01f38",
+    "mtime": 1781609871.8446612,
+    "ast_hash": "95014a276fd6f740987a5697fb59d3fc",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/lib/bff-relay.ts": {
@@ -85,8 +85,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/lib/api-server.ts": {
-    "mtime": 1781042560.9788225,
-    "ast_hash": "508e0126c9673011bb4a91dea0c6c47f",
+    "mtime": 1781603087.058722,
+    "ast_hash": "cff5f2bea8c643e1b0661615e6a50190",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/lib/format-datetime.ts": {
@@ -100,7 +100,7 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/app/providers.tsx": {
-    "mtime": 1781113884.4015892,
+    "mtime": 1781596258.3481996,
     "ast_hash": "251203044ef2641ec608e2b11de24ce0",
     "semantic_hash": ""
   },
@@ -135,8 +135,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/app/[locale]/(app)/mentor/page.tsx": {
-    "mtime": 1781063379.9269295,
-    "ast_hash": "1330b1917d1e8ac7573bac9a45730562",
+    "mtime": 1781603758.9865773,
+    "ast_hash": "07c5e1409bd0703998312087347007db",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/app/api/rubberduck/redirect/route.ts": {
@@ -255,18 +255,18 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/tests/home-content.test.tsx": {
-    "mtime": 1781042560.9788225,
-    "ast_hash": "5cd2aa9fc749fe45e22ba51fb5bcccf5",
+    "mtime": 1781603836.0745609,
+    "ast_hash": "0c1419b4da2aefb447564f8cf72c9656",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/home-content.tsx": {
-    "mtime": 1781042560.9788225,
-    "ast_hash": "ce74aa20fc6fd5cf2e8fc26a7c4b0e41",
+    "mtime": 1781603737.418581,
+    "ast_hash": "b9d67939c76f86bc0bfd372df3c23589",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/help-request-detail-content.tsx": {
-    "mtime": 1781062516.450036,
-    "ast_hash": "96ff0cf274a2ff31f57c30e5ddaafb70",
+    "mtime": 1781603749.374579,
+    "ast_hash": "0f6715abad415da187680a9ee4f945f1",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/mentor-nav-link.tsx": {
@@ -300,8 +300,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/help-request-detail-client.tsx": {
-    "mtime": 1781042560.9748225,
-    "ast_hash": "13149244f4dacea869a7ec9719f4b3bd",
+    "mtime": 1781603753.166578,
+    "ast_hash": "7c5a110bb75cc90c763b5fd172247c27",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/feed-client-preview.tsx": {
@@ -335,8 +335,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/package.json": {
-    "mtime": 1781062516.4380362,
-    "ast_hash": "4216d1c65d7dcee83ae94a050653b67b",
+    "mtime": 1781609737.483535,
+    "ast_hash": "9ff1605cad6abfba46ba521200cd2e28",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/tsconfig.json": {
@@ -445,8 +445,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/app.ts": {
-    "mtime": 1781062516.4380362,
-    "ast_hash": "0f2994812284613d8745da6bf5d3b247",
+    "mtime": 1781609789.8519735,
+    "ast_hash": "d99588669ee75e0d4e9e637a7ba5c39d",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/agent/routing.test.ts": {
@@ -510,8 +510,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/lib/user-mappers.ts": {
-    "mtime": 1781042560.9668226,
-    "ast_hash": "1f942fb8a444cd65f2286a0c1d931d21",
+    "mtime": 1781605256.4382563,
+    "ast_hash": "d7585f7edca7fc9d73be3b33fb30f9e5",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/lib/resources-query.ts": {
@@ -535,13 +535,13 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/lib/mappers.ts": {
-    "mtime": 1781042560.9628227,
-    "ast_hash": "64a24d9473eb7202ee1b32c126568caa",
+    "mtime": 1781603690.3465912,
+    "ast_hash": "f06659bc58131ebef3a4393ff485a20a",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/routes/feed.ts": {
-    "mtime": 1781042560.9668226,
-    "ast_hash": "600d32d4848cc2d24d5e66b443d2b8d1",
+    "mtime": 1781603696.6705897,
+    "ast_hash": "a300ce3882875e0f2d0f2c83e08f6605",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/routes/me.ts": {
@@ -550,13 +550,13 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/routes/help-requests.ts": {
-    "mtime": 1781042560.9668226,
-    "ast_hash": "6a420c2bd135f6ac19a26b3597989710",
+    "mtime": 1781603712.0465865,
+    "ast_hash": "01925aa6b108567b85804bbb5da56cdf",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/routes/users.ts": {
-    "mtime": 1781042560.9668226,
-    "ast_hash": "0d4cb23319731f135f65a36a781fddb6",
+    "mtime": 1781603697.6305895,
+    "ast_hash": "9e8d5cb78a4c163078a04c2ef9783bf9",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/routes/subject-requests.ts": {
@@ -570,8 +570,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/routes/auth.ts": {
-    "mtime": 1781042560.9668226,
-    "ast_hash": "51ee53bed033e8678b858e7aeecf1384",
+    "mtime": 1781603085.8627224,
+    "ast_hash": "f641ea4e8b3e525c335eb3154bb43095",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/routes/social.ts": {
@@ -600,8 +600,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/routes/mentor.ts": {
-    "mtime": 1781042560.9668226,
-    "ast_hash": "bccda4b00ddaa758d2b7e2908ab37ef6",
+    "mtime": 1781603730.2945826,
+    "ast_hash": "c10a67460a4131638f0fcda803425002",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/services/admin-moderation.ts": {
@@ -610,8 +610,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/services/user-profile.ts": {
-    "mtime": 1781042560.9668226,
-    "ast_hash": "2add8fc3c452cde5919c0e4d06c7bc70",
+    "mtime": 1781603704.278588,
+    "ast_hash": "67cea1bc8bb9d284dcc87ad8e87d9e91",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/src/services/profanity.ts": {
@@ -655,8 +655,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/openapi.yaml": {
-    "mtime": 1781062516.4380362,
-    "ast_hash": "bedad4fdf334a37d306e41e08a7f33f6",
+    "mtime": 1781605400.8462236,
+    "ast_hash": "972611a8f2074a958582f4e550f21161",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/vitest.config.ts": {
@@ -675,8 +675,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/package.json": {
-    "mtime": 1781119018.3613617,
-    "ast_hash": "bf01407889f8e84e82235a0730b9a68d",
+    "mtime": 1781609737.8915384,
+    "ast_hash": "2d9bc4e6a54825a26de2bf7d6b21426b",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/tsconfig.json": {
@@ -700,17 +700,17 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/i18n/legacy-labels.ts": {
-    "mtime": 1781118965.397565,
-    "ast_hash": "69ae6c195ed3ed123b140a9193d12028",
+    "mtime": 1781598275.731766,
+    "ast_hash": "ee2fe126f6093c5df72f9b5f8faa5edb",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/i18n/post-card-labels.ts": {
-    "mtime": 1781113884.405589,
+    "mtime": 1781596258.3601997,
     "ast_hash": "0b2aae12bec3f32767f41418ba3e9cfd",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/i18n/storybook-locale.tsx": {
-    "mtime": 1781113884.405589,
+    "mtime": 1781596258.3481996,
     "ast_hash": "f7a086a7c44255a2f895c0a75c742230",
     "semantic_hash": ""
   },
@@ -745,7 +745,7 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/feed-patterns.stories.tsx": {
-    "mtime": 1781113884.4175887,
+    "mtime": 1781596258.4921997,
     "ast_hash": "5e0bf292b502618daec9896c355b1e75",
     "semantic_hash": ""
   },
@@ -755,18 +755,18 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/profile-patterns.stories.tsx": {
-    "mtime": 1781062516.5060363,
-    "ast_hash": "e8a61c71e1c7b716295665da44e32577",
+    "mtime": 1781609975.0255282,
+    "ast_hash": "ef460f621ccbacffb17975f0eee08db3",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/auth-patterns.stories.tsx": {
-    "mtime": 1781119018.6653597,
-    "ast_hash": "ab1958415e494d5e3a6267f90da4a36d",
+    "mtime": 1781598280.9677649,
+    "ast_hash": "2580baf0f4faa7a7c7be9aa471eee6d7",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/pattern-story-frame.tsx": {
-    "mtime": 1781062516.502036,
-    "ast_hash": "4fe8134031a5ab88e6bc88b8cba5540e",
+    "mtime": 1781604167.3744903,
+    "ast_hash": "529bc99f356bade83cf5df78517000b3",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/page-header.stories.tsx": {
@@ -790,8 +790,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/legacy-auth-patterns.tsx": {
-    "mtime": 1781119359.212094,
-    "ast_hash": "0052041ee071d01fdcc8c41269d0769f",
+    "mtime": 1781609841.1684039,
+    "ast_hash": "1a5f4421e1c395241a3a63942787aa73",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/legacy-feed-patterns.tsx": {
@@ -845,8 +845,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/legacy-profile-patterns.tsx": {
-    "mtime": 1781062516.4980361,
-    "ast_hash": "ffea9b4f71d5b29e81eecf5a66b4f79f",
+    "mtime": 1781603761.5825768,
+    "ast_hash": "4222bb6b8b75baee493159b823e4d737",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/legacy-mobile-patterns.tsx": {
@@ -860,7 +860,7 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/legacy-ui.tsx": {
-    "mtime": 1781113884.405589,
+    "mtime": 1781596258.3601997,
     "ast_hash": "596f5fd156b28a8ba56fdc3542361c1a",
     "semantic_hash": ""
   },
@@ -905,8 +905,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/app-chrome.stories.tsx": {
-    "mtime": 1781090080.0124807,
-    "ast_hash": "57bb95d8263f1e07c072e0dda3f80bdd",
+    "mtime": 1781597293.9359787,
+    "ast_hash": "f91e94b6b8234044522bfb61a083ac41",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/mobile-patterns.stories.tsx": {
@@ -920,7 +920,7 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/post-card.stories.tsx": {
-    "mtime": 1781113884.4175887,
+    "mtime": 1781596258.3601997,
     "ast_hash": "cdbc9746c690cee82020bc26cfc60aa5",
     "semantic_hash": ""
   },
@@ -935,8 +935,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-layout.ts": {
-    "mtime": 1781118965.397565,
-    "ast_hash": "a9b0a20b038a60f8aa90a906d1217f1b",
+    "mtime": 1781596258.4921997,
+    "ast_hash": "1ee5a8983cc3fb2741eac0374a703534",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/fixtures/legacy-mentor.ts": {
@@ -955,8 +955,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/fixtures/legacy-profile.ts": {
-    "mtime": 1781062516.4940362,
-    "ast_hash": "e0c7aad3afab93a4a63042345abd1844",
+    "mtime": 1781606300.6180303,
+    "ast_hash": "14c5b4ded2128002ec51717ac1cad3ac",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/fixtures/legacy-events.ts": {
@@ -975,7 +975,7 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/fixtures/legacy-feed-thread.ts": {
-    "mtime": 1781113884.405589,
+    "mtime": 1781596258.3601997,
     "ast_hash": "35dc4a29f668003741d81b99b6fc3928",
     "semantic_hash": ""
   },
@@ -990,13 +990,13 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/screens/legacy-screens.tsx": {
-    "mtime": 1781119312.228253,
-    "ast_hash": "ede965e58ceca1319d14c8b36146ada0",
+    "mtime": 1781605318.8382404,
+    "ast_hash": "f83a3b7b4fbdab692e1e18fff93448a6",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/foundations/catalog.stories.tsx": {
-    "mtime": 1781062516.4860363,
-    "ast_hash": "f46f1bcdf52f14d48e67bc6d373e6543",
+    "mtime": 1781597342.6239674,
+    "ast_hash": "bc9ff9334ca7e6919c8c1b0e37523b94",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/foundations/motion.stories.tsx": {
@@ -1010,8 +1010,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/foundations/catalog-patterns.stories.tsx": {
-    "mtime": 1781062516.4860363,
-    "ast_hash": "9307f30f2801a993c520ffc8e3e6a1db",
+    "mtime": 1781597377.43596,
+    "ast_hash": "82ed654eca1b29388ee6b5bc1e9abd52",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/foundations/typography.stories.tsx": {
@@ -1195,7 +1195,7 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/components/card.tsx": {
-    "mtime": 1781113884.4015892,
+    "mtime": 1781596258.3481996,
     "ast_hash": "580bb1db0d0e93fad59186c7274f5fc0",
     "semantic_hash": ""
   },
@@ -1255,7 +1255,7 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/types/static-brand-assets.d.ts": {
-    "mtime": 1781113884.405589,
+    "mtime": 1781596258.3601997,
     "ast_hash": "00f3cdef9202d2f7a83e098b05f09139",
     "semantic_hash": ""
   },
@@ -1275,8 +1275,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/types/src/index.ts": {
-    "mtime": 1781062516.466036,
-    "ast_hash": "a481ef68655488be5bac40c7fcd3d2d7",
+    "mtime": 1781609792.047992,
+    "ast_hash": "09158e879cf82ce47e5da36f479636a2",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/config-eslint/next.mjs": {
@@ -1325,8 +1325,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/foundations/Welcome.mdx": {
-    "mtime": 1780963502.845733,
-    "ast_hash": "c2a102ba33d0ec3148f9a9aee335c0ac",
+    "mtime": 1781597213.1759956,
+    "ast_hash": "1528dedbd3cec8e7a3702748912a093c",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/assets/logo-mark.png": {
@@ -1490,7 +1490,7 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/Docs/branding/README.md": {
-    "mtime": 1781113884.4175887,
+    "mtime": 1781596258.3601997,
     "ast_hash": "fcb16a900817061bba3111052a8a13da",
     "semantic_hash": ""
   },
@@ -1640,8 +1640,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/app/[locale]/(app)/profile/page.tsx": {
-    "mtime": 1781063379.9269295,
-    "ast_hash": "25e80bf183585030f6ed4a9a2ffcb0e8",
+    "mtime": 1781598260.7797725,
+    "ast_hash": "ebc8bf325675b3c36934e1601d7c5c47",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/app/[locale]/(app)/nav-demo/page.tsx": {
@@ -1700,7 +1700,7 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/app/[locale]/(public)/register/page.tsx": {
-    "mtime": 1781119357.5121005,
+    "mtime": 1781596258.3601997,
     "ast_hash": "1b17c10d422e302e3b0fabbf1049b937",
     "semantic_hash": ""
   },
@@ -1730,8 +1730,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/oauth-onboarding-page.tsx": {
-    "mtime": 1781119367.7600513,
-    "ast_hash": "0fcf9da0a0f7421d6e4e70c86c37d4be",
+    "mtime": 1781598267.7997687,
+    "ast_hash": "0148f2ed6720194eb108df6abbbb8046",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/api/drizzle/0012_oauth_accounts.sql": {
@@ -1790,17 +1790,17 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/student-dashboard-demo.tsx": {
-    "mtime": 1781113884.405589,
+    "mtime": 1781596258.3481996,
     "ast_hash": "77aa82e6ab104fe5156845e68ff9dd28",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/student-dashboard.stories.tsx": {
-    "mtime": 1781063712.3952718,
-    "ast_hash": "6a9848fb67eaea3d77c8eefd8ef2dade",
+    "mtime": 1781597304.0519762,
+    "ast_hash": "e0821dc3ce1abeabfa5e242fe6a40f39",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/student-dashboard-labels.ts": {
-    "mtime": 1781113884.405589,
+    "mtime": 1781596258.3601997,
     "ast_hash": "c3128564b2c4c24f3db15205b60b8082",
     "semantic_hash": ""
   },
@@ -1850,7 +1850,7 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/apps/web/tests/app-shell-sidebar.test.ts": {
-    "mtime": 1781113884.4175887,
+    "mtime": 1781596258.4921997,
     "ast_hash": "6b7b618b2bd95d535344837b28a87297",
     "semantic_hash": ""
   },
@@ -1890,7 +1890,7 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/app-sidebar-nav.test.ts": {
-    "mtime": 1781113884.4175887,
+    "mtime": 1781596258.4921997,
     "ast_hash": "017291837d0df0986c364991d17f4699",
     "semantic_hash": ""
   },
@@ -1935,8 +1935,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/screens-auth.stories.tsx": {
-    "mtime": 1781119368.37605,
-    "ast_hash": "c300f2025164494c5a86f00cacfbcaca",
+    "mtime": 1781597298.6279776,
+    "ast_hash": "e765afe5cca887ea578ae45d13903a00",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/screens-admin.stories.tsx": {
@@ -1945,8 +1945,8 @@
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/mobile-screens-auth.stories.tsx": {
-    "mtime": 1781119368.37605,
-    "ast_hash": "81700d5174015cb5f5b64e9af8724987",
+    "mtime": 1781597300.471977,
+    "ast_hash": "e66eed10f8aa0160cfa6e775258c7d93",
     "semantic_hash": ""
   },
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/mobile-screens-app.stories.tsx": {
@@ -2152,6 +2152,171 @@
   "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/components/legal-cgu-button.stories.tsx": {
     "mtime": 1781118965.4095647,
     "ast_hash": "fa2edf2a178b386f6f6d5ccf6827b6f7",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-shell.stories.tsx": {
+    "mtime": 1781597230.4319918,
+    "ast_hash": "b9c5aba4713b4ba1559bf80ad1ec5f02",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/app-chrome-shell.stories.tsx": {
+    "mtime": 1781597222.5439935,
+    "ast_hash": "57c6e2b0d4f84431a890ad9c8aa752d7",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/app-shell-composition.stories.tsx": {
+    "mtime": 1781597274.9079826,
+    "ast_hash": "1e9c649a43bc26a7f66efc02e58403d2",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/help-request-detail.stories.tsx": {
+    "mtime": 1781597270.2919836,
+    "ast_hash": "f7a624ab663cbc8565101c1e05ae1c7e",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/landing-onboarding-body.tsx": {
+    "mtime": 1781597216.6079948,
+    "ast_hash": "16ec8ae02138a4cb3ed71a937e50104f",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/screens-help.stories.tsx": {
+    "mtime": 1781597262.3519852,
+    "ast_hash": "5a7748137e856b06114bde43e9098fac",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/lib/profile-mappers.ts": {
+    "mtime": 1781609977.3575478,
+    "ast_hash": "53d876ae3fbd022be39bc486ec4055be",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/lib/submit-profile-completion.ts": {
+    "mtime": 1781609865.400607,
+    "ast_hash": "bd050e50c9a891c7d586a96afca622c9",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/lib/patch-user-profile.ts": {
+    "mtime": 1781603764.6825762,
+    "ast_hash": "8926c5a3ef4e3e56715c45d290bfa117",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/lib/format-relative-time.ts": {
+    "mtime": 1781602480.942854,
+    "ast_hash": "224e1a5fb0879ae154ef4b4b7ed9bdf4",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/profile-page.tsx": {
+    "mtime": 1781609907.2849588,
+    "ast_hash": "f1054f900b4ca6691c5816337c9d706f",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/profile-panels.tsx": {
+    "mtime": 1781609845.7604425,
+    "ast_hash": "a24409beba42c29fe8fbc22a83ca26b3",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/profile-page-layout.tsx": {
+    "mtime": 1781603167.8067102,
+    "ast_hash": "c4ac4cea2e5c84070e71d7ddf813dc76",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/profile-types.ts": {
+    "mtime": 1781605238.2022603,
+    "ast_hash": "8ae4aba027bc55fbf5b129cb27bebb1c",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/fixtures/profile-page.ts": {
+    "mtime": 1781609997.3017154,
+    "ast_hash": "77fae22857a24eb5a9eca7086049d2ad",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/lib/load-profile-activity.ts": {
+    "mtime": 1781603151.634712,
+    "ast_hash": "d94eceb9a40f5b259cd0ecfdb0db1d28",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/lib/fetch-subject-catalog.ts": {
+    "mtime": 1781603118.4467144,
+    "ast_hash": "eeca0076add9dbb1334dee5aaa79a270",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/app/[locale]/(app)/users/[id]/page.tsx": {
+    "mtime": 1781603160.2747118,
+    "ast_hash": "13978aaaf91471d464cf44849faa28cc",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/app/api/subjects/route.ts": {
+    "mtime": 1781603101.846718,
+    "ast_hash": "f4f80183f7a6246087f79b383a279942",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/public-profile-page.tsx": {
+    "mtime": 1781605336.2222366,
+    "ast_hash": "6b8a70f8e39a0a74f663d708af7d0e59",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/components/features/author-profile-link.tsx": {
+    "mtime": 1781603715.7665856,
+    "ast_hash": "2defa2ed5c8566013ee0c7971d650ea7",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/app-shell-story-frame.tsx": {
+    "mtime": 1781604568.998404,
+    "ast_hash": "908963eec971a4d904f5fcb4bee39221",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/profile-page-screen.tsx": {
+    "mtime": 1781609926.6451218,
+    "ast_hash": "48a205acb484285c45032950af6ba523",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/lib/upload-avatar.ts": {
+    "mtime": 1781609797.656039,
+    "ast_hash": "1b4baca1b797acdddb041ca86fcbf14b",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/web/app/api/users/me/avatar/route.ts": {
+    "mtime": 1781609794.9320161,
+    "ast_hash": "9488ced341e2dadc3680b86dde0e22e6",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/api/src/lib/avatar-storage.test.ts": {
+    "mtime": 1781610097.7184043,
+    "ast_hash": "27328a87d192a83baa57b4b7ca329aea",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/api/src/lib/avatar-storage.ts": {
+    "mtime": 1781609746.195608,
+    "ast_hash": "0de65eba10ff17aec01b27d6e75aec85",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/api/src/routes/avatar.ts": {
+    "mtime": 1781609769.9238067,
+    "ast_hash": "cfa553e9a9c2b2c4622242a0a41408d5",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/api/src/services/avatar-upload.ts": {
+    "mtime": 1781610110.0784771,
+    "ast_hash": "d2ffa68bfafe79dd8e6c9ed959294b2d",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/api/src/services/avatar-upload.test.ts": {
+    "mtime": 1781610110.5784802,
+    "ast_hash": "927b857ce76aa9e6b1321a6c681efae2",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/apps/api/src/services/avatar-upload-rules.ts": {
+    "mtime": 1781610107.8944638,
+    "ast_hash": "e057d83a2b6a1c34b8f08a50cdb86160",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/lib/crop-image.ts": {
+    "mtime": 1781609802.924083,
+    "ast_hash": "583f41c93256693390376f7cc95ba4cf",
+    "semantic_hash": ""
+  },
+  "/home/toxy/dossierlinux/project/allaboard/packages/ui/src/patterns/profile-avatar-upload.tsx": {
+    "mtime": 1781609819.8922255,
+    "ast_hash": "2e4cd29e4ecf0d40f5e67fd51fc0601c",
     "semantic_hash": ""
   }
 }

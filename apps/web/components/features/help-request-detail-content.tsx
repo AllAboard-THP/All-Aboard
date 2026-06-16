@@ -16,6 +16,7 @@ import {
 } from "@allaboard/ui/components/card";
 
 import { HelpRequestDetailClient } from "@/components/features/help-request-detail-client";
+import { AuthorProfileLink } from "@/components/features/author-profile-link";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { formatDateTime } from "@/lib/format-datetime";
@@ -88,7 +89,15 @@ export async function HelpRequestDetailContent({
           {item.title}
         </h1>
         <CardDescription className="flex flex-wrap gap-x-3 gap-y-1 text-base">
-          <span>{tCommon("author", { authorId: item.authorId })}</span>
+          <span className="inline-flex flex-wrap items-center gap-x-1">
+            <span>{tCommon("authorLabel")}</span>
+            <AuthorProfileLink
+              authorId={item.authorId}
+              authorProfileId={item.authorProfileId}
+            >
+              {item.authorId}
+            </AuthorProfileLink>
+          </span>
           <span>{formatDateTime(item.createdAt, locale)}</span>
         </CardDescription>
         {item.tags && item.tags.length > 0 ? (

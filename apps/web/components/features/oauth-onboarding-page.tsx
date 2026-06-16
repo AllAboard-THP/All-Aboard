@@ -15,6 +15,7 @@ import { useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { openLegalCgu } from "@/lib/open-legal-cgu";
+import { submitProfileCompletion } from "@/lib/submit-profile-completion";
 
 function OAuthOnboardingBody() {
   const labels = useLegacyLabels();
@@ -60,34 +61,15 @@ function OAuthOnboardingBody() {
     if (!input.acceptCgu) return;
     setSubmitting(true);
     setErrorMessage(null);
-    try {
-      const patchRes = await fetch("/api/users/me", {
-        method: "PATCH",
-        credentials: "include",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          fullName: input.fullName,
-          educationLevel: input.educationLevel ?? null,
-          headline: input.headline ?? null,
-        }),
-      });
-      if (!patchRes.ok) {
-        throw new Error("profile_update_failed");
-      }
 
-      const legalRes = await fetch("/api/legal/accept", {
-        method: "POST",
-        credentials: "include",
-      });
-      if (!legalRes.ok) {
-        throw new Error("cgu_accept_failed");
-      }
-
-      router.replace("/feed");
-    } catch {
+    const result = await submitProfileCompletion(input, { acceptLegal: true });
+    if (!result.ok) {
       setErrorMessage(labels.auth.oauthError);
       setSubmitting(false);
+      return;
     }
+
+    router.replace("/feed");
   }
 
   if (loading) {

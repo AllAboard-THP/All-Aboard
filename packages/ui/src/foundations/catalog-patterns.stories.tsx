@@ -71,14 +71,54 @@ function ListingPatternsStory() {
         <code className="text-foreground">{labels.patternsListingStrong}</code>
         {labels.patternsListingTail}
       </p>
-      <ol className="mt-4 list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
-        <li>EmptyState</li>
-        <li>ErrorAlert</li>
-        <li>FeedItemCard</li>
-        <li>FormField</li>
-        <li>PageHeader</li>
-        <li>LoadingFeed</li>
-      </ol>
+
+      <div className="mt-8 space-y-6 text-sm text-muted-foreground">
+        <section>
+          <h2 className="mb-2 text-base font-semibold text-foreground">Shell & chrome</h2>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>AppChromeShell — header/footer verre canonique</li>
+            <li>AppChrome — footer, nav, user menu, mesh</li>
+            <li>AppSidebar — rail + drawers + context panel</li>
+            <li>LandingShell — LandingPageShell + corps auth</li>
+            <li>AppShellComposition — sidebar + contenu dashboard</li>
+          </ul>
+        </section>
+        <section>
+          <h2 className="mb-2 text-base font-semibold text-foreground">Layout</h2>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>PageHeader · EmptyState · ErrorAlert · LoadingFeed · FormField</li>
+          </ul>
+        </section>
+        <section>
+          <h2 className="mb-2 text-base font-semibold text-foreground">Feed & social</h2>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>Feed · FeedItemCard · PostCard · HelpRequestDetail</li>
+          </ul>
+        </section>
+        <section>
+          <h2 className="mb-2 text-base font-semibold text-foreground">Auth</h2>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>Auth — register, forgot-password, OAuth onboarding</li>
+          </ul>
+        </section>
+        <section>
+          <h2 className="mb-2 text-base font-semibold text-foreground">Domain</h2>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              Profile · Messages · Resources · Events · Subjects · Mentor · Modals ·
+              Legal · AdminExtended · LegacyBrand
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h2 className="mb-2 text-base font-semibold text-foreground">Screens</h2>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              Auth · App · Help · UserDashboard · MentorDashboard · Admin · Legal (+ Mobile)
+            </li>
+          </ul>
+        </section>
+      </div>
     </div>
   );
 }
@@ -188,6 +228,35 @@ function LoadingFeedPatternStory() {
   );
 }
 
+function LandingShellPatternStory() {
+  const labels = useMvpPatternLabels().pageHeader;
+
+  return (
+    <div className="p-8">
+      <PatternSection index={7} name="LandingShell" storyPath="Patterns/LandingShell">
+        <p className="m-0 text-sm text-muted-foreground">
+          {labels.feedDescription}
+        </p>
+        <p className="mt-2 text-sm text-foreground">
+          LandingPageShell · hero · register · forgot-password · onboarding
+        </p>
+      </PatternSection>
+    </div>
+  );
+}
+
+function OnboardingPatternStory() {
+  const labels = useMvpPatternLabels().formField;
+
+  return (
+    <div className="p-8">
+      <PatternSection index={8} name="OAuthOnboarding" storyPath="Patterns/Auth">
+        <Button className="w-full max-w-sm">{labels.submitButton}</Button>
+      </PatternSection>
+    </div>
+  );
+}
+
 export const ListingPatterns: Story = {
   name: "00 · Listing patterns",
   render: () => <ListingPatternsStory />,
@@ -221,4 +290,14 @@ export const PageHeaderPattern: Story = {
 export const LoadingFeedPattern: Story = {
   name: "06 · LoadingFeed",
   render: () => <LoadingFeedPatternStory />,
+};
+
+export const LandingShellPattern: Story = {
+  name: "07 · LandingShell",
+  render: () => <LandingShellPatternStory />,
+};
+
+export const OnboardingPattern: Story = {
+  name: "08 · OAuthOnboarding",
+  render: () => <OnboardingPatternStory />,
 };

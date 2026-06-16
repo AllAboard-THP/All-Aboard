@@ -25,7 +25,11 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-function StudentDashboardPreview() {
+function StudentDashboardPreview({
+  variant = "standalone",
+}: {
+  variant?: "standalone" | "content";
+}) {
   const locale = useStorybookLocale();
   const labels =
     locale === "en" ? studentDashboardLabelsEn : studentDashboardLabelsFr;
@@ -36,6 +40,7 @@ function StudentDashboardPreview() {
     <StudentDashboardScreen
       labels={labels}
       fixture={fixture}
+      variant={variant}
       onDemoAction={(message) => toast.message(message)}
     />
   );
@@ -45,4 +50,10 @@ function StudentDashboardPreview() {
 export const Standalone: Story = {
   name: "Standalone",
   render: () => <StudentDashboardPreview />,
+};
+
+/** Main panels only — chrome from parent AppShell. */
+export const ContentOnly: Story = {
+  name: "Content (AppShell)",
+  render: () => <StudentDashboardPreview variant="content" />,
 };

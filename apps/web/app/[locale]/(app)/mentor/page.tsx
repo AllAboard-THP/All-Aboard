@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@allaboard/ui/components/card";
 
+import { AuthorProfileLink } from "@/components/features/author-profile-link";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { fetchAuthMe, fetchMentorFeed } from "@/lib/api-server";
@@ -152,8 +153,14 @@ export default async function MentorDashboardPage({ params }: PageProps) {
                     ) : null}
                   </div>
                   <CardDescription className="flex flex-wrap gap-x-3 gap-y-1">
-                    <span>
-                      {tCommon("author", { authorId: item.authorId })}
+                    <span className="inline-flex flex-wrap items-center gap-x-1">
+                      <span>{tCommon("authorLabel")}</span>
+                      <AuthorProfileLink
+                        authorId={item.authorId}
+                        authorProfileId={item.authorProfileId}
+                      >
+                        {item.authorId}
+                      </AuthorProfileLink>
                     </span>
                     <span>{formatDateTime(item.createdAt, locale)}</span>
                     {item.responseCount > 0 ? (

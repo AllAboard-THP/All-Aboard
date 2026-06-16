@@ -30,7 +30,10 @@ import {
   mapResourceBundles,
   mapResourceRow,
 } from "../services/resources.js";
-import { loadUserByEmail } from "../services/user-profile.js";
+import {
+  loadProfileIdsByEmails,
+  loadUserByEmail,
+} from "../services/user-profile.js";
 
 export function registerMentorRoutes(
   app: FastifyInstance,
@@ -80,8 +83,17 @@ export function registerMentorRoutes(
         }
       }
 
+      const profileIdsByEmail = await loadProfileIdsByEmails(
+        db,
+        rows.map(({ helpRequest }) => helpRequest.authorId),
+      );
+
       const items: MentorFeedItem[] = rows.map(({ helpRequest, subject }) => {
-        const base = rowToHelpRequest(helpRequest, subject);
+        const base = rowToHelpRequest(
+          helpRequest,
+          subject,
+          profileIdsByEmail.get(helpRequest.authorId.toLowerCase()),
+        );
         const requestResponses = responsesByRequest.get(helpRequest.id) ?? [];
         const responseCount = requestResponses.length;
         let lastResponseAt: string | null = null;

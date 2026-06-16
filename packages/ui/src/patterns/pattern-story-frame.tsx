@@ -3,6 +3,9 @@ import type { ReactNode } from "react";
 
 import { cn } from "@allaboard/ui/lib/utils";
 
+import { AppAbstractBackground } from "./app-abstract-background";
+import { APP_STAGE_CLASS } from "./landing-layout";
+
 type FrameWidth = "feed" | "form" | "full";
 
 /** Spacing compact pour cartes feed en prod (apps/web). */
@@ -68,6 +71,20 @@ export function withPatternStoryFrame(width: FrameWidth = "feed"): Decorator {
     <PatternStoryFrame width={width}>
       <Story />
     </PatternStoryFrame>
+  );
+}
+
+/** App mesh background — canonical `(app)/` pages (profile, feed, dashboard). */
+export function withAppStageStoryFrame(width: FrameWidth = "full"): Decorator {
+  return (Story) => (
+    <div className={cn("relative min-h-[100dvh]", APP_STAGE_CLASS)}>
+      <AppAbstractBackground />
+      <div className="relative z-10">
+        <PatternStoryFrame width={width}>
+          <Story />
+        </PatternStoryFrame>
+      </div>
+    </div>
   );
 }
 

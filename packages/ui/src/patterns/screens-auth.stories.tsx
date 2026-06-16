@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import {
   ForgotPasswordScreen,
   LandingLoginScreen,
+  OAuthOnboardingScreen,
   RegisterScreen,
 } from "./screens/legacy-screens";
 import { screenStoryParameters } from "./pattern-story-frame";
@@ -30,4 +31,9 @@ export const Register: Story = {
 export const ForgotPassword: Story = {
   name: "ForgotPassword",
   render: () => <ForgotPasswordScreen />,
+};
+
+export const OAuthOnboarding: Story = {
+  name: "OAuthOnboarding",
+  render: () => <OAuthOnboardingScreen />,
 };

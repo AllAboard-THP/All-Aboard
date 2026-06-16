@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { useLegacyLabels } from "../i18n/storybook-locale";
+import { AppAbstractBackground } from "./app-abstract-background";
+import { AppChromeUserMenu } from "./app-chrome-user-menu";
 import { AppChromeFooter } from "./app-chrome-shell";
+import { APP_STAGE_CLASS } from "./landing-layout";
+import { cn } from "../lib/utils";
 import { LandingPublicHeader } from "./landing-public-header";
 import { AppFooter, AppNavBar, StatCard, UserMenu } from "./legacy-ui";
 import {
@@ -53,6 +57,25 @@ function UserMenuStory() {
   );
 }
 
+function AppChromeUserMenuStory() {
+  return (
+    <div className="flex justify-end p-8">
+      <AppChromeUserMenu isAdmin />
+    </div>
+  );
+}
+
+function AppMeshStory() {
+  return (
+    <div className={cn("relative min-h-[100dvh]", APP_STAGE_CLASS)}>
+      <AppAbstractBackground />
+      <p className="relative z-10 p-8 text-sm text-muted-foreground">
+        App mesh — fixed layer under header, footer, and main content.
+      </p>
+    </div>
+  );
+}
+
 function StatCardsStory() {
   const labels = useLegacyLabels();
   const isEn = labels.nav.feed === "Home";
@@ -88,6 +111,17 @@ export const UserMenuOpen: Story = {
   name: "UserMenu",
   decorators: [withPatternStoryFrame()],
   render: () => <UserMenuStory />,
+};
+
+export const AppChromeUserMenuDefault: Story = {
+  name: "AppChromeUserMenu",
+  decorators: [withPatternStoryFrame()],
+  render: () => <AppChromeUserMenuStory />,
+};
+
+export const AppAbstractMesh: Story = {
+  name: "AppAbstractBackground",
+  render: () => <AppMeshStory />,
 };
 
 export const StatCardRow: Story = {

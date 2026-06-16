@@ -10,6 +10,7 @@ import {
   useLegacyLegalContent,
   useLegacyMentorDashboard,
   useLegacyModeration,
+  useMvpPatternLabels,
   useLegacyProfile,
   useLegacyResources,
   usePostCardFixture,
@@ -43,6 +44,7 @@ import {
   FeedSidebarContributions,
   FeedSidebarRecentViewed,
   FeedSidebarUnanswered,
+  CommentCard,
   ScrollToTopFab,
 } from "../legacy-feed-patterns";
 import type { LegacyRecentlyViewedPost } from "../fixtures/legacy-feed-thread";
@@ -53,8 +55,20 @@ import {
   ProfileHeaderCard,
   ProfileStatGrid,
 } from "../legacy-profile-patterns";
+import { ProfilePrivatePageDemo } from "../profile-page-screen";
+import { Button } from "../../components/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/card";
+import { Input } from "../../components/input";
+import { Label } from "../../components/label";
 import { LandingForgotPasswordBody } from "../landing-forgot-password-body";
 import { LandingHeroBody } from "../landing-hero-body";
+import { LandingOnboardingBody } from "../landing-onboarding-body";
 import { LandingPageShell } from "../landing-page-shell";
 import { LandingRegisterBody } from "../landing-register-body";
 import { SubjectCardGrid } from "../legacy-ui";
@@ -219,17 +233,9 @@ export function MessagesInboxScreen({ mobileChrome = false }: { mobileChrome?: b
 export function UserProfileScreen({
   mobileChrome = false,
 }: { mobileChrome?: boolean } = {}) {
-  const labels = useLegacyLabels();
-  const profile = useLegacyProfile();
-
   return (
     <AppChrome activeLink="feed" mobileChrome={mobileChrome} sidebarActiveId="profile">
-      <div className="mx-auto max-w-5xl animate-fade-in space-y-6">
-        <ProfileHeaderCard profile={profile} labels={labels} />
-        <ProfileAboutCard profile={profile} labels={labels} />
-        <ProfileStatGrid profile={profile} labels={labels} />
-        <ProfileActivityTabs profile={profile} labels={labels} />
-      </div>
+      <ProfilePrivatePageDemo />
     </AppChrome>
   );
 }
@@ -297,6 +303,143 @@ export function ForgotPasswordScreen({
     >
       <LandingForgotPasswordBody labels={labels} />
     </LandingPageShell>
+  );
+}
+
+export function OAuthOnboardingScreen({
+  onCguClick,
+  onSubmit,
+  submitting = false,
+  errorMessage,
+}: {
+  onCguClick?: () => void;
+  onSubmit?: Parameters<typeof LandingOnboardingBody>[0]["onSubmit"];
+  submitting?: boolean;
+  errorMessage?: string | null;
+} = {}) {
+  const labels = useLegacyLabels();
+
+  return (
+    <LandingPageShell labels={labels} background="app" activeAction="signUp">
+      <LandingOnboardingBody
+        labels={labels}
+        submitting={submitting}
+        errorMessage={errorMessage}
+        onSubmit={onSubmit}
+        onCguClick={onCguClick}
+      />
+    </LandingPageShell>
+  );
+}
+
+export function HelpNewScreen({ mobileChrome = false }: { mobileChrome?: boolean } = {}) {
+  const formLabels = useMvpPatternLabels().formField;
+  const pageLabels = useMvpPatternLabels().pageHeader;
+  const emptyLabels = useMvpPatternLabels().emptyState;
+
+  return (
+    <AppChrome activeLink="feed" mobileChrome={mobileChrome} sidebarActiveId="newRequest">
+      <div className="mx-auto w-full max-w-lg animate-fade-in">
+        <Card>
+          <CardHeader>
+            <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
+              {pageLabels.feedEyebrow}
+            </p>
+            <CardTitle className="text-2xl">{pageLabels.feedCta}</CardTitle>
+            <CardDescription>{pageLabels.feedDescription}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="help-screen-email">{formLabels.userIdLabel}</Label>
+                <Input id="help-screen-email" type="email" defaultValue="bob@dev.local" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="help-screen-password">{formLabels.passwordMvpLabel}</Label>
+                <Input id="help-screen-password" type="password" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="help-screen-title">{formLabels.titleLabel}</Label>
+                <Input
+                  id="help-screen-title"
+                  placeholder={formLabels.titlePlaceholder}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="help-screen-tags">{formLabels.tagsLabel}</Label>
+                <Input
+                  id="help-screen-tags"
+                  placeholder={formLabels.tagsPlaceholder}
+                />
+              </div>
+              <Button
+                type="button"
+                className="w-full"
+                onClick={() => legacyDemoToast(formLabels.submitButton)}
+              >
+                {formLabels.submitButton}
+              </Button>
+            </div>
+            <p className="mt-5">
+              <button
+                type="button"
+                className="text-sm font-semibold text-primary hover:underline"
+                onClick={() => legacyDemoToast(emptyLabels.backToFeed)}
+              >
+                {emptyLabels.backToFeed}
+              </button>
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </AppChrome>
+  );
+}
+
+export function HelpRequestDetailScreen({
+  mobileChrome = false,
+}: { mobileChrome?: boolean } = {}) {
+  const labels = useLegacyLabels();
+  const pageLabels = useMvpPatternLabels().pageHeader;
+  const postLabels = usePostCardLabels();
+
+  return (
+    <AppChrome activeLink="feed" mobileChrome={mobileChrome} sidebarActiveId="newRequest">
+      <div className="mx-auto w-full max-w-3xl animate-fade-in space-y-6">
+        <header>
+          <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
+            {pageLabels.detailEyebrow}
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold">{pageLabels.detailTitle}</h1>
+          <p className="text-muted-foreground">{pageLabels.detailMeta}</p>
+        </header>
+        <div className="space-y-4">
+          <CommentCard
+            authorName="Yann L."
+            authorInitials="YL"
+            timeAgo="il y a 1 h"
+            body="Essaie de retirer data des deps ou de mémoriser fetchData avec useCallback."
+            code={{
+              language: "javascript",
+              snippet: "const fetchData = useCallback(() => {...}, []);",
+            }}
+          />
+          <CommentCard
+            authorName="Inès M."
+            authorInitials="IM"
+            timeAgo="il y a 45 min"
+            body="Tu peux aussi isoler la logique dans un hook dédié pour clarifier le composant."
+          />
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => legacyDemoToast(postLabels.copy)}
+        >
+          {labels.nav.feed}
+        </Button>
+      </div>
+    </AppChrome>
   );
 }
 

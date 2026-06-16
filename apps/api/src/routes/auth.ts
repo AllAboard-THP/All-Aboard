@@ -127,6 +127,9 @@ export function registerAuthRoutes(
       const profile = rowToUserProfile(row, competenceSubjects);
       return {
         userId: jwtUser.sub,
+        id: profile.id,
+        email: profile.email,
+        createdAt: profile.createdAt,
         role: profile.role,
         displayName: profile.displayName,
         fullName: profile.fullName,

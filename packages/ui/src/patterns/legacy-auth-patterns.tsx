@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../components/button";
 import { Checkbox } from "../components/checkbox";
 import { LegalCguButton } from "../components/legal-cgu-button";
@@ -19,6 +19,7 @@ import {
 } from "../i18n/legacy-labels";
 import { cn } from "@allaboard/ui/lib/utils";
 import {
+  APP_GLASS_CARD_CLASS,
   LANDING_AUTH_CARD_WIDTH_CLASS,
   LANDING_AUTH_SUBMIT_BUTTON_CLASS,
   LANDING_GLASS_INPUT_CLASS,
@@ -35,6 +36,10 @@ import {
   Eyebrow,
 } from "./legacy-ui";
 import { legacyDemoToast } from "./legacy-story-feedback";
+import {
+  ProfileAvatarUploadField,
+  type ProfileAvatarUploadLabels,
+} from "./profile-avatar-upload";
 
 export function RegisterForm({
   labels = legacyLabelsFr,
@@ -290,6 +295,8 @@ export function ForgotPasswordForm({
   );
 }
 
+export type { ProfileAvatarUploadLabels };
+
 export type OAuthOnboardingSubmitInput = {
   fullName: string;
   educationLevel?: string;
@@ -297,12 +304,27 @@ export type OAuthOnboardingSubmitInput = {
   acceptCgu: boolean;
 };
 
+export type OAuthOnboardingFormVariant = "onboarding" | "profile";
+
 export function OAuthOnboardingForm({
   labels = legacyLabelsFr,
   className,
+  variant = "onboarding",
+  title,
+  subtitle,
+  submitLabel,
+  showCgu = true,
+  fieldIdPrefix = "onboarding",
   initialFullName = "",
   initialEducationLevel = "",
   initialHeadline = "",
+  avatarUrl,
+  avatarLabels,
+  avatarDisplayName,
+  avatarInitials,
+  avatarUploading = false,
+  onAvatarUpload,
+  onAvatarRemove,
   submitting = false,
   errorMessage,
   onSubmit,
@@ -310,9 +332,24 @@ export function OAuthOnboardingForm({
 }: {
   labels?: LegacyLabels;
   className?: string;
+  /** `onboarding` = post OAuth sign-up; `profile` = editable from /profile. */
+  variant?: OAuthOnboardingFormVariant;
+  title?: string;
+  subtitle?: string;
+  submitLabel?: string;
+  showCgu?: boolean;
+  fieldIdPrefix?: string;
   initialFullName?: string;
   initialEducationLevel?: string;
   initialHeadline?: string;
+  /** Profile variant — file upload with crop (saved immediately). */
+  avatarUrl?: string;
+  avatarLabels?: ProfileAvatarUploadLabels;
+  avatarDisplayName?: string;
+  avatarInitials?: string;
+  avatarUploading?: boolean;
+  onAvatarUpload?: (file: Blob) => void | Promise<void>;
+  onAvatarRemove?: () => void | Promise<void>;
   submitting?: boolean;
   errorMessage?: string | null;
   onSubmit: (input: OAuthOnboardingSubmitInput) => void | Promise<void>;
@@ -328,36 +365,95 @@ export function OAuthOnboardingForm({
   const [headline, setHeadline] = useState(initialHeadline);
   const [acceptCgu, setAcceptCgu] = useState(false);
 
+  useEffect(() => {
+    setFullName(initialFullName);
+  }, [initialFullName]);
+
+  useEffect(() => {
+    setEducationLevel(initialEducationLevel);
+  }, [initialEducationLevel]);
+
+  useEffect(() => {
+    setHeadline(initialHeadline);
+  }, [initialHeadline]);
+
+  const showAvatarField =
+    variant === "profile" &&
+    avatarLabels != null &&
+    onAvatarUpload != null;
+
+  const resolvedTitle =
+    title ??
+    (variant === "profile"
+      ? labels.auth.profileCompleteTitle
+      : labels.auth.onboardingTitle);
+  const resolvedSubtitle =
+    subtitle ??
+    (variant === "profile"
+      ? labels.auth.profileCompleteSubtitle
+      : labels.auth.onboardingSubtitle);
+  const resolvedSubmit =
+    submitLabel ??
+    (variant === "profile"
+      ? labels.auth.profileCompleteSubmit
+      : labels.auth.onboardingSubmit);
+  const cguRequired = showCgu;
+  const canSubmit =
+    Boolean(fullName.trim()) && (!cguRequired || acceptCgu);
+
   return (
     <Card
       className={cn(
-        LANDING_LOGIN_CARD_LAYOUT_CLASS,
-        LANDING_AUTH_CARD_WIDTH_CLASS,
-        LANDING_LOGIN_CARD_CLASS,
+        variant === "profile"
+          ? cn(APP_GLASS_CARD_CLASS, "w-full rounded-2xl p-6")
+          : cn(
+              LANDING_LOGIN_CARD_LAYOUT_CLASS,
+              LANDING_AUTH_CARD_WIDTH_CLASS,
+              LANDING_LOGIN_CARD_CLASS,
+            ),
         className,
       )}
     >
-      <CardHeader className="shrink-0 px-0 pb-0 text-center">
-        <CardTitle className="text-2xl sm:text-3xl">
-          {labels.auth.onboardingTitle}
-        </CardTitle>
-        <p className="text-muted-foreground">{labels.auth.onboardingSubtitle}</p>
+      <CardHeader
+        className={cn(
+          "shrink-0 px-0 pb-0",
+          variant === "profile" ? "text-left" : "text-center",
+        )}
+      >
+        <CardTitle className="text-2xl sm:text-3xl">{resolvedTitle}</CardTitle>
+        <p className="text-muted-foreground">{resolvedSubtitle}</p>
       </CardHeader>
       <CardContent className="flex flex-col gap-5 px-0">
+        {showAvatarField ? (
+          <ProfileAvatarUploadField
+            labels={avatarLabels}
+            avatarUrl={avatarUrl}
+            initials={avatarInitials ?? "?"}
+            displayName={avatarDisplayName ?? (fullName.trim() || "Profile")}
+            uploading={avatarUploading}
+            onUpload={onAvatarUpload}
+            onRemove={onAvatarRemove}
+            disabled={submitting}
+          />
+        ) : null}
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-2 sm:col-span-2">
-            <Label htmlFor="onboarding-full-name">{labels.auth.fullName}</Label>
+            <Label htmlFor={`${fieldIdPrefix}-full-name`}>
+              {labels.auth.fullName}
+            </Label>
             <Input
-              id="onboarding-full-name"
+              id={`${fieldIdPrefix}-full-name`}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className={LANDING_GLASS_INPUT_CLASS}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="onboarding-level">{labels.auth.educationLevel}</Label>
+            <Label htmlFor={`${fieldIdPrefix}-level`}>
+              {labels.auth.educationLevel}
+            </Label>
             <Input
-              id="onboarding-level"
+              id={`${fieldIdPrefix}-level`}
               value={educationLevel}
               onChange={(e) => setEducationLevel(e.target.value)}
               placeholder={labels.auth.educationLevelPlaceholder}
@@ -365,9 +461,11 @@ export function OAuthOnboardingForm({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="onboarding-headline">{labels.auth.headline}</Label>
+            <Label htmlFor={`${fieldIdPrefix}-headline`}>
+              {labels.auth.headline}
+            </Label>
             <Input
-              id="onboarding-headline"
+              id={`${fieldIdPrefix}-headline`}
               value={headline}
               onChange={(e) => setHeadline(e.target.value)}
               placeholder={labels.auth.headlinePlaceholder}
@@ -375,45 +473,56 @@ export function OAuthOnboardingForm({
             />
           </div>
         </div>
-        <div className="flex items-start gap-2.5">
-          <Checkbox
-            id="onboarding-cgu"
-            checked={acceptCgu}
-            onCheckedChange={(checked) => setAcceptCgu(checked === true)}
-            className="mt-0.5 shrink-0 border-white/30 bg-white/5"
-          />
-          <label htmlFor="onboarding-cgu" className="cursor-pointer text-sm leading-snug">
-            <span className="text-muted-foreground">{labels.auth.acceptCguPrefix} </span>
-            <LegalCguButton
-              label={labels.auth.acceptCguTermsLink}
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                handleCguClick();
-              }}
-              className="inline align-baseline font-normal"
+        {cguRequired ? (
+          <div className="flex items-start gap-2.5">
+            <Checkbox
+              id={`${fieldIdPrefix}-cgu`}
+              checked={acceptCgu}
+              onCheckedChange={(checked) => setAcceptCgu(checked === true)}
+              className="mt-0.5 shrink-0 border-white/30 bg-white/5"
             />
-          </label>
-        </div>
+            <label
+              htmlFor={`${fieldIdPrefix}-cgu`}
+              className="cursor-pointer text-sm leading-snug"
+            >
+              <span className="text-muted-foreground">
+                {labels.auth.acceptCguPrefix}{" "}
+              </span>
+              <LegalCguButton
+                label={labels.auth.acceptCguTermsLink}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  handleCguClick();
+                }}
+                className="inline align-baseline font-normal"
+              />
+            </label>
+          </div>
+        ) : null}
         {errorMessage ? (
           <p className="text-sm text-destructive">{errorMessage}</p>
         ) : null}
       </CardContent>
       <CardFooter className="shrink-0 flex-col gap-3 px-0 pt-0">
         <Button
-          variant="landingSubmit"
-          className={LANDING_AUTH_SUBMIT_BUTTON_CLASS}
-          disabled={submitting || !fullName.trim() || !acceptCgu}
+          variant={variant === "profile" ? "default" : "landingSubmit"}
+          className={
+            variant === "profile"
+              ? "w-full"
+              : LANDING_AUTH_SUBMIT_BUTTON_CLASS
+          }
+          disabled={submitting || !canSubmit}
           onClick={() =>
             void onSubmit({
               fullName: fullName.trim(),
               educationLevel: educationLevel.trim() || undefined,
               headline: headline.trim() || undefined,
-              acceptCgu,
+              acceptCgu: cguRequired ? acceptCgu : true,
             })
           }
         >
-          {labels.auth.onboardingSubmit}
+          {resolvedSubmit}
         </Button>
       </CardFooter>
     </Card>

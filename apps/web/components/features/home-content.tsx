@@ -16,6 +16,7 @@ import {
 } from "@allaboard/ui/components/card";
 
 import { FeedClientPreview } from "@/components/features/feed-client-preview";
+import { AuthorProfileLink } from "@/components/features/author-profile-link";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { formatDateTime } from "@/lib/format-datetime";
@@ -26,7 +27,7 @@ type Props = {
 };
 
 type FeedItemLabels = {
-  author: (authorId: string) => string;
+  authorLabel: string;
   tags: (tags: string) => string;
   formatDate: (iso: string) => string;
 };
@@ -55,7 +56,15 @@ function FeedItemCard({
             </Link>
           </CardTitle>
           <CardDescription className="flex flex-wrap gap-x-3 gap-y-1">
-            <span>{labels.author(item.authorId)}</span>
+            <span className="inline-flex flex-wrap items-center gap-x-1">
+              <span>{labels.authorLabel}</span>
+              <AuthorProfileLink
+                authorId={item.authorId}
+                authorProfileId={item.authorProfileId}
+              >
+                {item.authorId}
+              </AuthorProfileLink>
+            </span>
             <span>{labels.formatDate(item.createdAt)}</span>
           </CardDescription>
         </CardHeader>
@@ -79,7 +88,7 @@ export async function HomeContent({ feed, feedError }: Props) {
   const hasItems = Boolean(feed && feed.items.length > 0);
 
   const itemLabels: FeedItemLabels = {
-    author: (authorId) => tCommon("author", { authorId }),
+    authorLabel: tCommon("authorLabel"),
     tags: (tags) => tCommon("tags", { tags }),
     formatDate: (iso) => formatDateTime(iso, locale),
   };
