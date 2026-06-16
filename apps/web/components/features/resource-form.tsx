@@ -14,7 +14,7 @@ import { Button } from "@allaboard/ui/components/button";
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
 import { Textarea } from "@allaboard/ui/components/textarea";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import {
   ApiRequestError,
   mapApiError,
@@ -23,6 +23,7 @@ import {
   createResource,
   updateResource,
 } from "@/lib/resource-client";
+import { SubjectRequestModal } from "@/components/features/subject-request-modal";
 
 type Mode = "create" | "edit";
 
@@ -46,8 +47,10 @@ function tagsToRaw(tags?: string[]): string {
 
 export function ResourceForm({ mode, subjects, resourceId, initialItem }: Props) {
   const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
   const t = useTranslations("resources");
+  const tSubjectRequests = useTranslations("subjectRequests");
   const tErrors = useTranslations("errors");
   const tCommon = useTranslations("common");
 
@@ -55,6 +58,7 @@ export function ResourceForm({ mode, subjects, resourceId, initialItem }: Props)
   const [subjectId, setSubjectId] = useState(initialItem?.subjectId ?? "");
   const [tagsRaw, setTagsRaw] = useState(tagsToRaw(initialItem?.tags));
   const [body, setBody] = useState(initialItem?.body ?? "");
+  const [subjectRequestOpen, setSubjectRequestOpen] = useState(false);
 
   const authQuery = useQuery({
     queryKey: ["auth-me"],
@@ -196,6 +200,16 @@ export function ResourceForm({ mode, subjects, resourceId, initialItem }: Props)
             </option>
           ))}
         </select>
+        <p className="m-0 text-sm text-muted-foreground">
+          <button
+            type="button"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+            onClick={() => setSubjectRequestOpen(true)}
+            data-testid="resource-form-subject-request-trigger"
+          >
+            {tSubjectRequests("resourcesLinkLabel")}
+          </button>
+        </p>
       </div>
 
       <div className="grid gap-2">
@@ -247,6 +261,14 @@ export function ResourceForm({ mode, subjects, resourceId, initialItem }: Props)
           </Link>
         </Button>
       </div>
+
+      {subjectRequestOpen ? (
+        <SubjectRequestModal
+          open={subjectRequestOpen}
+          onOpenChange={setSubjectRequestOpen}
+          returnTo={pathname}
+        />
+      ) : null}
     </div>
   );
 }
