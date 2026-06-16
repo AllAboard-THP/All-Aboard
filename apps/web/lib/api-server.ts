@@ -3,12 +3,17 @@ import type {
   FeedResponse,
   HelpRequest,
   HelpRequestDetailResponse,
+  MentorDashboardResponse,
   MentorFeedItem,
   MentorFeedResponse,
   MyHelpRequestsResponse,
   PublicUserResponse,
+  Resource,
+  ResourceDetailResponse,
+  ResourcesListResponse,
   Response,
   Subject,
+  SubjectSummary,
   SubjectsResponse,
 } from "@allaboard/types";
 
@@ -243,6 +248,135 @@ export function parseSubjectsResponse(data: unknown): SubjectsResponse {
   return { items: o.items };
 }
 
+function isSubjectSummary(value: unknown): value is SubjectSummary {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.id === "string" &&
+    typeof o.name === "string" &&
+    typeof o.slug === "string" &&
+    typeof o.icon === "string" &&
+    typeof o.accentColor === "string"
+  );
+}
+
+function isResource(value: unknown): value is Resource {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  const statusOk =
+    o.status === "pending" ||
+    o.status === "published" ||
+    o.status === "rejected";
+  const tagsOk =
+    o.tags === undefined ||
+    (Array.isArray(o.tags) && o.tags.every((x) => typeof x === "string"));
+  const subjectOk =
+    o.subject === undefined ||
+    o.subject === null ||
+    isSubjectSummary(o.subject);
+  return (
+    typeof o.id === "string" &&
+    typeof o.title === "string" &&
+    typeof o.body === "string" &&
+    typeof o.authorId === "string" &&
+    statusOk &&
+    typeof o.createdAt === "string" &&
+    typeof o.updatedAt === "string" &&
+    tagsOk &&
+    subjectOk &&
+    (o.subjectId === undefined || typeof o.subjectId === "string")
+  );
+}
+
+export function parseResourcesListResponse(data: unknown): ResourcesListResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid resources list: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!Array.isArray(o.items)) {
+    throw new Error("Invalid resources list: items must be an array");
+  }
+  if (!o.items.every(isResource)) {
+    throw new Error("Invalid resources list: item shape");
+  }
+  if (typeof o.pagination !== "object" || o.pagination === null) {
+    throw new Error("Invalid resources list: pagination shape");
+  }
+  const p = o.pagination as Record<string, unknown>;
+  if (
+    typeof p.page !== "number" ||
+    typeof p.limit !== "number" ||
+    typeof p.total !== "number"
+  ) {
+    throw new Error("Invalid resources list: pagination shape");
+  }
+  return {
+    items: o.items,
+    pagination: { page: p.page, limit: p.limit, total: p.total },
+  };
+}
+
+export function parseResourceDetailResponse(
+  data: unknown,
+): ResourceDetailResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid resource detail: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!isResource(o.item)) {
+    throw new Error("Invalid resource detail: item shape");
+  }
+  return { item: o.item };
+}
+
+function isMentorDashboardStats(
+  value: unknown,
+): value is MentorDashboardResponse["stats"] {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.myResourcesCount === "number" &&
+    typeof o.pendingResourcesCount === "number" &&
+    typeof o.helpMentorQueueCount === "number"
+  );
+}
+
+export function parseMentorDashboardResponse(
+  data: unknown,
+): MentorDashboardResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid mentor dashboard: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!isMentorDashboardStats(o.stats)) {
+    throw new Error("Invalid mentor dashboard: stats shape");
+  }
+  if (!Array.isArray(o.myResources)) {
+    throw new Error("Invalid mentor dashboard: myResources must be an array");
+  }
+  if (!o.myResources.every(isResource)) {
+    throw new Error("Invalid mentor dashboard: myResources item shape");
+  }
+  if (!Array.isArray(o.pendingResources)) {
+    throw new Error("Invalid mentor dashboard: pendingResources must be an array");
+  }
+  if (!o.pendingResources.every(isResource)) {
+    throw new Error("Invalid mentor dashboard: pendingResources item shape");
+  }
+  if (!Array.isArray(o.helpMentorQueue)) {
+    throw new Error("Invalid mentor dashboard: helpMentorQueue must be an array");
+  }
+  if (!o.helpMentorQueue.every(isHelpRequest)) {
+    throw new Error("Invalid mentor dashboard: helpMentorQueue item shape");
+  }
+  return {
+    stats: o.stats,
+    myResources: o.myResources,
+    pendingResources: o.pendingResources,
+    helpMentorQueue: o.helpMentorQueue,
+  };
+}
+
 export type FetchFeedResult =
   | { ok: true; data: FeedResponse }
   | { ok: false; error: string };
@@ -270,6 +404,35 @@ export type FetchPublicUserResult =
 export type FetchMyListResult =
   | { ok: true; data: MyHelpRequestsResponse }
   | { ok: false; error: string; status?: number };
+
+export type FetchResourcesResult =
+  | { ok: true; data: ResourcesListResponse }
+  | { ok: false; error: string };
+
+export type FetchResourceResult =
+  | { ok: true; data: ResourceDetailResponse }
+  | { ok: false; error: string; status?: number };
+
+export type FetchMentorDashboardResult =
+  | { ok: true; data: MentorDashboardResponse }
+  | { ok: false; error: string; status?: number };
+
+export type ResourcesPageParams = {
+  q?: string;
+  page?: number;
+  limit?: number;
+};
+
+export const RESOURCES_DEFAULT_LIMIT = 12;
+
+function buildResourcesQueryString(params: ResourcesPageParams): string {
+  const sp = new URLSearchParams();
+  if (params.q) sp.set("q", params.q);
+  if (params.page !== undefined) sp.set("page", String(params.page));
+  if (params.limit !== undefined) sp.set("limit", String(params.limit));
+  const qs = sp.toString();
+  return qs.length > 0 ? `?${qs}` : "";
+}
 
 function isPublicUserResponse(value: unknown): value is PublicUserResponse {
   if (typeof value !== "object" || value === null) return false;
@@ -578,4 +741,100 @@ export async function fetchMyBookmarks(
   accessToken: string,
 ): Promise<FetchMyListResult> {
   return fetchMyList("/me/bookmarks", accessToken);
+}
+
+export async function fetchResources(
+  params?: ResourcesPageParams,
+): Promise<FetchResourcesResult> {
+  const resolved = params ?? { page: 1, limit: RESOURCES_DEFAULT_LIMIT };
+  const query = buildResourcesQueryString(resolved);
+  const url = `${getApiBaseUrl()}/resources${query}`;
+  try {
+    const { ok, status, json } = await fetchJson(url, {
+      next: { revalidate: 60 },
+    });
+    if (!ok) {
+      return { ok: false, error: `Resources HTTP ${status}` };
+    }
+    try {
+      return { ok: true, data: parseResourcesListResponse(json) };
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Invalid resources payload";
+      return { ok: false, error: message };
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Network error";
+    return { ok: false, error: message };
+  }
+}
+
+export async function fetchResource(
+  id: string,
+  accessToken?: string,
+): Promise<FetchResourceResult> {
+  const url = `${getApiBaseUrl()}/resources/${encodeURIComponent(id)}`;
+  const headers: HeadersInit = accessToken
+    ? { authorization: `Bearer ${accessToken}` }
+    : {};
+  try {
+    const { ok, status, json } = await fetchJson(url, {
+      headers,
+      next: { revalidate: 60 },
+    });
+    if (status === 404) {
+      return { ok: false, error: "not_found", status: 404 };
+    }
+    if (!ok) {
+      const err =
+        typeof json === "object" &&
+        json !== null &&
+        "error" in json &&
+        typeof (json as { error: unknown }).error === "string"
+          ? (json as { error: string }).error
+          : `Resource HTTP ${status}`;
+      return { ok: false, error: err, status };
+    }
+    try {
+      return { ok: true, data: parseResourceDetailResponse(json) };
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Invalid resource payload";
+      return { ok: false, error: message, status };
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Network error";
+    return { ok: false, error: message };
+  }
+}
+
+export async function fetchMentorDashboard(
+  accessToken: string,
+): Promise<FetchMentorDashboardResult> {
+  const url = `${getApiBaseUrl()}/mentor/dashboard`;
+  try {
+    const { ok, status, json } = await fetchJson(url, {
+      headers: { authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    });
+    if (status === 401) {
+      return { ok: false, error: "unauthorized", status: 401 };
+    }
+    if (status === 403) {
+      return { ok: false, error: "forbidden", status: 403 };
+    }
+    if (!ok) {
+      return { ok: false, error: `Mentor dashboard HTTP ${status}`, status };
+    }
+    try {
+      return { ok: true, data: parseMentorDashboardResponse(json) };
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Invalid mentor dashboard payload";
+      return { ok: false, error: message, status };
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Network error";
+    return { ok: false, error: message };
+  }
 }

@@ -3,9 +3,12 @@ import {
   parseAuthMeResponse,
   parseFeedResponse,
   parseHelpRequestDetailResponse,
+  parseMentorDashboardResponse,
   parseMentorFeedResponse,
   parseMyHelpRequestsResponse,
   parsePublicUserResponse,
+  parseResourceDetailResponse,
+  parseResourcesListResponse,
   parseSubjectsResponse,
 } from "@/lib/api-server";
 
@@ -249,5 +252,112 @@ describe("parseMyHelpRequestsResponse", () => {
 
   it("rejects missing items", () => {
     expect(() => parseMyHelpRequestsResponse({})).toThrow("items must be an array");
+  });
+});
+
+describe("parseResourcesListResponse", () => {
+  const resource = {
+    id: "res-1",
+    title: "Guide",
+    body: "Body",
+    authorId: "bob@dev.local",
+    status: "published" as const,
+    createdAt: "2020-01-01T00:00:00.000Z",
+    updatedAt: "2020-01-01T00:00:00.000Z",
+  };
+
+  it("accepts valid list with pagination", () => {
+    const data = {
+      items: [resource],
+      pagination: { page: 1, limit: 12, total: 1 },
+    };
+    expect(parseResourcesListResponse(data)).toEqual(data);
+  });
+
+  it("accepts optional subject and tags", () => {
+    const data = {
+      items: [
+        {
+          ...resource,
+          subjectId: "sub-1",
+          tags: ["react"],
+          subject: {
+            id: "sub-1",
+            name: "JavaScript",
+            slug: "javascript",
+            icon: "fa-js",
+            accentColor: "#f7df1e",
+          },
+        },
+      ],
+      pagination: { page: 1, limit: 12, total: 1 },
+    };
+    expect(parseResourcesListResponse(data)).toEqual(data);
+  });
+
+  it("rejects missing pagination", () => {
+    expect(() =>
+      parseResourcesListResponse({ items: [resource] }),
+    ).toThrow("pagination shape");
+  });
+});
+
+describe("parseResourceDetailResponse", () => {
+  it("accepts valid detail", () => {
+    const data = {
+      item: {
+        id: "res-1",
+        title: "Guide",
+        body: "Body",
+        authorId: "bob@dev.local",
+        status: "pending",
+        createdAt: "2020-01-01T00:00:00.000Z",
+        updatedAt: "2020-01-01T00:00:00.000Z",
+      },
+    };
+    expect(parseResourceDetailResponse(data)).toEqual(data);
+  });
+});
+
+describe("parseMentorDashboardResponse", () => {
+  it("accepts valid dashboard payload", () => {
+    const resource = {
+      id: "res-1",
+      title: "Guide",
+      body: "Body",
+      authorId: "bob@dev.local",
+      status: "published" as const,
+      createdAt: "2020-01-01T00:00:00.000Z",
+      updatedAt: "2020-01-01T00:00:00.000Z",
+    };
+    const data = {
+      stats: {
+        myResourcesCount: 1,
+        pendingResourcesCount: 0,
+        helpMentorQueueCount: 2,
+      },
+      myResources: [resource],
+      pendingResources: [],
+      helpMentorQueue: [
+        {
+          id: "hr-1",
+          title: "Help",
+          authorId: "alice@dev.local",
+          createdAt: "2020-01-01T00:00:00.000Z",
+        },
+      ],
+    };
+    expect(parseMentorDashboardResponse(data)).toEqual(data);
+  });
+
+  it("rejects invalid stats", () => {
+    expect(() =>
+      parseMentorDashboardResponse({
+        stats: { myResourcesCount: 1 },
+        myResources: [],
+        pendingResources: [],
+        helpMentorQueue: [],
+      }),
+    ).toThrow("stats shape");
   });
 });
