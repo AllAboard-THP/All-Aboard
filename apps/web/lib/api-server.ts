@@ -1,11 +1,20 @@
 import type {
   AuthMeResponse,
+  ChatMessage,
+  ConversationInboxItem,
+  ConversationParticipantSummary,
+  ConversationsListResponse,
+  ConversationSummary,
+  CreateConversationResponse,
+  CreateMessageResponse,
   FeedResponse,
   HelpRequest,
   HelpRequestDetailResponse,
+  MarkConversationReadResponse,
   MentorDashboardResponse,
   MentorFeedItem,
   MentorFeedResponse,
+  MessagesListResponse,
   MyHelpRequestsResponse,
   PublicUserResponse,
   Resource,
@@ -377,6 +386,145 @@ export function parseMentorDashboardResponse(
   };
 }
 
+function isChatMessage(value: unknown): value is ChatMessage {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.id === "string" &&
+    typeof o.body === "string" &&
+    typeof o.userId === "string" &&
+    typeof o.userName === "string" &&
+    typeof o.createdAt === "string" &&
+    o.type === "message" &&
+    (o.avatarUrl === undefined || typeof o.avatarUrl === "string")
+  );
+}
+
+function isConversationParticipantSummary(
+  value: unknown,
+): value is ConversationParticipantSummary {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.id === "string" &&
+    typeof o.displayName === "string" &&
+    (o.avatarUrl === undefined || typeof o.avatarUrl === "string")
+  );
+}
+
+function isConversationInboxItem(value: unknown): value is ConversationInboxItem {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  if (
+    typeof o.id !== "string" ||
+    typeof o.updatedAt !== "string" ||
+    typeof o.unreadCount !== "number" ||
+    !isConversationParticipantSummary(o.otherParticipant)
+  ) {
+    return false;
+  }
+  if (o.topic !== undefined && typeof o.topic !== "string") return false;
+  if (o.lastMessage !== undefined && !isChatMessage(o.lastMessage)) return false;
+  return true;
+}
+
+function isConversationSummary(value: unknown): value is ConversationSummary {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  if (
+    typeof o.id !== "string" ||
+    typeof o.updatedAt !== "string" ||
+    !isConversationParticipantSummary(o.otherParticipant)
+  ) {
+    return false;
+  }
+  if (o.topic !== undefined && typeof o.topic !== "string") return false;
+  return true;
+}
+
+export function parseConversationsListResponse(
+  data: unknown,
+): ConversationsListResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid conversations list: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!Array.isArray(o.items)) {
+    throw new Error("Invalid conversations list: items must be an array");
+  }
+  if (!o.items.every(isConversationInboxItem)) {
+    throw new Error("Invalid conversations list: item shape");
+  }
+  return { items: o.items };
+}
+
+export function parseCreateConversationResponse(
+  data: unknown,
+): CreateConversationResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid create conversation: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!isConversationSummary(o.item)) {
+    throw new Error("Invalid create conversation: item shape");
+  }
+  return { item: o.item };
+}
+
+export function parseMessagesListResponse(data: unknown): MessagesListResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid messages list: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!Array.isArray(o.items)) {
+    throw new Error("Invalid messages list: items must be an array");
+  }
+  if (!o.items.every(isChatMessage)) {
+    throw new Error("Invalid messages list: item shape");
+  }
+  if (typeof o.pagination !== "object" || o.pagination === null) {
+    throw new Error("Invalid messages list: pagination shape");
+  }
+  const p = o.pagination as Record<string, unknown>;
+  if (
+    typeof p.page !== "number" ||
+    typeof p.limit !== "number" ||
+    typeof p.total !== "number"
+  ) {
+    throw new Error("Invalid messages list: pagination shape");
+  }
+  return {
+    items: o.items,
+    pagination: { page: p.page, limit: p.limit, total: p.total },
+  };
+}
+
+export function parseCreateMessageResponse(
+  data: unknown,
+): CreateMessageResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid create message: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!isChatMessage(o.item)) {
+    throw new Error("Invalid create message: item shape");
+  }
+  return { item: o.item };
+}
+
+export function parseMarkConversationReadResponse(
+  data: unknown,
+): MarkConversationReadResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid mark read: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (o.ok !== true || typeof o.lastReadAt !== "string") {
+    throw new Error("Invalid mark read: shape");
+  }
+  return { ok: true, lastReadAt: o.lastReadAt };
+}
+
 export type FetchFeedResult =
   | { ok: true; data: FeedResponse }
   | { ok: false; error: string };
@@ -416,6 +564,29 @@ export type FetchResourceResult =
 export type FetchMentorDashboardResult =
   | { ok: true; data: MentorDashboardResponse }
   | { ok: false; error: string; status?: number };
+
+export type FetchConversationsResult =
+  | { ok: true; data: ConversationsListResponse }
+  | { ok: false; error: string; status?: number };
+
+export type FetchConversationMessagesResult =
+  | { ok: true; data: MessagesListResponse }
+  | { ok: false; error: string; status?: number };
+
+export type MessagesPageParams = {
+  page?: number;
+  limit?: number;
+};
+
+export const MESSAGES_DEFAULT_LIMIT = 50;
+
+function buildMessagesQueryString(params: MessagesPageParams): string {
+  const sp = new URLSearchParams();
+  if (params.page !== undefined) sp.set("page", String(params.page));
+  if (params.limit !== undefined) sp.set("limit", String(params.limit));
+  const qs = sp.toString();
+  return qs.length > 0 ? `?${qs}` : "";
+}
 
 export type ResourcesPageParams = {
   q?: string;
@@ -831,6 +1002,73 @@ export async function fetchMentorDashboard(
     } catch (e) {
       const message =
         e instanceof Error ? e.message : "Invalid mentor dashboard payload";
+      return { ok: false, error: message, status };
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Network error";
+    return { ok: false, error: message };
+  }
+}
+
+export async function fetchConversations(
+  accessToken: string,
+): Promise<FetchConversationsResult> {
+  const url = `${getApiBaseUrl()}/conversations`;
+  try {
+    const { ok, status, json } = await fetchJson(url, {
+      headers: { authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    });
+    if (status === 401) {
+      return { ok: false, error: "unauthorized", status: 401 };
+    }
+    if (!ok) {
+      return { ok: false, error: `Conversations HTTP ${status}`, status };
+    }
+    try {
+      return { ok: true, data: parseConversationsListResponse(json) };
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Invalid conversations payload";
+      return { ok: false, error: message, status };
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Network error";
+    return { ok: false, error: message };
+  }
+}
+
+export async function fetchConversationMessages(
+  conversationId: string,
+  accessToken: string,
+  params?: MessagesPageParams,
+): Promise<FetchConversationMessagesResult> {
+  const resolved = params ?? { page: 1, limit: MESSAGES_DEFAULT_LIMIT };
+  const query = buildMessagesQueryString(resolved);
+  const url = `${getApiBaseUrl()}/conversations/${encodeURIComponent(conversationId)}/messages${query}`;
+  try {
+    const { ok, status, json } = await fetchJson(url, {
+      headers: { authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    });
+    if (status === 401) {
+      return { ok: false, error: "unauthorized", status: 401 };
+    }
+    if (status === 403) {
+      return { ok: false, error: "forbidden", status: 403 };
+    }
+    if (!ok) {
+      return {
+        ok: false,
+        error: `Messages HTTP ${status}`,
+        status,
+      };
+    }
+    try {
+      return { ok: true, data: parseMessagesListResponse(json) };
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Invalid messages payload";
       return { ok: false, error: message, status };
     }
   } catch (e) {
