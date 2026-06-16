@@ -15,6 +15,7 @@ import {
 } from "@allaboard/ui/components/card";
 
 import { SubjectIcon } from "@/components/features/subject-icon";
+import { SubjectRequestExploreCard } from "@/components/features/subject-request-explore-card";
 import { Link } from "@/i18n/navigation";
 import {
   feedHref,
@@ -52,12 +53,17 @@ export async function ExploreContent({ subjects, error }: Props) {
       ) : null}
 
       {!error && subjects.length === 0 ? (
-        <Card data-testid="explore-empty">
-          <CardHeader>
-            <CardTitle className="text-lg">{t("emptyTitle")}</CardTitle>
-            <CardDescription>{t("emptyDescription")}</CardDescription>
-          </CardHeader>
-        </Card>
+        <section aria-label={t("sectionAria")}>
+          <Card className="mb-6" data-testid="explore-empty">
+            <CardHeader>
+              <CardTitle className="text-lg">{t("emptyTitle")}</CardTitle>
+              <CardDescription>{t("emptyDescription")}</CardDescription>
+            </CardHeader>
+          </Card>
+          <ul className="grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
+            <SubjectRequestExploreCard />
+          </ul>
+        </section>
       ) : null}
 
       {!error && subjects.length > 0 ? (
@@ -67,7 +73,7 @@ export async function ExploreContent({ subjects, error }: Props) {
             data-testid="explore-subject-grid"
           >
             {subjects.map((subject) => (
-              <li key={subject.id}>
+              <li key={subject.id} data-testid={`explore-subject-${subject.slug}`}>
                 <Card className="h-full transition-colors hover:border-primary/50">
                   <Link
                     href={feedHref({
@@ -108,6 +114,7 @@ export async function ExploreContent({ subjects, error }: Props) {
                 </Card>
               </li>
             ))}
+            <SubjectRequestExploreCard />
           </ul>
         </section>
       ) : null}

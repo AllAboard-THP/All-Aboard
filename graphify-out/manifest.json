@@ -130,7 +130,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/app-shell-nav.test.tsx": {
-    "mtime": 1781604170.3752053,
+    "mtime": 1781604864.6713266,
     "ast_hash": "9ed19ccb8ec202bf1941cc3f0551c548",
     "semantic_hash": ""
   },
@@ -170,7 +170,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/app-shell-nav.tsx": {
-    "mtime": 1781604156.2282357,
+    "mtime": 1781604864.6669412,
     "ast_hash": "19b6351396e13dd60a76934b50ee170a",
     "semantic_hash": ""
   },
@@ -930,13 +930,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/en.json": {
-    "mtime": 1781604169.630205,
-    "ast_hash": "bec9adb4d4ae3ca7ed14a0d286764f7c",
+    "mtime": 1781609539.9932077,
+    "ast_hash": "2538d19218cbef612b307000de8e29b5",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/fr.json": {
-    "mtime": 1781604167.693204,
-    "ast_hash": "8a3e92916fb226297008dd71d9f424fc",
+    "mtime": 1781609540.2900472,
+    "ast_hash": "9ff69ca458408a3249fa27546845332e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/layout.tsx": {
@@ -1490,8 +1490,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/explore-content.test.tsx": {
-    "mtime": 1781534460.7107778,
-    "ast_hash": "2eb714a4157964b84f41399e1c9505ef",
+    "mtime": 1781609613.038052,
+    "ast_hash": "88a29cd82c819394ee72b753cc4cee91",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/subject-icon.test.tsx": {
@@ -1500,8 +1500,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/explore-content.tsx": {
-    "mtime": 1781534460.7067778,
-    "ast_hash": "a030f3d649deaf7c0e5cff84af81d84e",
+    "mtime": 1781609534.4162414,
+    "ast_hash": "f4842dff4b2f2fd7707e713d8e90b76e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/subject-icon.tsx": {
@@ -1780,83 +1780,103 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/(app)/resources/page.tsx": {
-    "mtime": 1781604152.685203,
+    "mtime": 1781604864.6669412,
     "ast_hash": "bfecc0815545efbc413456f5c0b72ad6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/(app)/resources/new/page.tsx": {
-    "mtime": 1781604154.3104858,
+    "mtime": 1781604864.6669412,
     "ast_hash": "db30c27f23714b8553cea5ec56d9fbd6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/(app)/resources/[id]/page.tsx": {
-    "mtime": 1781604153.4163713,
+    "mtime": 1781604864.6669412,
     "ast_hash": "6da2fe810f898dce153ca792921f59a1",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/(app)/resources/[id]/edit/page.tsx": {
-    "mtime": 1781604155.7853568,
+    "mtime": 1781604864.6669412,
     "ast_hash": "9cf63d6712e2351614a767e9b99388a8",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/resources-list-content.test.tsx": {
-    "mtime": 1781604202.5380232,
-    "ast_hash": "eb5f87580a46483585b22618cec0f7a9",
+    "mtime": 1781605255.1100671,
+    "ast_hash": "2840afe7122874a3cd8d211fd9425d26",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/resources-search-params.test.ts": {
-    "mtime": 1781604171.5288916,
+    "mtime": 1781604864.6713266,
     "ast_hash": "5eb5e43c836b87757b1a7a9dc45406c3",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/resource-card.tsx": {
-    "mtime": 1781604198.5030327,
+    "mtime": 1781604864.6669412,
     "ast_hash": "a220fb6e6b2fff1c9a90c5418de5465a",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/resource-detail-content.tsx": {
-    "mtime": 1781604145.1992776,
+    "mtime": 1781604864.6669412,
     "ast_hash": "2ff5e12f80e446b349a23dce68d813b4",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/resources-new-cta.tsx": {
-    "mtime": 1781604133.3217924,
+    "mtime": 1781604864.6669412,
     "ast_hash": "16a4bcce540d3b6ad6c8584072a4312d",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/resource-owner-actions.tsx": {
-    "mtime": 1781604143.0704267,
+    "mtime": 1781604864.6669412,
     "ast_hash": "8ecb9880d8b5557fac7ec6fb7a9da9cc",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/resource-form.tsx": {
-    "mtime": 1781604152.2757487,
-    "ast_hash": "ab1cc7882643f9c7065afc4c5293ba56",
+    "mtime": 1781609667.0741715,
+    "ast_hash": "25e98463d1849064c78a01543b648ee4",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/resources-search-form.tsx": {
-    "mtime": 1781604130.8179038,
+    "mtime": 1781604864.6669412,
     "ast_hash": "fdcb25f085c4ab06d025691fa03eff1f",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/resources-list-content.tsx": {
-    "mtime": 1781604199.894522,
+    "mtime": 1781604864.6669412,
     "ast_hash": "8b9671c9e44d6faaec86d59320488bc8",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/resources-pagination.tsx": {
-    "mtime": 1781604132.2652369,
+    "mtime": 1781604864.6669412,
     "ast_hash": "cddcdbc2346c907b1be0052c8da97be8",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/resource-client.ts": {
-    "mtime": 1781604129.236237,
+    "mtime": 1781604864.6669412,
     "ast_hash": "0069964de39c11ca13b8a422ffa14049",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/resources-search-params.ts": {
-    "mtime": 1781604128.4345703,
+    "mtime": 1781604864.6713266,
     "ast_hash": "4dee915ccb565386528ac7c6e14267a8",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/tests/subject-request-modal.test.tsx": {
+    "mtime": 1781609606.8046923,
+    "ast_hash": "e21af696fe4e475672e578b7693925c6",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/components/features/subject-request-modal.tsx": {
+    "mtime": 1781609530.7334094,
+    "ast_hash": "99389bbb81de6f5098eaaffa380dad08",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/components/features/subject-request-explore-card.tsx": {
+    "mtime": 1781609666.9666011,
+    "ast_hash": "8f8238abd6c2cf27d21d6bbbef590b36",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/lib/subject-request-client.ts": {
+    "mtime": 1781609501.532152,
+    "ast_hash": "2c818fc535ddf36d3bc316c7ce7f380b",
     "semantic_hash": ""
   }
 }

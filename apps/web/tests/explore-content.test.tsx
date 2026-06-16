@@ -17,6 +17,7 @@ vi.mock("@/i18n/navigation", () => ({
       {children}
     </a>
   ),
+  usePathname: () => "/explore",
 }));
 
 vi.mock("next-intl/server", () => ({
@@ -94,6 +95,7 @@ describe("ExploreContent", () => {
     expect(links[1]?.getAttribute("href")).toBe("/?subject=rails");
     expect(within(grid).getByText("JavaScript")).toBeTruthy();
     expect(within(grid).getByText("Rails")).toBeTruthy();
+    expect(screen.getByTestId("subject-request-explore-card")).toBeTruthy();
   });
 
   it("shows error alert when catalogue fails", async () => {
@@ -114,5 +116,6 @@ describe("ExploreContent", () => {
     expect(screen.getByTestId("explore-empty")).toBeTruthy();
     expect(screen.getByText("Aucune matière disponible")).toBeTruthy();
     expect(screen.queryByTestId("explore-subject-grid")).toBeNull();
+    expect(screen.getByTestId("subject-request-explore-card")).toBeTruthy();
   });
 });
