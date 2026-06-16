@@ -11,6 +11,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 export const APP_SHELL_NAV = [
   { href: "/", navKey: "feed" as const },
   { href: "/explore", navKey: "explore" as const },
+  { href: "/resources", navKey: "resources" as const },
   { href: "/help/new", navKey: "newRequest" as const },
 ] as const;
 
