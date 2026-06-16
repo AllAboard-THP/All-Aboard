@@ -36,11 +36,12 @@ describe("AppShellNav", () => {
     usePathname.mockReturnValue("/");
   });
 
-  it("renders four navigation links", () => {
+  it("renders five navigation links", () => {
     renderWithI18n(<AppShellNav />);
     const nav = getPrimaryNav();
     expect(nav.getByRole("link", { name: "Feed" })).toBeTruthy();
     expect(nav.getByRole("link", { name: "Explorer" })).toBeTruthy();
+    expect(nav.getByRole("link", { name: "Ressources" })).toBeTruthy();
     expect(nav.getByRole("link", { name: "Nouvelle demande" })).toBeTruthy();
     expect(nav.getByRole("link", { name: "Mentor" })).toBeTruthy();
   });
