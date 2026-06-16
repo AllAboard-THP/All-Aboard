@@ -23,7 +23,9 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 
 vi.mock("@/components/features/resources-new-cta", () => ({
-  ResourcesNewCta: () => <a href="/resources/new">Proposer une ressource</a>,
+  ResourcesNewCta: () => (
+    <div data-testid="resources-new-cta">Proposer une ressource</div>
+  ),
 }));
 
 vi.mock("@/components/features/resources-search-form", () => ({
