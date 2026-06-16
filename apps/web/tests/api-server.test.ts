@@ -1,8 +1,11 @@
 import { describe, it, expect } from "vitest";
 import {
   parseAuthMeResponse,
+  parseConversationsListResponse,
   parseFeedResponse,
   parseHelpRequestDetailResponse,
+  parseMarkConversationReadResponse,
+  parseMessagesListResponse,
   parseMentorDashboardResponse,
   parseMentorFeedResponse,
   parseMyHelpRequestsResponse,
@@ -359,5 +362,69 @@ describe("parseMentorDashboardResponse", () => {
         helpMentorQueue: [],
       }),
     ).toThrow("stats shape");
+  });
+});
+
+describe("parseConversationsListResponse", () => {
+  it("accepts valid inbox payload", () => {
+    const data = {
+      items: [
+        {
+          id: "conv-1",
+          updatedAt: "2020-01-01T00:00:00.000Z",
+          otherParticipant: { id: "u2", displayName: "Alice" },
+          unreadCount: 1,
+          lastMessage: {
+            id: "m1",
+            body: "Hi",
+            userId: "u1",
+            userName: "Bob",
+            createdAt: "2020-01-01T00:00:00.000Z",
+            type: "message" as const,
+          },
+        },
+      ],
+    };
+    expect(parseConversationsListResponse(data)).toEqual(data);
+  });
+
+  it("rejects invalid inbox item", () => {
+    expect(() =>
+      parseConversationsListResponse({
+        items: [{ id: "conv-1", unreadCount: "two" }],
+      }),
+    ).toThrow("item shape");
+  });
+});
+
+describe("parseMessagesListResponse", () => {
+  it("accepts valid messages page", () => {
+    const data = {
+      items: [
+        {
+          id: "m1",
+          body: "Hi",
+          userId: "u1",
+          userName: "Bob",
+          createdAt: "2020-01-01T00:00:00.000Z",
+          type: "message" as const,
+        },
+      ],
+      pagination: { page: 1, limit: 50, total: 1 },
+    };
+    expect(parseMessagesListResponse(data)).toEqual(data);
+  });
+});
+
+describe("parseMarkConversationReadResponse", () => {
+  it("accepts valid mark-read payload", () => {
+    const data = { ok: true as const, lastReadAt: "2020-01-01T00:00:00.000Z" };
+    expect(parseMarkConversationReadResponse(data)).toEqual(data);
+  });
+
+  it("rejects invalid shape", () => {
+    expect(() => parseMarkConversationReadResponse({ ok: false })).toThrow(
+      "shape",
+    );
   });
 });
