@@ -1678,6 +1678,19 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       expect(readBody.ok).toBe(true);
       expect(readBody.lastReadAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
 
+      const wsTokenRes = await app.inject({
+        method: "GET",
+        url: `/conversations/${conv.item.id}/ws-token`,
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      expect(wsTokenRes.statusCode).toBe(200);
+      const wsToken = JSON.parse(wsTokenRes.payload) as {
+        token: string;
+        expiresIn: number;
+      };
+      expect(wsToken.token.length).toBeGreaterThan(10);
+      expect(wsToken.expiresIn).toBe(60);
+
       const inboxAfterRead = await app.inject({
         method: "GET",
         url: "/conversations",

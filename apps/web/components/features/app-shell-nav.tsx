@@ -6,6 +6,7 @@ import { Button } from "@allaboard/ui/components/button";
 import { cn } from "@allaboard/ui/lib/utils";
 
 import { MentorNavLink } from "@/components/features/mentor-nav-link";
+import { MessagesNavLink } from "@/components/features/messages-nav-link";
 import { Link, usePathname } from "@/i18n/navigation";
 
 export const APP_SHELL_NAV = [
@@ -56,6 +57,7 @@ export function AppShellNav() {
           </Button>
         );
       })}
+      <MessagesNavLink />
       <MentorNavLink active={isNavActive(pathname, MENTOR_HREF)} />
     </nav>
   );

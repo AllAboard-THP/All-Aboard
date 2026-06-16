@@ -12,6 +12,12 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@allaboard/ui"],
   output: "standalone",
   outputFileTracingRoot: monorepoRoot,
+  env: {
+    NEXT_PUBLIC_API_URL:
+      process.env.NEXT_PUBLIC_API_URL?.trim() ||
+      process.env.API_URL?.trim() ||
+      "http://127.0.0.1:4000",
+  },
 };
 
 export default withNextIntl(nextConfig);

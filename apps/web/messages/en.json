@@ -58,8 +58,10 @@
     "explore": "Explore",
     "resources": "Resources",
     "newRequest": "New request",
+    "messages": "Messages",
     "mentor": "Mentor",
-    "mentorUnreadAria": "{count, plural, one {# request with new replies} other {# requests with new replies}}"
+    "mentorUnreadAria": "{count, plural, one {# item needs attention} other {# items need attention}}",
+    "messagesUnreadAria": "{count, plural, one {# unread message} other {# unread messages}}"
   },
   "userMenu": {
     "ariaLabel": "User menu — {name}",
@@ -402,5 +404,26 @@
     "myBookmarksEmptyTitle": "No bookmarks yet",
     "myBookmarksEmptyDescription": "Click Save on a request to find it here.",
     "myBookmarksEmptyCta": "Browse the feed"
+  },
+  "messages": {
+    "title": "Messages",
+    "inboxAria": "Conversation list",
+    "emptyInbox": "No conversations yet.",
+    "selectConversation": "Select a conversation to get started.",
+    "loadErrorTitle": "Unable to load messages",
+    "threadErrorTitle": "Unable to load this conversation",
+    "threadMessagesAria": "Conversation messages",
+    "backToInbox": "Back to conversations",
+    "send": "Send",
+    "sendPending": "Sending…",
+    "sendLabel": "Your message",
+    "sendPlaceholder": "Write a message…",
+    "sendError": "Could not send the message. Try again.",
+    "startWith": "Message {name}",
+    "startPending": "Opening…",
+    "loginRequiredTitle": "Sign-in required",
+    "loginRequiredDescription": "Sign in with a passkey via <link></link> to access your messages.",
+    "loginRequiredLink": "the sign-in page",
+    "unknownPeer": "Conversation"
   }
 }

@@ -12,6 +12,7 @@ import {
 } from "@allaboard/ui/components/card";
 
 import { PostCard, type PostCardLabels } from "@/components/features/post-card";
+import { StartConversationButton } from "@/components/features/start-conversation-button";
 import { UserProfilePagination } from "@/components/features/user-profile-pagination";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
@@ -25,6 +26,7 @@ type Props = {
   userId: string;
   data: PublicUserResponse;
   params: PublicUserPageParams;
+  viewerId?: string | null;
 };
 
 function profileAvatarSrc(
@@ -82,7 +84,12 @@ function ResponseListItem({
   );
 }
 
-export async function UserPublicContent({ userId, data, params }: Props) {
+export async function UserPublicContent({
+  userId,
+  data,
+  params,
+  viewerId,
+}: Props) {
   const t = await getTranslations("profile.public");
   const tPostCard = await getTranslations("postCard");
   const tFeed = await getTranslations("feed");
@@ -102,6 +109,7 @@ export async function UserPublicContent({ userId, data, params }: Props) {
 
   const posts = data.tab === "posts" ? (data.items as HelpRequest[]) : [];
   const responses = data.tab === "responses" ? (data.items as Response[]) : [];
+  const canMessage = viewerId && viewerId !== userId;
 
   return (
     <div className="mx-auto w-full max-w-5xl p-6">
@@ -140,6 +148,14 @@ export async function UserPublicContent({ userId, data, params }: Props) {
               <Badge variant="secondary" className="mt-2">
                 {profile.role}
               </Badge>
+              {canMessage ?
+                <div className="mt-3">
+                  <StartConversationButton
+                    recipientId={userId}
+                    recipientName={profile.displayName}
+                  />
+                </div>
+              : null}
             </div>
           </div>
         </div>

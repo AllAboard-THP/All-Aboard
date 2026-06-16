@@ -516,6 +516,12 @@ export type MarkConversationReadResponse = {
   lastReadAt: string;
 };
 
+/** Short-lived JWT for WebSocket handoff (BFF → browser → API WS). */
+export type ConversationWsTokenResponse = {
+  token: string;
+  expiresIn: number;
+};
+
 export type DenylistPattern = {
   id: string;
   label: string;

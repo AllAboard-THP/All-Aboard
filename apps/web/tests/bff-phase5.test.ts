@@ -9,6 +9,7 @@ import {
   POST as messagesPost,
 } from "@/app/api/conversations/[id]/messages/route";
 import { PATCH as readPatch } from "@/app/api/conversations/[id]/read/route";
+import { GET as wsTokenGet } from "@/app/api/conversations/[id]/ws-token/route";
 
 vi.mock("@/lib/api-server", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/api-server")>();
@@ -365,6 +366,47 @@ describe("BFF Phase 5 (W-P2-05)", () => {
       );
       const body = (await res.json()) as { ok: boolean; lastReadAt: string };
       expect(body.ok).toBe(true);
+    });
+  });
+
+  describe("GET /api/conversations/[id]/ws-token", () => {
+    it("returns 401 without cookie", async () => {
+      mockNoToken();
+
+      const res = await wsTokenGet(
+        new Request("http://localhost/api/conversations/conv-1/ws-token"),
+        { params: Promise.resolve({ id: "conv-1" }) },
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    it("forwards auth and relays upstream token", async () => {
+      mockToken();
+      fetchMock.mockResolvedValueOnce(
+        new Response(JSON.stringify({ token: "ws-jwt", expiresIn: 60 }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+
+      const res = await wsTokenGet(
+        new Request("http://localhost/api/conversations/conv-1/ws-token"),
+        { params: Promise.resolve({ id: "conv-1" }) },
+      );
+
+      expect(res.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://api.test:4000/conversations/conv-1/ws-token",
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            authorization: "Bearer jwt-chat",
+          }),
+        }),
+      );
+      const body = (await res.json()) as { token: string; expiresIn: number };
+      expect(body.token).toBe("ws-jwt");
+      expect(body.expiresIn).toBe(60);
     });
   });
 });

@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type {
   ConversationsListResponse,
+  ConversationWsTokenResponse,
   CreateConversationResponse,
   CreateMessageResponse,
   MarkConversationReadResponse,
@@ -207,6 +208,38 @@ export function registerConversationRoutes(
       broadcastChatMessage(conversationId, message);
 
       return reply.code(201).send({ item: message });
+    },
+  );
+
+  app.get(
+    "/conversations/:id/ws-token",
+    { preHandler: [app.authenticate] },
+    async (request, reply): Promise<ConversationWsTokenResponse | void> => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      const { id: conversationId } = request.params as { id: string };
+      const jwtUser = getJwtUser(request);
+      const viewer = await loadUserFromJwtSub(db, jwtUser.sub);
+      if (!viewer) {
+        return reply.code(404).send({ error: "user_not_found" });
+      }
+
+      const allowed = await isConversationParticipant(
+        db,
+        conversationId,
+        viewer.id,
+      );
+      if (!allowed) {
+        return reply.code(403).send({ error: "forbidden" });
+      }
+
+      const token = app.jwt.sign(
+        { sub: jwtUser.sub, role: jwtUser.role },
+        { expiresIn: "60s" },
+      );
+
+      return { token, expiresIn: 60 };
     },
   );
 

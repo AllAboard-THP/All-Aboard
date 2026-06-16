@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 
 import {
@@ -9,7 +10,7 @@ import { Button } from "@allaboard/ui/components/button";
 
 import { UserPublicContent } from "@/components/features/user-public-content";
 import { Link } from "@/i18n/navigation";
-import { fetchPublicUser } from "@/lib/api-server";
+import { fetchAuthMe, fetchPublicUser } from "@/lib/api-server";
 import { parsePublicUserSearchParams } from "@/lib/user-search-params";
 
 export const dynamic = "force-dynamic";
@@ -25,12 +26,26 @@ export default async function UserPublicPage({ params, searchParams }: Props) {
   const pageParams = parsePublicUserSearchParams(resolvedSearchParams);
   const t = await getTranslations("profile.public");
   const tFeed = await getTranslations("feed");
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
+  let viewerId: string | null = null;
+  if (token) {
+    const meResult = await fetchAuthMe(token);
+    if (meResult.ok) {
+      viewerId = meResult.data.userId;
+    }
+  }
 
   const result = await fetchPublicUser(id, pageParams);
 
   if (result.ok) {
     return (
-      <UserPublicContent userId={id} data={result.data} params={pageParams} />
+      <UserPublicContent
+        userId={id}
+        data={result.data}
+        params={pageParams}
+        viewerId={viewerId}
+      />
     );
   }
 
