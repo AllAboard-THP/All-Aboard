@@ -1,5 +1,4 @@
 import fs from "node:fs/promises";
-import multipart from "@fastify/multipart";
 import type { FastifyInstance } from "fastify";
 import type { DeleteAvatarResponse, UploadAvatarResponse } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
@@ -12,6 +11,7 @@ import {
   isManagedAvatarUrl,
   resolveAvatarPublicBaseUrl,
 } from "../lib/avatar-storage.js";
+import { uploadAvatarBodySchema } from "../lib/schemas.js";
 import {
   AVATAR_MAX_BYTES,
   processAvatarImage,
@@ -21,17 +21,10 @@ import { loadUserByEmail } from "../services/user-profile.js";
 import { users } from "../db/schema.js";
 import { eq } from "drizzle-orm";
 
-export async function registerAvatarRoutes(
+export function registerAvatarRoutes(
   app: FastifyInstance,
   db: AppDatabase | null,
 ) {
-  await app.register(multipart, {
-    limits: {
-      fileSize: AVATAR_MAX_BYTES,
-      files: 1,
-    },
-  });
-
   app.post(
     "/users/me/avatar",
     { preHandler: [app.authenticate] },
@@ -40,26 +33,30 @@ export async function registerAvatarRoutes(
         return reply.code(503).send({ error: "database_unavailable" });
       }
 
+      const parsed = uploadAvatarBodySchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.code(400).send({ error: "invalid_body" });
+      }
+
       const jwtUser = getJwtUser(request);
       const row = await loadUserByEmail(db, jwtUser.sub);
       if (!row) {
         return reply.code(404).send({ error: "user_not_found" });
       }
 
-      const file = await request.file();
-      if (!file) {
-        return reply.code(400).send({ error: "missing_file" });
-      }
-
-      const mimeError = validateAvatarMimeType(file.mimetype);
+      const mimeError = validateAvatarMimeType(parsed.data.mimeType);
       if (mimeError) {
         return reply.code(400).send({ error: mimeError });
       }
 
       let inputBuffer: Buffer;
       try {
-        inputBuffer = await file.toBuffer();
+        inputBuffer = Buffer.from(parsed.data.imageBase64, "base64");
       } catch {
+        return reply.code(400).send({ error: "invalid_image" });
+      }
+
+      if (inputBuffer.length === 0 || inputBuffer.length > AVATAR_MAX_BYTES) {
         return reply.code(400).send({ error: "file_too_large" });
       }
 

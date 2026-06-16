@@ -11,7 +11,6 @@ import {
   useLegacyMentorDashboard,
   useLegacyModeration,
   useMvpPatternLabels,
-  useLegacyProfile,
   useLegacyResources,
   usePostCardFixture,
   usePostCardLabels,
@@ -49,12 +48,6 @@ import {
 } from "../legacy-feed-patterns";
 import type { LegacyRecentlyViewedPost } from "../fixtures/legacy-feed-thread";
 import { MessagesInboxLayout } from "../legacy-messages-patterns";
-import {
-  ProfileAboutCard,
-  ProfileActivityTabs,
-  ProfileHeaderCard,
-  ProfileStatGrid,
-} from "../legacy-profile-patterns";
 import { ProfilePrivatePageDemo } from "../profile-page-screen";
 import { Button } from "../../components/button";
 import {

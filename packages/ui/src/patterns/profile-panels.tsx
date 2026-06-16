@@ -5,7 +5,6 @@ import type { ReactNode } from "react";
 import { Badge } from "../components/badge";
 import { Button } from "../components/button";
 import { Checkbox } from "../components/checkbox";
-import { Input } from "../components/input";
 import { Label } from "../components/label";
 import { Textarea } from "../components/textarea";
 import {
