@@ -15,20 +15,45 @@ type MentorNavLinkProps = {
 
 export function MentorNavLink({ active }: MentorNavLinkProps) {
   const t = useTranslations("nav");
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [badgeCount, setBadgeCount] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/mentor/feed", { cache: "no-store", credentials: "include" })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: { items?: Array<{ hasUnreadForMentor?: boolean }> } | null) => {
-        if (cancelled || !data?.items) return;
-        const count = data.items.filter((item) => item.hasUnreadForMentor).length;
-        setUnreadCount(count);
+
+    async function loadBadgeCounts() {
+      const feedPromise = fetch("/api/mentor/feed", {
+        cache: "no-store",
+        credentials: "include",
       })
-      .catch(() => {
-        /* mentor-only route — ignore errors for students */
-      });
+        .then((res) => (res.ok ? res.json() : null))
+        .catch(() => null);
+
+      const dashboardPromise = fetch("/api/mentor/dashboard", {
+        cache: "no-store",
+        credentials: "include",
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .catch(() => null);
+
+      const [feedData, dashboardData] = await Promise.all([
+        feedPromise,
+        dashboardPromise,
+      ]);
+
+      if (cancelled) return;
+
+      const feedUnread =
+        feedData?.items?.filter(
+          (item: { hasUnreadForMentor?: boolean }) => item.hasUnreadForMentor,
+        ).length ?? 0;
+      const pendingResources =
+        dashboardData?.stats?.pendingResourcesCount ?? 0;
+
+      setBadgeCount(feedUnread + pendingResources);
+    }
+
+    loadBadgeCounts();
+
     return () => {
       cancelled = true;
     };
@@ -44,15 +69,15 @@ export function MentorNavLink({ active }: MentorNavLinkProps) {
       <Link href="/mentor" aria-current={active ? "page" : undefined}>
         <span className="inline-flex items-center gap-1.5">
           {t("mentor")}
-          {unreadCount > 0 ? (
+          {badgeCount > 0 ?
             <Badge
               variant="destructive"
               data-testid="mentor-notification-badge"
-              aria-label={t("mentorUnreadAria", { count: unreadCount })}
+              aria-label={t("mentorUnreadAria", { count: badgeCount })}
             >
-              {unreadCount}
+              {badgeCount}
             </Badge>
-          ) : null}
+          : null}
         </span>
       </Link>
     </Button>

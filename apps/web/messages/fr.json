@@ -58,8 +58,10 @@
     "explore": "Explorer",
     "resources": "Ressources",
     "newRequest": "Nouvelle demande",
+    "messages": "Messages",
     "mentor": "Mentor",
-    "mentorUnreadAria": "{count, plural, one {# demande avec nouvelles réponses} other {# demandes avec nouvelles réponses}}"
+    "mentorUnreadAria": "{count, plural, one {# élément à traiter} other {# éléments à traiter}}",
+    "messagesUnreadAria": "{count, plural, one {# message non lu} other {# messages non lus}}"
   },
   "userMenu": {
     "ariaLabel": "Menu utilisateur — {name}",
@@ -402,5 +404,26 @@
     "myBookmarksEmptyTitle": "Aucune sauvegarde",
     "myBookmarksEmptyDescription": "Cliquez sur « Sauvegarder » sur une demande pour la retrouver ici.",
     "myBookmarksEmptyCta": "Explorer le feed"
+  },
+  "messages": {
+    "title": "Messages",
+    "inboxAria": "Liste des conversations",
+    "emptyInbox": "Aucune conversation pour le moment.",
+    "selectConversation": "Sélectionnez une conversation pour commencer.",
+    "loadErrorTitle": "Impossible de charger les messages",
+    "threadErrorTitle": "Impossible de charger la conversation",
+    "threadMessagesAria": "Messages de la conversation",
+    "backToInbox": "Retour aux conversations",
+    "send": "Envoyer",
+    "sendPending": "Envoi…",
+    "sendLabel": "Votre message",
+    "sendPlaceholder": "Écrire un message…",
+    "sendError": "Le message n'a pas pu être envoyé. Réessayez.",
+    "startWith": "Message à {name}",
+    "startPending": "Ouverture…",
+    "loginRequiredTitle": "Connexion requise",
+    "loginRequiredDescription": "Connectez-vous avec une passkey via <link></link> pour accéder à vos messages.",
+    "loginRequiredLink": "la page de connexion",
+    "unknownPeer": "Conversation"
   }
 }
