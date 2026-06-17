@@ -31,7 +31,7 @@ import {
   mapResourceRow,
   syncResourceTags,
 } from "../services/resources.js";
-import { loadUserByEmail } from "../services/user-profile.js";
+import { loadUserFromJwtSub } from "../services/user-profile.js";
 
 async function subjectExists(
   db: AppDatabase,
@@ -120,7 +120,7 @@ export function registerResourceRoutes(
       }
 
       const jwtUser = getJwtUser(request);
-      const user = await loadUserByEmail(db, jwtUser.sub);
+      const user = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!user) {
         return reply.code(404).send({ error: "user_not_found" });
       }
@@ -180,7 +180,7 @@ export function registerResourceRoutes(
         const jwtUser = getJwtUser(request);
         viewerEmail = jwtUser.sub;
         viewerRole = roleFromJwtClaims(jwtUser.sub, jwtUser.role);
-        const user = await loadUserByEmail(db, jwtUser.sub);
+        const user = await loadUserFromJwtSub(db, jwtUser.sub);
         viewerUserId = user?.id ?? null;
       } catch {
         // public access for published only
@@ -228,7 +228,10 @@ export function registerResourceRoutes(
 
       const jwtUser = getJwtUser(request);
       const role = roleFromJwtClaims(jwtUser.sub, jwtUser.role);
-      const isOwner = bundle.author?.email === jwtUser.sub;
+      const dbUser = await loadUserFromJwtSub(db, jwtUser.sub);
+      const isOwner = Boolean(
+        dbUser && bundle.author?.email === dbUser.email,
+      );
       if (!isOwner && role !== "admin") {
         return reply.code(403).send({ error: "forbidden" });
       }
@@ -291,7 +294,10 @@ export function registerResourceRoutes(
 
       const jwtUser = getJwtUser(request);
       const role = roleFromJwtClaims(jwtUser.sub, jwtUser.role);
-      const isOwner = bundle.author?.email === jwtUser.sub;
+      const dbUser = await loadUserFromJwtSub(db, jwtUser.sub);
+      const isOwner = Boolean(
+        dbUser && bundle.author?.email === dbUser.email,
+      );
       if (!isOwner && role !== "admin") {
         return reply.code(403).send({ error: "forbidden" });
       }

@@ -18,13 +18,11 @@ import { clearAuthCookie, issueAuthToken } from "../auth/session.js";
 import type { AppDatabase } from "../db/client.js";
 import {
   getJwtUser,
+  resolveAuthenticatedUser,
   roleFromJwtClaims,
 } from "../lib/auth-helpers.js";
 import { rowToUserProfile } from "../lib/user-mappers.js";
-import {
-  loadCompetenceSubjects,
-  loadUserByEmail,
-} from "../services/user-profile.js";
+import { loadCompetenceSubjects, loadUserById } from "../services/user-profile.js";
 
 export function registerAuthRoutes(
   app: FastifyInstance,
@@ -118,18 +116,24 @@ export function registerAuthRoutes(
         };
       }
 
-      const row = await loadUserByEmail(db, jwtUser.sub);
-      if (!row) {
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
         return { userId: jwtUser.sub, role };
       }
 
-      const competenceSubjects = await loadCompetenceSubjects(db, row.id);
+      const row = await loadUserById(db, authUser.id);
+      if (!row) {
+        return { userId: authUser.id, role: authUser.role };
+      }
+
+      const competenceSubjects = await loadCompetenceSubjects(db, authUser.id);
       const profile = rowToUserProfile(row, competenceSubjects);
       return {
-        userId: jwtUser.sub,
-        id: profile.id,
-        email: profile.email,
-        createdAt: profile.createdAt,
+        userId: authUser.id,
         role: profile.role,
         displayName: profile.displayName,
         fullName: profile.fullName,

@@ -8,6 +8,10 @@ import type pg from "pg";
 import { createDb, createPool } from "./db/client.js";
 import type { AppDatabase } from "./db/client.js";
 import {
+  createAgentModerationEvaluator,
+  type EvaluateModerationFn,
+} from "./agent/moderation.js";
+import {
   createAgentRoutingEvaluator,
   type EvaluateRoutingFn,
 } from "./agent/routing.js";
@@ -18,7 +22,6 @@ import {
 } from "./lib/avatar-storage.js";
 import { registerOpenApiDocs } from "./openapi.js";
 import { registerAdminRoutes } from "./routes/admin.js";
-import { registerGoogleOAuthRoutes } from "./auth/oauth/google-routes.js";
 import { registerAuthRoutes } from "./routes/auth.js";
 import { registerFeedRoutes } from "./routes/feed.js";
 import { registerHelpRequestRoutes } from "./routes/help-requests.js";
@@ -32,6 +35,7 @@ import { registerSocialRoutes } from "./routes/social.js";
 import { registerSubjectRequestRoutes } from "./routes/subject-requests.js";
 import { registerSubjectRoutes } from "./routes/subjects.js";
 import { registerSuggestTagsRoutes } from "./routes/suggest-tags.js";
+import { registerPasskeyRoutes } from "./routes/passkey.js";
 import { registerUserRoutes } from "./routes/users.js";
 import { registerAvatarRoutes } from "./routes/avatar.js";
 import type { SuggestTagsFn } from "./agent/tag-suggestion.js";
@@ -40,6 +44,8 @@ export type BuildAppOptions = {
   pool?: pg.Pool | null;
   /** Injecté en tests (#68) ; défaut : client HTTP vers `AGENT_URL` + fallback. */
   evaluateRouting?: EvaluateRoutingFn;
+  /** Injecté en tests ; défaut : proxy `POST /moderation/evaluate` + fallback conservateur. */
+  evaluateModeration?: EvaluateModerationFn;
   suggestTags?: SuggestTagsFn;
 };
 
@@ -49,6 +55,8 @@ export async function buildApp(options?: BuildAppOptions) {
   const db: AppDatabase | null = pool ? createDb(pool) : null;
   const evaluateRouting =
     options?.evaluateRouting ?? createAgentRoutingEvaluator();
+  const evaluateModeration =
+    options?.evaluateModeration ?? createAgentModerationEvaluator();
   const suggestTags = options?.suggestTags;
 
   const app = Fastify({ logger: false });
@@ -87,12 +95,12 @@ export async function buildApp(options?: BuildAppOptions) {
 
   registerFeedRoutes(app, db);
   registerSubjectRoutes(app, db);
-  registerHelpRequestRoutes(app, db, evaluateRouting);
+  registerHelpRequestRoutes(app, db, evaluateRouting, evaluateModeration);
   registerSuggestTagsRoutes(app, db, suggestTags);
   registerSocialRoutes(app, db);
   registerMeRoutes(app, db);
   registerAuthRoutes(app, db);
-  registerGoogleOAuthRoutes(app, db);
+  registerPasskeyRoutes(app, db);
   registerUserRoutes(app, db);
   await ensureAvatarStorageDir();
   await app.register(fastifyStatic, {

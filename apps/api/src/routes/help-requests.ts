@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { eq, inArray, sql } from "drizzle-orm";
+import { eq, inArray, or, sql } from "drizzle-orm";
 import type {
   CreateHelpRequestResponse,
   CreateResponseResponse,
@@ -9,18 +9,24 @@ import type {
 } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import { helpRequests, responses, subjects, users } from "../db/schema.js";
+import type { EvaluateModerationFn } from "../agent/moderation.js";
 import type { EvaluateRoutingFn } from "../agent/routing.js";
 import {
   enqueueHelpRequestCreated,
   enqueueHelpRequestSummaryRequested,
 } from "../intuition/outbox.js";
 import {
+  authorIdKeysFromRow,
+  authorIdMatchesUser,
   getJwtUser,
   isAdminRole,
   normalizeTitle,
+  resolveAuthenticatedUser,
   responseVisibleUnderCertificationFilter,
   roleFromJwtClaims,
+  userAuthorIdKeys,
 } from "../lib/auth-helpers.js";
+import { isUuid } from "../auth/passkey/config.js";
 import {
   contentShouldBeFlagged,
   moderationContentFromFields,
@@ -64,10 +70,62 @@ async function subjectExists(
   return rows.length > 0;
 }
 
+const LEGACY_AUTHOR_EMAIL: Record<string, string> = {
+  bob: "bob@dev.local",
+  alice: "alice@dev.local",
+};
+
+async function certificationTagsByAuthorIds(
+  db: AppDatabase,
+  authorIds: string[],
+): Promise<Map<string, string[]>> {
+  const result = new Map<string, string[]>();
+  const unique = [...new Set(authorIds)];
+  if (unique.length === 0) return result;
+
+  const uuidKeys = unique.filter((k) => isUuid(k));
+  const emailKeys = unique.filter((k) => k.includes("@"));
+  const legacyKeys = unique.filter((k) => !isUuid(k) && !k.includes("@"));
+  const legacyEmails = legacyKeys.map(
+    (k) => LEGACY_AUTHOR_EMAIL[k] ?? k,
+  );
+  const emails = [
+    ...new Set([
+      ...emailKeys,
+      ...legacyEmails.filter((e) => e.includes("@")),
+    ]),
+  ];
+
+  const clauses = [];
+  if (uuidKeys.length > 0) clauses.push(inArray(users.id, uuidKeys));
+  if (emails.length > 0) clauses.push(inArray(users.email, emails));
+  if (clauses.length === 0) return result;
+
+  const userRows = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      certificationTags: users.certificationTags,
+    })
+    .from(users)
+    .where(clauses.length === 1 ? clauses[0]! : or(...clauses));
+
+  for (const u of userRows) {
+    const tags = u.certificationTags ?? [];
+    for (const key of authorIdKeysFromRow(u)) {
+      if (unique.includes(key)) {
+        result.set(key, tags);
+      }
+    }
+  }
+  return result;
+}
+
 export function registerHelpRequestRoutes(
   app: FastifyInstance,
   db: AppDatabase | null,
   evaluateRouting: EvaluateRoutingFn,
+  evaluateModeration: EvaluateModerationFn,
 ) {
   app.get(
     "/help-requests/:id",
@@ -97,11 +155,18 @@ export function registerHelpRequestRoutes(
         return reply.code(404).send({ error: "not_found" });
       }
 
-      let viewerEmail: string | undefined;
+      let viewerAuthorKeys: string[] | undefined;
       let viewerIsAdmin = false;
       if (filterByCertifications) {
         const jwtUser = getJwtUser(request);
-        viewerEmail = jwtUser.sub;
+        const authUser = await resolveAuthenticatedUser(
+          db,
+          jwtUser.sub,
+          jwtUser.role,
+        );
+        if (authUser) {
+          viewerAuthorKeys = userAuthorIdKeys(authUser);
+        }
         viewerIsAdmin = isAdminRole(
           roleFromJwtClaims(jwtUser.sub, jwtUser.role),
         );
@@ -109,7 +174,14 @@ export function registerHelpRequestRoutes(
         try {
           await request.jwtVerify();
           const jwtUser = getJwtUser(request);
-          viewerEmail = jwtUser.sub;
+          const authUser = await resolveAuthenticatedUser(
+            db,
+            jwtUser.sub,
+            jwtUser.role,
+          );
+          if (authUser) {
+            viewerAuthorKeys = userAuthorIdKeys(authUser);
+          }
           viewerIsAdmin = isAdminRole(
             roleFromJwtClaims(jwtUser.sub, jwtUser.role),
           );
@@ -121,7 +193,8 @@ export function registerHelpRequestRoutes(
       if (
         loaded.helpRequest.flaggedForModeration &&
         !viewerIsAdmin &&
-        loaded.helpRequest.authorId !== viewerEmail
+        (!viewerAuthorKeys ||
+          !viewerAuthorKeys.includes(loaded.helpRequest.authorId))
       ) {
         return reply.code(404).send({ error: "not_found" });
       }
@@ -129,7 +202,8 @@ export function registerHelpRequestRoutes(
       if (
         loaded.helpRequest.deletedAt &&
         !viewerIsAdmin &&
-        loaded.helpRequest.authorId !== viewerEmail
+        (!viewerAuthorKeys ||
+          !viewerAuthorKeys.includes(loaded.helpRequest.authorId))
       ) {
         return reply.code(404).send({ error: "not_found" });
       }
@@ -144,27 +218,17 @@ export function registerHelpRequestRoutes(
         ? responseRows
         : responseRows.filter((r) => !r.flaggedForModeration);
       if (filterByCertifications) {
-        const authorEmails = [...new Set(responseRows.map((r) => r.authorId))];
-        const certByEmail = new Map<string, string[]>();
-        if (authorEmails.length > 0) {
-          const userRows = await db
-            .select({
-              email: users.email,
-              certificationTags: users.certificationTags,
-            })
-            .from(users)
-            .where(inArray(users.email, authorEmails));
-          for (const u of userRows) {
-            certByEmail.set(u.email, u.certificationTags ?? []);
-          }
-        }
+        const certByAuthorId = await certificationTagsByAuthorIds(
+          db,
+          responseRows.map((r) => r.authorId),
+        );
         const requestTags = loaded.helpRequest.tags ?? [];
         visibleRows = responseRows.filter((r) =>
           responseVisibleUnderCertificationFilter(
             r.authorId,
             loaded.helpRequest.authorId,
             requestTags,
-            certByEmail.get(r.authorId) ?? [],
+            certByAuthorId.get(r.authorId) ?? [],
           ),
         );
       }
@@ -210,7 +274,15 @@ export function registerHelpRequestRoutes(
       if (!parsed.success) {
         return reply.code(400).send({ error: "invalid_body" });
       }
-      const user = getJwtUser(request);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
       const norm = normalizeTitle(parsed.data.title);
       const dup = await db
         .select({ id: helpRequests.id })
@@ -242,6 +314,7 @@ export function registerHelpRequestRoutes(
           body,
           parsed.data.codeSnippet,
         ]),
+        evaluateModeration,
       );
       const now = new Date();
       const inserted = await db
@@ -249,7 +322,7 @@ export function registerHelpRequestRoutes(
         .values({
           title,
           body,
-          authorId: user.sub,
+          authorId: authUser.id,
           tags,
           codeSnippet: parsed.data.codeSnippet,
           codeLanguage: parsed.data.codeLanguage ?? "plaintext",
@@ -284,7 +357,7 @@ export function registerHelpRequestRoutes(
       const routing = await evaluateRouting({
         title: parsed.data.title.trim(),
         ...(tags.length ? { tags } : {}),
-        authorId: user.sub,
+        authorId: authUser.id,
       });
       const hints = routing.suggestRubberduckRedirect
         ? { rubberduckEligible: true as const }
@@ -307,13 +380,24 @@ export function registerHelpRequestRoutes(
       }
 
       const { id } = request.params as { id: string };
-      const user = getJwtUser(request);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
       const loaded = await loadHelpRequestRow(db, id);
       if (!loaded) {
         return reply.code(404).send({ error: "not_found" });
       }
-      const role = roleFromJwtClaims(user.sub, user.role);
-      const isAuthor = loaded.helpRequest.authorId === user.sub;
+      const role = roleFromJwtClaims(jwtUser.sub, jwtUser.role);
+      const isAuthor = authorIdMatchesUser(
+        loaded.helpRequest.authorId,
+        authUser,
+      );
       if (!isAuthor && !isAdminRole(role)) {
         return reply.code(403).send({ error: "forbidden" });
       }
@@ -346,6 +430,7 @@ export function registerHelpRequestRoutes(
       const flagged = await contentShouldBeFlagged(
         db,
         moderationContentFromFields([nextTitle, nextBody, nextCodeSnippet]),
+        evaluateModeration,
       );
 
       const updated = await db
@@ -418,12 +503,20 @@ export function registerHelpRequestRoutes(
         return reply.code(503).send({ error: "database_unavailable" });
       }
       const { id } = request.params as { id: string };
-      const user = getJwtUser(request);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
       const loaded = await loadHelpRequestRow(db, id);
       if (!loaded) {
         return reply.code(404).send({ error: "not_found" });
       }
-      if (loaded.helpRequest.authorId !== user.sub) {
+      if (!authorIdMatchesUser(loaded.helpRequest.authorId, authUser)) {
         return reply.code(403).send({ error: "forbidden" });
       }
 
@@ -471,18 +564,27 @@ export function registerHelpRequestRoutes(
       if (helpRows.length === 0) {
         return reply.code(404).send({ error: "not_found" });
       }
-      const user = getJwtUser(request);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
       const body = parsed.data.body.trim();
       const flagged = await contentShouldBeFlagged(
         db,
         moderationContentFromFields([body, parsed.data.codeSnippet]),
+        evaluateModeration,
       );
       const inserted = await db
         .insert(responses)
         .values({
           helpRequestId: id,
           body,
-          authorId: user.sub,
+          authorId: authUser.id,
           codeSnippet: parsed.data.codeSnippet,
           codeLanguage: parsed.data.codeLanguage,
           flaggedForModeration: flagged,
@@ -530,8 +632,16 @@ export function registerHelpRequestRoutes(
       if (!row || row.helpRequestId !== id) {
         return reply.code(404).send({ error: "not_found" });
       }
-      const user = getJwtUser(request);
-      if (row.authorId !== user.sub) {
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
+      if (!authorIdMatchesUser(row.authorId, authUser)) {
         return reply.code(403).send({ error: "forbidden" });
       }
       const nextBody =
@@ -543,6 +653,7 @@ export function registerHelpRequestRoutes(
       const flagged = await contentShouldBeFlagged(
         db,
         moderationContentFromFields([nextBody, nextCodeSnippet]),
+        evaluateModeration,
       );
       const updated = await db
         .update(responses)
@@ -576,13 +687,24 @@ export function registerHelpRequestRoutes(
         return reply.code(503).send({ error: "database_unavailable" });
       }
       const { id } = request.params as { id: string };
-      const user = getJwtUser(request);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
       const loaded = await loadHelpRequestRow(db, id);
       if (!loaded || loaded.helpRequest.deletedAt) {
         return reply.code(404).send({ error: "not_found" });
       }
-      const role = roleFromJwtClaims(user.sub, user.role);
-      const isAuthor = loaded.helpRequest.authorId === user.sub;
+      const role = roleFromJwtClaims(jwtUser.sub, jwtUser.role);
+      const isAuthor = authorIdMatchesUser(
+        loaded.helpRequest.authorId,
+        authUser,
+      );
       if (!isAuthor && !isAdminRole(role)) {
         return reply.code(403).send({ error: "forbidden" });
       }
@@ -620,8 +742,16 @@ export function registerHelpRequestRoutes(
       if (!row || row.helpRequestId !== id) {
         return reply.code(404).send({ error: "not_found" });
       }
-      const user = getJwtUser(request);
-      if (row.authorId !== user.sub) {
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
+      if (!authorIdMatchesUser(row.authorId, authUser)) {
         return reply.code(403).send({ error: "forbidden" });
       }
       await db.delete(responses).where(eq(responses.id, responseId));

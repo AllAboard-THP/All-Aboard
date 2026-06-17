@@ -62,10 +62,14 @@ Docs/
 
 ## Engineering principles
 
-1. **Shared contract** — `packages/types` + API; a cross-cutting PR touches api + types + web + tests.
-2. **SSR** uses internal `API_URL`; client feed refresh uses **BFF** `GET /api/feed` (same-origin).
-3. **TanStack Query** is the client data layer; foundation shipped with the feed ([integration guide](guides/web-api-integration.md)).
-4. **`NEXT_PUBLIC_*`** only when the browser calls the API directly.
+| Zone | État |
+|------|------|
+| `apps/api` | Fastify : socle MVP + **parité Rails phases 1–7** (feed, social, auth/profils, resources, chat REST+WS, admin, soft delete, suggest-tags, `ai_summary` outbox) ; `apps/agent` pour tags/summary ; hub doc [api-rails-parity](tasks/api-rails-parity/README.md) ; OpenAPI [`openapi.yaml`](../apps/api/openapi.yaml) **0.10.0**. |
+| `apps/web` | SSR feed ; BFF ; `/help/new` ; **AppShell** (`app/(app)/`, nav MOC) — [app-shell.md](design-system/app-shell.md) ; `@allaboard/ui` + features/blocks. |
+| `packages/ui` + `apps/storybook` | Design system + catalogue SB — [design-system/README.md](design-system/README.md). |
+| Auth | JWT (cookie `access_token` + relais BFF Bearer) — [ADR 0001](adr/0001-authentication-strategy.md) ; cible prod **passkeys** — [ADR 0006](adr/0006-authentication-passkeys.md) ; legacy password — [ADR 0003](adr/0003-authentication-users-production.md). |
+| TanStack | Socle + `useQuery` feed/détail, `useMutation` création — [#36](https://github.com/AllAboard-THP/All-Aboard/issues/36). |
+| `apps/thp-final` | Rails historique — hors MVP JS sauf décision explicite. |
 
 ---
 

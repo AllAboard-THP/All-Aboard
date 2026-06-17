@@ -6,10 +6,13 @@ import { Button } from "@allaboard/ui/components/button";
 import { cn } from "@allaboard/ui/lib/utils";
 
 import { MentorNavLink } from "@/components/features/mentor-nav-link";
+import { MessagesNavLink } from "@/components/features/messages-nav-link";
 import { Link, usePathname } from "@/i18n/navigation";
 
 export const APP_SHELL_NAV = [
-  { href: "/feed", navKey: "feed" as const },
+  { href: "/", navKey: "feed" as const },
+  { href: "/explore", navKey: "explore" as const },
+  { href: "/resources", navKey: "resources" as const },
   { href: "/help/new", navKey: "newRequest" as const },
 ] as const;
 
@@ -19,8 +22,8 @@ function isNavActive(pathname: string | null, href: string): boolean {
   if (!pathname) {
     return false;
   }
-  if (href === "/feed") {
-    return pathname === "/feed";
+  if (href === "/") {
+    return pathname === "/" || pathname === "/feed";
   }
   if (href.startsWith("/requests")) {
     return pathname.startsWith("/requests");
@@ -54,6 +57,7 @@ export function AppShellNav() {
           </Button>
         );
       })}
+      <MessagesNavLink />
       <MentorNavLink active={isNavActive(pathname, MENTOR_HREF)} />
     </nav>
   );

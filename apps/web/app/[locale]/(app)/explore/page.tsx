@@ -1,11 +1,15 @@
-import { ExploreSubjectsScreen } from "@allaboard/ui/patterns/screens/legacy-screens";
+import { fetchSubjects } from "@/lib/api-server";
+import { ExploreContent } from "@/components/features/explore-content";
 
-import { initPageLocale } from "@/lib/init-page-locale";
+export const dynamic = "force-dynamic";
 
-type PageProps = { params: Promise<{ locale: string }> };
+export default async function ExplorePage() {
+  const subjectsResult = await fetchSubjects();
 
-export default async function ExplorePage({ params }: PageProps) {
-  const { locale } = await params;
-  initPageLocale(locale);
-  return <ExploreSubjectsScreen />;
+  return (
+    <ExploreContent
+      subjects={subjectsResult.ok ? subjectsResult.data.items : []}
+      error={subjectsResult.ok ? null : subjectsResult.error}
+    />
+  );
 }

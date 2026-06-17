@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull } from "drizzle-orm";
 import type { FastifyInstance } from "fastify";
 import type {
   PublicUserResponse,
@@ -6,7 +6,7 @@ import type {
 } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import { helpRequests, responses, subjects, users } from "../db/schema.js";
-import { getJwtUser } from "../lib/auth-helpers.js";
+import { getJwtUser, authorIdKeysFromRow } from "../lib/auth-helpers.js";
 import { rowToHelpRequest, rowToResponse } from "../lib/mappers.js";
 import {
   parsePublicUserQuery,
@@ -20,8 +20,9 @@ import {
   countUserPosts,
   countUserResponses,
   loadCompetenceSubjects,
-  loadUserByEmail,
+  loadUserFromJwtSub,
   loadUserById,
+  loadUserByEmail,
   syncMentorSubjects,
 } from "../services/user-profile.js";
 
@@ -42,7 +43,7 @@ export function registerUserRoutes(
       }
 
       const jwtUser = getJwtUser(request);
-      const row = await loadUserByEmail(db, jwtUser.sub);
+      const row = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!row) {
         return reply.code(404).send({ error: "user_not_found" });
       }
@@ -80,7 +81,7 @@ export function registerUserRoutes(
         await syncMentorSubjects(db, row.id, data.subjectIds);
       }
 
-      const updated = await loadUserByEmail(db, jwtUser.sub);
+      const updated = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!updated) {
         return reply.code(404).send({ error: "user_not_found" });
       }
@@ -108,16 +109,17 @@ export function registerUserRoutes(
       );
       const competenceSubjects = await loadCompetenceSubjects(db, row.id);
       const stats = {
-        postsCount: await countUserPosts(db, row.email),
-        responsesCount: await countUserResponses(db, row.email),
+        postsCount: await countUserPosts(db, row),
+        responsesCount: await countUserResponses(db, row),
       };
       const profile = rowToUserPublicProfile(row, stats, competenceSubjects);
+      const authorKeys = authorIdKeysFromRow(row);
 
       if (query.tab === "responses") {
         const responseRows = await db
           .select()
           .from(responses)
-          .where(eq(responses.authorId, row.email))
+          .where(inArray(responses.authorId, authorKeys))
           .orderBy(desc(responses.createdAt))
           .limit(query.limit)
           .offset(query.offset);
@@ -143,7 +145,7 @@ export function registerUserRoutes(
         .leftJoin(subjects, eq(helpRequests.subjectId, subjects.id))
         .where(
           and(
-            eq(helpRequests.authorId, row.email),
+            inArray(helpRequests.authorId, authorKeys),
             isNull(helpRequests.deletedAt),
             eq(helpRequests.flaggedForModeration, false),
           ),

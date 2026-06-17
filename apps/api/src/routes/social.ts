@@ -6,7 +6,7 @@ import type {
 } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import { bookmarks, helpRequests, likes } from "../db/schema.js";
-import { getJwtUser } from "../lib/auth-helpers.js";
+import { getJwtUser, resolveAuthenticatedUser } from "../lib/auth-helpers.js";
 import { helpRequestExists, loadHelpRequestRow } from "../lib/help-request-query.js";
 import { rowToHelpRequest } from "../lib/mappers.js";
 
@@ -116,8 +116,16 @@ export function registerSocialRoutes(
       if (!(await helpRequestExists(db, id))) {
         return reply.code(404).send({ error: "not_found" });
       }
-      const user = getJwtUser(request);
-      const result = await toggleLike(db, user.sub, id);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
+      const result = await toggleLike(db, authUser.id, id);
       const loaded = await loadHelpRequestRow(db, id);
       return {
         ...result,
@@ -137,8 +145,16 @@ export function registerSocialRoutes(
       if (!(await helpRequestExists(db, id))) {
         return reply.code(404).send({ error: "not_found" });
       }
-      const user = getJwtUser(request);
-      const result = await toggleBookmark(db, user.sub, id);
+      const jwtUser = getJwtUser(request);
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
+      const result = await toggleBookmark(db, authUser.id, id);
       const loaded = await loadHelpRequestRow(db, id);
       return {
         ...result,

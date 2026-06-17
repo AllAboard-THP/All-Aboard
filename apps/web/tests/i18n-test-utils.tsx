@@ -4,6 +4,7 @@ import { render, type RenderOptions } from "@testing-library/react";
 
 import enMessages from "../messages/en.json";
 import frMessages from "../messages/fr.json";
+import enMessages from "../messages/en.json";
 
 type Props = {
   children: ReactNode;

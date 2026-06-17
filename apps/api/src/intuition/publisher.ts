@@ -4,6 +4,10 @@ import type { AppDatabase } from "../db/client.js";
 import { helpRequests, outboxEvents } from "../db/schema.js";
 import { loadIntuitionConfig, type IntuitionConfig } from "./config.js";
 import { HELP_REQUEST_CREATED } from "./outbox.js";
+import {
+  publishHelpRequestCreatedToIntuition,
+  type PublishHelpRequestResult,
+} from "./sdk-client.js";
 
 export type IntuitionPublisherLog = (
   message: string,
@@ -13,24 +17,48 @@ export type IntuitionPublisherLog = (
 export type ProcessOutboxResult = {
   processed: number;
   skippedAlreadyPublished: number;
+  publishErrors: number;
 };
+
+export type PublishHelpRequestFn = (
+  payload: HelpRequestCreatedOutboxPayload,
+  config: IntuitionConfig,
+) => Promise<PublishHelpRequestResult>;
 
 const DEFAULT_BATCH = 50;
 
-function stubPublishHelpRequestCreated(
+function logPublishResult(
+  result: PublishHelpRequestResult,
   payload: HelpRequestCreatedOutboxPayload,
   config: IntuitionConfig,
   log: IntuitionPublisherLog,
 ): void {
-  log("intuition_publish_stub", {
+  if (result.mode === "stub") {
+    log("intuition_publish_stub", {
+      eventType: HELP_REQUEST_CREATED,
+      helpRequestId: payload.id,
+      title: payload.title,
+      authorId: payload.authorId,
+      tags: payload.tags ?? [],
+      externalId: result.externalId,
+      networkId: config.networkId,
+      rpcConfigured: Boolean(config.rpcUrl),
+      graphqlConfigured: Boolean(config.graphqlUrl),
+    });
+    return;
+  }
+
+  log("intuition_publish_sdk", {
     eventType: HELP_REQUEST_CREATED,
     helpRequestId: payload.id,
     title: payload.title,
     authorId: payload.authorId,
     tags: payload.tags ?? [],
+    externalId: result.externalId,
+    transactionHash: result.transactionHash,
+    atomTermId: result.atomTermId,
+    tripleCount: result.tripleCount,
     networkId: config.networkId,
-    rpcConfigured: Boolean(config.rpcUrl),
-    graphqlConfigured: Boolean(config.graphqlUrl),
   });
 }
 
@@ -41,12 +69,15 @@ export async function processPendingOutboxEvents(
     config?: IntuitionConfig;
     log?: IntuitionPublisherLog;
     now?: () => Date;
+    publishFn?: PublishHelpRequestFn;
   },
 ): Promise<ProcessOutboxResult> {
   const config = options?.config ?? loadIntuitionConfig();
   const log = options?.log ?? (() => {});
   const now = options?.now ?? (() => new Date());
   const batchSize = options?.batchSize ?? DEFAULT_BATCH;
+  const publishFn =
+    options?.publishFn ?? publishHelpRequestCreatedToIntuition;
 
   const pending = await db
     .select()
@@ -57,6 +88,7 @@ export async function processPendingOutboxEvents(
 
   let processed = 0;
   let skippedAlreadyPublished = 0;
+  let publishErrors = 0;
 
   for (const event of pending) {
     if (event.eventType !== HELP_REQUEST_CREATED) {
@@ -105,7 +137,19 @@ export async function processPendingOutboxEvents(
       continue;
     }
 
-    stubPublishHelpRequestCreated(payload, config, log);
+    let publishResult: PublishHelpRequestResult;
+    try {
+      publishResult = await publishFn(payload, config);
+      logPublishResult(publishResult, payload, config, log);
+    } catch (err) {
+      publishErrors += 1;
+      log("intuition_publish_error", {
+        outboxId: event.id,
+        helpRequestId: payload.id,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      continue;
+    }
 
     const publishedAt = now();
     await db
@@ -128,7 +172,7 @@ export async function processPendingOutboxEvents(
     processed += 1;
   }
 
-  return { processed, skippedAlreadyPublished };
+  return { processed, skippedAlreadyPublished, publishErrors };
 }
 
 export type IntuitionPublisherHandle = {

@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull } from "drizzle-orm";
 import type { HelpRequest } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import { bookmarks, helpRequests, subjects } from "../db/schema.js";
@@ -19,9 +19,10 @@ export async function loadHelpRequestRow(db: AppDatabase, id: string) {
 
 export async function fetchHelpRequestsForAuthor(
   db: AppDatabase,
-  authorId: string,
+  authorKeys: string | string[],
   limit = 100,
 ): Promise<HelpRequest[]> {
+  const keys = Array.isArray(authorKeys) ? authorKeys : [authorKeys];
   const rows = await db
     .select({
       helpRequest: helpRequests,
@@ -29,7 +30,7 @@ export async function fetchHelpRequestsForAuthor(
     })
     .from(helpRequests)
     .leftJoin(subjects, eq(helpRequests.subjectId, subjects.id))
-    .where(eq(helpRequests.authorId, authorId))
+    .where(inArray(helpRequests.authorId, keys))
     .orderBy(desc(helpRequests.createdAt))
     .limit(limit);
   return rows.map(({ helpRequest, subject }) =>
@@ -39,9 +40,10 @@ export async function fetchHelpRequestsForAuthor(
 
 export async function fetchBookmarkedHelpRequests(
   db: AppDatabase,
-  userId: string,
+  userKeys: string | string[],
   limit = 100,
 ): Promise<HelpRequest[]> {
+  const keys = Array.isArray(userKeys) ? userKeys : [userKeys];
   const rows = await db
     .select({
       helpRequest: helpRequests,
@@ -51,7 +53,7 @@ export async function fetchBookmarkedHelpRequests(
     .innerJoin(helpRequests, eq(bookmarks.helpRequestId, helpRequests.id))
     .leftJoin(subjects, eq(helpRequests.subjectId, subjects.id))
     .where(
-      and(eq(bookmarks.userId, userId), isNull(helpRequests.deletedAt)),
+      and(inArray(bookmarks.userId, keys), isNull(helpRequests.deletedAt)),
     )
     .orderBy(desc(bookmarks.createdAt))
     .limit(limit);

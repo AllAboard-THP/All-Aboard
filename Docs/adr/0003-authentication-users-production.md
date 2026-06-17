@@ -4,7 +4,9 @@
 
 Accepted — 2026-05-28 (MVP implementation: `users` table, hash login, dev/CI seed).
 
-## Context
+> **Évolution** : en production, l’identité migre vers **passkeys** ([ADR 0006](0006-authentication-passkeys.md)). Email/password reste en dev/CI transitoire.
+
+## Contexte
 
 [ADR 0001](0001-authentication-strategy.md) establishes JWT + BFF for Phase 2. MVP login relies on `MVP_LOGIN_PASSWORD` (shared password) and free-form `userId` values — acceptable for **internal dev**, insufficient before THP beta or public staging.
 

@@ -1,4 +1,15 @@
 import type { UserRole } from "@allaboard/types";
+import type { AppDatabase } from "../db/client.js";
+import {
+  loadUserByEmail,
+  loadUserById,
+} from "../services/user-profile.js";
+import { isUuid } from "../auth/passkey/config.js";
+
+const LEGACY_USER_EMAIL: Record<string, string> = {
+  bob: "bob@dev.local",
+  alice: "alice@dev.local",
+};
 
 export function jwtSecret(): string {
   const s = process.env.JWT_SECRET?.trim();
@@ -51,6 +62,64 @@ export function responseVisibleUnderCertificationFilter(
 }
 
 export type JwtUser = { sub: string; role?: UserRole };
+
+export type AuthenticatedUser = {
+  id: string;
+  email: string;
+  role: UserRole;
+};
+
+export async function resolveAuthenticatedUser(
+  db: AppDatabase,
+  sub: string,
+  roleClaim?: UserRole,
+): Promise<AuthenticatedUser | null> {
+  if (isUuid(sub)) {
+    const row = await loadUserById(db, sub);
+    if (!row) return null;
+    return {
+      id: row.id,
+      email: row.email,
+      role: roleFromJwtClaims(sub, roleClaim ?? row.role),
+    };
+  }
+
+  let email = sub.trim().toLowerCase();
+  if (!email.includes("@")) {
+    email = LEGACY_USER_EMAIL[email] ?? email;
+  }
+
+  const row = await loadUserByEmail(db, email);
+  if (!row) return null;
+  return {
+    id: row.id,
+    email: row.email,
+    role: roleFromJwtClaims(sub, roleClaim ?? row.role),
+  };
+}
+
+export function authorIdMatchesUser(
+  authorId: string,
+  user: AuthenticatedUser,
+): boolean {
+  if (authorId === user.id || authorId === user.email) return true;
+  const shortName = user.email.split("@")[0];
+  return authorId === shortName;
+}
+
+export function userAuthorIdKeys(user: AuthenticatedUser): string[] {
+  const shortName = user.email.split("@")[0];
+  return [user.id, user.email, shortName];
+}
+
+/** Keys stored in help_requests/responses.author_id for a users row. */
+export function authorIdKeysFromRow(user: {
+  id: string;
+  email: string;
+}): string[] {
+  const shortName = user.email.split("@")[0];
+  return [user.id, user.email, shortName];
+}
 
 export function getJwtUser(request: { user: unknown }): JwtUser {
   return request.user as JwtUser;

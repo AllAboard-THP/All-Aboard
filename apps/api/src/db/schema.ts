@@ -1,4 +1,5 @@
 import {
+  bigint,
   boolean,
   integer,
   jsonb,
@@ -24,7 +25,6 @@ export const helpRequestStatusEnum = pgEnum("help_request_status", [
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").notNull().unique(),
-  /** Null for OAuth-only accounts (ADR 0006). */
   passwordHash: text("password_hash"),
   role: userRoleEnum("role").notNull(),
   fullName: text("full_name"),
@@ -350,6 +350,43 @@ export const messages = pgTable("messages", {
     .notNull()
     .defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export const webauthnCredentials = pgTable(
+  "webauthn_credentials",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    credentialId: text("credential_id").notNull().unique(),
+    publicKey: text("public_key").notNull(),
+    counter: bigint("counter", { mode: "number" }).notNull().default(0),
+    transports: text("transports").array(),
+    deviceType: text("device_type"),
+    backedUp: boolean("backed_up").notNull().default(false),
+    aaguid: text("aaguid"),
+    webauthnUserId: text("webauthn_user_id"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+  },
+  (table) => [
+    uniqueIndex("webauthn_credentials_user_id_idx").on(table.userId),
+  ],
+);
+
+export const webauthnChallenges = pgTable("webauthn_challenges", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  challenge: text("challenge").notNull().unique(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  type: text("type").notNull(),
+  metadata: jsonb("metadata"),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
 });

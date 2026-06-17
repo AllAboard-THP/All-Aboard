@@ -5,7 +5,7 @@ import { subjectRequests } from "../db/schema.js";
 import { getJwtUser } from "../lib/auth-helpers.js";
 import { rowToSubjectRequest } from "../lib/mappers.js";
 import { createSubjectRequestBodySchema } from "../lib/schemas.js";
-import { loadUserByEmail } from "../services/user-profile.js";
+import { loadUserFromJwtSub } from "../services/user-profile.js";
 
 export function registerSubjectRequestRoutes(
   app: FastifyInstance,
@@ -24,7 +24,7 @@ export function registerSubjectRequestRoutes(
       }
 
       const jwtUser = getJwtUser(request);
-      const user = await loadUserByEmail(db, jwtUser.sub);
+      const user = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!user) {
         return reply.code(404).send({ error: "user_not_found" });
       }

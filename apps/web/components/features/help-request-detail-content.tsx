@@ -17,6 +17,8 @@ import {
 
 import { HelpRequestDetailClient } from "@/components/features/help-request-detail-client";
 import { AuthorProfileLink } from "@/components/features/author-profile-link";
+import { HelpRequestOwnerActions } from "@/components/features/help-request-owner-actions";
+import { PostSocialActions } from "@/components/features/post-social-actions";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { formatDateTime } from "@/lib/format-datetime";
@@ -106,6 +108,15 @@ export async function HelpRequestDetailContent({
           </p>
         ) : null}
       </header>
+
+      <PostSocialActions
+        helpRequestId={id}
+        initialLikesCount={item.likesCount ?? 0}
+        loginReturnPath={`/requests/${id}`}
+        className="mb-6"
+      />
+
+      <HelpRequestOwnerActions requestId={id} authorId={item.authorId} />
 
       <HelpRequestDetailClient initialDetail={detail} requestId={id} />
 

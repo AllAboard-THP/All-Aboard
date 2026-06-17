@@ -1,9 +1,9 @@
 # Rails API parity — hub (phases 1–7 + lots A / 5b / 7)
 
-**Product reference:** `apps/thp-final` mockup (Rails/Turbo, **read-only** — no code port).  
-**HTTP contract:** [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml) (current version **0.10.0**).  
-**Operational plan:** [§ Rails parity](../../guides/web-api-integration.md#rails-parity-thp-final--api).  
-**Scope:** `apps/api`, `apps/agent`, `packages/types`, Drizzle migrations — **not** `apps/web` (BFF/UI in parallel).
+**Référence produit** : maquette `apps/thp-final` (Rails/Turbo, **lecture seule** — pas de port de code).  
+**Contrat HTTP** : [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml) (version courante **0.11.0**).  
+**Plan opérationnel** : [§ Parité Rails](../../plan-mise-en-place-web-api-donnees.md#parité-rails-thp-final--api).  
+**Scope** : `apps/api`, `apps/agent`, `packages/types`, migrations Drizzle — **pas** `apps/web` (BFF/UI en parallèle).
 
 ## Goal
 
@@ -28,9 +28,10 @@ Progressively align the Fastify MVP API with THP Rails mockup journeys and endpo
 
 | Lot | Focus | OpenAPI | Migration / deps | Task doc | Status |
 |-----|--------|---------|------------------|-----------|--------|
-| **A** | Soft delete post + reject mentor resource | 0.8.1 | `0011_api_soft_delete_help_requests.sql` | [api-parity-delete-reject](../api-parity-delete-reject/README.md) | PR [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104) |
-| **5b** | Real-time WebSocket chat | 0.9.0 | `@fastify/websocket` | [phase5b](../api-rails-parity-phase5b/README.md) | PR [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104) |
-| **7** | Suggest-tags + `ai_summary` on resolution | 0.10.0 | outbox + `apps/agent` | [phase7](../api-rails-parity-phase7/README.md) | PR [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104) |
+| **A** | Soft delete post + reject resource mentor | 0.8.1 | `0011_api_soft_delete_help_requests.sql` | [api-parity-delete-reject](../api-parity-delete-reject/README.md) | PR [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104) |
+| **5b** | Chat temps réel WebSocket | 0.9.0 | `@fastify/websocket` | [phase5b](../api-rails-parity-phase5b/README.md) | PR [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104) |
+| **7** | Suggest-tags + `ai_summary` à la résolution | 0.10.0 | outbox + `apps/agent` | [phase7](../api-rails-parity-phase7/README.md) | PR [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104) |
+| **Modération Claude** | Second avis agent après regex/denylist | 0.11.0 | `apps/agent` + proxy API | [api-claude-moderation](../api-claude-moderation/README.md) | en cours |
 
 ---
 
@@ -45,7 +46,7 @@ Progressively align the Fastify MVP API with THP Rails mockup journeys and endpo
 | Resources, mentor | `apps/api/src/routes/{resources,subject-requests,mentor}.ts` |
 | REST chat + WS | `apps/api/src/routes/{conversations,conversations-ws}.ts` |
 | Admin | `apps/api/src/routes/admin.ts` |
-| Agent (tags, summary) | `apps/agent/src/{tag-suggest,summary-generate}.ts`; proxy `apps/api/src/agent/` |
+| Agent (tags, summary, modération) | `apps/agent/src/{tag-suggest,summary-generate,moderation-evaluate}.ts` ; proxy `apps/api/src/agent/` |
 
 ---
 
@@ -64,11 +65,10 @@ Apply migrations on target environment before smoke (`pnpm --filter api run db:m
 
 ## Out of scope (confirmed)
 
-- BFF / Next pages (`apps/web`) — consumption or relay to add per screen
-- Phase 3b (email confirmation, password reset)
-- Ticketmaster Events (`apps/thp-final`)
-- Claude moderation (phase 6 = regex + denylist)
-- Redis pub/sub multi-instance for WebSocket (5b doc note only)
+- BFF / pages Next (`apps/web`) — consommation ou relais à ajouter par écran
+- ~~Phase 3b (confirmation email, reset password)~~ — **annulé** ; voir [ADR 0006](../adr/0006-authentication-passkeys.md) (passkeys)
+- Events Ticketmaster (`apps/thp-final`)
+- Redis pub/sub multi-instance pour WebSocket (note doc 5b uniquement)
 
 ## Files
 

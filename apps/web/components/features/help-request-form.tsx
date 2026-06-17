@@ -1,9 +1,15 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+import type { AuthMeResponse } from "@allaboard/types";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@allaboard/ui/components/alert";
 import { Button } from "@allaboard/ui/components/button";
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
@@ -11,6 +17,11 @@ import {
   buildRubberduckRedirectUrl,
   fetchRubberduckRedirectUrl,
 } from "@/lib/rubberduck-redirect";
+import {
+  ApiRequestError,
+  mapApiError,
+  throwFromApiResponse,
+} from "@/lib/map-api-error";
 import { Link, useRouter } from "@/i18n/navigation";
 
 type CreateResult = {
@@ -18,27 +29,17 @@ type CreateResult = {
   hints?: { rubberduckEligible?: boolean };
 };
 
-type DuplicateError = {
-  existingId?: string;
-};
+async function fetchAuthMe(): Promise<AuthMeResponse | null> {
+  const res = await fetch("/api/auth/me", { credentials: "include" });
+  if (res.status === 401) return null;
+  if (!res.ok) throw new Error(`Auth me ${res.status}`);
+  return (await res.json()) as AuthMeResponse;
+}
 
-async function loginAndCreate(input: {
-  email: string;
-  password: string;
+async function createHelpRequest(input: {
   title: string;
   tags: string[];
 }): Promise<CreateResult> {
-  const loginRes = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ email: input.email, password: input.password }),
-  });
-  if (!loginRes.ok) {
-    const t = await loginRes.text();
-    throw new Error(loginRes.status === 401 ? "invalid_credentials" : t);
-  }
-
   const createRes = await fetch("/api/help-requests", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -50,14 +51,8 @@ async function loginAndCreate(input: {
   });
   const createText = await createRes.text();
 
-  if (createRes.status === 409) {
-    const dup = JSON.parse(createText) as DuplicateError;
-    const err = new Error("duplicate") as Error & { existingId?: string };
-    err.existingId = dup.existingId;
-    throw err;
-  }
   if (!createRes.ok) {
-    throw new Error(createText || `Erreur ${createRes.status}`);
+    throwFromApiResponse(createRes.status, createText);
   }
   return JSON.parse(createText) as CreateResult;
 }
@@ -66,9 +61,8 @@ export function HelpRequestForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const t = useTranslations("helpForm");
+  const tErrors = useTranslations("errors");
   const tCommon = useTranslations("common");
-  const [email, setEmail] = useState("bob@dev.local");
-  const [password, setPassword] = useState("");
   const [title, setTitle] = useState("");
   const [tagsRaw, setTagsRaw] = useState("");
   const [duplicateId, setDuplicateId] = useState<string | null>(null);
@@ -76,8 +70,14 @@ export function HelpRequestForm() {
     null,
   );
 
+  const authQuery = useQuery({
+    queryKey: ["auth-me"],
+    queryFn: fetchAuthMe,
+    staleTime: 60_000,
+  });
+
   const mutation = useMutation({
-    mutationFn: loginAndCreate,
+    mutationFn: createHelpRequest,
     onSuccess: async (data) => {
       setDuplicateId(null);
       setRubberduckMessage(null);
@@ -99,9 +99,9 @@ export function HelpRequestForm() {
       }
       router.push(`/requests/${data.item.id}`);
     },
-    onError: (err: Error & { existingId?: string }) => {
+    onError: (err: Error) => {
       setRubberduckMessage(null);
-      if (err.message === "duplicate" && err.existingId) {
+      if (err instanceof ApiRequestError && err.code === "duplicate" && err.existingId) {
         setDuplicateId(err.existingId);
       } else {
         setDuplicateId(null);
@@ -110,44 +110,48 @@ export function HelpRequestForm() {
   });
 
   function submit() {
+    if (authQuery.isPending) return;
+    if (!authQuery.data) {
+      router.push(`/login?returnTo=${encodeURIComponent("/help/new")}`);
+      return;
+    }
     setDuplicateId(null);
     setRubberduckMessage(null);
     const tags = tagsRaw
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
-    mutation.mutate({ email, password, title, tags });
+    mutation.mutate({ title, tags });
   }
 
   const errorMessage =
-    mutation.error && mutation.error.message !== "duplicate"
-      ? mutation.error.message === "invalid_credentials"
-        ? t("invalidCredentials")
-        : mutation.error.message
+    mutation.error instanceof ApiRequestError && mutation.error.code !== "duplicate"
+      ? tErrors(
+          mapApiError({
+            status: mutation.error.status,
+            body: { error: mutation.error.code },
+          }),
+        )
       : null;
+
+  const loginHref = `/login?returnTo=${encodeURIComponent("/help/new")}`;
 
   return (
     <div className="mt-5 grid gap-4">
-      <div className="grid gap-2">
-        <Label htmlFor="help-email">{t("email")}</Label>
-        <Input
-          id="help-email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="username"
-        />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="help-password">{t("password")}</Label>
-        <Input
-          id="help-password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-        />
-      </div>
+      {!authQuery.data && !authQuery.isPending ? (
+        <Alert data-testid="help-form-login-required">
+          <AlertTitle>{t("loginRequiredTitle")}</AlertTitle>
+          <AlertDescription>
+            {t.rich("loginRequiredDescription", {
+              link: () => (
+                <Link href={loginHref} className="text-primary underline">
+                  {t("loginRequiredLink")}
+                </Link>
+              ),
+            })}
+          </AlertDescription>
+        </Alert>
+      ) : null}
       <div className="grid gap-2">
         <Label htmlFor="help-title">{t("title")}</Label>
         <Input
@@ -189,11 +193,15 @@ export function HelpRequestForm() {
       ) : null}
       <Button
         type="button"
-        disabled={mutation.isPending || !title.trim() || !password}
+        disabled={mutation.isPending || authQuery.isPending || !title.trim()}
         onClick={() => submit()}
         className="mt-1 w-full"
       >
-        {mutation.isPending ? tCommon("sending") : t("submit")}
+        {mutation.isPending
+          ? tCommon("sending")
+          : authQuery.data
+            ? t("submit")
+            : t("submitSignIn")}
       </Button>
     </div>
   );

@@ -124,6 +124,7 @@ export async function seedSubjects(
 }
 
 export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise<void> {
+  const cguAcceptedAt = new Date();
   for (const spec of specs) {
     const passwordHash = await hashPassword(spec.password);
     const existing = await db
@@ -141,6 +142,7 @@ export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise
           role: spec.role,
           certificationTags,
           fullName,
+          cguAcceptedAt,
           updatedAt: new Date(),
         })
         .where(eq(users.email, spec.email));
@@ -151,6 +153,7 @@ export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise
         role: spec.role,
         certificationTags,
         fullName,
+        cguAcceptedAt,
       });
     }
   }

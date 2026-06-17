@@ -56,9 +56,9 @@ export async function registerUser(
       cguAcceptedAt: now,
       updatedAt: now,
     })
-    .returning({ email: users.email, role: users.role });
+    .returning({ id: users.id, role: users.role });
 
   const row = inserted[0];
   if (!row) return "database_unavailable";
-  return { userId: row.email, role: row.role };
+  return { userId: row.id, role: row.role };
 }

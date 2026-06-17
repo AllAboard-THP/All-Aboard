@@ -16,7 +16,9 @@ import {
 } from "../db/schema.js";
 import {
   getJwtUser,
+  resolveAuthenticatedUser,
   roleFromJwtClaims,
+  userAuthorIdKeys,
 } from "../lib/auth-helpers.js";
 import { mentorFeedWhere } from "../lib/feed-query.js";
 import { rowToHelpRequest } from "../lib/mappers.js";
@@ -30,10 +32,7 @@ import {
   mapResourceBundles,
   mapResourceRow,
 } from "../services/resources.js";
-import {
-  loadProfileIdsByEmails,
-  loadUserByEmail,
-} from "../services/user-profile.js";
+import { loadUserFromJwtSub, loadProfileIdsByEmails } from "../services/user-profile.js";
 
 export function registerMentorRoutes(
   app: FastifyInstance,
@@ -46,12 +45,20 @@ export function registerMentorRoutes(
       if (!db) {
         return reply.code(503).send({ error: "database_unavailable" });
       }
-      const user = getJwtUser(request);
-      const role = roleFromJwtClaims(user.sub, user.role);
+      const jwtUser = getJwtUser(request);
+      const role = roleFromJwtClaims(jwtUser.sub, jwtUser.role);
       if (role !== "mentor") {
         return reply.code(403).send({ error: "forbidden" });
       }
-      const mentorId = user.sub;
+      const authUser = await resolveAuthenticatedUser(
+        db,
+        jwtUser.sub,
+        jwtUser.role,
+      );
+      if (!authUser) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
+      const mentorKeys = userAuthorIdKeys(authUser);
 
       const rows = await db
         .select({
@@ -101,7 +108,7 @@ export function registerMentorRoutes(
         if (responseCount > 0) {
           const last = requestResponses[responseCount - 1]!;
           lastResponseAt = last.createdAt.toISOString();
-          hasUnreadForMentor = last.authorId !== mentorId;
+          hasUnreadForMentor = !mentorKeys.includes(last.authorId);
         }
         return {
           ...base,
@@ -128,7 +135,7 @@ export function registerMentorRoutes(
         return reply.code(403).send({ error: "forbidden" });
       }
 
-      const user = await loadUserByEmail(db, jwtUser.sub);
+      const user = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!user) {
         return reply.code(404).send({ error: "user_not_found" });
       }
@@ -244,7 +251,7 @@ export function registerMentorRoutes(
         return reply.code(403).send({ error: "forbidden" });
       }
 
-      const user = await loadUserByEmail(db, jwtUser.sub);
+      const user = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!user) {
         return reply.code(404).send({ error: "user_not_found" });
       }
@@ -298,7 +305,7 @@ export function registerMentorRoutes(
         return reply.code(403).send({ error: "forbidden" });
       }
 
-      const user = await loadUserByEmail(db, jwtUser.sub);
+      const user = await loadUserFromJwtSub(db, jwtUser.sub);
       if (!user) {
         return reply.code(404).send({ error: "user_not_found" });
       }
