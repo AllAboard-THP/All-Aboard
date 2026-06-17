@@ -3,7 +3,11 @@
 import type { DashboardLinkProps } from "@allaboard/ui/patterns/student-dashboard-screen";
 import { StudentDashboardScreen } from "@allaboard/ui/patterns/student-dashboard-screen";
 import type { StudentDashboardLabels } from "@allaboard/ui/patterns/student-dashboard-labels";
-import type { StudentDashboardFixture } from "@allaboard/ui/patterns/fixtures/student-dashboard";
+import {
+  studentDashboardFixtureEn,
+  studentDashboardFixtureFr,
+  type StudentDashboardFixture,
+} from "@allaboard/ui/patterns/fixtures/student-dashboard";
 import {
   Alert,
   AlertDescription,
@@ -201,9 +205,7 @@ export function StudentDashboardContent({
 export function StudentDashboardDemo() {
   const locale = useLocale();
   const fixture =
-    locale === "en"
-      ? require("@allaboard/ui/patterns/fixtures/student-dashboard").studentDashboardFixtureEn
-      : require("@allaboard/ui/patterns/fixtures/student-dashboard").studentDashboardFixtureFr;
+    locale === "en" ? studentDashboardFixtureEn : studentDashboardFixtureFr;
 
   return <StudentDashboardContent fixture={fixture} />;
 }

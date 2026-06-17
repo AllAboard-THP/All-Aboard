@@ -18,7 +18,7 @@ export type LoadStudentDashboardResult =
   | { ok: true; fixture: StudentDashboardFixture }
   | { ok: false; error: string };
 
-async function buildDashboardCopy(locale: AppLocale): Promise<StudentDashboardCopy> {
+async function buildDashboardCopy(): Promise<StudentDashboardCopy> {
   const t = await getTranslations("studentDashboard");
   const format = await getFormatter();
 
@@ -53,7 +53,7 @@ export async function loadStudentDashboard(
   accessToken: string,
   locale: AppLocale,
 ): Promise<LoadStudentDashboardResult> {
-  const copy = await buildDashboardCopy(locale);
+  const copy = await buildDashboardCopy();
 
   const [meResult, myRequestsResult, conversationsResult, feedResult] =
     await Promise.all([
