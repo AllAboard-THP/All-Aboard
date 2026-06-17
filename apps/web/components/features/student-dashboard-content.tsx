@@ -133,6 +133,11 @@ function useStudentDashboardLabels(): StudentDashboardLabels {
       title: t("activity.title"),
       viewAll: t("activity.viewAll"),
       empty: t("activity.empty"),
+      kinds: {
+        reply: t("activity.kinds.reply"),
+        resource: t("activity.kinds.resource"),
+        event: t("activity.kinds.event"),
+      },
     },
     shortcuts: {
       subjects: t("shortcuts.subjects"),

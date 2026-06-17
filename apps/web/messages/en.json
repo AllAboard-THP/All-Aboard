@@ -391,7 +391,12 @@
       "title": "Recent activity",
       "viewAll": "View full feed",
       "empty": "No recent activity.",
-      "replyOn": "Activity on “{title}”"
+      "replyOn": "Activity on “{title}”",
+      "kinds": {
+        "reply": "Reply",
+        "resource": "Resource",
+        "event": "Event"
+      }
     },
     "shortcuts": {
       "subjects": "Explore",

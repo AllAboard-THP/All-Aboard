@@ -784,6 +784,21 @@
     border-color: rgb(255 255 255 / 0.08);
   }
 
+  /** Dashboard list sections — lighter glass than chrome cards. */
+  .dashboard-list-shell.dashboard-glass-card {
+    background:
+      linear-gradient(160deg, rgb(99 102 241 / 0.04), rgb(15 23 42 / 0.06)),
+      rgb(15 23 42 / 0.18);
+    border-color: rgb(255 255 255 / 0.06);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  .dashboard-list-shell.dashboard-glass-card:hover {
+    filter: saturate(98%) brightness(1.03);
+    transform: scale(1.006);
+  }
+
   .dashboard-stat-card {
     border-radius: 1rem;
     padding: 0.75rem 1rem;
@@ -798,10 +813,23 @@
       transform 200ms ease-out;
   }
 
-  .dashboard-inner-card:hover {
+  .dashboard-list-panel {
+    @apply flex flex-col gap-3;
+  }
+
+  .dashboard-list-row {
+    @apply cursor-pointer rounded-xl border border-white/10 bg-white/[0.04] p-4;
+    transition:
+      border-color 200ms ease-out,
+      background-color 200ms ease-out,
+      transform 200ms ease-out;
+  }
+
+  .dashboard-inner-card:hover,
+  .dashboard-list-row:hover {
     border-color: rgb(255 255 255 / 0.18);
     background-color: rgb(255 255 255 / 0.08);
-    transform: translateY(-1px);
+    transform: scale(1.012);
   }
 
   /** Dashboard rows, links, nav — white glass highlight (aligned with `.landing-glass-input`). */
@@ -859,7 +887,8 @@
   @media (prefers-reduced-motion: reduce) {
     .dashboard-glass-card:hover,
     .dashboard-stat-card:hover,
-    .dashboard-inner-card:hover {
+    .dashboard-inner-card:hover,
+    .dashboard-list-row:hover {
       transform: none;
     }
 

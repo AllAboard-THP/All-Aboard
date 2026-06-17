@@ -77,6 +77,11 @@ export type StudentDashboardLabels = {
     title: string;
     viewAll: string;
     empty: string;
+    kinds: {
+      reply: string;
+      resource: string;
+      event: string;
+    };
   };
   shortcuts: {
     subjects: string;
@@ -174,6 +179,11 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
     title: "Activité récente",
     viewAll: "Voir tout le fil",
     empty: "Aucune activité récente.",
+    kinds: {
+      reply: "Réponse",
+      resource: "Ressource",
+      event: "Événement",
+    },
   },
   shortcuts: {
     subjects: "Explorer",
@@ -271,6 +281,11 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
     title: "Recent activity",
     viewAll: "View full feed",
     empty: "No recent activity.",
+    kinds: {
+      reply: "Reply",
+      resource: "Resource",
+      event: "Event",
+    },
   },
   shortcuts: {
     subjects: "Explore",

@@ -391,7 +391,12 @@
       "title": "Activité récente",
       "viewAll": "Voir tout le fil",
       "empty": "Aucune activité récente.",
-      "replyOn": "Activité sur « {title} »"
+      "replyOn": "Activité sur « {title} »",
+      "kinds": {
+        "reply": "Réponse",
+        "resource": "Ressource",
+        "event": "Événement"
+      }
     },
     "shortcuts": {
       "subjects": "Explorer",

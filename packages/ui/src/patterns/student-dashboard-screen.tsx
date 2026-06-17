@@ -9,18 +9,13 @@ import {
   Library,
   MessageSquare,
   Plus,
+  Reply,
   User,
   Zap,
 } from "lucide-react";
 
 import { AllAboardLogoMark } from "../components/allaboard-logo-mark";
 import { Button } from "../components/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../components/card";
 import { cn } from "../lib/utils";
 import {
   studentDashboardFixtureFr,
@@ -49,6 +44,13 @@ import {
   type StudentDashboardLabels,
 } from "./student-dashboard-labels";
 import { AppAbstractBackground } from "./app-abstract-background";
+import {
+  accentIconSurfaceStyle,
+  accentSurfaceStyle,
+  DASHBOARD_ACTIVITY_ACCENT,
+  DASHBOARD_SHORTCUT_ACCENT,
+  DASHBOARD_TODO_ACCENT,
+} from "./dashboard-accent";
 
 export type StudentDashboardVariant = "standalone" | "content";
 
@@ -56,6 +58,7 @@ export type DashboardLinkProps = {
   href: string;
   className?: string;
   children: ReactNode;
+  style?: React.CSSProperties;
   onClick?: (event: MouseEvent<HTMLElement>) => void;
 };
 
@@ -117,16 +120,18 @@ function DashboardNavLink({
   children,
   LinkComponent,
   onNavigate,
+  style,
 }: {
   href: string;
   className?: string;
   children: ReactNode;
   LinkComponent?: ComponentType<DashboardLinkProps>;
   onNavigate?: (href: string) => void;
+  style?: React.CSSProperties;
 }) {
   if (LinkComponent) {
     return (
-      <LinkComponent href={href} className={className}>
+      <LinkComponent href={href} className={className} style={style}>
         {children}
       </LinkComponent>
     );
@@ -136,6 +141,7 @@ function DashboardNavLink({
     <button
       type="button"
       className={className}
+      style={style}
       onClick={() => onNavigate?.(href)}
     >
       {children}
@@ -212,6 +218,47 @@ function DashboardHeroCompact({
   );
 }
 
+function DashboardSectionHeader({
+  id,
+  title,
+  icon,
+  action,
+}: {
+  id: string;
+  title: string;
+  icon?: ReactNode;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 px-1">
+      <div className="flex min-w-0 items-center gap-2">
+        {icon}
+        <h2 id={id} className="text-base font-semibold">
+          {title}
+        </h2>
+      </div>
+      {action}
+    </div>
+  );
+}
+
+function DashboardListPanel({ children }: { children: ReactNode }) {
+  return <div className="dashboard-list-panel">{children}</div>;
+}
+
+function DashboardListShell({ children }: { children: ReactNode }) {
+  return (
+    <div
+      className={cn(
+        APP_GLASS_CARD_CLASS,
+        "dashboard-glass-card dashboard-list-shell rounded-2xl p-5 shadow-none sm:p-6",
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
 function TodoRow({
   item,
   LinkComponent,
@@ -221,26 +268,33 @@ function TodoRow({
   LinkComponent?: ComponentType<DashboardLinkProps>;
   onNavigate?: (href: string) => void;
 }) {
+  const accent = DASHBOARD_TODO_ACCENT[item.kind];
+
   return (
     <DashboardNavLink
       href={item.href}
       LinkComponent={LinkComponent}
       onNavigate={onNavigate}
-      className="dashboard-inner-card group flex items-start gap-3 text-left transition-colors hover:bg-white/5"
+      className="dashboard-list-row group flex w-full items-start gap-4 text-left"
     >
-      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 ring-1 ring-primary/20">
+      <span
+        className="flex size-9 shrink-0 items-center justify-center rounded-lg"
+        style={accentIconSurfaceStyle(accent)}
+      >
         {item.kind === "message" ? (
-          <MessageSquare className="size-4 text-primary" aria-hidden />
+          <MessageSquare className="size-4" aria-hidden />
+        ) : item.kind === "resource" ? (
+          <Library className="size-4" aria-hidden />
         ) : (
-          <Zap className="size-4 text-primary" aria-hidden />
+          <Zap className="size-4" aria-hidden />
         )}
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-medium leading-snug group-hover:text-foreground">
+      <span className="min-w-0 flex-1 space-y-1">
+        <span className="block text-sm font-medium leading-relaxed group-hover:text-foreground">
           {item.title}
         </span>
         {item.subtitle ? (
-          <span className="mt-0.5 block text-xs text-muted-foreground">{item.subtitle}</span>
+          <span className="block text-xs leading-relaxed text-muted-foreground">{item.subtitle}</span>
         ) : null}
       </span>
       {item.timeAgo ? (
@@ -269,14 +323,10 @@ function DashboardInboxPanel({
   onNavigate?: (href: string) => void;
 }) {
   return (
-    <Card className={cn(APP_GLASS_CARD_CLASS, "dashboard-glass-card gap-0 rounded-2xl py-0 shadow-none")}>
-      <CardHeader className="flex-row items-center gap-2 border-b border-white/10 px-5 py-4">
-        <span className="flex size-8 items-center justify-center rounded-lg bg-primary/15 ring-1 ring-primary/20">
-          <Zap className="size-4 text-primary" aria-hidden />
-        </span>
-        <CardTitle className="text-base">{labels.inbox.title}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3 px-5 py-5">
+    <section className="space-y-3" aria-labelledby="dashboard-inbox-heading">
+      <DashboardSectionHeader id="dashboard-inbox-heading" title={labels.inbox.title} />
+      <DashboardListShell>
+        <DashboardListPanel>
         {todos.length > 0 ? (
           <>
             {todos.map((item) => (
@@ -288,57 +338,78 @@ function DashboardInboxPanel({
               />
             ))}
             {overflowCount > 0 ? (
-              <p className="text-center text-xs text-muted-foreground">
+              <p className="px-1 text-center text-xs text-muted-foreground">
                 {labels.inbox.overflow(overflowCount)}
               </p>
             ) : null}
           </>
         ) : (
-          <div className="space-y-3 py-4 text-center">
+          <div className="dashboard-list-row py-8 text-center">
             <p className="text-sm text-muted-foreground">{labels.inbox.empty}</p>
             <DashboardNavLink
               href={FEED_HREF}
               LinkComponent={LinkComponent}
               onNavigate={onNavigate}
-              className="dashboard-hover-link inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-primary"
+              className="dashboard-hover-link mt-3 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-primary"
             >
               {labels.inbox.emptyCta}
               <ArrowRight className="size-4" aria-hidden />
             </DashboardNavLink>
           </div>
         )}
-      </CardContent>
-    </Card>
+        </DashboardListPanel>
+      </DashboardListShell>
+    </section>
   );
 }
 
 function ActivityRow({
   item,
+  kindLabel,
   LinkComponent,
   onNavigate,
 }: {
   item: DashboardActivityItem;
+  kindLabel: string;
   LinkComponent?: ComponentType<DashboardLinkProps>;
   onNavigate?: (href: string) => void;
 }) {
+  const accent = DASHBOARD_ACTIVITY_ACCENT[item.kind];
+  const ActivityIcon =
+    item.kind === "reply" ? Reply : item.kind === "resource" ? Library : Calendar;
+
   return (
     <DashboardNavLink
       href={item.href}
       LinkComponent={LinkComponent}
       onNavigate={onNavigate}
-      className="group flex items-start justify-between gap-4 border-b border-white/8 py-3 text-left last:border-b-0"
+      className="dashboard-list-row group flex w-full items-start gap-4 text-left"
     >
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-medium leading-snug group-hover:text-foreground">
+      <span
+        className="flex size-9 shrink-0 items-center justify-center rounded-lg"
+        style={accentIconSurfaceStyle(accent)}
+      >
+        <ActivityIcon className="size-4" aria-hidden />
+      </span>
+      <span className="min-w-0 flex-1 space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <span
+            className="rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+            style={accentSurfaceStyle(accent)}
+          >
+            {kindLabel}
+          </span>
+          <span className="shrink-0 text-xs text-muted-foreground">{item.timeAgo}</span>
+        </div>
+        <span className="block text-sm font-medium leading-relaxed group-hover:text-foreground">
           {item.title}
         </span>
         {item.excerpt ? (
-          <span className="mt-1 block text-sm text-muted-foreground line-clamp-2">
+          <span className="block text-sm leading-relaxed text-muted-foreground line-clamp-2">
             {item.excerpt}
           </span>
         ) : null}
       </span>
-      <span className="shrink-0 text-xs text-muted-foreground">{item.timeAgo}</span>
     </DashboardNavLink>
   );
 }
@@ -355,35 +426,41 @@ function DashboardActivitySection({
   onNavigate?: (href: string) => void;
 }) {
   return (
-    <section className="space-y-2" aria-labelledby="dashboard-activity-heading">
-      <div className="flex items-center justify-between gap-3 px-1">
-        <h2 id="dashboard-activity-heading" className="text-base font-semibold">
-          {labels.activity.title}
-        </h2>
-        <DashboardNavLink
-          href={FEED_HREF}
-          LinkComponent={LinkComponent}
-          onNavigate={onNavigate}
-          className="dashboard-hover-link inline-flex items-center gap-1 text-sm text-primary"
-        >
-          {labels.activity.viewAll}
-          <ArrowRight className="size-3.5" aria-hidden />
-        </DashboardNavLink>
-      </div>
-      <div className="rounded-2xl border border-white/10 bg-white/5 px-4">
+    <section className="space-y-3" aria-labelledby="dashboard-activity-heading">
+      <DashboardSectionHeader
+        id="dashboard-activity-heading"
+        title={labels.activity.title}
+        action={
+          <DashboardNavLink
+            href={FEED_HREF}
+            LinkComponent={LinkComponent}
+            onNavigate={onNavigate}
+            className="dashboard-hover-link inline-flex shrink-0 items-center gap-1 text-sm text-primary"
+          >
+            {labels.activity.viewAll}
+            <ArrowRight className="size-3.5" aria-hidden />
+          </DashboardNavLink>
+        }
+      />
+      <DashboardListShell>
+        <DashboardListPanel>
         {items.length > 0 ? (
           items.map((item) => (
             <ActivityRow
               key={item.id}
               item={item}
+              kindLabel={labels.activity.kinds[item.kind]}
               LinkComponent={LinkComponent}
               onNavigate={onNavigate}
             />
           ))
         ) : (
-          <p className="py-8 text-center text-sm text-muted-foreground">{labels.activity.empty}</p>
+          <p className="dashboard-list-row py-8 text-center text-sm text-muted-foreground">
+            {labels.activity.empty}
+          </p>
         )}
-      </div>
+        </DashboardListPanel>
+      </DashboardListShell>
     </section>
   );
 }
@@ -400,6 +477,7 @@ function ShortcutTile({
   onNavigate?: (href: string) => void;
 }) {
   const Icon = SHORTCUT_ICONS[shortcut.id];
+  const accent = DASHBOARD_SHORTCUT_ACCENT[shortcut.id];
 
   return (
     <DashboardNavLink
@@ -408,8 +486,11 @@ function ShortcutTile({
       onNavigate={onNavigate}
       className="dashboard-inner-card group flex flex-col items-center gap-2 px-4 py-5 text-center transition-colors hover:bg-white/8"
     >
-      <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/15">
-        <Icon className="size-5 text-primary" aria-hidden />
+      <span
+        className="flex size-10 items-center justify-center rounded-xl"
+        style={accentIconSurfaceStyle(accent)}
+      >
+        <Icon className="size-5" aria-hidden />
       </span>
       <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">
         {label}
@@ -503,7 +584,7 @@ function StudentDashboardMain({
   const overflowCount = Math.max(0, fixture.todos.length - visibleTodos.length);
 
   return (
-    <div className="animate-fade-in mx-auto max-w-6xl space-y-8">
+    <div className="animate-fade-in mx-auto max-w-6xl space-y-10">
       <DashboardHeroCompact
         labels={labels}
         fixture={fixture}
