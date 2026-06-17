@@ -1,16 +1,28 @@
 import pg from "pg";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { drizzle } from "drizzle-orm/node-postgres";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFileSync } from "node:fs";
 import { parse as parseYaml } from "yaml";
+import { eq } from "drizzle-orm";
 import { buildApp } from "./app";
-import { defaultSeedUsers, seedUsers } from "./db/seed";
+import { ensureMigrated } from "./test/ensure-migrated.js";
+import {
+  defaultSeedUsers,
+  defaultSeedSubjects,
+  seedMentorSubjectsForAlice,
+  seedSubjects,
+  seedUsers,
+} from "./db/seed";
+import { outboxEvents, subjects, users } from "./db/schema";
+import {
+  HELP_REQUEST_CREATED,
+  HELP_REQUEST_SUMMARY_REQUESTED,
+} from "./intuition/outbox";
+import { processPendingSummaryEvents } from "./services/ai-summary-worker";
 import { isOpenApiDocsEnabled } from "./openapi";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 describe("api", () => {
   it("GET /health returns 200", async () => {
     const app = await buildApp({ pool: null });
@@ -234,18 +246,50 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
   "api with database",
   () => {
     let pool: pg.Pool;
+    let db: ReturnType<typeof drizzle>;
     let app: Awaited<ReturnType<typeof buildApp>>;
+    let bobUserId: string;
+    let aliceUserId: string;
+    let charlieUserId: string;
 
     beforeAll(async () => {
       pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-      const db = drizzle(pool);
-      await migrate(db, {
-        migrationsFolder: path.join(__dirname, "../drizzle"),
-      });
+      db = drizzle(pool);
+      await ensureMigrated(process.env.DATABASE_URL!);
       const specs = defaultSeedUsers();
       if (specs.length > 0) {
         await seedUsers(db, specs);
       }
+      await seedSubjects(db, defaultSeedSubjects());
+      await seedMentorSubjectsForAlice(db);
+      await seedUsers(db, [
+        {
+          email: "charlie@dev.local",
+          role: "student",
+          password: seedPassword,
+          fullName: "Charlie Student",
+        },
+      ]);
+
+      const bobRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "bob@dev.local"))
+        .limit(1);
+      const aliceRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "alice@dev.local"))
+        .limit(1);
+      const charlieRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "charlie@dev.local"))
+        .limit(1);
+      bobUserId = bobRows[0]!.id;
+      aliceUserId = aliceRows[0]!.id;
+      charlieUserId = charlieRows[0]!.id;
+
       app = await buildApp({ pool });
     });
 
@@ -254,11 +298,16 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       await pool.end();
     });
 
-    it("GET /feed returns 200 with items array", async () => {
+    it("GET /feed returns 200 with items array and pagination", async () => {
       const res = await app.inject({ method: "GET", url: "/feed" });
       expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload) as { items: unknown[] };
+      const body = JSON.parse(res.payload) as {
+        items: unknown[];
+        pagination: { page: number; limit: number; total: number };
+      };
       expect(Array.isArray(body.items)).toBe(true);
+      expect(body.pagination.page).toBe(1);
+      expect(typeof body.pagination.total).toBe("number");
     });
 
     it("GET /feed includes created item with tags", async () => {
@@ -308,11 +357,17 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         userId: string;
         role: string;
       };
-      expect(body).toEqual({
-        ok: true,
-        userId: "bob@dev.local",
-        role: "student",
-      });
+      expect(body.ok).toBe(true);
+      expect(body.role).toBe("student");
+      expect(body.userId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+      );
+      const bobRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "bob@dev.local"))
+        .limit(1);
+      expect(body.userId).toBe(bobRows[0]?.id);
       const setCookie = res.headers["set-cookie"];
       const cookieStr = Array.isArray(setCookie)
         ? setCookie.join("; ")
@@ -367,7 +422,37 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         item: { id: string; title: string; authorId: string };
       };
       expect(body.item.title).toBe(title);
-      expect(body.item.authorId).toBe("bob");
+      expect(body.item.authorId).toBe(bobUserId);
+    });
+
+    it("POST /help-requests enqueues help_request.created outbox event", async () => {
+      const title = `Outbox on create ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob" });
+      const res = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title, tags: ["typescript"] },
+      });
+      expect(res.statusCode).toBe(201);
+      const body = JSON.parse(res.payload) as { item: { id: string } };
+      const db = drizzle(pool);
+      const rows = await db
+        .select()
+        .from(outboxEvents)
+        .where(eq(outboxEvents.aggregateId, body.item.id));
+      expect(rows).toHaveLength(1);
+      expect(rows[0]?.eventType).toBe(HELP_REQUEST_CREATED);
+      const payload = rows[0]?.payload as {
+        id: string;
+        title: string;
+        authorId: string;
+        tags?: string[];
+      };
+      expect(payload.id).toBe(body.item.id);
+      expect(payload.title).toBe(title);
+      expect(payload.authorId).toBe(bobUserId);
+      expect(payload.tags).toEqual(["typescript"]);
     });
 
     it("POST /help-requests returns 409 for duplicate title", async () => {
@@ -424,6 +509,92 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       expect(body.hints).toBeUndefined();
     });
 
+    it("POST /help-requests maps agent routing to rubberduck hint", async () => {
+      const agentApp = await buildApp({
+        pool,
+        evaluateRouting: async () => ({
+          suggestRubberduckRedirect: true,
+          reason: "agent_mock",
+        }),
+      });
+      const token = agentApp.jwt.sign({ sub: "bob" });
+      const title = `Agent routed long title ${Date.now()} with many words`;
+      const res = await agentApp.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      expect(res.statusCode).toBe(201);
+      const body = JSON.parse(res.payload) as {
+        hints?: { rubberduckEligible?: boolean };
+      };
+      expect(body.hints?.rubberduckEligible).toBe(true);
+      await agentApp.close();
+    });
+
+    it("POST /help-requests omits rubberduck hint when agent declines redirect", async () => {
+      const agentApp = await buildApp({
+        pool,
+        evaluateRouting: async () => ({
+          suggestRubberduckRedirect: false,
+          reason: "agent_mock",
+        }),
+      });
+      const token = agentApp.jwt.sign({ sub: "bob" });
+      const title = `Short ${Date.now()}`;
+      const res = await agentApp.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      expect(res.statusCode).toBe(201);
+      const body = JSON.parse(res.payload) as {
+        hints?: { rubberduckEligible?: boolean };
+      };
+      expect(body.hints).toBeUndefined();
+      await agentApp.close();
+    });
+
+    it("POST /help-requests delegates routing to live agent when AGENT_URL is set", async () => {
+      const { buildApp: buildAgentApp } = await import(
+        "../../agent/src/app.js"
+      );
+      const liveAgent = await buildAgentApp();
+      await liveAgent.listen({ port: 0, host: "127.0.0.1" });
+      const address = liveAgent.server.address();
+      if (!address || typeof address === "string") {
+        throw new Error("agent listen address unavailable");
+      }
+      const prevAgentUrl = process.env.AGENT_URL;
+      process.env.AGENT_URL = `http://127.0.0.1:${address.port}`;
+      const apiWithAgent = await buildApp({ pool });
+      try {
+        const token = apiWithAgent.jwt.sign({ sub: "bob" });
+        const title = `Short ${Date.now()}`;
+        const res = await apiWithAgent.inject({
+          method: "POST",
+          url: "/help-requests",
+          headers: { authorization: `Bearer ${token}` },
+          payload: { title },
+        });
+        expect(res.statusCode).toBe(201);
+        const body = JSON.parse(res.payload) as {
+          hints?: { rubberduckEligible?: boolean };
+        };
+        expect(body.hints?.rubberduckEligible).toBe(true);
+      } finally {
+        if (prevAgentUrl === undefined) {
+          delete process.env.AGENT_URL;
+        } else {
+          process.env.AGENT_URL = prevAgentUrl;
+        }
+        await apiWithAgent.close();
+        await liveAgent.close();
+      }
+    });
+
     it("GET /help-requests/:id returns 404 for unknown id", async () => {
       const res = await app.inject({
         method: "GET",
@@ -463,6 +634,179 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       expect(body.responses).toEqual([]);
     });
 
+    it("POST /help-requests/:id/responses returns 401 without token", async () => {
+      const res = await app.inject({
+        method: "POST",
+        url: "/help-requests/00000000-0000-0000-0000-000000000099/responses",
+        payload: { body: "Try without auth" },
+      });
+      expect(res.statusCode).toBe(401);
+    });
+
+    it("POST /help-requests/:id/responses returns 404 for unknown help request", async () => {
+      const token = app.jwt.sign({ sub: "alice@dev.local", role: "mentor" });
+      const res = await app.inject({
+        method: "POST",
+        url: "/help-requests/00000000-0000-0000-0000-000000000099/responses",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { body: "Helpful answer" },
+      });
+      expect(res.statusCode).toBe(404);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("not_found");
+    });
+
+    it("POST /help-requests/:id/responses creates response and GET detail includes it", async () => {
+      const title = `Responses thread ${Date.now()}`;
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title, tags: ["rails"] },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: { id: string };
+      };
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const responseBody = "Voici une piste pour débloquer ton erreur.";
+      const postRes = await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/responses`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+        payload: { body: responseBody },
+      });
+      expect(postRes.statusCode).toBe(201);
+      const posted = JSON.parse(postRes.payload) as {
+        item: {
+          id: string;
+          helpRequestId: string;
+          body: string;
+          authorId: string;
+        };
+      };
+      expect(posted.item.helpRequestId).toBe(created.item.id);
+      expect(posted.item.body).toBe(responseBody);
+      expect(posted.item.authorId).toBe(aliceUserId);
+
+      const detailRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+      });
+      expect(detailRes.statusCode).toBe(200);
+      const detail = JSON.parse(detailRes.payload) as {
+        responses: Array<{ id: string; body: string; authorId: string }>;
+      };
+      expect(detail.responses).toHaveLength(1);
+      expect(detail.responses[0]?.id).toBe(posted.item.id);
+      expect(detail.responses[0]?.body).toBe(responseBody);
+      expect(detail.responses[0]?.authorId).toBe(aliceUserId);
+    });
+
+    it("GET /help-requests/:id?filterByCertifications=true returns 401 without token", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/help-requests/00000000-0000-0000-0000-000000000099?filterByCertifications=true",
+      });
+      expect(res.statusCode).toBe(401);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("unauthorized");
+    });
+
+    it("GET /help-requests/:id?filterByCertifications=true returns 403 for student", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "GET",
+        url: "/help-requests/00000000-0000-0000-0000-000000000099?filterByCertifications=true",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(res.statusCode).toBe(403);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("forbidden");
+    });
+
+    it("GET /help-requests/:id filters responses by certification overlap for mentor", async () => {
+      const title = `Cert filter ${Date.now()}`;
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title, tags: ["react", "rails"] },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+      const id = created.item.id;
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const charlieToken = app.jwt.sign({
+        sub: "charlie@dev.local",
+        role: "student",
+      });
+
+      await app.inject({
+        method: "POST",
+        url: `/help-requests/${id}/responses`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+        payload: { body: "Piste mentor react" },
+      });
+      await app.inject({
+        method: "POST",
+        url: `/help-requests/${id}/responses`,
+        headers: { authorization: `Bearer ${charlieToken}` },
+        payload: { body: "Piste hors certifications" },
+      });
+      await app.inject({
+        method: "POST",
+        url: `/help-requests/${id}/responses`,
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { body: "Précision du demandeur" },
+      });
+
+      const unfilteredRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${id}`,
+      });
+      expect(unfilteredRes.statusCode).toBe(200);
+      const unfiltered = JSON.parse(unfilteredRes.payload) as {
+        responses: Array<{ authorId: string }>;
+      };
+      expect(unfiltered.responses).toHaveLength(3);
+
+      const filteredRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${id}?filterByCertifications=true`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(filteredRes.statusCode).toBe(200);
+      const filtered = JSON.parse(filteredRes.payload) as {
+        responses: Array<{ authorId: string; body: string }>;
+        certificationFilter: {
+          applied: boolean;
+          totalCount: number;
+          visibleCount: number;
+        };
+      };
+      expect(filtered.certificationFilter).toEqual({
+        applied: true,
+        totalCount: 3,
+        visibleCount: 2,
+      });
+      expect(filtered.responses).toHaveLength(2);
+      const authors = filtered.responses.map((r) => r.authorId);
+      expect(authors).toContain(aliceUserId);
+      expect(authors).toContain(bobUserId);
+      expect(authors).not.toContain(charlieUserId);
+    });
+
     it("GET /auth/me returns role for mentor alice@dev.local on login", async () => {
       const loginRes = await app.inject({
         method: "POST",
@@ -487,36 +831,1254 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         headers: { authorization: `Bearer ${token}` },
       });
       expect(meRes.statusCode).toBe(200);
-      const me = JSON.parse(meRes.payload) as { userId: string; role: string };
-      expect(me).toEqual({ userId: "alice@dev.local", role: "mentor" });
+      const me = JSON.parse(meRes.payload) as {
+        userId: string;
+        role: string;
+        displayName?: string;
+      };
+      expect(me.userId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+      );
+      expect(me.role).toBe("mentor");
+      expect(me.displayName).toBe("Alice Mentor");
     });
 
-    it("GET /mentor/feed returns only tagged requests", async () => {
+    it("GET /mentor/feed returns 401 without token", async () => {
+      const res = await app.inject({ method: "GET", url: "/mentor/feed" });
+      expect(res.statusCode).toBe(401);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("unauthorized");
+    });
+
+    it("GET /mentor/feed returns 403 for student", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "GET",
+        url: "/mentor/feed",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(res.statusCode).toBe(403);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("forbidden");
+    });
+
+    it("GET /mentor/feed returns only tagged requests for mentor", async () => {
       const taggedTitle = `Mentor tagged ${Date.now()}`;
       const plainTitle = `Mentor plain ${Date.now()}`;
-      const token = app.jwt.sign({ sub: "bob", role: "student" });
-      const headers = { authorization: `Bearer ${token}` };
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const bobHeaders = { authorization: `Bearer ${bobToken}` };
 
       await app.inject({
         method: "POST",
         url: "/help-requests",
-        headers,
+        headers: bobHeaders,
         payload: { title: taggedTitle, tags: ["mentor"] },
       });
       await app.inject({
         method: "POST",
         url: "/help-requests",
-        headers,
+        headers: bobHeaders,
         payload: { title: plainTitle },
       });
 
-      const res = await app.inject({ method: "GET", url: "/mentor/feed" });
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const res = await app.inject({
+        method: "GET",
+        url: "/mentor/feed",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload) as {
-        items: Array<{ title: string }>;
+        items: Array<{ title: string; responseCount: number }>;
       };
       expect(body.items.some((i) => i.title === taggedTitle)).toBe(true);
       expect(body.items.some((i) => i.title === plainTitle)).toBe(false);
+      for (const item of body.items) {
+        expect(typeof item.responseCount).toBe("number");
+      }
+    });
+
+    it("GET /mentor/feed sets hasUnreadForMentor when last response is not from mentor", async () => {
+      const title = `Mentor unread ${Date.now()}`;
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title, tags: ["mentor"] },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: { id: string };
+      };
+
+      await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/responses`,
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { body: "Réponse étudiant en attente de mentor." },
+      });
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const feedRes = await app.inject({
+        method: "GET",
+        url: "/mentor/feed",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(feedRes.statusCode).toBe(200);
+      const feed = JSON.parse(feedRes.payload) as {
+        items: Array<{
+          id: string;
+          responseCount: number;
+          lastResponseAt: string | null;
+          hasUnreadForMentor: boolean;
+        }>;
+      };
+      const item = feed.items.find((i) => i.id === created.item.id);
+      expect(item).toBeDefined();
+      expect(item?.responseCount).toBe(1);
+      expect(item?.lastResponseAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+      expect(item?.hasUnreadForMentor).toBe(true);
+
+      await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/responses`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+        payload: { body: "Réponse mentor — lu pour le dashboard." },
+      });
+
+      const feedAfterRes = await app.inject({
+        method: "GET",
+        url: "/mentor/feed",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      const feedAfter = JSON.parse(feedAfterRes.payload) as {
+        items: Array<{ id: string; hasUnreadForMentor: boolean }>;
+      };
+      const itemAfter = feedAfter.items.find((i) => i.id === created.item.id);
+      expect(itemAfter?.hasUnreadForMentor).toBe(false);
+    });
+
+    it("POST /help-requests with title only remains backward compatible", async () => {
+      const title = `Compat title only ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      expect(res.statusCode).toBe(201);
+      const body = JSON.parse(res.payload) as { item: { title: string; body?: string } };
+      expect(body.item.title).toBe(title);
+      expect(body.item.body).toBeUndefined();
+    });
+
+    it("POST /help-requests accepts enriched body and subject", async () => {
+      const subjectsRes = await app.inject({ method: "GET", url: "/subjects" });
+      expect(subjectsRes.statusCode).toBe(200);
+      const subjects = JSON.parse(subjectsRes.payload) as {
+        items: Array<{ id: string; slug: string }>;
+      };
+      const react = subjects.items.find((s) => s.slug === "react");
+      expect(react).toBeDefined();
+
+      const title = `Enriched post ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          title,
+          body: "Détail du problème React hooks.",
+          codeSnippet: "useEffect(() => {}, [])",
+          codeLanguage: "javascript",
+          subjectId: react!.id,
+          urgent: true,
+          tags: ["react"],
+        },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: {
+          id: string;
+          body?: string;
+          subject?: { slug: string };
+          urgent?: boolean;
+        };
+      };
+      expect(created.item.body).toBe("Détail du problème React hooks.");
+      expect(created.item.subject?.slug).toBe("react");
+      expect(created.item.urgent).toBe(true);
+
+      const detailRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+      });
+      expect(detailRes.statusCode).toBe(200);
+      const detail = JSON.parse(detailRes.payload) as {
+        item: { body?: string; responsesCount?: number };
+      };
+      expect(detail.item.body).toBe("Détail du problème React hooks.");
+    });
+
+    it("GET /feed filters by subject slug", async () => {
+      const subjectsRes = await app.inject({ method: "GET", url: "/subjects" });
+      const subjects = JSON.parse(subjectsRes.payload) as {
+        items: Array<{ id: string; slug: string }>;
+      };
+      const rails = subjects.items.find((s) => s.slug === "rails");
+      expect(rails).toBeDefined();
+
+      const title = `Rails filter ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title, subjectId: rails!.id },
+      });
+
+      const feedRes = await app.inject({
+        method: "GET",
+        url: "/feed?subject=rails",
+      });
+      expect(feedRes.statusCode).toBe(200);
+      const feed = JSON.parse(feedRes.payload) as { items: Array<{ title: string }> };
+      expect(feed.items.some((i) => i.title === title)).toBe(true);
+
+      const otherFeed = await app.inject({
+        method: "GET",
+        url: "/feed?subject=javascript",
+      });
+      const other = JSON.parse(otherFeed.payload) as { items: Array<{ title: string }> };
+      expect(other.items.some((i) => i.title === title)).toBe(false);
+    });
+
+    it("GET /subjects returns seeded catalogue", async () => {
+      const res = await app.inject({ method: "GET", url: "/subjects" });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as { items: Array<{ slug: string }> };
+      expect(body.items.some((s) => s.slug === "react")).toBe(true);
+    });
+
+    it("POST /help-requests/:id/help-mentor sets flag visible in mentor feed", async () => {
+      const title = `Help mentor ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const helpRes = await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/help-mentor`,
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(helpRes.statusCode).toBe(200);
+      const updated = JSON.parse(helpRes.payload) as {
+        item: { mentorHelpRequested?: boolean };
+      };
+      expect(updated.item.mentorHelpRequested).toBe(true);
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const mentorFeed = await app.inject({
+        method: "GET",
+        url: "/mentor/feed",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      const feed = JSON.parse(mentorFeed.payload) as {
+        items: Array<{ title: string; mentorHelpRequested?: boolean }>;
+      };
+      expect(feed.items.some((i) => i.title === title)).toBe(true);
+    });
+
+    it("PATCH /help-requests/:id allows author to update body", async () => {
+      const title = `Patch author ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title, body: "Version initiale" },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const patchRes = await app.inject({
+        method: "PATCH",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { body: "Version corrigée" },
+      });
+      expect(patchRes.statusCode).toBe(200);
+      const patched = JSON.parse(patchRes.payload) as { item: { body?: string } };
+      expect(patched.item.body).toBe("Version corrigée");
+    });
+
+    it("PATCH /help-requests/:id returns 403 for non-author", async () => {
+      const title = `Patch forbidden ${Date.now()}`;
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const patchRes = await app.inject({
+        method: "PATCH",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+        payload: { body: "Tentative mentor" },
+      });
+      expect(patchRes.statusCode).toBe(403);
+    });
+
+    it("POST /help-requests/:id/likes toggles like and updates count", async () => {
+      const title = `Like toggle ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const likeRes = await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/likes`,
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(likeRes.statusCode).toBe(200);
+      const liked = JSON.parse(likeRes.payload) as {
+        liked: boolean;
+        likesCount: number;
+      };
+      expect(liked.liked).toBe(true);
+      expect(liked.likesCount).toBe(1);
+
+      const unlikeRes = await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/likes`,
+        headers: { authorization: `Bearer ${token}` },
+      });
+      const unliked = JSON.parse(unlikeRes.payload) as {
+        liked: boolean;
+        likesCount: number;
+      };
+      expect(unliked.liked).toBe(false);
+      expect(unliked.likesCount).toBe(0);
+    });
+
+    it("POST /help-requests/:id/bookmarks toggles bookmark", async () => {
+      const title = `Bookmark toggle ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const bookmarkRes = await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/bookmarks`,
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(bookmarkRes.statusCode).toBe(200);
+      const body = JSON.parse(bookmarkRes.payload) as { bookmarked: boolean };
+      expect(body.bookmarked).toBe(true);
+
+      const listRes = await app.inject({
+        method: "GET",
+        url: "/me/bookmarks",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(listRes.statusCode).toBe(200);
+      const list = JSON.parse(listRes.payload) as {
+        items: Array<{ title: string }>;
+      };
+      expect(list.items.some((i) => i.title === title)).toBe(true);
+    });
+
+    it("GET /me/help-requests returns author posts only", async () => {
+      const title = `My posts ${Date.now()}`;
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title },
+      });
+
+      const res = await app.inject({
+        method: "GET",
+        url: "/me/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as { items: Array<{ title: string }> };
+      expect(body.items.some((i) => i.title === title)).toBe(true);
+    });
+
+    it("PATCH and DELETE /help-requests/:id/responses/:responseId work for author", async () => {
+      const title = `Response crud ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const responseRes = await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/responses`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { body: "Première version" },
+      });
+      const response = JSON.parse(responseRes.payload) as {
+        item: { id: string };
+      };
+
+      const patchRes = await app.inject({
+        method: "PATCH",
+        url: `/help-requests/${created.item.id}/responses/${response.item.id}`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { body: "Version corrigée" },
+      });
+      expect(patchRes.statusCode).toBe(200);
+      const patched = JSON.parse(patchRes.payload) as { item: { body: string } };
+      expect(patched.item.body).toBe("Version corrigée");
+
+      const deleteRes = await app.inject({
+        method: "DELETE",
+        url: `/help-requests/${created.item.id}/responses/${response.item.id}`,
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(deleteRes.statusCode).toBe(204);
+
+      const detailRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+      });
+      const detail = JSON.parse(detailRes.payload) as {
+        item: { responsesCount?: number };
+        responses?: unknown[];
+      };
+      expect(detail.responses?.length ?? 0).toBe(0);
+      expect(detail.item.responsesCount ?? 0).toBe(0);
+    });
+
+    it("POST /auth/register creates user and returns JWT", async () => {
+      const email = `newuser-${Date.now()}@dev.local`;
+      const res = await app.inject({
+        method: "POST",
+        url: "/auth/register",
+        payload: {
+          email,
+          password: "secure-pass-1",
+          fullName: "Nouveau Membre",
+          acceptCgu: true,
+        },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as {
+        ok: boolean;
+        userId: string;
+        role: string;
+      };
+      expect(body.ok).toBe(true);
+      expect(body.role).toBe("student");
+      expect(body.userId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+      );
+      const setCookie = res.headers["set-cookie"];
+      const cookieStr = Array.isArray(setCookie)
+        ? setCookie.join("; ")
+        : String(setCookie ?? "");
+      expect(cookieStr).toContain("access_token=");
+    });
+
+    it("POST /auth/register returns 409 for duplicate email", async () => {
+      const res = await app.inject({
+        method: "POST",
+        url: "/auth/register",
+        payload: {
+          email: "bob@dev.local",
+          password: "secure-pass-2",
+          fullName: "Bob Duplicate",
+          acceptCgu: true,
+        },
+      });
+      expect(res.statusCode).toBe(409);
+      const body = JSON.parse(res.payload) as { error: string };
+      expect(body.error).toBe("email_taken");
+    });
+
+    it("POST /auth/logout clears access_token cookie", async () => {
+      const loginRes = await app.inject({
+        method: "POST",
+        url: "/auth/login",
+        payload: { email: "bob@dev.local", password: seedPassword },
+      });
+      expect(loginRes.statusCode).toBe(200);
+      const logoutRes = await app.inject({
+        method: "POST",
+        url: "/auth/logout",
+      });
+      expect(logoutRes.statusCode).toBe(200);
+      const setCookie = logoutRes.headers["set-cookie"];
+      const cookieStr = Array.isArray(setCookie)
+        ? setCookie.join("; ")
+        : String(setCookie ?? "");
+      expect(cookieStr.toLowerCase()).toMatch(/access_token=;/);
+    });
+
+    it("PATCH /users/me updates profile fields", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "PATCH",
+        url: "/users/me",
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          bio: "Étudiant THP",
+          headline: "Apprend Rails",
+        },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as {
+        item: { bio?: string; headline?: string; email: string };
+      };
+      expect(body.item.bio).toBe("Étudiant THP");
+      expect(body.item.headline).toBe("Apprend Rails");
+      expect(body.item.email).toBe("bob@dev.local");
+    });
+
+    it("POST /legal/accept sets cguAcceptedAt", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "POST",
+        url: "/legal/accept",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as {
+        ok: boolean;
+        cguAcceptedAt: string;
+      };
+      expect(body.ok).toBe(true);
+      expect(body.cguAcceptedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+
+      const meRes = await app.inject({
+        method: "GET",
+        url: "/auth/me",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      const me = JSON.parse(meRes.payload) as { cguAcceptedAt?: string };
+      expect(me.cguAcceptedAt).toBe(body.cguAcceptedAt);
+    });
+
+    it("GET /users/:id returns public profile and paginated posts", async () => {
+      const bobRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "bob@dev.local"))
+        .limit(1);
+      const bobId = bobRows[0]?.id;
+      expect(bobId).toBeDefined();
+
+      const title = `Public profile ${Date.now()}`;
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: { title },
+      });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/users/${bobId}?tab=posts&limit=10`,
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as {
+        profile: { displayName: string; stats: { postsCount: number } };
+        tab: string;
+        items: Array<{ title: string }>;
+        pagination: { total: number };
+      };
+      expect(body.tab).toBe("posts");
+      expect(body.profile.displayName).toBe("Bob Dev");
+      expect(body.profile.stats.postsCount).toBeGreaterThanOrEqual(1);
+      expect(body.items.some((i) => i.title === title)).toBe(true);
+      expect(body.pagination.total).toBeGreaterThanOrEqual(1);
+    });
+
+    it("POST /resources as student creates pending resource hidden from public index", async () => {
+      const reactRows = await db
+        .select({ id: subjects.id })
+        .from(subjects)
+        .where(eq(subjects.slug, "react"))
+        .limit(1);
+      const subjectId = reactRows[0]?.id;
+      expect(subjectId).toBeDefined();
+
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const title = `Pending resource ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/resources",
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          title,
+          body: "Contenu en attente de validation.",
+          subjectId,
+          tags: ["react"],
+        },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: { id: string; status: string };
+      };
+      expect(created.item.status).toBe("pending");
+
+      const listRes = await app.inject({ method: "GET", url: "/resources" });
+      const list = JSON.parse(listRes.payload) as {
+        items: Array<{ id: string; title: string }>;
+      };
+      expect(list.items.some((i) => i.id === created.item.id)).toBe(false);
+    });
+
+    it("POST /resources as mentor creates published resource visible in GET /resources", async () => {
+      const reactRows = await db
+        .select({ id: subjects.id })
+        .from(subjects)
+        .where(eq(subjects.slug, "react"))
+        .limit(1);
+      const subjectId = reactRows[0]?.id;
+      expect(subjectId).toBeDefined();
+
+      const token = app.jwt.sign({ sub: "alice@dev.local", role: "mentor" });
+      const title = `Published resource ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/resources",
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          title,
+          body: "Ressource mentor publiée directement.",
+          subjectId,
+        },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: { id: string; status: string };
+      };
+      expect(created.item.status).toBe("published");
+
+      const listRes = await app.inject({
+        method: "GET",
+        url: `/resources?q=${encodeURIComponent(title)}`,
+      });
+      const list = JSON.parse(listRes.payload) as {
+        items: Array<{ id: string; title: string }>;
+      };
+      expect(list.items.some((i) => i.id === created.item.id)).toBe(true);
+    });
+
+    it("POST /subject-requests creates pending request", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "POST",
+        url: "/subject-requests",
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          name: "Philosophie",
+          description: "Matière utile pour la culture générale.",
+        },
+      });
+      expect(res.statusCode).toBe(201);
+      const body = JSON.parse(res.payload) as {
+        item: { name: string; status: string };
+      };
+      expect(body.item.name).toBe("Philosophie");
+      expect(body.item.status).toBe("pending");
+    });
+
+    it("GET /mentor/dashboard and approve pending resource", async () => {
+      const reactRows = await db
+        .select({ id: subjects.id })
+        .from(subjects)
+        .where(eq(subjects.slug, "react"))
+        .limit(1);
+      const subjectId = reactRows[0]?.id;
+      expect(subjectId).toBeDefined();
+
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const title = `Approve me ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/resources",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: {
+          title,
+          body: "À approuver par Alice.",
+          subjectId,
+        },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const dashRes = await app.inject({
+        method: "GET",
+        url: "/mentor/dashboard",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(dashRes.statusCode).toBe(200);
+      const dash = JSON.parse(dashRes.payload) as {
+        stats: { pendingResourcesCount: number };
+        pendingResources: Array<{ id: string; title: string }>;
+      };
+      expect(dash.stats.pendingResourcesCount).toBeGreaterThanOrEqual(1);
+      expect(
+        dash.pendingResources.some((r) => r.id === created.item.id),
+      ).toBe(true);
+
+      const approveRes = await app.inject({
+        method: "POST",
+        url: `/mentor/resources/${created.item.id}/approve`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(approveRes.statusCode).toBe(200);
+      const approved = JSON.parse(approveRes.payload) as {
+        item: { status: string };
+      };
+      expect(approved.item.status).toBe("published");
+
+      const listRes = await app.inject({
+        method: "GET",
+        url: `/resources?q=${encodeURIComponent(title)}`,
+      });
+      const list = JSON.parse(listRes.payload) as {
+        items: Array<{ id: string }>;
+      };
+      expect(list.items.some((i) => i.id === created.item.id)).toBe(true);
+    });
+
+    it("GET /mentor/dashboard returns 403 for student", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "GET",
+        url: "/mentor/dashboard",
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(res.statusCode).toBe(403);
+    });
+
+    it("POST /conversations creates direct thread and POST message returns chat JSON", async () => {
+      const bobRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "bob@dev.local"))
+        .limit(1);
+      const aliceRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "alice@dev.local"))
+        .limit(1);
+      const bobId = bobRows[0]?.id;
+      const aliceId = aliceRows[0]?.id;
+      expect(bobId).toBeDefined();
+      expect(aliceId).toBeDefined();
+
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const createConvRes = await app.inject({
+        method: "POST",
+        url: "/conversations",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { recipientId: aliceId },
+      });
+      expect(createConvRes.statusCode).toBe(201);
+      const conv = JSON.parse(createConvRes.payload) as {
+        item: { id: string; otherParticipant: { id: string; displayName: string } };
+      };
+      expect(conv.item.otherParticipant.id).toBe(aliceId);
+
+      const msgRes = await app.inject({
+        method: "POST",
+        url: `/conversations/${conv.item.id}/messages`,
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { body: "Salut Alice !" },
+      });
+      expect(msgRes.statusCode).toBe(201);
+      const msg = JSON.parse(msgRes.payload) as {
+        item: {
+          body: string;
+          userId: string;
+          userName: string;
+          type: string;
+        };
+      };
+      expect(msg.item.body).toBe("Salut Alice !");
+      expect(msg.item.userId).toBe(bobId);
+      expect(msg.item.type).toBe("message");
+      expect(msg.item.userName.length).toBeGreaterThan(0);
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const inboxRes = await app.inject({
+        method: "GET",
+        url: "/conversations",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(inboxRes.statusCode).toBe(200);
+      const inbox = JSON.parse(inboxRes.payload) as {
+        items: Array<{ id: string; unreadCount: number; lastMessage?: { body: string } }>;
+      };
+      const thread = inbox.items.find((i) => i.id === conv.item.id);
+      expect(thread).toBeDefined();
+      expect(thread?.unreadCount).toBeGreaterThanOrEqual(1);
+      expect(thread?.lastMessage?.body).toBe("Salut Alice !");
+
+      const readRes = await app.inject({
+        method: "PATCH",
+        url: `/conversations/${conv.item.id}/read`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(readRes.statusCode).toBe(200);
+      const readBody = JSON.parse(readRes.payload) as { ok: boolean; lastReadAt: string };
+      expect(readBody.ok).toBe(true);
+      expect(readBody.lastReadAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+
+      const wsTokenRes = await app.inject({
+        method: "GET",
+        url: `/conversations/${conv.item.id}/ws-token`,
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      expect(wsTokenRes.statusCode).toBe(200);
+      const wsToken = JSON.parse(wsTokenRes.payload) as {
+        token: string;
+        expiresIn: number;
+      };
+      expect(wsToken.token.length).toBeGreaterThan(10);
+      expect(wsToken.expiresIn).toBe(60);
+
+      const inboxAfterRead = await app.inject({
+        method: "GET",
+        url: "/conversations",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      const inbox2 = JSON.parse(inboxAfterRead.payload) as {
+        items: Array<{ id: string; unreadCount: number }>;
+      };
+      const threadAfter = inbox2.items.find((i) => i.id === conv.item.id);
+      expect(threadAfter?.unreadCount).toBe(0);
+
+      const historyRes = await app.inject({
+        method: "GET",
+        url: `/conversations/${conv.item.id}/messages`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(historyRes.statusCode).toBe(200);
+      const history = JSON.parse(historyRes.payload) as {
+        items: Array<{ body: string }>;
+        pagination: { total: number };
+      };
+      expect(history.pagination.total).toBeGreaterThanOrEqual(1);
+      expect(history.items.some((m) => m.body === "Salut Alice !")).toBe(true);
+    });
+
+    it("POST /conversations returns 200 when direct thread already exists", async () => {
+      const aliceRows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, "alice@dev.local"))
+        .limit(1);
+      const aliceId = aliceRows[0]?.id;
+      expect(aliceId).toBeDefined();
+
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      await app.inject({
+        method: "POST",
+        url: "/conversations",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { recipientId: aliceId },
+      });
+      const secondRes = await app.inject({
+        method: "POST",
+        url: "/conversations",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { recipientId: aliceId },
+      });
+      expect(secondRes.statusCode).toBe(200);
+    });
+
+    it("GET /conversations/:id/messages returns 403 when user is not a participant", async () => {
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "GET",
+        url: "/conversations/00000000-0000-4000-8000-000000000001/messages",
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      expect(res.statusCode).toBe(403);
+    });
+
+    it("flags profane help-request and hides it from GET /feed until admin approves", async () => {
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const adminToken = app.jwt.sign({
+        sub: "admin@dev.local",
+        role: "admin",
+      });
+      const title = `Flagged post ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title, body: "what the fuck is going on" },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as {
+        item: { id: string; flaggedForModeration?: boolean };
+      };
+      expect(created.item.flaggedForModeration).toBe(true);
+
+      const feedRes = await app.inject({ method: "GET", url: "/feed" });
+      const feed = JSON.parse(feedRes.payload) as {
+        items: Array<{ id: string }>;
+      };
+      expect(feed.items.some((i) => i.id === created.item.id)).toBe(false);
+
+      const modRes = await app.inject({
+        method: "GET",
+        url: "/admin/moderation",
+        headers: { authorization: `Bearer ${adminToken}` },
+      });
+      expect(modRes.statusCode).toBe(200);
+      const mod = JSON.parse(modRes.payload) as {
+        flaggedHelpRequests: Array<{ id: string }>;
+      };
+      expect(
+        mod.flaggedHelpRequests.some((i) => i.id === created.item.id),
+      ).toBe(true);
+
+      const approveRes = await app.inject({
+        method: "POST",
+        url: `/admin/moderation/help-requests/${created.item.id}/approve`,
+        headers: { authorization: `Bearer ${adminToken}` },
+      });
+      expect(approveRes.statusCode).toBe(200);
+
+      const feedAfter = await app.inject({ method: "GET", url: "/feed" });
+      const feed2 = JSON.parse(feedAfter.payload) as {
+        items: Array<{ id: string }>;
+      };
+      expect(feed2.items.some((i) => i.id === created.item.id)).toBe(true);
+    });
+
+    it("does not flag help-request when agent clears regex false positive", async () => {
+      const modApp = await buildApp({
+        pool,
+        evaluateModeration: async () => false,
+      });
+      try {
+        const bobToken = modApp.jwt.sign({
+          sub: "bob@dev.local",
+          role: "student",
+        });
+        const title = `Cleared moderation ${Date.now()}`;
+        const createRes = await modApp.inject({
+          method: "POST",
+          url: "/help-requests",
+          headers: { authorization: `Bearer ${bobToken}` },
+          payload: { title, body: "what the fuck is going on" },
+        });
+        expect(createRes.statusCode).toBe(201);
+        const created = JSON.parse(createRes.payload) as {
+          item: { id: string; flaggedForModeration?: boolean };
+        };
+        expect(created.item.flaggedForModeration ?? false).toBe(false);
+
+        const feedRes = await modApp.inject({ method: "GET", url: "/feed" });
+        const feed = JSON.parse(feedRes.payload) as {
+          items: Array<{ id: string }>;
+        };
+        expect(feed.items.some((i) => i.id === created.item.id)).toBe(true);
+      } finally {
+        await modApp.close();
+      }
+    });
+
+    it("GET /admin/dashboard returns 403 for student and 200 for admin", async () => {
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const forbidden = await app.inject({
+        method: "GET",
+        url: "/admin/dashboard",
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      expect(forbidden.statusCode).toBe(403);
+
+      const adminToken = app.jwt.sign({
+        sub: "admin@dev.local",
+        role: "admin",
+      });
+      const ok = await app.inject({
+        method: "GET",
+        url: "/admin/dashboard",
+        headers: { authorization: `Bearer ${adminToken}` },
+      });
+      expect(ok.statusCode).toBe(200);
+      const body = JSON.parse(ok.payload) as {
+        stats: { totalUsers: number; flaggedCount: number };
+      };
+      expect(body.stats.totalUsers).toBeGreaterThanOrEqual(3);
+      expect(typeof body.stats.flaggedCount).toBe("number");
+    });
+
+    it("POST /admin/denylist-patterns and PATCH subject-request status", async () => {
+      const adminToken = app.jwt.sign({
+        sub: "admin@dev.local",
+        role: "admin",
+      });
+      const patternRes = await app.inject({
+        method: "POST",
+        url: "/admin/denylist-patterns",
+        headers: { authorization: `Bearer ${adminToken}` },
+        payload: { label: "spam-test", pattern: "spammity", active: true },
+      });
+      expect(patternRes.statusCode).toBe(201);
+
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const srRes = await app.inject({
+        method: "POST",
+        url: "/subject-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { name: `Admin SR ${Date.now()}` },
+      });
+      const sr = JSON.parse(srRes.payload) as { item: { id: string } };
+
+      const patchRes = await app.inject({
+        method: "PATCH",
+        url: `/admin/subject-requests/${sr.item.id}`,
+        headers: { authorization: `Bearer ${adminToken}` },
+        payload: { status: "approved" },
+      });
+      expect(patchRes.statusCode).toBe(200);
+      const patched = JSON.parse(patchRes.payload) as {
+        item: { status: string };
+      };
+      expect(patched.item.status).toBe("approved");
+    });
+
+    it("DELETE /help-requests/:id soft-deletes for author and hides from feed", async () => {
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const title = `Soft delete ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title },
+      });
+      expect(createRes.statusCode).toBe(201);
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const delRes = await app.inject({
+        method: "DELETE",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      expect(delRes.statusCode).toBe(204);
+
+      const feedRes = await app.inject({ method: "GET", url: "/feed" });
+      const feed = JSON.parse(feedRes.payload) as {
+        items: Array<{ id: string }>;
+      };
+      expect(feed.items.some((i) => i.id === created.item.id)).toBe(false);
+
+      const detailRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      expect(detailRes.statusCode).toBe(200);
+      const detail = JSON.parse(detailRes.payload) as {
+        item: { deletedAt?: string };
+      };
+      expect(detail.item.deletedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+
+      const publicRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+      });
+      expect(publicRes.statusCode).toBe(404);
+    });
+
+    it("DELETE /help-requests/:id returns 403 for non-author", async () => {
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const title = `No delete ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const delRes = await app.inject({
+        method: "DELETE",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(delRes.statusCode).toBe(403);
+    });
+
+    it("POST /mentor/resources/:id/reject sets status rejected", async () => {
+      const reactRows = await db
+        .select({ id: subjects.id })
+        .from(subjects)
+        .where(eq(subjects.slug, "react"))
+        .limit(1);
+      const subjectId = reactRows[0]?.id;
+      expect(subjectId).toBeDefined();
+
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const title = `Reject me ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/resources",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title, body: "À rejeter.", subjectId },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      const aliceToken = app.jwt.sign({
+        sub: "alice@dev.local",
+        role: "mentor",
+      });
+      const rejectRes = await app.inject({
+        method: "POST",
+        url: `/mentor/resources/${created.item.id}/reject`,
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      expect(rejectRes.statusCode).toBe(200);
+      const rejected = JSON.parse(rejectRes.payload) as {
+        item: { status: string };
+      };
+      expect(rejected.item.status).toBe("rejected");
+
+      const dashRes = await app.inject({
+        method: "GET",
+        url: "/mentor/dashboard",
+        headers: { authorization: `Bearer ${aliceToken}` },
+      });
+      const dash = JSON.parse(dashRes.payload) as {
+        pendingResources: Array<{ id: string }>;
+      };
+      expect(
+        dash.pendingResources.some((r) => r.id === created.item.id),
+      ).toBe(false);
+    });
+
+    it("POST /help-requests/suggest-tags returns tag suggestions", async () => {
+      const token = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const res = await app.inject({
+        method: "POST",
+        url: "/help-requests/suggest-tags",
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          title: "React useEffect infinite loop",
+          body: "mon composant rerender sans fin",
+        },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as { tags: string[] };
+      expect(Array.isArray(body.tags)).toBe(true);
+      expect(body.tags.length).toBeGreaterThan(0);
+    });
+
+    it("PATCH resolved enqueues summary outbox and worker fills aiSummary", async () => {
+      const bobToken = app.jwt.sign({ sub: "bob@dev.local", role: "student" });
+      const title = `Resolve me ${Date.now()}`;
+      const createRes = await app.inject({
+        method: "POST",
+        url: "/help-requests",
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { title, body: "J'ai un bug TypeScript" },
+      });
+      const created = JSON.parse(createRes.payload) as { item: { id: string } };
+
+      await app.inject({
+        method: "POST",
+        url: `/help-requests/${created.item.id}/responses`,
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { body: "Vérifie tes types génériques." },
+      });
+
+      const patchRes = await app.inject({
+        method: "PATCH",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${bobToken}` },
+        payload: { status: "resolved" },
+      });
+      expect(patchRes.statusCode).toBe(200);
+
+      const outboxRows = await db
+        .select()
+        .from(outboxEvents)
+        .where(eq(outboxEvents.aggregateId, created.item.id));
+      expect(
+        outboxRows.some(
+          (e) => e.eventType === HELP_REQUEST_SUMMARY_REQUESTED,
+        ),
+      ).toBe(true);
+
+      await processPendingSummaryEvents(db, {
+        generateSummary: async () => ({
+          summary: "Problème : bug TS. Solution : typer correctement.",
+        }),
+      });
+
+      const detailRes = await app.inject({
+        method: "GET",
+        url: `/help-requests/${created.item.id}`,
+        headers: { authorization: `Bearer ${bobToken}` },
+      });
+      const detail = JSON.parse(detailRes.payload) as {
+        item: { aiSummary?: string; status?: string };
+      };
+      expect(detail.item.status).toBe("resolved");
+      expect(detail.item.aiSummary).toContain("Problème");
     });
   },
 );

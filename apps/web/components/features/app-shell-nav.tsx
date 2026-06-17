@@ -1,16 +1,22 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@allaboard/ui/components/button";
 import { cn } from "@allaboard/ui/lib/utils";
 
+import { MentorNavLink } from "@/components/features/mentor-nav-link";
+import { MessagesNavLink } from "@/components/features/messages-nav-link";
+import { Link, usePathname } from "@/i18n/navigation";
+
 export const APP_SHELL_NAV = [
-  { href: "/", label: "Feed" },
-  { href: "/help/new", label: "Nouvelle demande" },
-  { href: "/mentor", label: "Mentor" },
+  { href: "/", navKey: "feed" as const },
+  { href: "/explore", navKey: "explore" as const },
+  { href: "/resources", navKey: "resources" as const },
+  { href: "/help/new", navKey: "newRequest" as const },
 ] as const;
+
+const MENTOR_HREF = "/mentor";
 
 function isNavActive(pathname: string | null, href: string): boolean {
   if (!pathname) {
@@ -27,14 +33,16 @@ function isNavActive(pathname: string | null, href: string): boolean {
 
 export function AppShellNav() {
   const pathname = usePathname();
+  const t = useTranslations("nav");
 
   return (
     <nav
-      aria-label="Navigation principale"
+      aria-label={t("ariaLabel")}
       className="flex flex-wrap items-center gap-2"
     >
-      {APP_SHELL_NAV.map(({ href, label }) => {
+      {APP_SHELL_NAV.map(({ href, navKey }) => {
         const active = isNavActive(pathname, href);
+        const label = t(navKey);
         return (
           <Button
             key={href}
@@ -49,6 +57,8 @@ export function AppShellNav() {
           </Button>
         );
       })}
+      <MessagesNavLink />
+      <MentorNavLink active={isNavActive(pathname, MENTOR_HREF)} />
     </nav>
   );
 }

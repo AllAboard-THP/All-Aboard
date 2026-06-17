@@ -2,7 +2,7 @@
 
 Référence **canonique** pour le couplage `apps/web` ↔ `apps/api` : variables, contrat `GET /feed`, chemins code, journal de smoke, checklist Dokploy ciblée feed. La **timeline** des phases est dans [README.md](README.md) ; la **cartographie** des docs dans [map-of-content.md](map-of-content.md). Les **faits instance** (domaines, `API_URL` interne) : [deploiement-dokploy-instance-allaboard.md](deploiement-dokploy-instance-allaboard.md).
 
-**Mise à jour** : 2026-05-27. **Décision** : **Option B** — socle TanStack dans la même livraison que le feed SSR ; home feed client + invalidation livrés (voir *Journal*). **Phase 2 (MVP dépôt)** : Postgres + `GET /feed` réel, `POST /help-requests`, JWT + BFF auth, stubs MOC (doublon, Rubberduck) — ADR [0001](adr/0001-authentication-strategy.md). **MVP parcours Bob (dev)** : livré sur `Dev` + Dokploy dev (PR #50–#52) ; validation housekeeping 2026-05-25 — voir [staging-checklist.md](staging-checklist.md).
+**Mise à jour** : 2026-06-04. **Décision** : **Option B** — socle TanStack dans la même livraison que le feed SSR ; home feed client + invalidation livrés (voir *Journal*). **Phase 2 (MVP dépôt)** : Postgres + `GET /feed` réel, `POST /help-requests`, JWT + BFF auth, stubs MOC (doublon, Rubberduck) — ADR [0001](adr/0001-authentication-strategy.md). **MVP parcours Bob (dev)** : livré sur `Dev` + Dokploy dev (PR #50–#52) ; validation housekeeping 2026-05-25 — voir [staging-checklist.md](staging-checklist.md). **Parité Rails API (phases 1–7)** : alignement progressif `apps/thp-final` → Fastify — hub [api-rails-parity](tasks/api-rails-parity/README.md), [§ Parité Rails](#parité-rails-thp-final--api) ; OpenAPI courant **0.10.0**.
 
 ---
 
@@ -38,6 +38,10 @@ SSR feed, socle Query, merge Dokploy dev, `useQuery` + `invalidateQueries` sur `
 | 2026-05-25 | Dokploy **staging** (ops #32) | Env staging confirmé (MCP) ; vars API Phase 2 posées ; promotion code PR [#54](https://github.com/AllAboard-THP/All-Aboard/pull/54) `Dev`→`staging` ; smoke HTTPS staging post-merge — [runbook staging](runbook-dokploy-staging-phase2.md). |
 | 2026-05-27 | Dokploy **staging** (clôture #32 / #17) | PR #54 mergée ; API deploy OK ; Web redeploy manuel (build auto 2026-05-26 en erreur) ; `pnpm smoke:dev` OK (health, feed UUID, BFF `/api/feed`, auth + création + `GET /help-requests/:id`) ; parcours Bob navigateur OK (`/`, `/help/new`, 409, `/mentor` alice) — [runbook](runbook-dokploy-staging-phase2.md), [checklist](staging-checklist.md). |
 | 2026-05-28 | Code **ADR 0003** | Table `users`, login `{ email, password }` (hash argon2), seed `bob@dev.local` / `alice@dev.local` via `DEV_SEED_PASSWORD` ; fallback `MVP_LOGIN_PASSWORD` dev/CI seulement ; smoke `SMOKE_LOGIN_EMAIL` + `SMOKE_LOGIN_PASSWORD`. Ops staging : retirer `MVP_LOGIN_PASSWORD` après seed Dokploy. |
+| 2026-05-29 | Dokploy **staging** (ops ADR 0003) | PR #63 + #74 mergées ; `MVP_LOGIN_PASSWORD` retiré ; seed users au boot ; smoke HTTPS complet (`bob@dev.local`, création, détail) ; parcours `/help/new` navigateur OK ; fix crash Swagger (`openapi.yaml` dans image Docker). |
+| 2026-06-04 | Code **API parité Rails P1–P2** | Migrations `0005` / `0006` ; `GET /feed` enrichi (filtres, pagination, widgets) ; `GET /subjects` ; PATCH demande + help-mentor ; likes/bookmarks + `/me/*` + CRUD réponses ; OpenAPI ≥ 0.3.0 ; doc [phase1](tasks/api-rails-parity-phase1/README.md), [phase2](tasks/api-rails-parity-phase2/README.md), [MOC](moc-parcours-utilisateur.md). Smoke `pnpm smoke:dev` inchangé (contrat minimal `items`). |
+| 2026-06-04 | Doc **API parité Rails complète** | Hub [api-rails-parity](tasks/api-rails-parity/README.md) ; phases 3–6 + lots A / 5b / 7 documentés ; index [tasks/README](tasks/README.md), [MOC](moc-parcours-utilisateur.md), [map-of-content](map-of-content.md). |
+| 2026-06-04 | Code **API parité lots A / 5b / 7** (PR #104) | Migration `0011` soft delete ; `DELETE /help-requests/:id` ; `POST /mentor/resources/:id/reject` ; WS `GET /conversations/:id/ws` ; `POST /help-requests/suggest-tags` ; outbox + worker `ai_summary` ; OpenAPI **0.10.0**. |
 
 ---
 
@@ -91,15 +95,19 @@ Source de vérité types : [packages/types/src/index.ts](../packages/types/src/i
 
 ### `GET /feed`
 
-- **200** : `{ "items": HelpRequest[] }` — `HelpRequest` : `id`, `title`, `authorId`, `createdAt` ; `tags?: string[]` optionnel.
+- **Query** (tous optionnels) : `subject` (slug matière), `tag`, `q` (ILIKE titre/corps), `page`, `limit` (max 100), `include=widgets` → `widgets.unanswered` (demandes `open` sans réponse).
+- **200** : `FeedResponse` — `{ "items": HelpRequest[], "pagination": { page, limit, total }, "widgets"?: { "unanswered": HelpRequest[] } }`.
+- **HelpRequest** (champs de base + optionnels Phase 1) : `id`, `title`, `authorId`, `createdAt` ; `tags?` ; `body?`, `codeSnippet?`, `codeLanguage?`, `urgent?`, `status?`, `mentorHelpRequested?`, `subjectId?`, `subject?`, `educationLevel?`, `likesCount?`, `responsesCount?`, `bookmarksCount?`, `updatedAt?`.
 - **503** : `{ "error": "database_unavailable" }`
 - Public (pas de JWT).
 
-Exemple :
+Exemple minimal (rétrocompat smoke) :
 
 ```json
-{ "items": [{ "id": "uuid", "title": "…", "authorId": "bob", "createdAt": "2026-05-19T12:00:00.000Z", "tags": ["rails"] }] }
+{ "items": [{ "id": "uuid", "title": "…", "authorId": "bob@dev.local", "createdAt": "2026-05-19T12:00:00.000Z", "tags": ["rails"] }], "pagination": { "page": 1, "limit": 20, "total": 1 } }
 ```
+
+Doc détaillée : [tasks/api-rails-parity-phase1/README.md](tasks/api-rails-parity-phase1/README.md).
 
 ### `POST /auth/login`
 
@@ -117,21 +125,54 @@ Exemple :
 
 ### `GET /help-requests/:id`
 
-- **200** : `HelpRequestDetailResponse` — `{ "item": HelpRequest, "responses": Response[] }` (MVP : `responses` toujours `[]`).
+- **200** : `HelpRequestDetailResponse` — `{ "item": HelpRequest, "responses": Response[] }` (ordre chronologique).
 - **404** : `{ "error": "not_found" }`
 - **503** : `{ "error": "database_unavailable" }`
 - Public (pas de JWT).
 
+### `POST /help-requests/:id/responses`
+
+- **Auth** : `Authorization: Bearer <jwt>`.
+- **Corps** : `CreateResponseBody` — `{ "body": string }` (1–10 000 caractères).
+- **201** : `CreateResponseResponse` — `{ "item": Response }`.
+- **400** / **401** / **404** / **503** : voir table ci-dessus.
+
 ### `GET /mentor/feed`
 
-- **200** : `{ "items": HelpRequest[] }` — demandes avec au moins un tag (filtrage mentor/domaine MVP).
+- **200** : `{ "items": HelpRequest[] }` — demandes avec **au moins un tag** ou `mentorHelpRequested=true` (compat #82 / Phase 1).
 - **503** : `{ "error": "database_unavailable" }`
-- Public (garde UI mentor côté Web via `/api/auth/me`).
+- JWT mentor (garde UI côté Web via `/api/auth/me`).
+
+### `GET /subjects` · `GET /subjects/:slug`
+
+- **200** : catalogue ou détail matière (`Subject`, `postsCount`) — public. Voir [phase1](tasks/api-rails-parity-phase1/README.md).
+
+### `PATCH /help-requests/:id` · `POST /help-requests/:id/help-mentor`
+
+- **PATCH** (JWT auteur) : `UpdateHelpRequestBody` — champs partiels + `status` (`open` | `resolved`).
+- **POST help-mentor** (JWT) : **200** — `mentorHelpRequested=true`.
+- **403** / **404** : auteur invalide ou ressource absente.
+
+### `POST /help-requests/:id/likes` · `POST /help-requests/:id/bookmarks`
+
+- **Auth** : JWT.
+- **200** : toggle — `ToggleLikeResponse` / `ToggleBookmarkResponse` (`liked`/`bookmarked`, compteurs).
+- Voir [phase2](tasks/api-rails-parity-phase2/README.md).
+
+### `GET /me/help-requests` · `GET /me/bookmarks`
+
+- **Auth** : JWT (`sub` = email utilisateur).
+- **200** : `{ "items": HelpRequest[] }`.
+
+### `PATCH` / `DELETE /help-requests/:id/responses/:responseId`
+
+- **Auth** : JWT auteur de la réponse.
+- **PATCH** : `UpdateResponseBody` ; **DELETE** : **204** + décrément `responses_count`.
 
 ### `POST /help-requests`
 
 - **Auth** : en-tête `Authorization: Bearer <jwt>` (le BFF lit le cookie `access_token` côté Next et forward le Bearer).
-- **Corps** : `CreateHelpRequestBody` — `{ "title": string, "tags"?: string[] }` (`title` 1–500 caractères).
+- **Corps** : `CreateHelpRequestBody` — `{ "title": string, "tags"?: string[], "body"?, "codeSnippet"?, "codeLanguage"?, "subjectId"?, "urgent"?, "educationLevel"? }` (`title` 1–500 caractères ; seul `title` requis — rétrocompat).
 - **201** : `CreateHelpRequestResponse` — `{ "item": HelpRequest, "hints"?: { "rubberduckEligible": true } }`  
   - `hints.rubberduckEligible` : stub MOC si le titre comporte **≤ 6 mots** ; absent sinon.
 - **400** / **401** / **503** : voir table ci-dessus.
@@ -151,6 +192,39 @@ Le navigateur appelle le **Web** ; les Route Handlers relaient vers `API_URL` (s
 | `GET /api/auth/me` | `GET /auth/me` | **401** `{ "error": "missing_token" }` si cookie absent |
 | `POST /api/auth/login` | `POST /auth/login` | Propage `Set-Cookie` upstream |
 | `POST /api/help-requests` | `POST /help-requests` | **401** `{ "error": "missing_token" }` si cookie absent ; forward Bearer |
+| `POST /api/help-requests/:id/responses` | `POST /help-requests/:id/responses` | **401** `{ "error": "missing_token" }` si cookie absent ; forward Bearer |
+
+**Hors BFF (Phase 1–2 API, consommation directe ou à relayer)** : `GET /subjects`, `PATCH /help-requests/:id`, `POST …/help-mentor`, `POST …/likes|bookmarks`, `GET /me/*`, `PATCH|DELETE …/responses/:responseId`. Ajouter des Route Handlers `apps/web/app/api/*` lors des écrans web correspondants.
+
+---
+
+## Parité Rails (thp-final) — API (phases 1–7)
+
+Alignement progressif avec la maquette `apps/thp-final` (HTML/Turbo, **pas** Events). **Hub** : [tasks/api-rails-parity/README.md](tasks/api-rails-parity/README.md). Scope API/agent/types — BFF web à relayer par écran.
+
+### Phases principales
+
+| Phase | OpenAPI | Focus | Doc tâche |
+|-------|---------|--------|-----------|
+| 1 | ≥ 0.3.0 | Feed enrichi, subjects, CRUD demande, help-mentor | [phase1](tasks/api-rails-parity-phase1/README.md) |
+| 2 | ≥ 0.4.0 | Likes, bookmarks, `/me/*`, CRUD réponses | [phase2](tasks/api-rails-parity-phase2/README.md) |
+| 3 | ≥ 0.5.0 | Auth register, profils, CGU | [phase3](tasks/api-rails-parity-phase3/README.md) |
+| 4 | ≥ 0.6.0 | Resources, subject requests, mentor dashboard | [phase4](tasks/api-rails-parity-phase4/README.md) |
+| 5 | ≥ 0.7.0 | Messagerie REST | [phase5](tasks/api-rails-parity-phase5/README.md) |
+| 6 | ≥ 0.8.0 | Admin, modération, denylist | [phase6](tasks/api-rails-parity-phase6/README.md) |
+
+### Lots complémentaires (gaps)
+
+| Lot | OpenAPI | Focus | Doc tâche |
+|-----|---------|--------|-----------|
+| A | 0.8.1 | Soft delete post + reject resource mentor | [api-parity-delete-reject](tasks/api-parity-delete-reject/README.md) |
+| 5b | 0.9.0 | Chat WebSocket temps réel | [phase5b](tasks/api-rails-parity-phase5b/README.md) |
+| 7 | 0.10.0 | Suggest-tags + `ai_summary` (agent + outbox) | [phase7](tasks/api-rails-parity-phase7/README.md) |
+
+**Migrations parité** : `apps/api/drizzle/0005` … `0011_api_soft_delete_help_requests.sql`.  
+**Routes** : `apps/api/src/routes/{feed,subjects,help-requests,social,me,auth,users,legal,resources,subject-requests,mentor,conversations,conversations-ws,suggest-tags,admin}.ts` ; agent `apps/agent/src/{tag-suggest,summary-generate}.ts`.  
+**Env lots 5b/7** : `AGENT_URL`, `AI_SUMMARY_ENABLED` (API) ; `ANTHROPIC_API_KEY` optionnel (agent).  
+**MOC produit** : [moc-parcours-utilisateur.md](moc-parcours-utilisateur.md).
 
 ---
 
@@ -210,7 +284,8 @@ Scénarios : [apps/web/e2e/](../apps/web/e2e/) — feed (navigation shell) + cr�
 | BFF `GET /api/feed` | `apps/web/app/api/feed/route.ts` |
 | BFF `GET /api/help-requests/[id]`, `GET /api/mentor/feed`, `GET /api/auth/me` | `apps/web/app/api/help-requests/[id]/route.ts`, `mentor/feed/route.ts`, `auth/me/route.ts` |
 | BFF `POST /api/auth/login`, `POST /api/help-requests` | `apps/web/app/api/auth/login/route.ts`, `apps/web/app/api/help-requests/route.ts` |
-| Schéma SQL + migrations Drizzle | `apps/api/src/db/schema.ts`, `apps/api/drizzle/` |
+| Schéma SQL + migrations Drizzle | `apps/api/src/db/schema.ts`, `apps/api/drizzle/` (dont `0005` / `0006` parité Rails) |
+| Routes API modulaires (parité) | `apps/api/src/routes/feed.ts`, `subjects.ts`, `help-requests.ts`, `social.ts`, `me.ts` |
 | Démarrage API (migrations) | `apps/api/src/index.ts`, `apps/api/src/migrate.ts` |
 | Formulaire création demande | `apps/web/app/(app)/help/new/page.tsx`, `help-request-form.tsx` |
 | `QueryClientProvider` | `apps/web/app/providers.tsx`, `apps/web/app/layout.tsx` |

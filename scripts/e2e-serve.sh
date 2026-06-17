@@ -8,6 +8,7 @@ cd "$ROOT"
 export PORT="${PORT:-4000}"
 export HOST="${HOST:-127.0.0.1}"
 export API_URL="${API_URL:-http://127.0.0.1:4000}"
+export NEXT_PUBLIC_API_URL="${NEXT_PUBLIC_API_URL:-$API_URL}"
 export JWT_SECRET="${JWT_SECRET:-dev-only-jwt-secret-min-32-characters!!}"
 export MVP_LOGIN_PASSWORD="${MVP_LOGIN_PASSWORD:-ci-test-login-password}"
 

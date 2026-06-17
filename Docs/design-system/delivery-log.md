@@ -1,7 +1,7 @@
 # Journal de livraison — design system & shell
 
-**Branche principale** : `feat/design-system-ui-storybook` (base `Dev`)  
-**Dernière livraison documentée** : `65a1596` (2026-05-20)
+**Branche d’intégration** : `Dev` (epics #24 / #25 mergées)  
+**Dernière livraison documentée** : [PR #59](https://github.com/AllAboard-THP/All-Aboard/pull/59) — merge `933597e` (2026-05-27)
 
 Ce journal trace les **commits** et **issues** pour l’audit et l’onboarding. Le détail technique historique (snippets, tasklist T00–T23) reste dans le spec Hermes `WorkSpace/Todo/allaboard-design-system-storybook-monorepo.md`.
 
@@ -20,7 +20,7 @@ Ce journal trace les **commits** et **issues** pour l’audit et l’onboarding.
 | 24f T17–T20 | `60af213` | ESLint boundaries, ADR 0002, AGENTS.md |
 | Graph | `0ae3067` | Regen Graphify avec `packages/ui` |
 
-**Issue** : [#24](https://github.com/AllAboard-THP/All-Aboard/issues/24) — fondations **closables** après merge `Dev`.
+**Issue** : [#24](https://github.com/AllAboard-THP/All-Aboard/issues/24) — **clos** sur `Dev`.
 
 ---
 
@@ -40,9 +40,24 @@ Détail T22 : `verify:push` = `test && build && build:storybook`.
 | Élément | Détail |
 |---------|--------|
 | Commit | `65a1596` (avec T21–T22) |
-| Routes | `(app)/`, stubs `/requests/[id]`, `/mentor` |
-| Tests | 16 tests web (dont 4 nav/shell) |
+| Routes | `(app)/` — feed, `/help/new`, `/requests/[id]`, `/mentor` |
+| Tests | 16+ tests web (nav/shell + parcours Phase 2) |
 | Doc | [app-shell.md](app-shell.md) |
+
+**Issue** : [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25) — **clos** sur `Dev`.
+
+---
+
+## PR #59 — Polish DS (11 primitives, catalogue SB)
+
+| Élément | Détail |
+|---------|--------|
+| Merge | `933597e` (2026-05-27) |
+| Primitives | Alert, Skeleton, Select, Textarea, Sonner, Badge, Separator, … |
+| Stories + tests | Catalogue Storybook étendu ; Vitest `@allaboard/ui` |
+| CI | Job `storybook` exécuté sur la PR (paths-filter) |
+
+Clôture optionnelle T23.4 (Alert/Skeleton) — voir [tasks/25-app-shell-navigation](../tasks/25-app-shell-navigation/README.md).
 
 ---
 
@@ -52,8 +67,8 @@ Détail T22 : `verify:push` = `test && build && build:storybook`.
 - [x] `pnpm build:storybook` vert
 - [x] `apps/web` build avec routes AppShell
 - [x] ADR 0002 + hub [README.md](README.md)
-- [ ] Issue #24 / #25 checkboxes GitHub à jour après merge sur `Dev`
-- [ ] Au moins une PR CI avec job `storybook` exécuté (validation T21 en prod)
+- [x] Issues #24 / #25 clos sur `Dev`
+- [x] PR CI avec job `storybook` exécuté ([PR #59](https://github.com/AllAboard-THP/All-Aboard/pull/59))
 
 ---
 
@@ -61,5 +76,6 @@ Détail T22 : `verify:push` = `test && build && build:storybook`.
 
 | Issue | Dépend de | Doc cible |
 |-------|-----------|-----------|
-| [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) Feed réelle | #25 AppShell | `Docs/tasks/` + plan Web/API |
-| Alert/Skeleton UI | optionnel | `contributor-guide.md` |
+| [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) Feed réelle | #25 AppShell | Clos — plan Web/API |
+| Réponses MOC (Phase 2b) | Phase 2 auth | `Docs/tasks/` + plan Web/API |
+| Filtrage / notifications mentor | backlog produit | MOC + epic à créer |

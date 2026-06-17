@@ -6,7 +6,7 @@
 
 ## Objectif
 
-Shell App Router : navigation persistante, header, zones parcours MOC (accueil, création, détail stub, mentor stub).
+Shell App Router : navigation persistante, header, zones parcours MOC (accueil, création, détail, mentor).
 
 ## Doc canonique
 
@@ -18,19 +18,19 @@ Shell App Router : navigation persistante, header, zones parcours MOC (accueil, 
 
 - [x] Route group `app/(app)/` + `AppShell` / `AppShellNav`
 - [x] Pages `/`, `/help/new` migrées sous le shell
-- [x] Stubs `/requests/[id]`, `/mentor`
+- [x] Pages `/requests/[id]` (détail SSR) et `/mentor` (dashboard mentor)
 - [x] `/health` hors shell
 - [x] Tests Vitest (nav + landmarks)
-- [ ] T23.4 alert/skeleton UI — **reporté** (hors scope MVP)
+- [x] T23.4 Alert / Skeleton UI — livré via [PR #59](https://github.com/AllAboard-THP/All-Aboard/pull/59) (`@allaboard/ui`, 2026-05-27)
 
 ## Critères d’acceptation (#25)
 
-- [x] Nav entre pages stub ou réelles
+- [x] Nav entre pages produit
 - [x] Layout responsive minimal · landmarks / focus
 
 ## Suite
 
-- [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) — feed réelle SSR (réutilise AppShell)
+- [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) — feed réelle SSR (clos ; réutilise AppShell)
 
 ## Fichiers
 

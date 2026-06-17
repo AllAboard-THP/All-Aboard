@@ -1,0 +1,128 @@
+import { and, count, eq, inArray, isNull } from "drizzle-orm";
+import type { SubjectSummary } from "@allaboard/types";
+import type { AppDatabase } from "../db/client.js";
+import { authorIdKeysFromRow } from "../lib/auth-helpers.js";
+import { isUuid } from "../auth/passkey/config.js";
+import {
+  helpRequests,
+  mentorSubjects,
+  responses,
+  subjects,
+  users,
+} from "../db/schema.js";
+import { rowToSubjectSummary } from "../lib/user-mappers.js";
+
+const LEGACY_USER_EMAIL: Record<string, string> = {
+  bob: "bob@dev.local",
+  alice: "alice@dev.local",
+};
+
+export async function loadUserFromJwtSub(db: AppDatabase, sub: string) {
+  if (isUuid(sub)) {
+    return loadUserById(db, sub);
+  }
+  let email = sub.trim().toLowerCase();
+  if (!email.includes("@")) {
+    email = LEGACY_USER_EMAIL[email] ?? email;
+  }
+  return loadUserByEmail(db, email);
+}
+
+export async function loadUserByEmail(db: AppDatabase, email: string) {
+  const rows = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email.toLowerCase()))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
+export async function loadUserById(db: AppDatabase, id: string) {
+  const rows = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, id))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
+export async function loadCompetenceSubjects(
+  db: AppDatabase,
+  userId: string,
+): Promise<SubjectSummary[]> {
+  const rows = await db
+    .select({ subject: subjects })
+    .from(mentorSubjects)
+    .innerJoin(subjects, eq(mentorSubjects.subjectId, subjects.id))
+    .where(eq(mentorSubjects.userId, userId));
+  return rows.map(({ subject }) => rowToSubjectSummary(subject));
+}
+
+export async function syncMentorSubjects(
+  db: AppDatabase,
+  userId: string,
+  subjectIds: string[],
+): Promise<SubjectSummary[]> {
+  const uniqueIds = [...new Set(subjectIds)];
+  await db.delete(mentorSubjects).where(eq(mentorSubjects.userId, userId));
+
+  if (uniqueIds.length > 0) {
+    const existing = await db
+      .select({ id: subjects.id, slug: subjects.slug })
+      .from(subjects)
+      .where(inArray(subjects.id, uniqueIds));
+    if (existing.length > 0) {
+      await db.insert(mentorSubjects).values(
+        existing.map((s) => ({
+          userId,
+          subjectId: s.id,
+        })),
+      );
+      const slugs = existing.map((s) => s.slug);
+      await db
+        .update(users)
+        .set({
+          certificationTags: slugs,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, userId));
+    }
+  } else {
+    await db
+      .update(users)
+      .set({ certificationTags: [], updatedAt: new Date() })
+      .where(eq(users.id, userId));
+  }
+
+  return loadCompetenceSubjects(db, userId);
+}
+
+export async function countUserPosts(
+  db: AppDatabase,
+  user: { id: string; email: string },
+): Promise<number> {
+  const keys = authorIdKeysFromRow(user);
+  const rows = await db
+    .select({ value: count() })
+    .from(helpRequests)
+    .where(
+      and(
+        inArray(helpRequests.authorId, keys),
+        isNull(helpRequests.deletedAt),
+        eq(helpRequests.flaggedForModeration, false),
+      ),
+    );
+  return Number(rows[0]?.value ?? 0);
+}
+
+export async function countUserResponses(
+  db: AppDatabase,
+  user: { id: string; email: string },
+): Promise<number> {
+  const keys = authorIdKeysFromRow(user);
+  const rows = await db
+    .select({ value: count() })
+    .from(responses)
+    .where(inArray(responses.authorId, keys));
+  return Number(rows[0]?.value ?? 0);
+}

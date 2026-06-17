@@ -22,6 +22,7 @@ jobs:
     outputs:
       storybook: ${{ steps.filter.outputs.storybook }}
       e2e: ${{ steps.filter.outputs.e2e }}
+      agent: ${{ steps.filter.outputs.agent }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,6 +46,14 @@ jobs:
               - 'packages/types/**'
               - 'scripts/e2e-playwright.sh'
               - 'pnpm-lock.yaml'
+              - '.github/workflows/ci.yml'
+            agent:
+              - 'apps/agent/**'
+              - 'packages/types/**'
+              - 'infra/docker/Dockerfile.agent'
+              - 'pnpm-workspace.yaml'
+              - 'pnpm-lock.yaml'
+              - 'turbo.json'
               - '.github/workflows/ci.yml'
 
   verify:
@@ -180,3 +189,30 @@ jobs:
           name: storybook-static
           path: apps/storybook/storybook-static
           retention-days: 7
+
+  agent:
+    needs: changes
+    if: needs.changes.outputs.agent == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Agent Docker image
+        run: docker build -f infra/docker/Dockerfile.agent -t allaboard-agent:ci .
+
+      - name: Smoke GET /health
+        run: |
+          set -euo pipefail
+          docker run -d --name agent-smoke -p 4100:4100 allaboard-agent:ci
+          trap 'docker logs agent-smoke 2>&1 || true; docker rm -f agent-smoke 2>&1 || true' EXIT
+          for _ in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:4100/health | grep -q '"status":"ok"'; then
+              echo "Agent health OK"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Agent health check timed out after 60s"
+          exit 1

@@ -20,13 +20,13 @@ apps/web/app/
 ├── health/page.tsx            # hors shell (pas de nav produit)
 └── (app)/
     ├── layout.tsx             # <AppShell>{children}</AppShell>
-    ├── page.tsx               # / — HomeContent
-    ├── help/new/page.tsx      # /help/new
-    ├── requests/[id]/page.tsx # stub détail demande
-    └── mentor/page.tsx        # stub dashboard mentor
+    ├── page.tsx               # / — HomeContent (feed SSR + TanStack)
+    ├── help/new/page.tsx      # /help/new — création demande (auth + mutation)
+    ├── requests/[id]/page.tsx # /requests/[id] — détail demande (SSR + client)
+    └── mentor/page.tsx        # /mentor — dashboard mentor (feed tagué)
 ```
 
-URLs publiques inchangées : `/`, `/help/new`, `/requests/demo`, `/mentor`.
+URLs publiques : `/`, `/help/new`, `/requests/[id]`, `/mentor`.
 
 ---
 
@@ -39,10 +39,11 @@ URLs publiques inchangées : `/`, `/help/new`, `/requests/demo`, `/mentor`.
 
 Navigation (constante `APP_SHELL_NAV`) :
 
-- Accueil → `/`
+- Feed → `/`
 - Nouvelle demande → `/help/new`
-- Détail (stub) → `/requests/demo`
-- Mentor (stub) → `/mentor`
+- Mentor → `/mentor`
+
+Les pages détail (`/requests/[id]`) sont atteignables depuis le feed ou le dashboard mentor ; pas de lien nav dédié.
 
 Primitives : `Button` ghost + `Link` (`@allaboard/ui`).
 
@@ -74,8 +75,8 @@ Tests : `apps/web/tests/app-shell.test.tsx`, `app-shell-nav.test.tsx`.
 
 ---
 
-## Hors scope #25 (fait plus tard)
+## Hors scope #25 (livré ensuite)
 
-- Données réelles feed / détail → [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26)
-- Sidebar desktop dense
-- Alert / Skeleton globaux dans UI (optionnel reporté)
+- Données réelles feed / détail → [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) (clos)
+- Alert / Skeleton dans `@allaboard/ui` → [PR #59](https://github.com/AllAboard-THP/All-Aboard/pull/59) (2026-05-27)
+- Sidebar desktop dense — backlog produit

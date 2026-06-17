@@ -1,5 +1,5 @@
-import type { FeedResponse, HelpRequest } from "@allaboard/types";
-import Link from "next/link";
+import type { FeedResponse, Subject } from "@allaboard/types";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import {
   Alert,
@@ -15,118 +15,122 @@ import {
   CardTitle,
 } from "@allaboard/ui/components/card";
 
-import { FeedClientPreview } from "@/components/features/feed-client-preview";
+import { FeedFilters } from "@/components/features/feed-filters";
+import { FeedPagination } from "@/components/features/feed-pagination";
+import { PostCard, type PostCardLabels } from "@/components/features/post-card";
+import { UnansweredWidget } from "@/components/features/unanswered-widget";
+import { Link } from "@/i18n/navigation";
+import type { AppLocale } from "@/i18n/routing";
+import type { FeedPageParams } from "@/lib/feed-search-params";
+import { formatDateTime } from "@/lib/format-datetime";
 
 type Props = {
   feed: FeedResponse | null;
   feedError: string | null;
+  subjects: Subject[];
+  params: FeedPageParams;
 };
 
-function formatCreatedAt(iso: string): string {
-  return new Date(iso).toLocaleString("fr-FR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
-
-function FeedItemCard({ item }: { item: HelpRequest }) {
-  const hasTags = Boolean(item.tags && item.tags.length > 0);
-
-  return (
-    <li>
-      <Card className="w-full gap-0 py-4 transition-colors hover:border-primary/50">
-        <CardHeader
-          className={`gap-1.5 px-4 ${hasTags ? "pb-2" : "pb-0"}`}
-        >
-          <CardTitle className="text-lg">
-            <Link
-              href={`/requests/${item.id}`}
-              className="text-foreground hover:text-primary hover:underline"
-            >
-              {item.title}
-            </Link>
-          </CardTitle>
-          <CardDescription className="flex flex-wrap gap-x-3 gap-y-1">
-            <span>Auteur : {item.authorId}</span>
-            <span>{formatCreatedAt(item.createdAt)}</span>
-          </CardDescription>
-        </CardHeader>
-        {hasTags ? (
-          <CardContent className="px-4 pt-0">
-            <p className="m-0 text-xs text-muted-foreground">
-              Tags : {item.tags!.join(", ")}
-            </p>
-          </CardContent>
-        ) : null}
-      </Card>
-    </li>
-  );
-}
-
-export function HomeContent({ feed, feedError }: Props) {
+export async function HomeContent({
+  feed,
+  feedError,
+  subjects,
+  params,
+}: Props) {
+  const t = await getTranslations("feed");
+  const tPostCard = await getTranslations("postCard");
+  const tNav = await getTranslations("nav");
+  const tCommon = await getTranslations("common");
+  const locale = (await getLocale()) as AppLocale;
   const hasItems = Boolean(feed && feed.items.length > 0);
+  const unanswered = feed?.widgets?.unanswered ?? [];
+
+  const postCardLabels: PostCardLabels = {
+    author: (authorId) => tPostCard("author", { authorId }),
+    formatDate: (iso) => formatDateTime(iso, locale),
+    responsesCount: (count) => tPostCard("responsesCount", { count }),
+    likesCount: (count) => tPostCard("likesCount", { count }),
+    urgent: tPostCard("urgent"),
+    resolved: tPostCard("resolved"),
+    filterByTagAria: (tag) => tPostCard("filterByTagAria", { tag }),
+  };
 
   return (
-    <div className="mx-auto w-full max-w-3xl p-6">
+    <div className="mx-auto w-full max-w-6xl p-6">
       <header className="mb-6">
         <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
-          All-Aboard
+          {tCommon("brand")}
         </p>
         <h1 className="mt-2 mb-2 text-3xl font-semibold text-foreground md:text-4xl">
-          Feed communautaire
+          {t("title")}
         </h1>
         <p className="m-0 max-w-prose text-base text-muted-foreground">
-          Parcourez les demandes d&apos;aide publiées par la communauté. Posez la
-          vôtre ou consultez une demande pour voir les réponses.
+          {t("description")}
         </p>
         <div className="mt-4">
           <Button asChild>
-            <Link href="/help/new">Nouvelle demande</Link>
+            <Link href="/help/new">{tNav("newRequest")}</Link>
           </Button>
         </div>
       </header>
 
-      <section aria-label="Feed des demandes d'aide">
-        {feedError ? (
-          <Alert variant="destructive" data-testid="feed-ssr-error">
-            <AlertTitle>Impossible de charger le feed</AlertTitle>
-            <AlertDescription>{feedError}</AlertDescription>
-          </Alert>
-        ) : null}
+      <FeedFilters subjects={subjects} params={params} />
 
-        {!feedError && feed && feed.items.length === 0 ? (
-          <Card data-testid="feed-empty">
-            <CardHeader>
-              <CardTitle className="text-lg">
-                Aucune demande pour l&apos;instant
-              </CardTitle>
-              <CardDescription>
-                Soyez le premier à publier une demande d&apos;aide.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" asChild>
-                <Link href="/help/new">Publier une demande</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ) : null}
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <section aria-label={t("sectionAria")}>
+          {feedError ? (
+            <Alert variant="destructive" data-testid="feed-ssr-error">
+              <AlertTitle>{t("loadErrorTitle")}</AlertTitle>
+              <AlertDescription>{feedError}</AlertDescription>
+            </Alert>
+          ) : null}
 
-        {!feedError && hasItems ? (
-          <ul
-            className="flex list-none flex-col gap-3 p-0"
-            data-testid="feed-ssr-list"
-          >
-            {feed!.items.map((item) => (
-              <FeedItemCard key={item.id} item={item} />
-            ))}
-          </ul>
-        ) : null}
+          {!feedError && feed && feed.items.length === 0 ? (
+            <Card data-testid="feed-empty">
+              <CardHeader>
+                <CardTitle className="text-lg">{t("emptyTitle")}</CardTitle>
+                <CardDescription>{t("emptyDescription")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" asChild>
+                  <Link href="/help/new">{t("publishCta")}</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : null}
 
-        <div className="mt-4">
-          <FeedClientPreview />
-        </div>
-      </section>
+          {!feedError && hasItems ? (
+            <ul
+              className="flex list-none flex-col gap-3 p-0"
+              data-testid="feed-ssr-list"
+            >
+              {feed!.items.map((item) => (
+                <li key={item.id}>
+                  <PostCard
+                    item={item}
+                    labels={postCardLabels}
+                    showSocialActions
+                    socialLoginReturnPath="/"
+                  />
+                </li>
+              ))}
+            </ul>
+          ) : null}
+
+          {!feedError && feed?.pagination ? (
+            <FeedPagination
+              params={params}
+              page={feed.pagination.page}
+              limit={feed.pagination.limit}
+              total={feed.pagination.total}
+            />
+          ) : null}
+        </section>
+
+        {!feedError && unanswered.length > 0 ? (
+          <UnansweredWidget items={unanswered} labels={postCardLabels} />
+        ) : null}
+      </div>
     </div>
   );
 }

@@ -1,19 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 
 import {
-  APP_SHELL_NAV,
   AppShellNav,
 } from "@/components/features/app-shell-nav";
+import { renderWithI18n } from "./i18n-test-utils";
 
 const usePathname = vi.fn(() => "/");
 
-vi.mock("next/navigation", () => ({
-  usePathname: () => usePathname(),
-}));
-
-vi.mock("next/link", () => ({
-  default: ({
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({
     children,
     href,
     ...props
@@ -25,6 +21,7 @@ vi.mock("next/link", () => ({
       {children}
     </a>
   ),
+  usePathname: () => usePathname(),
 }));
 
 function getPrimaryNav() {
@@ -39,16 +36,19 @@ describe("AppShellNav", () => {
     usePathname.mockReturnValue("/");
   });
 
-  it("renders three navigation links", () => {
-    render(<AppShellNav />);
+  it("renders primary navigation links including messages", () => {
+    renderWithI18n(<AppShellNav />);
     const nav = getPrimaryNav();
-    for (const { label } of APP_SHELL_NAV) {
-      expect(nav.getByRole("link", { name: label })).toBeTruthy();
-    }
+    expect(nav.getByRole("link", { name: "Feed" })).toBeTruthy();
+    expect(nav.getByRole("link", { name: "Explorer" })).toBeTruthy();
+    expect(nav.getByRole("link", { name: "Ressources" })).toBeTruthy();
+    expect(nav.getByRole("link", { name: "Nouvelle demande" })).toBeTruthy();
+    expect(nav.getByRole("link", { name: "Messages" })).toBeTruthy();
+    expect(nav.getByRole("link", { name: "Mentor" })).toBeTruthy();
   });
 
   it("marks Feed as current page on /", () => {
-    render(<AppShellNav />);
+    renderWithI18n(<AppShellNav />);
     const nav = getPrimaryNav();
     const home = nav.getByRole("link", { name: "Feed" });
     expect(home.getAttribute("aria-current")).toBe("page");
@@ -57,9 +57,21 @@ describe("AppShellNav", () => {
 
   it("marks Nouvelle demande as current on /help/new", () => {
     usePathname.mockReturnValue("/help/new");
-    render(<AppShellNav />);
+    renderWithI18n(<AppShellNav />);
     const nav = getPrimaryNav();
-    expect(nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute("aria-current")).toBe("page");
+    expect(nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute("aria-current")).toBe(
+      "page",
+    );
+    expect(nav.getByRole("link", { name: "Feed" }).getAttribute("aria-current")).toBeNull();
+  });
+
+  it("marks Explorer as current on /explore", () => {
+    usePathname.mockReturnValue("/explore");
+    renderWithI18n(<AppShellNav />);
+    const nav = getPrimaryNav();
+    expect(nav.getByRole("link", { name: "Explorer" }).getAttribute("aria-current")).toBe(
+      "page",
+    );
     expect(nav.getByRole("link", { name: "Feed" }).getAttribute("aria-current")).toBeNull();
   });
 });
