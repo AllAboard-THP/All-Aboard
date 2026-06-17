@@ -5,7 +5,9 @@ import { useMemo } from "react";
 import { AppSidebar } from "./app-sidebar";
 import {
   buildAppSidebarSections,
+  buildSidebarContextPanelLabels,
   resolveAppSidebarContext,
+  resolveAppSidebarContextPanel,
   resolveAppSidebarPathname,
   resolveSidebarActiveId,
   type AppSidebarLabelMap,
@@ -50,6 +52,8 @@ export function AppChromeSidebar({
   legacyNav,
   mockPathname,
   messageCount = 0,
+  feedCount = 0,
+  dashboardCount = 0,
   showMentorDot = false,
   isMentor = false,
   isAdmin = false,
@@ -58,6 +62,8 @@ export function AppChromeSidebar({
   legacyNav?: "feed" | "explore" | "resources" | "events" | "messages";
   mockPathname?: string;
   messageCount?: number;
+  feedCount?: number;
+  dashboardCount?: number;
   showMentorDot?: boolean;
   isMentor?: boolean;
   isAdmin?: boolean;
@@ -76,7 +82,7 @@ export function AppChromeSidebar({
         isMentor,
         isAdmin,
       }),
-    [pathname, isMentor, isAdmin, labelMap],
+    [pathname, isMentor, isAdmin],
   );
 
   const sections = useMemo(
@@ -89,8 +95,23 @@ export function AppChromeSidebar({
     [labelMap, resolved.activeId, resolved.showMentorSection, resolved.showAdminSection],
   );
 
-  const badges: Partial<Record<AppSidebarNavId, number>> =
-    messageCount > 0 ? { messages: messageCount } : {};
+  const badges = useMemo((): Partial<Record<AppSidebarNavId, number>> => {
+    const next: Partial<Record<AppSidebarNavId, number>> = {};
+    if (dashboardCount > 0) next.dashboard = dashboardCount;
+    if (feedCount > 0) next.feed = feedCount;
+    if (messageCount > 0) next.messages = messageCount;
+    return next;
+  }, [dashboardCount, feedCount, messageCount]);
+
+  const contextPanelLabels = useMemo(
+    () => buildSidebarContextPanelLabels(resolved.activeId, dashboardLabels.sidebar.context),
+    [resolved.activeId, dashboardLabels.sidebar.context],
+  );
+
+  const contextPanel = useMemo(
+    () => resolveAppSidebarContextPanel(resolved.activeId, contextPanelLabels),
+    [resolved.activeId, contextPanelLabels],
+  );
 
   return (
     <AppSidebar
@@ -106,6 +127,8 @@ export function AppChromeSidebar({
       openSectionIds={resolved.openSectionIds}
       badges={badges}
       mentorDot={showMentorDot}
+      contextPanel={contextPanel}
+      contextLinkLabels={contextPanelLabels?.links}
       onItemClick={(id) => legacyDemoToast(id)}
     />
   );

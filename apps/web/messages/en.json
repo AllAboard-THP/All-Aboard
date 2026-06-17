@@ -314,9 +314,12 @@
       "signOut": "Sign out",
       "context": {
         "dashboard": {
-          "title": "Your space",
-          "description": "Track progress and open requests.",
-          "demo": "Demo dashboard"
+          "title": "On this page",
+          "description": "Shortcuts to your frequent actions.",
+          "newRequest": "New request",
+          "browseFeed": "Browse feed",
+          "inbox": "Unread messages",
+          "myRequests": "My open requests"
         },
         "subjects": {
           "title": "Subjects",
@@ -368,26 +371,38 @@
     "header": {
       "greetingPrefix": "Hello",
       "greetingSuffix": "!",
-      "subtitle": "Explore available subjects and keep progressing.",
-      "statPosts": "Published posts",
-      "statReplies": "Replies given",
-      "statRating": "Community rating"
+      "subtitle": "Pick up where you left off.",
+      "primaryCta": "New request"
     },
-    "panels": {
-      "helpRequestsTitle": "Current requests",
-      "helpRequestsEmpty": "No requests available right now",
-      "helpRequestsCta": "Browse peer help",
-      "upcomingTitle": "Coming to your dashboard",
-      "resourcesTitle": "New resources",
-      "resourcesEmpty": "No updates right now",
-      "resourcesCta": "All resources",
-      "subjectsTitle": "Subjects in progress",
-      "subjectsEmpty": "No subjects in progress",
-      "subjectsCta": "Explore subjects",
-      "unansweredTitle": "Unanswered requests",
-      "unansweredEmpty": "All your requests have received a reply",
-      "demoToast": "Demo — feature coming soon"
-    }
+    "summary": {
+      "activeRequests": "{count, plural, one {# active request} other {# active requests}}",
+      "unreadMessages": "{count, plural, one {# unread message} other {# unread messages}}"
+    },
+    "inbox": {
+      "title": "To do",
+      "empty": "You're all caught up.",
+      "emptyCta": "Browse peer help",
+      "overflow": "+{count} more",
+      "todoReplies": "{count, plural, one {# new reply} other {# new replies}}",
+      "todoUnread": "Unread",
+      "messageFrom": "Message from {name}"
+    },
+    "activity": {
+      "title": "Recent activity",
+      "viewAll": "View full feed",
+      "empty": "No recent activity.",
+      "replyOn": "Activity on “{title}”"
+    },
+    "shortcuts": {
+      "subjects": "Explore",
+      "resources": "Resources",
+      "events": "Events",
+      "profile": "My profile"
+    },
+    "loginRequiredTitle": "Sign-in required",
+    "loginRequiredDescription": "Sign in with a passkey via <link></link> to access your dashboard.",
+    "loginRequiredLink": "the login page",
+    "loadErrorTitle": "Unable to load dashboard"
   },
   "mentorDashboard": {
     "brandName": "All-Aboard",

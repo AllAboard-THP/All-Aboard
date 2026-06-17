@@ -3,6 +3,8 @@ import { toast } from "sonner";
 
 import { useStorybookLocale } from "../i18n/storybook-locale";
 import {
+  studentDashboardFixtureEmptyEn,
+  studentDashboardFixtureEmptyFr,
   studentDashboardFixtureEn,
   studentDashboardFixtureFr,
 } from "./fixtures/student-dashboard";
@@ -27,14 +29,21 @@ type Story = StoryObj<typeof meta>;
 
 function StudentDashboardPreview({
   variant = "standalone",
+  empty = false,
 }: {
   variant?: "standalone" | "content";
+  empty?: boolean;
 }) {
   const locale = useStorybookLocale();
   const labels =
     locale === "en" ? studentDashboardLabelsEn : studentDashboardLabelsFr;
-  const fixture =
-    locale === "en" ? studentDashboardFixtureEn : studentDashboardFixtureFr;
+  const fixture = empty
+    ? locale === "en"
+      ? studentDashboardFixtureEmptyEn
+      : studentDashboardFixtureEmptyFr
+    : locale === "en"
+      ? studentDashboardFixtureEn
+      : studentDashboardFixtureFr;
 
   return (
     <StudentDashboardScreen
@@ -56,4 +65,10 @@ export const Standalone: Story = {
 export const ContentOnly: Story = {
   name: "Content (AppShell)",
   render: () => <StudentDashboardPreview variant="content" />,
+};
+
+/** Empty inbox — all caught up state. */
+export const EmptyInbox: Story = {
+  name: "EmptyInbox",
+  render: () => <StudentDashboardPreview variant="content" empty />,
 };

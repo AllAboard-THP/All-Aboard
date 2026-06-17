@@ -314,9 +314,12 @@
       "signOut": "Déconnexion",
       "context": {
         "dashboard": {
-          "title": "Ton espace",
-          "description": "Suivi de progression et demandes en cours.",
-          "demo": "Dashboard démo"
+          "title": "Sur cette page",
+          "description": "Raccourcis vers tes actions courantes.",
+          "newRequest": "Nouvelle demande",
+          "browseFeed": "Parcourir le fil",
+          "inbox": "Messages non lus",
+          "myRequests": "Mes demandes en cours"
         },
         "subjects": {
           "title": "Matières",
@@ -368,26 +371,38 @@
     "header": {
       "greetingPrefix": "Bonjour",
       "greetingSuffix": " !",
-      "subtitle": "Explore les matières disponibles et continue ta progression.",
-      "statPosts": "Posts publiés",
-      "statReplies": "Réponses données",
-      "statRating": "Note communauté"
+      "subtitle": "Reprends là où tu t'es arrêtée.",
+      "primaryCta": "Nouvelle demande"
     },
-    "panels": {
-      "helpRequestsTitle": "Demandes du moment",
-      "helpRequestsEmpty": "Aucune demande disponible pour le moment",
-      "helpRequestsCta": "Voir l'entraide",
-      "upcomingTitle": "À venir sur ton dashboard",
-      "resourcesTitle": "Nouvelles ressources",
-      "resourcesEmpty": "Aucune nouveauté pour le moment",
-      "resourcesCta": "Toutes les ressources",
-      "subjectsTitle": "Matières suivies",
-      "subjectsEmpty": "Aucune matière en cours",
-      "subjectsCta": "Explorer les matières",
-      "unansweredTitle": "Demandes sans réponse",
-      "unansweredEmpty": "Toutes tes demandes ont reçu une réponse",
-      "demoToast": "Démo — fonctionnalité à venir"
-    }
+    "summary": {
+      "activeRequests": "{count, plural, one {# demande active} other {# demandes actives}}",
+      "unreadMessages": "{count, plural, one {# message non lu} other {# messages non lus}}"
+    },
+    "inbox": {
+      "title": "À faire",
+      "empty": "Tout est à jour.",
+      "emptyCta": "Parcourir l'entraide",
+      "overflow": "+{count} autres",
+      "todoReplies": "{count, plural, one {# nouvelle réponse} other {# nouvelles réponses}}",
+      "todoUnread": "Non lu",
+      "messageFrom": "Message de {name}"
+    },
+    "activity": {
+      "title": "Activité récente",
+      "viewAll": "Voir tout le fil",
+      "empty": "Aucune activité récente.",
+      "replyOn": "Activité sur « {title} »"
+    },
+    "shortcuts": {
+      "subjects": "Explorer",
+      "resources": "Ressources",
+      "events": "Événements",
+      "profile": "Mon profil"
+    },
+    "loginRequiredTitle": "Connexion requise",
+    "loginRequiredDescription": "Connectez-vous avec une passkey via <link></link> pour accéder à votre dashboard.",
+    "loginRequiredLink": "la page de connexion",
+    "loadErrorTitle": "Impossible de charger le dashboard"
   },
   "mentorDashboard": {
     "brandName": "All-Aboard",

@@ -350,3 +350,217 @@ export function resolveAppSidebarPathname(
   }
   return "/feed";
 }
+
+export type AppSidebarContextLinkDef = {
+  id: string;
+  href: string;
+};
+
+/** Route-specific quick links shown in the sidebar context panel (expanded only). */
+export const APP_SIDEBAR_CONTEXT_LINKS: Partial<
+  Record<AppSidebarNavId, AppSidebarContextLinkDef[]>
+> = {
+  dashboard: [
+    { id: "newRequest", href: "/help/new" },
+    { id: "browseFeed", href: "/feed" },
+    { id: "inbox", href: "/messages" },
+    { id: "myRequests", href: "/me/posts" },
+  ],
+  subjects: [{ id: "explore", href: "/explore" }],
+  resources: [{ id: "all", href: "/resources" }],
+  events: [{ id: "all", href: "/events" }],
+  newRequest: [
+    { id: "create", href: "/help/new" },
+    { id: "backToFeed", href: "/feed" },
+  ],
+  feed: [
+    { id: "browse", href: "/feed" },
+    { id: "newRequest", href: "/help/new" },
+    { id: "backToFeed", href: "/feed" },
+  ],
+  messages: [{ id: "inbox", href: "/messages" }],
+  mentor: [{ id: "space", href: "/mentor" }],
+  profile: [{ id: "view", href: "/profile" }],
+  admin: [
+    { id: "overview", href: "/admin" },
+    { id: "users", href: "/admin/users" },
+    { id: "moderation", href: "/admin/moderation" },
+  ],
+  adminUsers: [
+    { id: "users", href: "/admin/users" },
+    { id: "overview", href: "/admin" },
+  ],
+  adminModeration: [
+    { id: "moderation", href: "/admin/moderation" },
+    { id: "overview", href: "/admin" },
+  ],
+};
+
+export type AppSidebarContextPanelLabels = {
+  title: string;
+  description?: string;
+  links: Record<string, string>;
+};
+
+export type AppSidebarContextPanel = {
+  title: string;
+  description?: string;
+  links: AppSidebarContextLinkDef[];
+};
+
+export function resolveAppSidebarContextPanel(
+  activeId: AppSidebarNavId | undefined,
+  labels: AppSidebarContextPanelLabels | null,
+): AppSidebarContextPanel | null {
+  if (!activeId || !labels) {
+    return null;
+  }
+
+  const linkDefs = APP_SIDEBAR_CONTEXT_LINKS[activeId];
+  if (!linkDefs || linkDefs.length === 0) {
+    return null;
+  }
+
+  const links = linkDefs.filter((link) => labels.links[link.id]);
+  if (links.length === 0) {
+    return null;
+  }
+
+  return {
+    title: labels.title,
+    description: labels.description,
+    links,
+  };
+}
+
+type SidebarContextSource = {
+  dashboard: {
+    title: string;
+    description: string;
+    newRequest: string;
+    browseFeed: string;
+    inbox: string;
+    myRequests: string;
+  };
+  subjects: { title: string; explore: string };
+  resources: { title: string; all: string };
+  events: { title: string; all: string };
+  newRequest: { title: string; description: string; create: string; backToFeed: string };
+  feed: {
+    title: string;
+    description: string;
+    browse: string;
+    newRequest: string;
+    backToFeed: string;
+  };
+  messages: { title: string; inbox: string };
+  mentor: { title: string; space: string };
+  profile: { title: string; view: string };
+  admin: {
+    title: string;
+    description: string;
+    overview: string;
+    users: string;
+    moderation: string;
+  };
+};
+
+export function buildSidebarContextPanelLabels(
+  activeId: AppSidebarNavId | undefined,
+  context: SidebarContextSource,
+): AppSidebarContextPanelLabels | null {
+  if (!activeId) {
+    return null;
+  }
+
+  switch (activeId) {
+    case "dashboard":
+      return {
+        title: context.dashboard.title,
+        description: context.dashboard.description,
+        links: {
+          newRequest: context.dashboard.newRequest,
+          browseFeed: context.dashboard.browseFeed,
+          inbox: context.dashboard.inbox,
+          myRequests: context.dashboard.myRequests,
+        },
+      };
+    case "subjects":
+      return {
+        title: context.subjects.title,
+        links: { explore: context.subjects.explore },
+      };
+    case "resources":
+      return {
+        title: context.resources.title,
+        links: { all: context.resources.all },
+      };
+    case "events":
+      return {
+        title: context.events.title,
+        links: { all: context.events.all },
+      };
+    case "newRequest":
+      return {
+        title: context.newRequest.title,
+        description: context.newRequest.description,
+        links: {
+          create: context.newRequest.create,
+          backToFeed: context.newRequest.backToFeed,
+        },
+      };
+    case "feed":
+      return {
+        title: context.feed.title,
+        description: context.feed.description,
+        links: {
+          browse: context.feed.browse,
+          newRequest: context.feed.newRequest,
+          backToFeed: context.feed.backToFeed,
+        },
+      };
+    case "messages":
+      return {
+        title: context.messages.title,
+        links: { inbox: context.messages.inbox },
+      };
+    case "mentor":
+      return {
+        title: context.mentor.title,
+        links: { space: context.mentor.space },
+      };
+    case "profile":
+      return {
+        title: context.profile.title,
+        links: { view: context.profile.view },
+      };
+    case "admin":
+      return {
+        title: context.admin.title,
+        description: context.admin.description,
+        links: {
+          overview: context.admin.overview,
+          users: context.admin.users,
+          moderation: context.admin.moderation,
+        },
+      };
+    case "adminUsers":
+      return {
+        title: context.admin.title,
+        links: {
+          users: context.admin.users,
+          overview: context.admin.overview,
+        },
+      };
+    case "adminModeration":
+      return {
+        title: context.admin.title,
+        links: {
+          moderation: context.admin.moderation,
+          overview: context.admin.overview,
+        },
+      };
+    default:
+      return null;
+  }
+}

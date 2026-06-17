@@ -30,7 +30,14 @@ export type StudentDashboardLabels = {
     settings: string;
     signOut: string;
     context: {
-      dashboard: { title: string; description: string; demo: string };
+      dashboard: {
+        title: string;
+        description: string;
+        newRequest: string;
+        browseFeed: string;
+        inbox: string;
+        myRequests: string;
+      };
       subjects: { title: string; explore: string };
       resources: { title: string; all: string };
       events: { title: string; all: string };
@@ -58,24 +65,24 @@ export type StudentDashboardLabels = {
     greetingPrefix: string;
     greetingSuffix: string;
     subtitle: string;
-    statPosts: string;
-    statReplies: string;
-    statRating: string;
+    primaryCta: string;
   };
-  panels: {
-    helpRequestsTitle: string;
-    helpRequestsEmpty: string;
-    helpRequestsCta: string;
-    upcomingTitle: string;
-    resourcesTitle: string;
-    resourcesEmpty: string;
-    resourcesCta: string;
-    subjectsTitle: string;
-    subjectsEmpty: string;
-    subjectsCta: string;
-    unansweredTitle: string;
-    unansweredEmpty: string;
-    demoToast: string;
+  inbox: {
+    title: string;
+    empty: string;
+    emptyCta: string;
+    overflow: (count: number) => string;
+  };
+  activity: {
+    title: string;
+    viewAll: string;
+    empty: string;
+  };
+  shortcuts: {
+    subjects: string;
+    resources: string;
+    events: string;
+    profile: string;
   };
 };
 
@@ -112,9 +119,12 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
     signOut: "Déconnexion",
     context: {
       dashboard: {
-        title: "Ton espace",
-        description: "Suivi de progression et demandes en cours.",
-        demo: "Dashboard démo",
+        title: "Sur cette page",
+        description: "Raccourcis vers tes actions courantes.",
+        newRequest: "Nouvelle demande",
+        browseFeed: "Parcourir le fil",
+        inbox: "Messages non lus",
+        myRequests: "Mes demandes en cours",
       },
       subjects: { title: "Matières", explore: "Explorer les matières" },
       resources: { title: "Ressources", all: "Toutes les ressources" },
@@ -150,26 +160,26 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
   },
   header: {
     greetingPrefix: "Bonjour",
-    greetingSuffix: "!",
-    subtitle: "Explore les matières disponibles et continue ta progression.",
-    statPosts: "Posts publiés",
-    statReplies: "Réponses données",
-    statRating: "Note communauté",
+    greetingSuffix: " !",
+    subtitle: "Reprends là où tu t'es arrêtée.",
+    primaryCta: "Nouvelle demande",
   },
-  panels: {
-    helpRequestsTitle: "Demandes du moment",
-    helpRequestsEmpty: "Aucune demande disponible pour le moment",
-    helpRequestsCta: "Voir l'entraide",
-    upcomingTitle: "À venir sur ton dashboard",
-    resourcesTitle: "Nouvelles ressources",
-    resourcesEmpty: "Aucune nouveauté pour le moment",
-    resourcesCta: "Toutes les ressources",
-    subjectsTitle: "Matières suivies",
-    subjectsEmpty: "Aucune matière en cours",
-    subjectsCta: "Explorer les matières",
-    unansweredTitle: "Demandes sans réponse",
-    unansweredEmpty: "Toutes tes demandes ont reçu une réponse",
-    demoToast: "Démo — fonctionnalité à venir",
+  inbox: {
+    title: "À faire",
+    empty: "Tout est à jour.",
+    emptyCta: "Parcourir l'entraide",
+    overflow: (count) => `+${count} autres`,
+  },
+  activity: {
+    title: "Activité récente",
+    viewAll: "Voir tout le fil",
+    empty: "Aucune activité récente.",
+  },
+  shortcuts: {
+    subjects: "Explorer",
+    resources: "Ressources",
+    events: "Événements",
+    profile: "Mon profil",
   },
 };
 
@@ -206,9 +216,12 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
     signOut: "Sign out",
     context: {
       dashboard: {
-        title: "Your space",
-        description: "Track progress and open requests.",
-        demo: "Demo dashboard",
+        title: "On this page",
+        description: "Shortcuts to your frequent actions.",
+        newRequest: "New request",
+        browseFeed: "Browse feed",
+        inbox: "Unread messages",
+        myRequests: "My open requests",
       },
       subjects: { title: "Subjects", explore: "Explore subjects" },
       resources: { title: "Resources", all: "All resources" },
@@ -245,24 +258,24 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
   header: {
     greetingPrefix: "Hello",
     greetingSuffix: "!",
-    subtitle: "Explore available subjects and keep progressing.",
-    statPosts: "Published posts",
-    statReplies: "Replies given",
-    statRating: "Community rating",
+    subtitle: "Pick up where you left off.",
+    primaryCta: "New request",
   },
-  panels: {
-    helpRequestsTitle: "Current requests",
-    helpRequestsEmpty: "No requests available right now",
-    helpRequestsCta: "Browse peer help",
-    upcomingTitle: "Coming to your dashboard",
-    resourcesTitle: "New resources",
-    resourcesEmpty: "No updates right now",
-    resourcesCta: "All resources",
-    subjectsTitle: "Subjects in progress",
-    subjectsEmpty: "No subjects in progress",
-    subjectsCta: "Explore subjects",
-    unansweredTitle: "Unanswered requests",
-    unansweredEmpty: "All your requests have received a reply",
-    demoToast: "Demo — feature coming soon",
+  inbox: {
+    title: "To do",
+    empty: "You're all caught up.",
+    emptyCta: "Browse peer help",
+    overflow: (count) => `+${count} more`,
+  },
+  activity: {
+    title: "Recent activity",
+    viewAll: "View full feed",
+    empty: "No recent activity.",
+  },
+  shortcuts: {
+    subjects: "Explore",
+    resources: "Resources",
+    events: "Events",
+    profile: "My profile",
   },
 };

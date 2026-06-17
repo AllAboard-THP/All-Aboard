@@ -12,11 +12,13 @@ import {
   APP_SIDEBAR_WIDTH_EXPANDED,
 } from "./landing-layout";
 import {
+  AppSidebarContextPanelSection,
   AppSidebarDrawerSection,
   AppSidebarRailItem,
 } from "./app-sidebar-parts";
 import { useAppSidebarOptional } from "./app-sidebar-provider";
 import type {
+  AppSidebarContextPanel,
   AppSidebarNavId,
   AppSidebarSection,
   AppSidebarSectionId,
@@ -56,6 +58,8 @@ export type AppSidebarProps = {
   openSectionIds?: AppSidebarSectionId[];
   badges?: Partial<Record<AppSidebarNavId, number>>;
   mentorDot?: boolean;
+  contextPanel?: AppSidebarContextPanel | null;
+  contextLinkLabels?: Record<string, string>;
   expanded?: boolean;
   onExpandedChange?: (expanded: boolean) => void;
   prefersReducedMotion?: boolean;
@@ -79,6 +83,8 @@ export function AppSidebar({
   openSectionIds = ["navigation"],
   badges,
   mentorDot,
+  contextPanel,
+  contextLinkLabels = {},
   expanded: expandedProp,
   onExpandedChange,
   prefersReducedMotion: prefersReducedMotionProp,
@@ -160,7 +166,7 @@ export function AppSidebar({
       onClick={handleShellClick}
     >
       <nav
-        className="flex min-h-0 flex-1 flex-col overflow-y-auto py-3"
+        className="pointer-events-none flex min-h-0 flex-1 flex-col overflow-y-auto py-3"
         aria-label={labels.navigationGroup}
       >
         {expanded ? (
@@ -212,6 +218,16 @@ export function AppSidebar({
             })}
           </div>
         )}
+
+        {contextPanel ? (
+          <AppSidebarContextPanelSection
+            panel={contextPanel}
+            linkLabels={contextLinkLabels}
+            expanded={expanded}
+            LinkComponent={LinkComponent}
+            onItemClick={onItemClick}
+          />
+        ) : null}
 
         <div className="min-h-6 flex-1 shrink-0" aria-hidden />
       </nav>

@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import type { ComponentType, ReactNode, MouseEvent } from "react";
 
 import { cn } from "../lib/utils";
+import type { AppSidebarContextPanel } from "./app-sidebar-nav";
 import type { AppSidebarLinkProps } from "./app-sidebar";
 
 export function AppSidebarDrawerSection({
@@ -32,7 +33,7 @@ export function AppSidebarDrawerSection({
     <section className="app-sidebar-drawer-section" data-sidebar-section={id}>
       <button
         type="button"
-        className="dashboard-hover-link flex w-full items-center justify-between rounded-xl px-3 py-2 text-left"
+        className="app-sidebar-interactive dashboard-hover-link ml-2 flex items-center justify-between rounded-xl px-3 py-2 text-left"
         aria-expanded={open}
         onClick={(event) => {
           event.stopPropagation();
@@ -80,8 +81,8 @@ export function AppSidebarRailItem({
 }) {
   const Icon = item.icon;
   const className = cn(
-    "app-sidebar-nav-item dashboard-hover-link relative flex w-full items-center rounded-xl py-2.5 text-left text-sm",
-    expanded ? "gap-3 px-3" : "justify-center px-0",
+    "app-sidebar-interactive app-sidebar-nav-item dashboard-hover-link relative flex items-center rounded-xl py-2.5 text-left text-sm",
+    expanded ? "ml-2 gap-3 px-3" : "justify-center px-0",
     item.active ? "dashboard-nav-active font-medium text-primary" : "text-muted-foreground",
   );
 
@@ -144,5 +145,85 @@ export function AppSidebarRailItem({
     >
       {content}
     </button>
+  );
+}
+
+export function AppSidebarContextPanelSection({
+  panel,
+  linkLabels,
+  expanded,
+  LinkComponent,
+  onItemClick,
+}: {
+  panel: AppSidebarContextPanel;
+  linkLabels: Record<string, string>;
+  expanded: boolean;
+  LinkComponent?: ComponentType<AppSidebarLinkProps>;
+  onItemClick?: (id: string) => void;
+}) {
+  if (!expanded) {
+    return null;
+  }
+
+  return (
+    <section
+      className="app-sidebar-context-panel mx-2 mt-2 border-t border-white/10 pt-3"
+      aria-label={panel.title}
+    >
+      <div className="px-2 pb-2">
+        <p className="text-xs font-semibold text-foreground">{panel.title}</p>
+        {panel.description ? (
+          <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
+            {panel.description}
+          </p>
+        ) : null}
+      </div>
+      <ul className="space-y-0.5 px-1">
+        {panel.links.map((link) => {
+          const label = linkLabels[link.id];
+          if (!label) {
+            return null;
+          }
+
+          const className = cn(
+            "app-sidebar-interactive dashboard-hover-link ml-2 block rounded-lg px-3 py-2 text-left text-xs text-muted-foreground",
+            "hover:text-foreground",
+          );
+
+          const stopShellToggle = (event: MouseEvent) => {
+            event.stopPropagation();
+          };
+
+          if (link.href && LinkComponent) {
+            return (
+              <li key={link.id}>
+                <LinkComponent
+                  href={link.href}
+                  className={className}
+                  onClick={stopShellToggle}
+                >
+                  {label}
+                </LinkComponent>
+              </li>
+            );
+          }
+
+          return (
+            <li key={link.id}>
+              <button
+                type="button"
+                className={className}
+                onClick={(event) => {
+                  stopShellToggle(event);
+                  onItemClick?.(link.id);
+                }}
+              >
+                {label}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

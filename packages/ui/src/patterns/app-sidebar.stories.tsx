@@ -6,7 +6,9 @@ import { AppSidebarProvider, useAppSidebar } from "./app-sidebar-provider";
 import {
   APP_SIDEBAR_ACTIVE_ID_PATH,
   buildAppSidebarSections,
+  buildSidebarContextPanelLabels,
   resolveAppSidebarContext,
+  resolveAppSidebarContextPanel,
   type AppSidebarNavId,
 } from "./app-sidebar-nav";
 import { buildAppSidebarLabelMapFromDashboardLabels } from "./app-chrome-sidebar";
@@ -15,11 +17,14 @@ import { legacyDemoToast } from "./legacy-story-feedback";
 import { patternStoryParameters } from "./pattern-story-frame";
 
 const labelMap = buildAppSidebarLabelMapFromDashboardLabels(studentDashboardLabelsFr);
+const contextSource = studentDashboardLabelsFr.sidebar.context;
 
 function SidebarDemoInner({
   activeId = "feed",
   expanded = true,
   messageCount = 0,
+  feedCount = 0,
+  dashboardCount = 0,
   showMentorDot = false,
   isMentor = false,
   isAdmin = false,
@@ -27,6 +32,8 @@ function SidebarDemoInner({
   activeId?: AppSidebarNavId;
   expanded?: boolean;
   messageCount?: number;
+  feedCount?: number;
+  dashboardCount?: number;
   showMentorDot?: boolean;
   isMentor?: boolean;
   isAdmin?: boolean;
@@ -39,6 +46,20 @@ function SidebarDemoInner({
     showMentorSection: resolved.showMentorSection,
     showAdminSection: resolved.showAdminSection,
   });
+
+  const badges: Partial<Record<AppSidebarNavId, number>> = {};
+  if (dashboardCount > 0) badges.dashboard = dashboardCount;
+  if (feedCount > 0) badges.feed = feedCount;
+  if (messageCount > 0) badges.messages = messageCount;
+
+  const contextPanelLabels = buildSidebarContextPanelLabels(
+    resolved.activeId,
+    contextSource,
+  );
+  const contextPanel = resolveAppSidebarContextPanel(
+    resolved.activeId,
+    contextPanelLabels,
+  );
 
   useEffect(() => {
     setExpanded(expanded);
@@ -57,8 +78,10 @@ function SidebarDemoInner({
         }}
         sections={sections}
         openSectionIds={resolved.openSectionIds}
-        badges={messageCount > 0 ? { messages: messageCount } : undefined}
+        badges={badges}
         mentorDot={showMentorDot}
+        contextPanel={contextPanel}
+        contextLinkLabels={contextPanelLabels?.links}
         onItemClick={(id) => legacyDemoToast(id)}
         className="!flex"
       />
@@ -137,4 +160,15 @@ export const CollapsedRail: Story = {
 
 export const MessagesWithBadge: Story = {
   args: { activeId: "messages", messageCount: 3 },
+};
+
+export const DashboardWithContext: Story = {
+  name: "DashboardWithContext",
+  args: {
+    activeId: "dashboard",
+    expanded: true,
+    dashboardCount: 2,
+    feedCount: 3,
+    messageCount: 1,
+  },
 };

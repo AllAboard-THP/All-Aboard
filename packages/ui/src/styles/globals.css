@@ -398,8 +398,26 @@
   }
 
   .app-sidebar-shell--click-toggle .app-sidebar-nav-item,
-  .app-sidebar-shell--click-toggle .app-sidebar-drawer-section button {
+  .app-sidebar-shell--click-toggle .app-sidebar-drawer-section button,
+  .app-sidebar-shell--click-toggle .app-sidebar-context-panel .app-sidebar-interactive {
     cursor: pointer;
+    pointer-events: auto;
+  }
+
+  /** Compact hit targets — leave gutter for click-to-collapse on the shell. */
+  .app-sidebar-interactive {
+    width: fit-content;
+    max-width: calc(100% - 1rem);
+  }
+
+  .app-sidebar-shell--collapsed .app-sidebar-nav-item {
+    width: 2.5rem;
+    max-width: 2.5rem;
+    margin-inline: auto;
+  }
+
+  .app-sidebar-shell--click-toggle nav {
+    pointer-events: none;
   }
 
   .app-sidebar-drawer {

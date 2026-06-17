@@ -1,34 +1,34 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { ComponentType, MouseEvent, ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
+  Calendar,
   Compass,
   Library,
-  Sparkles,
-  Users,
+  MessageSquare,
+  Plus,
+  User,
   Zap,
 } from "lucide-react";
 
 import { AllAboardLogoMark } from "../components/allaboard-logo-mark";
-import { Badge } from "../components/badge";
 import { Button } from "../components/button";
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "../components/card";
 import { cn } from "../lib/utils";
 import {
   studentDashboardFixtureFr,
+  type DashboardActivityItem,
+  type DashboardShortcut,
+  type DashboardShortcutId,
+  type DashboardTodoItem,
   type StudentDashboardFixture,
-  type StudentHelpRequestPreview,
-  type StudentResourcePreview,
-  type StudentSubjectPreview,
-  type StudentUpcomingTeaser,
 } from "./fixtures/student-dashboard";
 import {
   AppChromeBrand,
@@ -52,6 +52,56 @@ import { AppAbstractBackground } from "./app-abstract-background";
 
 export type StudentDashboardVariant = "standalone" | "content";
 
+export type DashboardLinkProps = {
+  href: string;
+  className?: string;
+  children: ReactNode;
+  onClick?: (event: MouseEvent<HTMLElement>) => void;
+};
+
+const SHORTCUT_ICONS: Record<DashboardShortcutId, LucideIcon> = {
+  subjects: Compass,
+  resources: Library,
+  events: Calendar,
+  profile: User,
+};
+
+const PRIMARY_CTA_HREF = "/help/new";
+const FEED_HREF = "/feed";
+
+function PrimaryCtaButton({
+  label,
+  LinkComponent,
+  onNavigate,
+}: {
+  label: string;
+  LinkComponent?: ComponentType<DashboardLinkProps>;
+  onNavigate?: (href: string) => void;
+}) {
+  const content = (
+    <>
+      <Plus className="size-4" aria-hidden />
+      {label}
+    </>
+  );
+
+  if (LinkComponent) {
+    return (
+      <Button asChild className="gap-2 rounded-full px-5">
+        <LinkComponent href={PRIMARY_CTA_HREF} className="inline-flex shrink-0">
+          {content}
+        </LinkComponent>
+      </Button>
+    );
+  }
+
+  return (
+    <Button className="gap-2 rounded-full px-5" onClick={() => onNavigate?.(PRIMARY_CTA_HREF)}>
+      {content}
+    </Button>
+  );
+}
+
 function DashboardStage({ children }: { children: ReactNode }) {
   return (
     <div className={cn(APP_STAGE_CLASS, "dashboard-stage relative flex min-h-[100dvh] flex-col")}>
@@ -61,28 +111,35 @@ function DashboardStage({ children }: { children: ReactNode }) {
   );
 }
 
-function StatCard({
-  value,
-  label,
-  tone = "primary",
+function DashboardNavLink({
+  href,
+  className,
+  children,
+  LinkComponent,
+  onNavigate,
 }: {
-  value: string | number;
-  label: string;
-  tone?: "primary" | "accent" | "gradient";
+  href: string;
+  className?: string;
+  children: ReactNode;
+  LinkComponent?: ComponentType<DashboardLinkProps>;
+  onNavigate?: (href: string) => void;
 }) {
-  const valueClass = {
-    primary: "text-primary",
-    accent: "text-accent",
-    gradient: "gradient-text",
-  }[tone];
+  if (LinkComponent) {
+    return (
+      <LinkComponent href={href} className={className}>
+        {children}
+      </LinkComponent>
+    );
+  }
 
   return (
-    <div className="dashboard-stat-card flex-1">
-      <p className={cn("text-2xl font-bold sm:text-3xl", valueClass)}>{value}</p>
-      <p className="landing-eyebrow mt-1 text-[10px] text-muted-foreground normal-case tracking-wide">
-        {label}
-      </p>
-    </div>
+    <button
+      type="button"
+      className={className}
+      onClick={() => onNavigate?.(href)}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -117,120 +174,273 @@ function StudentDashboardTopHeader({
   );
 }
 
-function DashboardPanel({
-  title,
-  icon: Icon,
-  children,
-  footer,
+function DashboardHeroCompact({
+  labels,
+  fixture,
+  LinkComponent,
+  onNavigate,
 }: {
-  title: string;
-  icon: LucideIcon;
-  children: ReactNode;
-  footer?: ReactNode;
+  labels: StudentDashboardLabels;
+  fixture: StudentDashboardFixture;
+  LinkComponent?: ComponentType<DashboardLinkProps>;
+  onNavigate?: (href: string) => void;
+}) {
+  return (
+    <header className="space-y-3">
+      <span className="dashboard-date-badge">{fixture.dateLabel}</span>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-2">
+          <h1 className="landing-hero-heading text-3xl font-bold tracking-tight sm:text-4xl">
+            <span className="landing-chrome-text">{labels.header.greetingPrefix}</span>{" "}
+            <span className="gradient-text">
+              {fixture.firstName}
+              {labels.header.greetingSuffix}
+            </span>
+          </h1>
+          <p className="max-w-xl text-muted-foreground">{labels.header.subtitle}</p>
+          {fixture.summaryLine ? (
+            <p className="text-sm text-muted-foreground/90">{fixture.summaryLine}</p>
+          ) : null}
+        </div>
+        <PrimaryCtaButton
+          label={labels.header.primaryCta}
+          LinkComponent={LinkComponent}
+          onNavigate={onNavigate}
+        />
+      </div>
+    </header>
+  );
+}
+
+function TodoRow({
+  item,
+  LinkComponent,
+  onNavigate,
+}: {
+  item: DashboardTodoItem;
+  LinkComponent?: ComponentType<DashboardLinkProps>;
+  onNavigate?: (href: string) => void;
+}) {
+  return (
+    <DashboardNavLink
+      href={item.href}
+      LinkComponent={LinkComponent}
+      onNavigate={onNavigate}
+      className="dashboard-inner-card group flex items-start gap-3 text-left transition-colors hover:bg-white/5"
+    >
+      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 ring-1 ring-primary/20">
+        {item.kind === "message" ? (
+          <MessageSquare className="size-4 text-primary" aria-hidden />
+        ) : (
+          <Zap className="size-4 text-primary" aria-hidden />
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium leading-snug group-hover:text-foreground">
+          {item.title}
+        </span>
+        {item.subtitle ? (
+          <span className="mt-0.5 block text-xs text-muted-foreground">{item.subtitle}</span>
+        ) : null}
+      </span>
+      {item.timeAgo ? (
+        <span className="shrink-0 text-xs text-muted-foreground">{item.timeAgo}</span>
+      ) : (
+        <ArrowRight
+          className="size-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
+          aria-hidden
+        />
+      )}
+    </DashboardNavLink>
+  );
+}
+
+function DashboardInboxPanel({
+  labels,
+  todos,
+  overflowCount = 0,
+  LinkComponent,
+  onNavigate,
+}: {
+  labels: StudentDashboardLabels;
+  todos: DashboardTodoItem[];
+  overflowCount?: number;
+  LinkComponent?: ComponentType<DashboardLinkProps>;
+  onNavigate?: (href: string) => void;
 }) {
   return (
     <Card className={cn(APP_GLASS_CARD_CLASS, "dashboard-glass-card gap-0 rounded-2xl py-0 shadow-none")}>
       <CardHeader className="flex-row items-center gap-2 border-b border-white/10 px-5 py-4">
         <span className="flex size-8 items-center justify-center rounded-lg bg-primary/15 ring-1 ring-primary/20">
-          <Icon className="size-4 text-primary" aria-hidden />
+          <Zap className="size-4 text-primary" aria-hidden />
         </span>
-        <CardTitle className="text-base">{title}</CardTitle>
+        <CardTitle className="text-base">{labels.inbox.title}</CardTitle>
       </CardHeader>
-      <CardContent className="px-5 py-6">{children}</CardContent>
-      {footer ? (
-        <CardFooter className="justify-center border-t border-white/10 px-5 py-4">
-          {footer}
-        </CardFooter>
-      ) : null}
+      <CardContent className="space-y-3 px-5 py-5">
+        {todos.length > 0 ? (
+          <>
+            {todos.map((item) => (
+              <TodoRow
+                key={item.id}
+                item={item}
+                LinkComponent={LinkComponent}
+                onNavigate={onNavigate}
+              />
+            ))}
+            {overflowCount > 0 ? (
+              <p className="text-center text-xs text-muted-foreground">
+                {labels.inbox.overflow(overflowCount)}
+              </p>
+            ) : null}
+          </>
+        ) : (
+          <div className="space-y-3 py-4 text-center">
+            <p className="text-sm text-muted-foreground">{labels.inbox.empty}</p>
+            <DashboardNavLink
+              href={FEED_HREF}
+              LinkComponent={LinkComponent}
+              onNavigate={onNavigate}
+              className="dashboard-hover-link inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-primary"
+            >
+              {labels.inbox.emptyCta}
+              <ArrowRight className="size-4" aria-hidden />
+            </DashboardNavLink>
+          </div>
+        )}
+      </CardContent>
     </Card>
   );
 }
 
-function EmptyState({ message }: { message: string }) {
-  return (
-    <p className="py-8 text-center text-sm text-muted-foreground">{message}</p>
-  );
-}
-
-function HelpRequestPreviewCard({ item }: { item: StudentHelpRequestPreview }) {
-  return (
-    <div className="dashboard-inner-card">
-      <div className="mb-2 flex items-center gap-2">
-        <Badge
-          variant="outline"
-          className="border-transparent text-xs"
-          style={{
-            color: item.subjectColor,
-            backgroundColor: `${item.subjectColor}18`,
-          }}
-        >
-          {item.subjectName}
-        </Badge>
-        <span className="ml-auto text-xs text-muted-foreground">{item.timeAgo}</span>
-      </div>
-      <p className="text-sm font-medium leading-snug">{item.title}</p>
-    </div>
-  );
-}
-
-function ResourcePreviewCard({ item }: { item: StudentResourcePreview }) {
-  return (
-    <div className="dashboard-inner-card">
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <p className="text-sm font-medium leading-snug">{item.title}</p>
-        <span className="shrink-0 text-xs text-muted-foreground">{item.timeAgo}</span>
-      </div>
-      <p className="text-sm text-muted-foreground">{item.excerpt}</p>
-    </div>
-  );
-}
-
-function SubjectChip({ item }: { item: StudentSubjectPreview }) {
-  return (
-    <div className="dashboard-inner-card flex items-center justify-between gap-3">
-      <div className="flex items-center gap-3">
-        <span
-          className="size-2.5 shrink-0 rounded-full shadow-[0_0_10px_currentColor]"
-          style={{ color: item.color, backgroundColor: item.color }}
-          aria-hidden
-        />
-        <span className="text-sm font-medium">{item.name}</span>
-      </div>
-      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
-        {item.progressLabel}
-      </span>
-    </div>
-  );
-}
-
-function UpcomingTeaserCard({ item }: { item: StudentUpcomingTeaser }) {
-  return (
-    <div className="dashboard-inner-card">
-      <div className="mb-2 flex items-center gap-2">
-        <Sparkles className="size-4 text-primary" aria-hidden />
-        <p className="text-sm font-medium">{item.title}</p>
-      </div>
-      <p className="text-sm text-muted-foreground">{item.description}</p>
-    </div>
-  );
-}
-
-function DemoLinkButton({
-  label,
-  onClick,
+function ActivityRow({
+  item,
+  LinkComponent,
+  onNavigate,
 }: {
-  label: string;
-  onClick: () => void;
+  item: DashboardActivityItem;
+  LinkComponent?: ComponentType<DashboardLinkProps>;
+  onNavigate?: (href: string) => void;
 }) {
   return (
-    <Button
-      variant="ghost"
-      className="dashboard-hover-link gap-2 rounded-full text-primary hover:text-foreground"
-      onClick={onClick}
+    <DashboardNavLink
+      href={item.href}
+      LinkComponent={LinkComponent}
+      onNavigate={onNavigate}
+      className="group flex items-start justify-between gap-4 border-b border-white/8 py-3 text-left last:border-b-0"
     >
-      {label}
-      <ArrowRight className="size-4" aria-hidden />
-    </Button>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium leading-snug group-hover:text-foreground">
+          {item.title}
+        </span>
+        {item.excerpt ? (
+          <span className="mt-1 block text-sm text-muted-foreground line-clamp-2">
+            {item.excerpt}
+          </span>
+        ) : null}
+      </span>
+      <span className="shrink-0 text-xs text-muted-foreground">{item.timeAgo}</span>
+    </DashboardNavLink>
+  );
+}
+
+function DashboardActivitySection({
+  labels,
+  items,
+  LinkComponent,
+  onNavigate,
+}: {
+  labels: StudentDashboardLabels;
+  items: DashboardActivityItem[];
+  LinkComponent?: ComponentType<DashboardLinkProps>;
+  onNavigate?: (href: string) => void;
+}) {
+  return (
+    <section className="space-y-2" aria-labelledby="dashboard-activity-heading">
+      <div className="flex items-center justify-between gap-3 px-1">
+        <h2 id="dashboard-activity-heading" className="text-base font-semibold">
+          {labels.activity.title}
+        </h2>
+        <DashboardNavLink
+          href={FEED_HREF}
+          LinkComponent={LinkComponent}
+          onNavigate={onNavigate}
+          className="dashboard-hover-link inline-flex items-center gap-1 text-sm text-primary"
+        >
+          {labels.activity.viewAll}
+          <ArrowRight className="size-3.5" aria-hidden />
+        </DashboardNavLink>
+      </div>
+      <div className="rounded-2xl border border-white/10 bg-white/5 px-4">
+        {items.length > 0 ? (
+          items.map((item) => (
+            <ActivityRow
+              key={item.id}
+              item={item}
+              LinkComponent={LinkComponent}
+              onNavigate={onNavigate}
+            />
+          ))
+        ) : (
+          <p className="py-8 text-center text-sm text-muted-foreground">{labels.activity.empty}</p>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function ShortcutTile({
+  shortcut,
+  label,
+  LinkComponent,
+  onNavigate,
+}: {
+  shortcut: DashboardShortcut;
+  label: string;
+  LinkComponent?: ComponentType<DashboardLinkProps>;
+  onNavigate?: (href: string) => void;
+}) {
+  const Icon = SHORTCUT_ICONS[shortcut.id];
+
+  return (
+    <DashboardNavLink
+      href={shortcut.href}
+      LinkComponent={LinkComponent}
+      onNavigate={onNavigate}
+      className="dashboard-inner-card group flex flex-col items-center gap-2 px-4 py-5 text-center transition-colors hover:bg-white/8"
+    >
+      <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/15">
+        <Icon className="size-5 text-primary" aria-hidden />
+      </span>
+      <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">
+        {label}
+      </span>
+    </DashboardNavLink>
+  );
+}
+
+function DashboardShortcutGrid({
+  labels,
+  shortcuts,
+  LinkComponent,
+  onNavigate,
+}: {
+  labels: StudentDashboardLabels;
+  shortcuts: DashboardShortcut[];
+  LinkComponent?: ComponentType<DashboardLinkProps>;
+  onNavigate?: (href: string) => void;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {shortcuts.map((shortcut) => (
+        <ShortcutTile
+          key={shortcut.id}
+          shortcut={shortcut}
+          label={labels.shortcuts[shortcut.id]}
+          LinkComponent={LinkComponent}
+          onNavigate={onNavigate}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -281,113 +491,47 @@ function StudentDashboardFooter({
 function StudentDashboardMain({
   labels,
   fixture,
-  onDemoClick,
+  LinkComponent,
+  onNavigate,
 }: {
   labels: StudentDashboardLabels;
   fixture: StudentDashboardFixture;
-  onDemoClick: () => void;
+  LinkComponent?: ComponentType<DashboardLinkProps>;
+  onNavigate?: (href: string) => void;
 }) {
+  const visibleTodos = fixture.todos.slice(0, 3);
+  const overflowCount = Math.max(0, fixture.todos.length - visibleTodos.length);
+
   return (
-    <div className="animate-fade-in mx-auto max-w-6xl space-y-6">
-      <div className="space-y-3">
-        <span className="dashboard-date-badge">{fixture.dateLabel}</span>
-        <div>
-          <h1 className="landing-hero-heading text-3xl font-bold tracking-tight sm:text-4xl">
-            <span className="landing-chrome-text">{labels.header.greetingPrefix}</span>{" "}
-            <span className="gradient-text">
-              {fixture.firstName}
-              {labels.header.greetingSuffix}
-            </span>
-          </h1>
-          <p className="mt-2 max-w-xl text-muted-foreground">{labels.header.subtitle}</p>
-        </div>
-      </div>
+    <div className="animate-fade-in mx-auto max-w-6xl space-y-8">
+      <DashboardHeroCompact
+        labels={labels}
+        fixture={fixture}
+        LinkComponent={LinkComponent}
+        onNavigate={onNavigate}
+      />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <StatCard value={fixture.postsCount} label={labels.header.statPosts} tone="primary" />
-        <StatCard value={fixture.repliesCount} label={labels.header.statReplies} tone="accent" />
-        <StatCard
-          value={fixture.communityRating}
-          label={labels.header.statRating}
-          tone="gradient"
-        />
-      </div>
+      <DashboardInboxPanel
+        labels={labels}
+        todos={visibleTodos}
+        overflowCount={overflowCount}
+        LinkComponent={LinkComponent}
+        onNavigate={onNavigate}
+      />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="space-y-6">
-          <DashboardPanel
-            title={labels.panels.helpRequestsTitle}
-            icon={Zap}
-            footer={
-              <DemoLinkButton label={labels.panels.helpRequestsCta} onClick={onDemoClick} />
-            }
-          >
-            {fixture.helpRequests.length > 0 ? (
-              <div className="space-y-3">
-                {fixture.helpRequests.map((item) => (
-                  <HelpRequestPreviewCard key={item.id} item={item} />
-                ))}
-              </div>
-            ) : (
-              <EmptyState message={labels.panels.helpRequestsEmpty} />
-            )}
-          </DashboardPanel>
+      <DashboardActivitySection
+        labels={labels}
+        items={fixture.recentActivity}
+        LinkComponent={LinkComponent}
+        onNavigate={onNavigate}
+      />
 
-          <DashboardPanel title={labels.panels.upcomingTitle} icon={Sparkles}>
-            <div className="space-y-3">
-              {fixture.upcoming.map((item) => (
-                <UpcomingTeaserCard key={item.id} item={item} />
-              ))}
-            </div>
-          </DashboardPanel>
-        </div>
-
-        <div className="space-y-6">
-          <DashboardPanel
-            title={labels.panels.subjectsTitle}
-            icon={Compass}
-            footer={
-              <DemoLinkButton label={labels.panels.subjectsCta} onClick={onDemoClick} />
-            }
-          >
-            {fixture.subjects.length > 0 ? (
-              <div className="space-y-3">
-                {fixture.subjects.map((item) => (
-                  <SubjectChip key={item.slug} item={item} />
-                ))}
-              </div>
-            ) : (
-              <EmptyState message={labels.panels.subjectsEmpty} />
-            )}
-          </DashboardPanel>
-
-          <DashboardPanel title={labels.panels.unansweredTitle} icon={Users}>
-            {fixture.unansweredCount > 0 ? (
-              <p className="text-center text-3xl font-bold text-primary">
-                {fixture.unansweredCount}
-              </p>
-            ) : (
-              <EmptyState message={labels.panels.unansweredEmpty} />
-            )}
-          </DashboardPanel>
-        </div>
-      </div>
-
-      <DashboardPanel
-        title={labels.panels.resourcesTitle}
-        icon={Library}
-        footer={<DemoLinkButton label={labels.panels.resourcesCta} onClick={onDemoClick} />}
-      >
-        {fixture.resources.length > 0 ? (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {fixture.resources.map((item) => (
-              <ResourcePreviewCard key={item.id} item={item} />
-            ))}
-          </div>
-        ) : (
-          <EmptyState message={labels.panels.resourcesEmpty} />
-        )}
-      </DashboardPanel>
+      <DashboardShortcutGrid
+        labels={labels}
+        shortcuts={fixture.shortcuts}
+        LinkComponent={LinkComponent}
+        onNavigate={onNavigate}
+      />
     </div>
   );
 }
@@ -396,28 +540,43 @@ export function StudentDashboardScreen({
   labels = studentDashboardLabelsFr,
   fixture = studentDashboardFixtureFr,
   onDemoAction,
+  onNavigate,
+  LinkComponent,
   headerEnd,
   variant = "standalone",
 }: {
   labels?: StudentDashboardLabels;
   fixture?: StudentDashboardFixture;
   onDemoAction?: (message: string) => void;
+  onNavigate?: (href: string) => void;
+  LinkComponent?: ComponentType<DashboardLinkProps>;
   headerEnd?: ReactNode;
   /** `content` = main panels only (sidebar/header from AppShell). */
   variant?: StudentDashboardVariant;
 }) {
   const handleDemoClick = () => {
-    onDemoAction?.(labels.panels.demoToast);
+    onDemoAction?.("Demo — legal links");
   };
 
+  const handleNavigate = (href: string) => {
+    if (LinkComponent) {
+      return;
+    }
+    onNavigate?.(href);
+    onDemoAction?.(`Navigate → ${href}`);
+  };
+
+  const main = (
+    <StudentDashboardMain
+      labels={labels}
+      fixture={fixture}
+      LinkComponent={LinkComponent}
+      onNavigate={handleNavigate}
+    />
+  );
+
   if (variant === "content") {
-    return (
-      <StudentDashboardMain
-        labels={labels}
-        fixture={fixture}
-        onDemoClick={handleDemoClick}
-      />
-    );
+    return main;
   }
 
   return (
@@ -430,15 +589,14 @@ export function StudentDashboardScreen({
         />
 
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-          <AppChromeSidebar activeId="dashboard" />
+          <AppChromeSidebar
+            activeId="dashboard"
+            messageCount={fixture.badgeCounts?.messages}
+            feedCount={fixture.badgeCounts?.feed}
+            dashboardCount={fixture.badgeCounts?.dashboard}
+          />
 
-          <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-            <StudentDashboardMain
-              labels={labels}
-              fixture={fixture}
-              onDemoClick={handleDemoClick}
-            />
-          </main>
+          <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">{main}</main>
         </div>
 
         <StudentDashboardFooter labels={labels} onDemoClick={handleDemoClick} />

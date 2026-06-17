@@ -1,29 +1,30 @@
-export type StudentHelpRequestPreview = {
+export type DashboardTodoKind = "helpRequest" | "message" | "resource";
+
+export type DashboardTodoItem = {
   id: string;
+  kind: DashboardTodoKind;
   title: string;
-  subjectName: string;
-  subjectColor: string;
+  subtitle?: string;
+  href: string;
+  timeAgo?: string;
+};
+
+export type DashboardActivityKind = "reply" | "resource" | "event";
+
+export type DashboardActivityItem = {
+  id: string;
+  kind: DashboardActivityKind;
+  title: string;
+  excerpt?: string;
+  href: string;
   timeAgo: string;
 };
 
-export type StudentResourcePreview = {
-  id: string;
-  title: string;
-  excerpt: string;
-  timeAgo: string;
-};
+export type DashboardShortcutId = "subjects" | "resources" | "events" | "profile";
 
-export type StudentSubjectPreview = {
-  slug: string;
-  name: string;
-  color: string;
-  progressLabel: string;
-};
-
-export type StudentUpcomingTeaser = {
-  id: string;
-  title: string;
-  description: string;
+export type DashboardShortcut = {
+  id: DashboardShortcutId;
+  href: string;
 };
 
 export type StudentDashboardFixture = {
@@ -31,132 +32,166 @@ export type StudentDashboardFixture = {
   fullName: string;
   initials: string;
   dateLabel: string;
-  postsCount: number;
-  repliesCount: number;
-  communityRating: string;
-  helpRequests: StudentHelpRequestPreview[];
-  resources: StudentResourcePreview[];
-  subjects: StudentSubjectPreview[];
-  upcoming: StudentUpcomingTeaser[];
-  unansweredCount: number;
+  summaryLine?: string;
+  todos: DashboardTodoItem[];
+  recentActivity: DashboardActivityItem[];
+  shortcuts: DashboardShortcut[];
+  badgeCounts?: {
+    dashboard?: number;
+    feed?: number;
+    messages?: number;
+  };
 };
 
 export const studentDashboardFixtureFr: StudentDashboardFixture = {
   firstName: "Inès",
   fullName: "Inès Martin",
-  initials: "AA",
-  dateLabel: "9 juin 2026",
-  postsCount: 7,
-  repliesCount: 19,
-  communityRating: "4.6",
-  helpRequests: [
+  initials: "IM",
+  dateLabel: "17 juin 2026",
+  summaryLine: "1 demande active · 1 message non lu",
+  todos: [
     {
-      id: "1",
+      id: "todo-1",
+      kind: "helpRequest",
       title: "Jointure SQL qui duplique mes lignes",
-      subjectName: "Bases de données",
-      subjectColor: "#a78bfa",
+      subtitle: "2 nouvelles réponses",
+      href: "/requests/1",
       timeAgo: "il y a 4 jours",
     },
-  ],
-  resources: [
     {
-      id: "1",
-      title: "Modéliser un schéma PostgreSQL pour débutants",
-      excerpt: "Tables, clés étrangères et migrations pour poser une base solide.",
-      timeAgo: "il y a 5 jours",
+      id: "todo-2",
+      kind: "message",
+      title: "Message d'Alice (mentor)",
+      subtitle: "Non lu",
+      href: "/messages",
     },
     {
-      id: "2",
-      title: "Découper un script Python en modules",
-      excerpt: "Organiser imports, packages et tests au-delà de 200 lignes.",
+      id: "todo-3",
+      kind: "resource",
+      title: "Ressource validée sur Python",
+      subtitle: "Disponible dans tes matières",
+      href: "/resources",
       timeAgo: "il y a 1 semaine",
     },
   ],
-  subjects: [
+  recentActivity: [
     {
-      slug: "bases-de-donnees",
-      name: "Bases de données",
-      color: "#a78bfa",
-      progressLabel: "En cours",
+      id: "act-1",
+      kind: "reply",
+      title: "Bob a répondu à « Jointure SQL… »",
+      href: "/requests/1",
+      timeAgo: "il y a 2 h",
     },
     {
-      slug: "python",
-      name: "Python",
-      color: "#60a5fa",
-      progressLabel: "En cours",
+      id: "act-2",
+      kind: "resource",
+      title: "Nouvelle ressource : PostgreSQL pour débutants",
+      excerpt: "Tables, clés étrangères et migrations.",
+      href: "/resources",
+      timeAgo: "il y a 5 jours",
+    },
+    {
+      id: "act-3",
+      kind: "event",
+      title: "Atelier live — Bases de données",
+      excerpt: "Jeudi 18 h · session d'entraide programmée.",
+      href: "/events",
+      timeAgo: "dans 2 jours",
     },
   ],
-  upcoming: [
-    {
-      id: "events",
-      title: "Événements communautaires",
-      description: "Ateliers live et sessions d'entraide programmées sur le calendrier.",
-    },
-    {
-      id: "messages",
-      title: "Messagerie enrichie",
-      description: "Filtrer les conversations par matière et retrouver un fil plus vite.",
-    },
+  shortcuts: [
+    { id: "subjects", href: "/explore" },
+    { id: "resources", href: "/resources" },
+    { id: "events", href: "/events" },
+    { id: "profile", href: "/profile" },
   ],
-  unansweredCount: 0,
+  badgeCounts: {
+    dashboard: 2,
+    feed: 3,
+    messages: 1,
+  },
 };
 
 export const studentDashboardFixtureEn: StudentDashboardFixture = {
   firstName: "Inès",
   fullName: "Inès Martin",
-  initials: "AA",
-  dateLabel: "June 9, 2026",
-  postsCount: 7,
-  repliesCount: 19,
-  communityRating: "4.6",
-  helpRequests: [
+  initials: "IM",
+  dateLabel: "June 17, 2026",
+  summaryLine: "1 active request · 1 unread message",
+  todos: [
     {
-      id: "1",
+      id: "todo-1",
+      kind: "helpRequest",
       title: "SQL join duplicating my rows",
-      subjectName: "Databases",
-      subjectColor: "#a78bfa",
+      subtitle: "2 new replies",
+      href: "/requests/1",
       timeAgo: "4 days ago",
     },
-  ],
-  resources: [
     {
-      id: "1",
-      title: "Model a PostgreSQL schema for beginners",
-      excerpt: "Tables, foreign keys and migrations before writing queries.",
-      timeAgo: "5 days ago",
+      id: "todo-2",
+      kind: "message",
+      title: "Message from Alice (mentor)",
+      subtitle: "Unread",
+      href: "/messages",
     },
     {
-      id: "2",
-      title: "Split a Python script into modules",
-      excerpt: "Organize imports, packages and tests beyond 200 lines.",
+      id: "todo-3",
+      kind: "resource",
+      title: "Resource approved for Python",
+      subtitle: "Available in your subjects",
+      href: "/resources",
       timeAgo: "1 week ago",
     },
   ],
-  subjects: [
+  recentActivity: [
     {
-      slug: "bases-de-donnees",
-      name: "Databases",
-      color: "#a78bfa",
-      progressLabel: "In progress",
+      id: "act-1",
+      kind: "reply",
+      title: "Bob replied to “SQL join…”",
+      href: "/requests/1",
+      timeAgo: "2 h ago",
     },
     {
-      slug: "python",
-      name: "Python",
-      color: "#60a5fa",
-      progressLabel: "In progress",
+      id: "act-2",
+      kind: "resource",
+      title: "New resource: PostgreSQL for beginners",
+      excerpt: "Tables, foreign keys and migrations.",
+      href: "/resources",
+      timeAgo: "5 days ago",
+    },
+    {
+      id: "act-3",
+      kind: "event",
+      title: "Live workshop — Databases",
+      excerpt: "Thursday 6 PM · scheduled peer-help session.",
+      href: "/events",
+      timeAgo: "in 2 days",
     },
   ],
-  upcoming: [
-    {
-      id: "events",
-      title: "Community events",
-      description: "Live workshops and scheduled peer-help sessions on the calendar.",
-    },
-    {
-      id: "messages",
-      title: "Richer messaging",
-      description: "Filter conversations by subject and find a thread faster.",
-    },
+  shortcuts: [
+    { id: "subjects", href: "/explore" },
+    { id: "resources", href: "/resources" },
+    { id: "events", href: "/events" },
+    { id: "profile", href: "/profile" },
   ],
-  unansweredCount: 0,
+  badgeCounts: {
+    dashboard: 2,
+    feed: 3,
+    messages: 1,
+  },
+};
+
+export const studentDashboardFixtureEmptyFr: StudentDashboardFixture = {
+  firstName: "Inès",
+  fullName: "Inès Martin",
+  initials: "IM",
+  dateLabel: "17 juin 2026",
+  todos: [],
+  recentActivity: [],
+  shortcuts: studentDashboardFixtureFr.shortcuts,
+};
+
+export const studentDashboardFixtureEmptyEn: StudentDashboardFixture = {
+  ...studentDashboardFixtureEmptyFr,
+  dateLabel: "June 17, 2026",
 };

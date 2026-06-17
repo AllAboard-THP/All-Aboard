@@ -24,11 +24,11 @@ import {
 } from "@allaboard/ui/components/sheet";
 import { AllAboardLogoMark } from "@allaboard/ui/components/allaboard-logo-mark";
 import { cn } from "@allaboard/ui/lib/utils";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { AppShellSidebarContent } from "@/components/features/app-shell-sidebar";
-import { LocaleSwitcher } from "@/components/features/locale-switcher";
-import { AppChromeUserMenu } from "@allaboard/ui/patterns/app-chrome-user-menu";
+import { APP_HOME_PATH } from "@/lib/app-routes";
+import type { SidebarBadgeCounts } from "@/lib/map-student-dashboard";
 import { shouldShowAppSidebar } from "@/lib/app-shell-sidebar";
 import { Link, usePathname } from "@/i18n/navigation";
 
@@ -36,14 +36,33 @@ type AppShellLayoutProps = {
   children: ReactNode;
   brandName: string;
   year: number;
+  headerEnd?: ReactNode;
+  sidebarBadges?: SidebarBadgeCounts;
+  isMentor?: boolean;
+  isAdmin?: boolean;
 };
 
-function AppShellLayoutInner({ children, brandName, year }: AppShellLayoutProps) {
+function AppShellLayoutInner({
+  children,
+  brandName,
+  year,
+  headerEnd,
+  sidebarBadges,
+  isMentor = false,
+  isAdmin = false,
+}: AppShellLayoutProps) {
   const pathname = usePathname();
   const showSidebar = shouldShowAppSidebar(pathname);
   const { mobileOpen, setMobileOpen } = useAppSidebar();
   const t = useTranslations("studentDashboard.sidebar");
-  const locale = useLocale();
+
+  const badgeProps = {
+    messageCount: sidebarBadges?.messageCount ?? 0,
+    feedCount: sidebarBadges?.feedCount ?? 0,
+    dashboardCount: sidebarBadges?.dashboardCount ?? 0,
+    isMentor,
+    isAdmin,
+  };
 
   return (
     <div className={cn(APP_STAGE_CLASS, "relative flex min-h-[100dvh] flex-col text-foreground")}>
@@ -60,34 +79,33 @@ function AppShellLayoutInner({ children, brandName, year }: AppShellLayoutProps)
             <div className="flex min-h-[4.25rem] shrink-0 items-center gap-2 overflow-visible px-3 sm:min-h-[4.75rem] sm:gap-3 sm:px-4">
               <AppSidebarMobileTrigger label={t("openMenu")} />
               <Link
-                href="/feed"
+                href={APP_HOME_PATH}
                 className="-ml-1 shrink-0 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <AppChromeBrand brandName={brandName} />
               </Link>
             </div>
             <div className="flex min-h-[4.25rem] flex-wrap items-center justify-end gap-2 px-3 sm:min-h-[4.75rem] sm:gap-3 sm:px-4 md:px-6 lg:px-8">
-              <LocaleSwitcher />
-              <AppChromeUserMenu locale={locale === "en" ? "en" : "fr"} />
+              {headerEnd}
             </div>
           </>
         ) : (
           <AppChromeHeaderRow>
             <Link
-              href="/feed"
+              href={APP_HOME_PATH}
               className="-ml-1 shrink-0 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <AppChromeBrand brandName={brandName} />
             </Link>
             <div className="ml-auto flex shrink-0 flex-wrap items-center gap-2 self-center sm:gap-4">
-              <LocaleSwitcher />
+              {headerEnd}
             </div>
           </AppChromeHeaderRow>
         )}
       </AppChromeHeader>
 
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-        {showSidebar ? <AppShellSidebarContent /> : null}
+        {showSidebar ? <AppShellSidebarContent {...badgeProps} /> : null}
         <main
           id="main-content"
           className={cn(
@@ -109,7 +127,7 @@ function AppShellLayoutInner({ children, brandName, year }: AppShellLayoutProps)
             <SheetHeader className="border-b border-white/10 px-4 py-3 text-left">
               <SheetTitle className="text-base">{t("openMenu")}</SheetTitle>
             </SheetHeader>
-            <AppShellSidebarContent forceExpanded className="!flex h-[calc(100dvh-4rem)] border-0" />
+            <AppShellSidebarContent forceExpanded className="!flex h-[calc(100dvh-4rem)] border-0" {...badgeProps} />
           </SheetContent>
         </Sheet>
       ) : null}

@@ -1,20 +1,32 @@
 "use client";
 
+import type { DashboardLinkProps } from "@allaboard/ui/patterns/student-dashboard-screen";
 import { StudentDashboardScreen } from "@allaboard/ui/patterns/student-dashboard-screen";
 import type { StudentDashboardLabels } from "@allaboard/ui/patterns/student-dashboard-labels";
+import type { StudentDashboardFixture } from "@allaboard/ui/patterns/fixtures/student-dashboard";
 import {
-  studentDashboardFixtureEn,
-  studentDashboardFixtureFr,
-} from "@allaboard/ui/patterns/fixtures/student-dashboard";
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@allaboard/ui/components/alert";
 import { useLocale, useTranslations } from "next-intl";
-import { toast } from "sonner";
 
-export function StudentDashboardDemo() {
-  const locale = useLocale();
+import { Link } from "@/i18n/navigation";
+import { APP_HOME_PATH } from "@/lib/app-routes";
+
+function DashboardLink({ href, className, children, onClick }: DashboardLinkProps) {
+  return (
+    <Link href={href} className={className} onClick={onClick}>
+      {children}
+    </Link>
+  );
+}
+
+function useStudentDashboardLabels(): StudentDashboardLabels {
   const t = useTranslations("studentDashboard");
   const year = new Date().getFullYear();
 
-  const labels: StudentDashboardLabels = {
+  return {
     brandName: t("brandName"),
     chrome: {
       footerRights: () => t("chrome.footerRights", { year }),
@@ -49,7 +61,10 @@ export function StudentDashboardDemo() {
         dashboard: {
           title: t("sidebar.context.dashboard.title"),
           description: t("sidebar.context.dashboard.description"),
-          demo: t("sidebar.context.dashboard.demo"),
+          newRequest: t("sidebar.context.dashboard.newRequest"),
+          browseFeed: t("sidebar.context.dashboard.browseFeed"),
+          inbox: t("sidebar.context.dashboard.inbox"),
+          myRequests: t("sidebar.context.dashboard.myRequests"),
         },
         subjects: {
           title: t("sidebar.context.subjects.title"),
@@ -102,35 +117,93 @@ export function StudentDashboardDemo() {
       greetingPrefix: t("header.greetingPrefix"),
       greetingSuffix: t("header.greetingSuffix"),
       subtitle: t("header.subtitle"),
-      statPosts: t("header.statPosts"),
-      statReplies: t("header.statReplies"),
-      statRating: t("header.statRating"),
+      primaryCta: t("header.primaryCta"),
     },
-    panels: {
-      helpRequestsTitle: t("panels.helpRequestsTitle"),
-      helpRequestsEmpty: t("panels.helpRequestsEmpty"),
-      helpRequestsCta: t("panels.helpRequestsCta"),
-      upcomingTitle: t("panels.upcomingTitle"),
-      resourcesTitle: t("panels.resourcesTitle"),
-      resourcesEmpty: t("panels.resourcesEmpty"),
-      resourcesCta: t("panels.resourcesCta"),
-      subjectsTitle: t("panels.subjectsTitle"),
-      subjectsEmpty: t("panels.subjectsEmpty"),
-      subjectsCta: t("panels.subjectsCta"),
-      unansweredTitle: t("panels.unansweredTitle"),
-      unansweredEmpty: t("panels.unansweredEmpty"),
-      demoToast: t("panels.demoToast"),
+    inbox: {
+      title: t("inbox.title"),
+      empty: t("inbox.empty"),
+      emptyCta: t("inbox.emptyCta"),
+      overflow: (count) => t("inbox.overflow", { count }),
+    },
+    activity: {
+      title: t("activity.title"),
+      viewAll: t("activity.viewAll"),
+      empty: t("activity.empty"),
+    },
+    shortcuts: {
+      subjects: t("shortcuts.subjects"),
+      resources: t("shortcuts.resources"),
+      events: t("shortcuts.events"),
+      profile: t("shortcuts.profile"),
     },
   };
+}
 
-  const fixture = locale === "en" ? studentDashboardFixtureEn : studentDashboardFixtureFr;
+type Props = {
+  fixture: StudentDashboardFixture;
+  loadError?: string | null;
+  unauthenticated?: boolean;
+};
+
+export function StudentDashboardContent({
+  fixture,
+  loadError = null,
+  unauthenticated = false,
+}: Props) {
+  const labels = useStudentDashboardLabels();
+  const t = useTranslations("studentDashboard");
+  const loginReturnTo = encodeURIComponent(APP_HOME_PATH);
+
+  if (unauthenticated) {
+    return (
+      <div className="mx-auto w-full max-w-3xl">
+        <Alert data-testid="student-dashboard-unauthenticated">
+          <AlertTitle>{t("loginRequiredTitle")}</AlertTitle>
+          <AlertDescription>
+            {t.rich("loginRequiredDescription", {
+              link: () => (
+                <Link
+                  href={`/login?returnTo=${loginReturnTo}`}
+                  className="text-primary underline"
+                >
+                  {t("loginRequiredLink")}
+                </Link>
+              ),
+            })}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="mx-auto w-full max-w-3xl">
+        <Alert variant="destructive" data-testid="student-dashboard-load-error">
+          <AlertTitle>{t("loadErrorTitle")}</AlertTitle>
+          <AlertDescription>{loadError}</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <StudentDashboardScreen
       labels={labels}
       fixture={fixture}
       variant="content"
-      onDemoAction={(message) => toast.message(message)}
+      LinkComponent={DashboardLink}
     />
   );
+}
+
+/** @deprecated Use StudentDashboardContent — kept for imports during migration. */
+export function StudentDashboardDemo() {
+  const locale = useLocale();
+  const fixture =
+    locale === "en"
+      ? require("@allaboard/ui/patterns/fixtures/student-dashboard").studentDashboardFixtureEn
+      : require("@allaboard/ui/patterns/fixtures/student-dashboard").studentDashboardFixtureFr;
+
+  return <StudentDashboardContent fixture={fixture} />;
 }

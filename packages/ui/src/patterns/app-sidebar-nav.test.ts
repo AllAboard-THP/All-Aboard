@@ -2,10 +2,12 @@ import { describe, it, expect } from "vitest";
 
 import {
   buildAppSidebarSections,
+  buildSidebarContextPanelLabels,
   isAppSidebarItemActive,
   normalizeAppSidebarPathname,
   resolveAppSidebarActiveId,
   resolveAppSidebarContext,
+  resolveAppSidebarContextPanel,
   resolveAppSidebarRoleFlags,
 } from "@allaboard/ui/patterns/app-sidebar-nav";
 
@@ -97,5 +99,50 @@ describe("app-sidebar-nav", () => {
       showMentorSection: true,
       showAdminSection: true,
     });
+  });
+
+  it("builds dashboard context panel with quick links", () => {
+    const labels = buildSidebarContextPanelLabels("dashboard", {
+      dashboard: {
+        title: "On this page",
+        description: "Shortcuts",
+        newRequest: "New request",
+        browseFeed: "Browse feed",
+        inbox: "Unread messages",
+        myRequests: "My requests",
+      },
+      subjects: { title: "Subjects", explore: "Explore" },
+      resources: { title: "Resources", all: "All" },
+      events: { title: "Events", all: "All" },
+      newRequest: {
+        title: "New",
+        description: "Desc",
+        create: "Create",
+        backToFeed: "Back",
+      },
+      feed: {
+        title: "Feed",
+        description: "Desc",
+        browse: "Browse",
+        newRequest: "New",
+        backToFeed: "Back",
+      },
+      messages: { title: "Messages", inbox: "Inbox" },
+      mentor: { title: "Mentor", space: "Space" },
+      profile: { title: "Profile", view: "View" },
+      admin: {
+        title: "Admin",
+        description: "Desc",
+        overview: "Overview",
+        users: "Users",
+        moderation: "Moderation",
+      },
+    });
+
+    const panel = resolveAppSidebarContextPanel("dashboard", labels);
+    expect(panel?.title).toBe("On this page");
+    expect(panel?.links).toHaveLength(4);
+    expect(panel?.links[0]?.href).toBe("/help/new");
+    expect(panel?.links[3]?.href).toBe("/me/posts");
   });
 });

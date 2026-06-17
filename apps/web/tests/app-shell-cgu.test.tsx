@@ -34,12 +34,58 @@ vi.mock("@/components/features/cgu-gate", () => ({
   CguGate: () => <div data-testid="cgu-gate">CGU gate</div>,
 }));
 
+vi.mock("@/lib/fetch-sidebar-badges", () => ({
+  fetchSidebarBadgeCounts: vi.fn().mockResolvedValue({
+    messageCount: 0,
+    feedCount: 0,
+    dashboardCount: 0,
+  }),
+}));
+
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({
+    children,
+    href,
+    ...props
+  }: {
+    children: React.ReactNode;
+    href: string;
+  }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+  usePathname: () => "/feed",
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+}));
+
+vi.mock("next-intl", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("next-intl")>();
+  return {
+    ...actual,
+    useTranslations: (namespace?: string) => {
+      const key = (name: string) => {
+        if (namespace === "studentDashboard.sidebar" && name === "openMenu") {
+          return "Menu de navigation";
+        }
+        return name;
+      };
+      key.rich = ((name: string) => name) as typeof key.rich;
+      return key;
+    },
+  };
+});
+
 vi.mock("next-intl/server", () => ({
-  getTranslations: async () => {
+  getTranslations: async (namespace?: string) => {
     const fr = (await import("../messages/fr.json")).default as Record<
       string,
       Record<string, string>
     >;
+    if (namespace === "studentDashboard") {
+      return (key: string) =>
+        (fr.studentDashboard as Record<string, string>)[key] ?? key;
+    }
     return (key: string) => fr.common[key] ?? key;
   },
 }));
