@@ -14,7 +14,7 @@ const DEMO_USER = {
 } as const;
 
 export function AppChromeUserMenu({
-  locale = "fr",
+  locale = "en",
   userName = DEMO_USER.name,
   userEmail = DEMO_USER.email,
   userInitials = DEMO_USER.initials,

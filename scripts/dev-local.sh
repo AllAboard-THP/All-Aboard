@@ -13,7 +13,30 @@ if [[ ! -f "$ENV_FILE" ]]; then
   exit 1
 fi
 
-docker compose up -d
+resolve_docker() {
+  if command -v docker >/dev/null 2>&1; then
+    command -v docker
+    return
+  fi
+  local win_docker="/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe"
+  if [[ -x "$win_docker" ]]; then
+    echo "$win_docker"
+    return
+  fi
+  echo ""
+}
+
+DOCKER_BIN="$(resolve_docker)"
+if [[ -z "$DOCKER_BIN" ]]; then
+  echo "error: docker not found (install Docker Desktop or use scripts/dev-local-mvp.sh)" >&2
+  exit 1
+fi
+
+if ! "$DOCKER_BIN" compose up -d; then
+  echo "error: docker compose failed — is Docker Desktop running?" >&2
+  echo "Fallback: scripts/dev-local-mvp.sh (MVP login without Postgres)" >&2
+  exit 1
+fi
 
 set -a
 # shellcheck source=/dev/null

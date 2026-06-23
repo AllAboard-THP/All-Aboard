@@ -34,7 +34,7 @@ test.describe("dashboard mentor — notifications", () => {
 
     await page.goto("/mentor");
     await expect(
-      page.getByRole("heading", { level: 1, name: "Mon espace mentor" }),
+      page.getByRole("heading", { level: 1, name: "Mentor workspace" }),
     ).toBeVisible({ timeout: 30_000 });
     await expect(page.getByTestId("mentor-notification-badge").first()).toBeVisible();
     await expect(page.getByText(title)).toBeVisible();

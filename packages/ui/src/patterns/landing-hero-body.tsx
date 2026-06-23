@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { Button } from "../components/button";
 import { GoogleSignInButton } from "../components/google-sign-in-button";
 import { Separator } from "../components/separator";
@@ -25,11 +27,19 @@ import {
 } from "./landing-layout";
 import { legacyDemoToast } from "./legacy-story-feedback";
 
+export type LandingLoginSubmitInput = {
+  email: string;
+  password: string;
+};
+
 type LandingHeroBodyProps = {
   labels: LegacyLabels;
   onForgotPasswordClick?: () => void;
   onSignUpClick?: () => void;
   onGoogleSignInClick?: () => void;
+  onSubmit?: (input: LandingLoginSubmitInput) => void | Promise<void>;
+  submitting?: boolean;
+  errorMessage?: string | null;
 };
 
 /**
@@ -41,7 +51,13 @@ export function LandingHeroBody({
   onForgotPasswordClick,
   onSignUpClick,
   onGoogleSignInClick,
+  onSubmit,
+  submitting = false,
+  errorMessage,
 }: LandingHeroBodyProps) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const handleForgotPassword =
     onForgotPasswordClick ??
     (() => legacyDemoToast(labels.auth.forgotPassword));
@@ -50,6 +66,11 @@ export function LandingHeroBody({
   const handleGoogleSignIn =
     onGoogleSignInClick ??
     (() => legacyDemoToast(labels.auth.continueWithGoogle));
+  const handleSubmit =
+    onSubmit ??
+    (() => {
+      legacyDemoToast(labels.auth.submit);
+    });
 
   return (
     <LandingAuthHeroLayout labels={labels}>
@@ -71,7 +92,10 @@ export function LandingHeroBody({
             <Input
               id="legacy-email"
               type="email"
+              autoComplete="email"
               className={LANDING_GLASS_INPUT_CLASS}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -79,7 +103,10 @@ export function LandingHeroBody({
             <Input
               id="legacy-password"
               type="password"
+              autoComplete="current-password"
               className={LANDING_GLASS_INPUT_CLASS}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
             />
           </div>
           <div className="flex items-center justify-between gap-3 rounded-lg">
@@ -99,10 +126,17 @@ export function LandingHeroBody({
           </div>
         </CardContent>
         <CardFooter className="shrink-0 flex-col gap-3 px-0 pt-0">
+          {errorMessage ? (
+            <p className="w-full text-center text-sm text-destructive" role="alert">
+              {errorMessage}
+            </p>
+          ) : null}
           <Button
+            type="button"
             variant="landingSubmit"
             className={LANDING_AUTH_SUBMIT_BUTTON_CLASS}
-            onClick={() => legacyDemoToast(labels.auth.submit)}
+            disabled={submitting}
+            onClick={() => void handleSubmit({ email, password })}
           >
             {labels.auth.submit}
           </Button>

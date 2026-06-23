@@ -14,6 +14,8 @@ import { useLocale } from "next-intl";
 
 import { useRouter } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
+import { useLandingShellActions } from "@/lib/use-landing-shell-actions";
+import { DEFAULT_EMAIL_POST_LOGIN_PATH } from "@/lib/app-routes";
 import { openLegalCgu } from "@/lib/open-legal-cgu";
 import { submitProfileCompletion } from "@/lib/submit-profile-completion";
 
@@ -45,7 +47,7 @@ function OAuthOnboardingBody() {
       }
       const me = (await res.json()) as AuthMeResponse;
       if (me.cguAcceptedAt) {
-        router.replace("/feed");
+        router.replace(DEFAULT_EMAIL_POST_LOGIN_PATH);
         return;
       }
       setProfile(me);
@@ -69,7 +71,7 @@ function OAuthOnboardingBody() {
       return;
     }
 
-    router.replace("/feed");
+    router.replace(DEFAULT_EMAIL_POST_LOGIN_PATH);
   }
 
   if (loading) {
@@ -98,9 +100,10 @@ function OAuthOnboardingBody() {
 
 export function OAuthOnboardingPage() {
   const labels = useLegacyLabels();
+  const shellActions = useLandingShellActions();
 
   return (
-    <LandingPageShell labels={labels} background="app">
+    <LandingPageShell labels={labels} background="app" {...shellActions}>
       <OAuthOnboardingBody />
     </LandingPageShell>
   );

@@ -20,9 +20,9 @@ const withStorybookLocale: Decorator = (Story, { globals }) => (
 const preview: Preview = {
   globalTypes: {
     locale: {
-      description: "Langue des stories (UI + fixtures)",
+      description: "Story locale (UI copy + fixtures)",
       toolbar: {
-        title: "Langue",
+        title: "Locale",
         icon: "globe",
         items: [
           { value: "fr", title: "Français" },
@@ -33,7 +33,7 @@ const preview: Preview = {
     },
   },
   initialGlobals: {
-    locale: "fr",
+    locale: "en",
   },
   parameters: {
     backgrounds: { disable: true },

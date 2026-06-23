@@ -73,6 +73,17 @@ const config: StorybookConfig = {
       },
       server: {
         ...config.server,
+        watch: {
+          ...config.server?.watch,
+          ignored: [
+            ...(Array.isArray(config.server?.watch?.ignored)
+              ? config.server.watch.ignored
+              : config.server?.watch?.ignored
+                ? [config.server.watch.ignored]
+                : []),
+            "**/storybook-static/**",
+          ],
+        },
         fs: {
           ...config.server?.fs,
           allow: [repoRoot],

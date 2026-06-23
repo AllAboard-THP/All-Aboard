@@ -3,9 +3,9 @@ import { test, expect } from "@playwright/test";
 const loginPassword =
   process.env.MVP_LOGIN_PASSWORD ?? "ci-test-login-password";
 
-/** > 6 mots pour éviter le stub Rubberduck (pas de redirect sinon). */
+/** > 6 words to avoid Rubberduck stub (no redirect otherwise). */
 function e2eTitle(label: string): string {
-  return `Demande E2E Playwright ${label} avec titre assez long ${Date.now()}`;
+  return `E2E Playwright help request ${label} with a long enough title ${Date.now()}`;
 }
 
 async function loginAsBob(page: import("@playwright/test").Page) {
@@ -18,47 +18,44 @@ async function loginAsBob(page: import("@playwright/test").Page) {
 async function createHelpRequest(page: import("@playwright/test").Page, title: string) {
   await loginAsBob(page);
   await page.goto("/help/new");
-  await expect(page.getByText("Publier une demande d'aide")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Publier" })).toBeVisible({
+  await expect(page.getByText("Publish a help request")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Publish" })).toBeVisible({
     timeout: 15_000,
   });
 
-  await page.getByLabel("Titre de la demande").fill(title);
-  await page.getByRole("button", { name: "Publier" }).click();
+  await page.getByLabel("Request title").fill(title);
+  await page.getByRole("button", { name: "Publish" }).click();
 
   await expect(page).toHaveURL(/\/requests\/[0-9a-f-]+/, { timeout: 30_000 });
 }
 
-test.describe("parcours création demande", () => {
-  test("création redirige vers le détail avec titre et réponses vides", async ({
+test.describe("help request creation flow", () => {
+  test("creation redirects to detail with title and empty responses", async ({
     page,
   }) => {
-    const title = e2eTitle("détail");
+    const title = e2eTitle("detail");
     await createHelpRequest(page, title);
 
     await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
     await expect(page.getByTestId("responses-empty")).toBeVisible();
-    await expect(page.getByText("Auteur :")).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: /^[0-9a-f-]{36}$/i }),
-    ).toBeVisible();
+    await expect(page.getByText(/^Author: [0-9a-f-]{36}$/i)).toBeVisible();
   });
 
-  test("retour feed après création et recherche filtrée", async ({ page }) => {
+  test("back to feed after creation and filtered search", async ({ page }) => {
     const title = e2eTitle("feed");
     await createHelpRequest(page, title);
     const detailUrl = page.url();
 
-    await page.getByRole("link", { name: "Retour au feed" }).click();
+    await page.getByRole("link", { name: "Back to feed" }).click();
     await expect(page).toHaveURL(/\/feed\/?$/);
     await expect(
-      page.getByRole("heading", { level: 1, name: "Feed communautaire" }),
+      page.getByRole("heading", { level: 1, name: "Community feed" }),
     ).toBeVisible();
 
     // SSR feed may be briefly cached; search forces a fresh filtered fetch.
     const searchTerm = title.slice(0, 40);
-    await page.getByRole("searchbox", { name: "Rechercher dans le feed" }).fill(searchTerm);
-    await page.getByRole("button", { name: "Rechercher" }).click();
+    await page.getByRole("searchbox", { name: "Search the feed" }).fill(searchTerm);
+    await page.getByRole("button", { name: "Search" }).click();
     await expect(page).toHaveURL(/\/feed\?q=/);
 
     await expect(
@@ -70,23 +67,22 @@ test.describe("parcours création demande", () => {
   });
 });
 
-test.describe("pages passkey", () => {
+test.describe("passkey pages", () => {
   test("login page renders passkey CTA", async ({ page }) => {
     await page.goto("/login");
     await expect(
-      page.getByRole("heading", { level: 1, name: "Se connecter avec une passkey" }),
+      page.getByRole("heading", { level: 1, name: "Sign in with a passkey" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Utiliser une passkey" }),
+      page.getByRole("button", { name: "Use a passkey" }),
     ).toBeVisible();
   });
 
   test("register page renders passkey form", async ({ page }) => {
     await page.goto("/register");
-    await expect(page.getByText("Créer un compte")).toBeVisible();
-    await expect(page.getByRole("textbox", { name: "Prénom" })).toBeVisible();
     await expect(
-      page.getByRole("textbox", { name: "Nom", exact: true }),
+      page.getByRole("heading", { level: 1, name: "Create an account" }),
     ).toBeVisible();
+    await expect(page.getByLabel("Full name")).toBeVisible();
   });
 });

@@ -40,7 +40,7 @@ test.describe("mentor — validation ressource pending", () => {
     await login(page, "alice@dev.local");
     await page.goto("/mentor");
     await expect(
-      page.getByRole("heading", { level: 1, name: "Mon espace mentor" }),
+      page.getByRole("heading", { level: 1, name: "Mentor workspace" }),
     ).toBeVisible({ timeout: 30_000 });
     await expect(page.getByText(title)).toBeVisible({ timeout: 30_000 });
 

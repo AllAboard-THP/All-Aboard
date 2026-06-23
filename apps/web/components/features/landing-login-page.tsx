@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Alert, AlertDescription } from "@allaboard/ui/components/alert";
 import { LandingLoginScreen } from "@allaboard/ui/patterns/screens/legacy-screens";
 import { useLegacyLabels } from "@allaboard/ui/i18n/storybook-locale";
 
 import { useRouter } from "@/i18n/navigation";
+import { mapApiError } from "@/lib/map-api-error";
+import { DEFAULT_EMAIL_POST_LOGIN_PATH } from "@/lib/app-routes";
+import { normalizeLoginEmail } from "@/lib/normalize-login-email";
+import { useLandingShellActions } from "@/lib/use-landing-shell-actions";
 
 function LandingLoginOAuthFeedback() {
   const labels = useLegacyLabels();
@@ -39,16 +44,53 @@ function LandingLoginOAuthFeedback() {
 /** Landing login — wired to apps/web auth routes; locale via root `LocaleBridge`. */
 export function LandingLoginPage() {
   const router = useRouter();
+  const tErrors = useTranslations("errors");
+  const shellActions = useLandingShellActions();
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  async function handleSubmit({ email, password }: { email: string; password: string }) {
+    setSubmitting(true);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          email: normalizeLoginEmail(email),
+          password,
+        }),
+      });
+
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        const key = mapApiError({ status: res.status, body });
+        setErrorMessage(tErrors(key));
+        setSubmitting(false);
+        return;
+      }
+
+      router.replace(DEFAULT_EMAIL_POST_LOGIN_PATH);
+    } catch {
+      setErrorMessage(tErrors("unknown"));
+      setSubmitting(false);
+    }
+  }
 
   return (
     <>
       <LandingLoginOAuthFeedback />
       <LandingLoginScreen
+        {...shellActions}
         onForgotPasswordClick={() => router.push("/forgot-password")}
-        onSignUpClick={() => router.push("/register")}
         onGoogleSignInClick={() => {
           window.location.href = "/api/auth/google";
         }}
+        onSubmit={handleSubmit}
+        submitting={submitting}
+        errorMessage={errorMessage}
       />
     </>
   );

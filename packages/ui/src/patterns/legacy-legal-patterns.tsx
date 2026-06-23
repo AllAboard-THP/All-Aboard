@@ -9,6 +9,7 @@ import {
   type LegalPageContent,
   type LegalSection,
 } from "./fixtures/legacy-legal-content";
+import { legacyDemoToast } from "./legacy-story-feedback";
 import { BrandLogo } from "./legacy-ui";
 
 function LegalSectionBlock({ section }: { section: LegalSection }) {
@@ -35,11 +36,22 @@ export function LegalPageLayout({
   content,
   labels = legacyLabelsFr,
   className,
+  onBackClick,
+  onPrivacyClick,
+  onLegalClick,
 }: {
   content: LegalPageContent;
   labels?: LegacyLabels;
   className?: string;
+  onBackClick?: () => void;
+  onPrivacyClick?: () => void;
+  onLegalClick?: () => void;
 }) {
+  const handleBack = onBackClick ?? (() => legacyDemoToast(labels.legal.back));
+  const handlePrivacy =
+    onPrivacyClick ?? (() => legacyDemoToast(labels.legal.privacyLink));
+  const handleLegal =
+    onLegalClick ?? (() => legacyDemoToast(labels.legal.legalLink));
   return (
     <article
       className={cn(
@@ -62,15 +74,27 @@ export function LegalPageLayout({
       </div>
 
       <footer className="flex flex-wrap gap-4 border-t border-white/10 pt-6 text-sm text-muted-foreground">
-        <button type="button" className="transition-colors hover:text-foreground">
+        <button
+          type="button"
+          className="transition-colors hover:text-foreground"
+          onClick={handleBack}
+        >
           {labels.legal.back}
         </button>
         <span aria-hidden>•</span>
-        <button type="button" className="transition-colors hover:text-foreground">
+        <button
+          type="button"
+          className="transition-colors hover:text-foreground"
+          onClick={handlePrivacy}
+        >
           {labels.legal.privacyLink}
         </button>
         <span aria-hidden>•</span>
-        <button type="button" className="transition-colors hover:text-foreground">
+        <button
+          type="button"
+          className="transition-colors hover:text-foreground"
+          onClick={handleLegal}
+        >
           {labels.legal.legalLink}
         </button>
       </footer>

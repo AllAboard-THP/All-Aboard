@@ -60,11 +60,11 @@ import {
 import { Input } from "../../components/input";
 import { Label } from "../../components/label";
 import { LandingForgotPasswordBody } from "../landing-forgot-password-body";
-import { LandingHeroBody } from "../landing-hero-body";
+import { LandingHeroBody, type LandingLoginSubmitInput } from "../landing-hero-body";
 import { LandingOnboardingBody } from "../landing-onboarding-body";
 import { LandingPageShell } from "../landing-page-shell";
 import { LandingRegisterBody } from "../landing-register-body";
-import { SubjectCardGrid } from "../legacy-ui";
+import { SubjectCardGrid, type LegacyLegalLinkKey } from "../legacy-ui";
 import {
   ResourceCardList,
   ResourcesPageHeader,
@@ -87,20 +87,46 @@ export function LandingLoginScreen({
   onForgotPasswordClick,
   onSignUpClick,
   onGoogleSignInClick,
+  onLegalLinkClick,
+  onSignInClick,
+  onLogoClick,
+  onSubmit,
+  submitting = false,
+  errorMessage,
 }: {
   onForgotPasswordClick?: () => void;
   onSignUpClick?: () => void;
   onGoogleSignInClick?: () => void;
+  onLegalLinkClick?: (key: LegacyLegalLinkKey) => void;
+  onSignInClick?: () => void;
+  onLogoClick?: () => void;
+  onSubmit?: (input: LandingLoginSubmitInput) => void | Promise<void>;
+  submitting?: boolean;
+  errorMessage?: string | null;
 } = {}) {
   const labels = useLegacyLabels();
 
+  const handleSignIn =
+    onSignInClick ?? (() => legacyDemoToast(labels.auth.signIn));
+  const handleSignUp =
+    onSignUpClick ?? (() => legacyDemoToast(labels.auth.signUp));
+
   return (
-    <LandingPageShell labels={labels}>
+    <LandingPageShell
+      labels={labels}
+      onSignInClick={handleSignIn}
+      onSignUpClick={handleSignUp}
+      onLogoClick={onLogoClick}
+      onLegalLinkClick={onLegalLinkClick}
+    >
       <LandingHeroBody
         labels={labels}
         onForgotPasswordClick={onForgotPasswordClick}
         onSignUpClick={onSignUpClick}
         onGoogleSignInClick={onGoogleSignInClick}
+        onSubmit={onSubmit}
+        submitting={submitting}
+        errorMessage={errorMessage}
       />
     </LandingPageShell>
   );
@@ -235,15 +261,19 @@ export function UserProfileScreen({
 
 export function RegisterScreen({
   onSignInClick,
+  onSignUpClick,
   onGoogleSignInClick,
   onCguClick,
+  onLegalLinkClick,
   onSubmit,
   submitting = false,
   errorMessage,
 }: {
   onSignInClick?: () => void;
+  onSignUpClick?: () => void;
   onGoogleSignInClick?: () => void;
   onCguClick?: () => void;
+  onLegalLinkClick?: (key: LegacyLegalLinkKey) => void;
   onSubmit?: Parameters<
     typeof import("../landing-register-body").LandingRegisterBody
   >[0]["onSubmit"];
@@ -254,6 +284,8 @@ export function RegisterScreen({
 
   const handleSignIn =
     onSignInClick ?? (() => legacyDemoToast(labels.auth.signIn));
+  const handleSignUp =
+    onSignUpClick ?? (() => legacyDemoToast(labels.auth.signUp));
   const handleGoogleSignIn =
     onGoogleSignInClick ??
     (() => legacyDemoToast(labels.auth.continueWithGoogle));
@@ -264,6 +296,8 @@ export function RegisterScreen({
       background="app"
       activeAction="signUp"
       onSignInClick={handleSignIn}
+      onSignUpClick={handleSignUp}
+      onLegalLinkClick={onLegalLinkClick}
     >
       <LandingRegisterBody
         labels={labels}
@@ -279,8 +313,10 @@ export function RegisterScreen({
 
 export function ForgotPasswordScreen({
   onSignInClick,
+  onLegalLinkClick,
 }: {
   onSignInClick?: () => void;
+  onLegalLinkClick?: (key: LegacyLegalLinkKey) => void;
 } = {}) {
   const labels = useLegacyLabels();
 
@@ -293,6 +329,7 @@ export function ForgotPasswordScreen({
       background="app"
       activeAction="signIn"
       onSignInClick={handleSignIn}
+      onLegalLinkClick={onLegalLinkClick}
     >
       <LandingForgotPasswordBody labels={labels} />
     </LandingPageShell>

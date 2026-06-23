@@ -12,6 +12,8 @@ import { useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { openLegalCgu } from "@/lib/open-legal-cgu";
+import { DEFAULT_EMAIL_POST_LOGIN_PATH } from "@/lib/app-routes";
+import { useLandingShellActions } from "@/lib/use-landing-shell-actions";
 
 function mapRegisterError(
   error: string | undefined,
@@ -32,6 +34,7 @@ export function LandingRegisterPage() {
   const router = useRouter();
   const locale = useLocale() as AppLocale;
   const labels = useLegacyLabels();
+  const shellActions = useLandingShellActions();
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -68,7 +71,7 @@ export function LandingRegisterPage() {
         return;
       }
 
-      router.replace("/feed");
+      router.replace(DEFAULT_EMAIL_POST_LOGIN_PATH);
     } catch {
       setErrorMessage(labels.auth.registerGenericError);
       setSubmitting(false);
@@ -77,7 +80,7 @@ export function LandingRegisterPage() {
 
   return (
     <RegisterScreen
-      onSignInClick={() => router.push("/")}
+      {...shellActions}
       onGoogleSignInClick={() => {
         window.location.href = "/api/auth/google";
       }}

@@ -84,7 +84,7 @@ function MentorStatCard({
 
 function mentorLegacyLabels(
   labels: MentorDashboardLabels,
-  locale: "fr" | "en" = "fr",
+  locale: "fr" | "en" = "en",
 ): LegacyLabels {
   const base = locale === "en" ? legacyLabelsEn : legacyLabelsFr;
   return { ...base, mentor: labels.mentor };
@@ -169,7 +169,7 @@ function MentorDashboardFooter({
 function MentorDashboardMain({
   labels,
   fixture,
-  locale = "fr",
+  locale = "en",
 }: {
   labels: MentorDashboardLabels;
   fixture: MentorDashboardFixture;
@@ -238,7 +238,7 @@ export function MentorDashboardScreen({
   onDemoAction,
   headerEnd,
   variant = "standalone",
-  locale = "fr",
+  locale = "en",
 }: {
   labels?: MentorDashboardLabels;
   fixture?: MentorDashboardFixture;

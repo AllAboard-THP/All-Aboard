@@ -84,7 +84,7 @@ export type StorybookLocale = "fr" | "en";
 
 export const storybookLocales: StorybookLocale[] = ["fr", "en"];
 
-const StorybookLocaleContext = createContext<StorybookLocale>("fr");
+const StorybookLocaleContext = createContext<StorybookLocale>("en");
 
 export function StorybookLocaleProvider({
   locale,
