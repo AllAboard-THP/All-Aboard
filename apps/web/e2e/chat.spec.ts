@@ -49,7 +49,7 @@ test.describe("chat — inbox et thread REST", () => {
 
     await login(page, "alice@dev.local");
     await page.goto("/messages");
-    await expect(page.getByTestId("messages-notification-badge")).toBeVisible({
+    await expect(page.getByTestId("messages-inbox-unread")).toBeVisible({
       timeout: 30_000,
     });
     await expect(page.getByTestId("messages-inbox-item").first()).toBeVisible();

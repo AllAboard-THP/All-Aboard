@@ -38,7 +38,10 @@ test.describe("parcours création demande", () => {
 
     await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
     await expect(page.getByTestId("responses-empty")).toBeVisible();
-    await expect(page.getByText(/^Auteur : [0-9a-f-]{36}$/i)).toBeVisible();
+    await expect(page.getByText("Auteur :")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /^[0-9a-f-]{36}$/i }),
+    ).toBeVisible();
   });
 
   test("retour feed après création et recherche filtrée", async ({ page }) => {
@@ -47,7 +50,7 @@ test.describe("parcours création demande", () => {
     const detailUrl = page.url();
 
     await page.getByRole("link", { name: "Retour au feed" }).click();
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL(/\/feed\/?$/);
     await expect(
       page.getByRole("heading", { level: 1, name: "Feed communautaire" }),
     ).toBeVisible();
@@ -80,9 +83,8 @@ test.describe("pages passkey", () => {
 
   test("register page renders passkey form", async ({ page }) => {
     await page.goto("/register");
-    await expect(
-      page.getByRole("heading", { level: 1, name: "Créer un compte" }),
-    ).toBeVisible();
-    await expect(page.getByLabel("Nom complet")).toBeVisible();
+    await expect(page.getByText("Créer un compte")).toBeVisible();
+    await expect(page.getByLabel("Prénom")).toBeVisible();
+    await expect(page.getByLabel("Nom")).toBeVisible();
   });
 });
