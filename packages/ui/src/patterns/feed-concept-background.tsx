@@ -14,7 +14,7 @@ function brandAssetUrl(asset: string | { src: string }): string {
 /**
  * Feed three-column stage — illustrated morning scene; premium in-scene branding
  * (canonical logo mark on tote, mug, yacht, framed print, small paper plane).
- * Canonical raster: Docs/branding/assets/concept-feed-hero.png
+ * Canonical raster: packages/ui/src/assets/concept-feed-hero.png
  */
 export function FeedConceptBackground({ className }: { className?: string }) {
   return (

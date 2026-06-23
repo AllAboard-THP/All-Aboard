@@ -10,7 +10,7 @@ _SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(_SCRIPT_DIR))
 from logo_mark_png import LOGO_MARK_PNG, REPO_ROOT  # noqa: E402
 
-SVG_OUT = REPO_ROOT / "Docs/branding/assets/logo-mark.svg"
+SVG_OUT = REPO_ROOT / "packages/ui/src/assets/logo-mark.svg"
 
 # Measured from logo-mark.png (41×54) — straight sails + hull notch
 NAVY = "#052775"

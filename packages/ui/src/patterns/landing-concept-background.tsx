@@ -20,7 +20,7 @@ const LANDING_BG_IMAGE_CLASS =
 
 /**
  * Landing hero — mural photo (2700×1800); fixed full-viewport cover under header/footer glass.
- * Canonical: Docs/branding/assets/concept-landing-hero.{webp,png}
+ * Canonical: packages/ui/src/assets/concept-landing-hero.{webp,png}
  */
 export function LandingConceptBackground({ className }: { className?: string }) {
   return (

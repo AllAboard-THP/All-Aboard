@@ -46,7 +46,7 @@ const config: StorybookConfig = {
       "node_modules/.cache/vite-storybook",
     );
 
-    const brandingAssets = path.join(repoRoot, "Docs/branding/assets");
+    const brandingAssets = path.join(repoRoot, "packages/ui/src/assets");
 
     return mergeConfig(config, {
       cacheDir: storybookCacheDir,

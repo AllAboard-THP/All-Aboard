@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LOGO_MARK_PNG = REPO_ROOT / "Docs/branding/assets/logo-mark.png"
+LOGO_MARK_PNG = REPO_ROOT / "packages/ui/src/assets/logo-mark.png"
 
 
 class ImmutableLogoMarkPngError(RuntimeError):

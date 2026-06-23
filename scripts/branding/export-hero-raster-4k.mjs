@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Write canonical hero rasters under Docs/branding/assets/.
+ * Write canonical hero rasters under packages/ui/src/assets/.
  *
  * - Source >= target width: preserve native detail (no upscale), fit to 3840×2560.
  * - Source < target width: Lanczos upscale (fallback) — script warns; prefer editorial illustration sources.
@@ -21,7 +21,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, "../..");
 const DEFAULT_WIDTH = 3840;
 const DEFAULT_HEIGHT = 2560;
-const DEFAULT_OUT_DIR = resolve(REPO_ROOT, "Docs/branding/assets");
+const DEFAULT_OUT_DIR = resolve(REPO_ROOT, "packages/ui/src/assets");
 const NATIVE_4K_MIN_WIDTH = 3840;
 
 function parseArgs(argv) {
