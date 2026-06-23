@@ -10,7 +10,7 @@ Banque partagée **`hermes`** — tag obligatoire **`project:all-aboard`**.
 2. **`retain`** au fil de la discussion pour décisions/préférences stables : `project:all-aboard` + `area:<domain>` + `source:cursor-session`.
 3. Détail : `.cursor/rules/hindsight.mdc`, `.cursor/references/hindsight-tagging.md`.
 
-**Chronologie, MVP et doc** : [Docs/README.md](Docs/README.md), [Docs/map-of-content.md](Docs/map-of-content.md), [Docs/plan-mise-en-place-web-api-donnees.md](Docs/plan-mise-en-place-web-api-donnees.md). **Design system / UI** : [Docs/design-system/README.md](Docs/design-system/README.md) (hub canonique). **Tâches** : [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3). **Doc par issue** : `Docs/tasks/<NN>-slug/` ([convention](Docs/tasks/README.md)).
+**Chronologie, MVP et doc** : [Docs/README.md](Docs/README.md) (EN), [Docs/INDEX.md](Docs/INDEX.md), [Docs/guides/web-api-integration.md](Docs/guides/web-api-integration.md). **Design system / UI** : [Docs/design-system/README.md](Docs/design-system/README.md) (hub canonique). **Tâches** : [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3). **Doc par issue** : `Docs/tasks/<NN>-slug/` ([convention](Docs/tasks/README.md)).
 
 ## `apps/thp-final` — artéfact THP (référence uniquement)
 
@@ -83,6 +83,8 @@ import "@allaboard/ui/globals.css"; // via app/globals.css + @source (voir layou
 ```
 
 **Vérifications utiles** : `pnpm storybook` · `pnpm build:storybook` · `pnpm --filter @allaboard/ui test` · [verification-and-ci.md](Docs/design-system/verification-and-ci.md) · ADR [0002](Docs/adr/0002-design-system-monorepo.md).
+
+**Chrome header/footer (absolu MVP)** : [.cursor/rules/app-chrome-shell.mdc](.cursor/rules/app-chrome-shell.mdc) · [app-shell.md](Docs/design-system/app-shell.md) · composants `AppChromeHeader` / `AppChromeFooter` dans `packages/ui/src/patterns/app-chrome-shell.tsx`. Pages `(app)/` → shell automatique via layout ; ne pas dupliquer le chrome dans les pages.
 
 ## Graphify (carte codebase MVP)
 

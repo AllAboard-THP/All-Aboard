@@ -136,7 +136,9 @@ describe("HomeContent", () => {
     });
 
     const list = screen.getByTestId("feed-ssr-list");
-    const links = within(list).getAllByRole("link");
+    const links = within(list).getAllByRole("link", {
+      name: /Aide sur les promesses JS|Comprendre useEffect/,
+    });
 
     expect(links.length).toBeGreaterThanOrEqual(2);
     expect(links[0]?.getAttribute("href")).toBe("/requests/req-1");

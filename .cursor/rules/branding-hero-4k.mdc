@@ -1,0 +1,61 @@
+---
+description: Hero rasters — real resolution first; editorial illustration + deploy 4K fallback
+globs:
+  - Docs/branding/**
+  - packages/ui/src/patterns/*concept-background*
+  - scripts/branding/**
+alwaysApply: true
+---
+
+# Branding hero rasters — real resolution first
+
+When generating or replacing a **hero / concept background** for landing or feed:
+
+## Real resolution (primary goal)
+
+| Term | Meaning |
+|------|---------|
+| **Native 4K** | Source file **≥ 3840 px wide** before any upscale — true detail |
+| **Deploy 4K** | Canonical output **3840 × 2560** in `Docs/branding/assets/` — dimensions for production |
+
+**Priority order:**
+
+1. Source **≥ 3840 px** wide (stock, human export, generator that outputs 4K) → export with **no upscale** (`export-hero-raster-4k.mjs` detects and preserves).
+2. Cursor `GenerateImage` (~**1536×1024** max) → **editorial illustration only** (flat fills, clean edges — not photoreal), then deploy 4K upscale as **fallback**. Document in revision slug that source was sub-4K.
+3. Never claim upscale-only assets are "native 4K" in docs or chat — say **deploy 4K from 1536 draft**.
+
+## After every generation — automatic pipeline
+
+1. **Visually verify**: scenery only — no login cards, buttons, headlines, UI mockups. UI = React.
+2. **Check source dimensions** (`sharp` metadata or script output). If &lt; 3840 wide, prefer illustration style that stays crisp when upscaled.
+3. **Export**:
+
+```bash
+node scripts/branding/export-hero-raster-4k.mjs \
+  --source <path-to-draft.png> \
+  --basename concept-landing-hero
+```
+
+4. **Bump** `LANDING_CONCEPT_BG_REVISION` / `FEED_CONCEPT_BG_REVISION` in `*-concept-background.tsx`.
+5. **Symlinks** `packages/ui/src/assets/` → `Docs/branding/assets/`.
+
+## Landing composition (illustration)
+
+- **Left 40%**: calm pale sky + soft water — no sun disk, no glare (hero copy zone).
+- **Center-right**: catamaran hero, **smaller in frame** (full mast + hull visible, header/footer safe margins).
+- **Sail**: flat indigo `#6366f1` + pink `#ec4899`, no panel seams. Hull: "All-Aboard" only.
+- **Style**: match `concept-feed-hero` — premium editorial, not photo/AI realism.
+
+## Deploy specs
+
+| Field | Value |
+|-------|-------|
+| Output | **3840 × 2560** PNG (RGB 24-bit) + WebP q=94 |
+| Paths | `Docs/branding/assets/{basename}.{png,webp}` |
+
+## Forbidden
+
+- Photoreal AI hero when only ~1536 px source (reads as 480p after upscale)
+- Baking UI into background images
+- Shipping raw ~1536 px to production paths without deploy export
+- Skipping WebP sibling export

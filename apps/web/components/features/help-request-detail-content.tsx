@@ -16,6 +16,7 @@ import {
 } from "@allaboard/ui/components/card";
 
 import { HelpRequestDetailClient } from "@/components/features/help-request-detail-client";
+import { AuthorProfileLink } from "@/components/features/author-profile-link";
 import { HelpRequestOwnerActions } from "@/components/features/help-request-owner-actions";
 import { PostSocialActions } from "@/components/features/post-social-actions";
 import { Link } from "@/i18n/navigation";
@@ -52,7 +53,7 @@ export async function HelpRequestDetailContent({
           </CardHeader>
           <CardContent>
             <Button variant="outline" asChild>
-              <Link href="/">{tFeed("backToFeed")}</Link>
+              <Link href="/feed">{tFeed("backToFeed")}</Link>
             </Button>
           </CardContent>
         </Card>
@@ -71,7 +72,7 @@ export async function HelpRequestDetailContent({
         </Alert>
         <div className="mt-4">
           <Button variant="outline" asChild>
-            <Link href="/">{tFeed("backToFeed")}</Link>
+            <Link href="/feed">{tFeed("backToFeed")}</Link>
           </Button>
         </div>
       </div>
@@ -90,7 +91,15 @@ export async function HelpRequestDetailContent({
           {item.title}
         </h1>
         <CardDescription className="flex flex-wrap gap-x-3 gap-y-1 text-base">
-          <span>{tCommon("author", { authorId: item.authorId })}</span>
+          <span className="inline-flex flex-wrap items-center gap-x-1">
+            <span>{tCommon("authorLabel")}</span>
+            <AuthorProfileLink
+              authorId={item.authorId}
+              authorProfileId={item.authorProfileId}
+            >
+              {item.authorId}
+            </AuthorProfileLink>
+          </span>
           <span>{formatDateTime(item.createdAt, locale)}</span>
         </CardDescription>
         {item.tags && item.tags.length > 0 ? (
@@ -113,7 +122,7 @@ export async function HelpRequestDetailContent({
 
       <div className="mt-6">
         <Button variant="outline" asChild>
-          <Link href="/">{tFeed("backToFeed")}</Link>
+          <Link href="/feed">{tFeed("backToFeed")}</Link>
         </Button>
       </div>
     </div>

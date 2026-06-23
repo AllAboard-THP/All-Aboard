@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Button } from "../components/button";
+import { useMvpPatternLabels } from "../i18n/storybook-locale";
 import { Separator } from "../components/separator";
 
 const meta = {
@@ -15,58 +16,76 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const FeedHero: Story = {
-  render: () => (
+function FeedHeroStory() {
+  const labels = useMvpPatternLabels().pageHeader;
+
+  return (
     <div className="mx-auto max-w-3xl p-6">
       <header className="mb-6">
         <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
-          All-Aboard
+          {labels.feedEyebrow}
         </p>
         <h1 className="mt-2 mb-2 text-3xl font-semibold text-foreground md:text-4xl">
-          Feed communautaire
+          {labels.feedTitle}
         </h1>
         <p className="m-0 max-w-prose text-base text-muted-foreground">
-          Parcourez les demandes d&apos;aide publiées par la communauté.
+          {labels.feedDescription}
         </p>
         <div className="mt-4">
-          <Button>Nouvelle demande</Button>
+          <Button>{labels.feedCta}</Button>
         </div>
       </header>
       <Separator />
     </div>
-  ),
-};
+  );
+}
 
-export const MentorHero: Story = {
-  render: () => (
-    <div className="mx-auto max-w-3xl p-6">
-      <header className="mb-6">
-        <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">Mentor</p>
-        <h1 className="mt-2 mb-2 text-3xl font-semibold text-foreground">
-          Demandes à traiter
-        </h1>
-        <p className="m-0 text-muted-foreground">
-          Connecté en tant que alice — demandes taguées mentor/domaine.
-        </p>
-      </header>
-      <Separator />
-    </div>
-  ),
-};
+function MentorHeroStory() {
+  const labels = useMvpPatternLabels().pageHeader;
 
-export const DetailHero: Story = {
-  render: () => (
+  return (
     <div className="mx-auto max-w-3xl p-6">
       <header className="mb-6">
         <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
-          Demande d&apos;aide
+          {labels.mentorEyebrow}
         </p>
         <h1 className="mt-2 mb-2 text-3xl font-semibold text-foreground">
-          Comment structurer un monorepo Turborepo ?
+          {labels.mentorTitle}
         </h1>
-        <p className="text-base text-muted-foreground">Auteur : bob · 26 mai 2026, 14:30</p>
+        <p className="m-0 text-muted-foreground">{labels.mentorDescription}</p>
       </header>
       <Separator />
     </div>
-  ),
+  );
+}
+
+function DetailHeroStory() {
+  const labels = useMvpPatternLabels().pageHeader;
+
+  return (
+    <div className="mx-auto max-w-3xl p-6">
+      <header className="mb-6">
+        <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
+          {labels.detailEyebrow}
+        </p>
+        <h1 className="mt-2 mb-2 text-3xl font-semibold text-foreground">
+          {labels.detailTitle}
+        </h1>
+        <p className="text-base text-muted-foreground">{labels.detailMeta}</p>
+      </header>
+      <Separator />
+    </div>
+  );
+}
+
+export const FeedHero: Story = {
+  render: () => <FeedHeroStory />,
+};
+
+export const MentorHero: Story = {
+  render: () => <MentorHeroStory />,
+};
+
+export const DetailHero: Story = {
+  render: () => <DetailHeroStory />,
 };

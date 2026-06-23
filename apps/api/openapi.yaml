@@ -275,6 +275,41 @@ paths:
               schema:
                 $ref: "#/components/schemas/LogoutResponse"
 
+  /auth/google:
+    get:
+      operationId: getAuthGoogle
+      tags: [auth]
+      summary: Démarre le flux OAuth Google (redirect)
+      responses:
+        "302":
+          description: Redirect vers Google OAuth
+        "503":
+          description: OAuth non configuré
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: oauth_not_configured
+
+  /auth/google/callback:
+    get:
+      operationId: getAuthGoogleCallback
+      tags: [auth]
+      summary: Callback OAuth Google (échange code, émet JWT, redirect web)
+      parameters:
+        - in: query
+          name: code
+          schema:
+            type: string
+        - in: query
+          name: state
+          schema:
+            type: string
+      responses:
+        "302":
+          description: Redirect vers WEB_APP_URL (/onboarding ou /feed) avec Set-Cookie
+
   /auth/me:
     get:
       operationId: getAuthMe
@@ -2291,6 +2326,9 @@ components:
           type: string
         authorId:
           type: string
+        authorProfileId:
+          type: string
+          format: uuid
         createdAt:
           type: string
           format: date-time
@@ -2399,6 +2437,9 @@ components:
           type: string
         authorId:
           type: string
+        authorProfileId:
+          type: string
+          format: uuid
         createdAt:
           type: string
           format: date-time
@@ -3179,6 +3220,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SubjectSummary"
+        createdAt:
+          type: string
+          format: date-time
         stats:
           type: object
           required: [postsCount, responsesCount]

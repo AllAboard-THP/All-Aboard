@@ -58,6 +58,23 @@ export async function loadCompetenceSubjects(
   return rows.map(({ subject }) => rowToSubjectSummary(subject));
 }
 
+export async function loadProfileIdsByEmails(
+  db: AppDatabase,
+  emails: string[],
+): Promise<Map<string, string>> {
+  const unique = [...new Set(emails.map((email) => email.toLowerCase()))];
+  if (unique.length === 0) {
+    return new Map();
+  }
+
+  const rows = await db
+    .select({ id: users.id, email: users.email })
+    .from(users)
+    .where(inArray(users.email, unique));
+
+  return new Map(rows.map((row) => [row.email.toLowerCase(), row.id]));
+}
+
 export async function syncMentorSubjects(
   db: AppDatabase,
   userId: string,

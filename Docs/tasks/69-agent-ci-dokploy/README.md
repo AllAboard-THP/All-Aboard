@@ -1,66 +1,66 @@
-# Tâche #69 — CI Agent + Dokploy (retrait Indexer legacy)
+# Task #69 — Agent CI + Dokploy (legacy Indexer removal)
 
-**Issue** : https://github.com/AllAboard-THP/All-Aboard/issues/69
+**Issue:** https://github.com/AllAboard-THP/All-Aboard/issues/69
 
-## Objectif
+## Goal
 
-Valider le build Docker de `apps/agent` en CI (image + smoke `GET /health`) et documenter la réactivation Agent sur Dokploy ainsi que le retrait du placeholder **Indexer** All-Aboard (legacy — ne pas réactiver).
+Validate `apps/agent` Docker build in CI (image + `GET /health` smoke) and document Agent reactivation on Dokploy plus removal of All-Aboard **Indexer** placeholder (legacy — do not reactivate).
 
-## Livrables
+## Deliverables
 
-| Livrable | Emplacement |
-|----------|-------------|
-| Job CI `agent` (paths-filter + Docker build + smoke) | [`.github/workflows/ci.yml`](../../../.github/workflows/ci.yml) |
-| Procédure réactivation Agent / statut Indexer legacy | [`deploiement-dokploy-instance-allaboard.md`](../../deploiement-dokploy-instance-allaboard.md) |
-| Image Docker | [`infra/docker/Dockerfile.agent`](../../../infra/docker/Dockerfile.agent) |
+| Deliverable | Location |
+|-------------|----------|
+| CI job `agent` (paths-filter + Docker build + smoke) | [`.github/workflows/ci.yml`](../../../.github/workflows/ci.yml) |
+| Agent reactivation procedure / legacy Indexer status | [`deployment/dokploy-instance.md`](../../deployment/dokploy-instance.md) |
+| Docker image | [`infra/docker/Dockerfile.agent`](../../../infra/docker/Dockerfile.agent) |
 
-## CI — job `agent`
+## CI — `agent` job
 
-Déclenché si le diff touche :
+Triggered when diff touches:
 
 - `apps/agent/**`
-- `packages/types/**` (dépendance workspace)
+- `packages/types/**` (workspace dependency)
 - `infra/docker/Dockerfile.agent`
-- lockfile / workspace / `turbo.json` / workflow CI
+- lockfile / workspace / `turbo.json` / CI workflow
 
-Étapes :
+Steps:
 
 1. `docker build -f infra/docker/Dockerfile.agent`
-2. Conteneur éphémère port **4100** → `GET /health` doit renvoyer `{ "status": "ok" }`
+2. Ephemeral container port **4100** → `GET /health` must return `{ "status": "ok" }`
 
-Le job `verify` existant couvre déjà lint / typecheck / test / build Turbo de `apps/agent` via `--filter=!thp-final`.
+Existing `verify` job already covers lint / typecheck / test / Turbo build of `apps/agent` via `--filter=!thp-final`.
 
-## Dokploy — Agent (réactivation manuelle)
+## Dokploy — Agent (manual reactivation)
 
-**Prérequis** : merge #66 + job CI `agent` vert sur la branche cible.
+**Prerequisite:** merge #66 + green CI `agent` job on target branch.
 
-**Production** : garder `enabled: false` jusqu’à validation humaine explicite (critère issue #69).
+**Production:** keep `enabled: false` until explicit human validation (#69 criterion).
 
-Pour **dev** ou **staging** (après revue ops) :
+For **dev** or **staging** (after ops review):
 
-1. Vérifier CI `agent` vert sur la branche alignée (ex. `Dev` / `staging`).
-2. Dokploy → application **Agent** → `enabled: true`.
-3. Aligner la **branche Git** sur Web/API (pas `Dev` partout en prod).
-4. Variables minimales : `PORT=4100`, `NODE_ENV=production`, `APP_ENV`, `LOG_LEVEL` — voir [matrice](../../matrice-deploiement-dokploy-coolify.md).
-5. **Pas d’exposition publique** Traefik — service réseau interne uniquement ; l’API consomme via `AGENT_URL` (issue #68).
-6. Déploiement **manuel** (`autoDeploy: false` recommandé tant que l’intégration API n’est pas validée).
-7. Smoke : depuis un conteneur du même réseau Docker, `GET http://<service-agent>:4100/health`.
+1. Verify green CI `agent` on aligned branch (e.g. `Dev` / `staging`).
+2. Dokploy → **Agent** application → `enabled: true`.
+3. Align **Git branch** with Web/API (not `Dev` everywhere in prod).
+4. Minimum vars: `PORT=4100`, `NODE_ENV=production`, `APP_ENV`, `LOG_LEVEL` — see [matrix](../../deployment/environment-variables.md).
+5. **No public** Traefik exposure — internal network only; API consumes via `AGENT_URL` (issue #68).
+6. **Manual** deploy (`autoDeploy: false` recommended until API integration validated).
+7. Smoke: from same Docker network container, `GET http://<agent-service>:4100/health`.
 
 ## Dokploy — Indexer placeholder (legacy)
 
-| Élément | Statut |
+| Element | Status |
 |---------|--------|
-| `infra/docker/Dockerfile.indexer` | Legacy bootstrap — **pas de `apps/indexer`** |
-| Service Dokploy « Indexer » | **Ne pas réactiver** — supprimer ou laisser `enabled: false` |
-| Indexation graphe | Indexer **réseau Intuition** (hors monorepo) — voir [ADR 0004](../../adr/0004-agent-indexer-architecture.md) |
+| `infra/docker/Dockerfile.indexer` | Legacy bootstrap — **no `apps/indexer`** |
+| Dokploy "Indexer" service | **Do not reactivate** — delete or keep `enabled: false` |
+| Graph indexing | **Intuition network** indexer (outside monorepo) — see [ADR 0004](../../adr/0004-agent-indexer-architecture.md) |
 
-## Critères de clôture #69
+## Closure criteria #69
 
-- [x] Job CI `agent` avec build image + smoke `/health`
-- [x] Doc instance Dokploy — procédure Agent + avertissement Indexer legacy
-- [ ] Réactivation Agent en prod (hors scope merge — validation humaine)
+- [x] CI `agent` job with image build + `/health` smoke
+- [x] Dokploy instance doc — Agent procedure + Indexer legacy warning
+- [ ] Agent reactivation in prod (out of merge scope — human validation)
 
-## Liens
+## Links
 
 - [ADR 0004](../../adr/0004-agent-indexer-architecture.md)
 - [Epic #37](../37-agent-indexer/README.md)

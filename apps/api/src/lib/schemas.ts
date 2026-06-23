@@ -69,6 +69,13 @@ export const updateUserMeBodySchema = z
     message: "at_least_one_field",
   });
 
+const AVATAR_MAX_BASE64_LENGTH = Math.ceil((5 * 1024 * 1024 * 4) / 3);
+
+export const uploadAvatarBodySchema = z.object({
+  imageBase64: z.string().min(1).max(AVATAR_MAX_BASE64_LENGTH),
+  mimeType: z.enum(["image/jpeg", "image/png", "image/webp"]),
+});
+
 export type PublicUserTab = "posts" | "responses";
 
 export type PublicUserQueryParams = {

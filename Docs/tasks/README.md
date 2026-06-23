@@ -1,86 +1,107 @@
-# Documentation par tâche (`Docs/tasks/`)
+# Task documentation (`Docs/tasks/`)
 
-**Backlog, priorités, dépendances, roadmap** : source canonique = [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3) (issues + champs Vague / Status). Ne pas recopier ces listes dans `Docs/`.
+**Backlog, priorities, dependencies, roadmap:** canonical source = [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3). Do not copy those lists into `Docs/`.
 
-Ce dossier accueille la **doc de travail liée à une issue** — notes, spikes, brouillons ADR, captures — **isolée par numéro d’issue** pour limiter les conflits de merge entre collaborateurs.
+This folder holds **working notes tied to a GitHub issue** — spikes, ADR drafts, captures — **one folder per issue number** to reduce merge conflicts.
 
 ---
 
-## Convention de nommage
+## Naming convention
 
 ```text
-Docs/tasks/<NN>-<slug-court>/
+Docs/tasks/<NN>-<short-slug>/
 ```
 
-| Élément | Règle | Exemple |
-|---------|--------|---------|
-| `NN` | Numéro d’issue GitHub | `18` |
-| `slug` | kebab-case, 2–4 mots | `adr-auth` |
-| Dossier | `Docs/tasks/18-adr-auth/` | |
+| Part | Rule | Example |
+|------|------|---------|
+| `NN` | GitHub issue number | `18` |
+| `slug` | kebab-case, 2–4 words | `adr-auth` |
+| Folder | `Docs/tasks/18-adr-auth/` | |
 
-Chaque dossier contient au minimum un **`README.md`** avec :
+Each folder must include a **`README.md`** with:
 
-- lien vers l’issue : `https://github.com/AllAboard-THP/All-Aboard/issues/<NN>`
-- objectif en une phrase (copie ou résumé de l’issue)
-- fichiers du dossier listés
+- link to the issue: `https://github.com/AllAboard-THP/All-Aboard/issues/<NN>`
+- one-sentence goal (from or summarizing the issue)
+- list of files in the folder
 
-Modèle vierge : [_template/README.md](_template/README.md).
-
----
-
-## Où écrire quoi
-
-| Contenu | Emplacement |
-|---------|-------------|
-| Checklist tâche, statut, assignation, deps | **Issue GitHub** + Project |
-| Notes / brouillons / spec détaillée **d’une** tâche | `Docs/tasks/<NN>-<slug>/` |
-| Décision d’architecture **validée** (ADR final) | `Docs/adr/` (après merge PR) — brouillon peut rester dans `tasks/` |
-| Contrat API, env, journal smoke **transverse** | [plan-mise-en-place-web-api-donnees.md](../plan-mise-en-place-web-api-donnees.md) |
-| Timeline phases, principes MVP | [README.md](../README.md) |
-| Parcours produit (MOC) | [moc-parcours-utilisateur.md](../moc-parcours-utilisateur.md) |
-| Design system (hub contributeur) | [design-system/README.md](../design-system/README.md) |
-| Infra Dokploy (faits instance) | [deploiement-dokploy-instance-allaboard.md](../deploiement-dokploy-instance-allaboard.md) |
+Blank template: [_template/README.md](_template/README.md).
 
 ---
 
-## Workflow collaborateur
+## Where to write what
 
-1. Prendre une issue sur le [Project](https://github.com/orgs/AllAboard-THP/projects/3) → **In Progress**.
-2. Créer `Docs/tasks/<NN>-<slug>/` si besoin de doc (copier `_template/`).
-3. Dans l’issue : section **Documentation** → ajouter le lien vers `Docs/tasks/<NN>-<slug>/`.
-4. Dans le `README.md` du dossier : lien retour vers l’issue.
-5. PR : `Refs #NN` ; doc transverse seulement si contrat Web/API change.
-
-**Ne pas** éditer le même fichier `Docs/` partagé que d’autres tâches en parallèle — utiliser le sous-dossier dédié.
+| Content | Location |
+|---------|----------|
+| Task checklist, status, assignee, deps | **GitHub issue** + Project |
+| Notes / drafts for **one** task | `Docs/tasks/<NN>-slug/` |
+| **Accepted** architecture decision (final ADR) | `Docs/adr/` after PR merge |
+| Cross-cutting API contract, env, smoke journal | [guides/web-api-integration.md](../guides/web-api-integration.md) |
+| MVP phase timeline, principles | [README.md](../README.md) |
+| Product journeys (MOC) | [product/user-journeys.md](../product/user-journeys.md) |
+| Design system hub | [design-system/README.md](../design-system/README.md) |
+| Dokploy instance facts | [deployment/dokploy-instance.md](../deployment/dokploy-instance.md) |
 
 ---
 
-## Index des dossiers tâche
+## Contributor workflow
 
-| Dossier | Issue |
-|---------|-------|
-| [18-adr-auth/](18-adr-auth/) | [#18 ADR auth](https://github.com/AllAboard-THP/All-Aboard/issues/18) |
-| [24-design-system-monorepo/](24-design-system-monorepo/) | [#24 Design system](https://github.com/AllAboard-THP/All-Aboard/issues/24) — ✅ livré |
-| [25-app-shell-navigation/](25-app-shell-navigation/) | [#25 AppShell](https://github.com/AllAboard-THP/All-Aboard/issues/25) — ✅ livré |
-| [49-openapi/](49-openapi/) | [#49 OpenAPI](https://github.com/AllAboard-THP/All-Aboard/issues/49) — ✅ livré (spike + spec MVP) |
-| [37-agent-indexer/](37-agent-indexer/) | [#37 Phase 4 Agent/Intuition](https://github.com/AllAboard-THP/All-Aboard/issues/37) — ADR 0004 (indexer Intuition + bridge #67) |
-| [78-phase2b-responses/](78-phase2b-responses/) | [#78 Phase 2b Réponses MOC](https://github.com/AllAboard-THP/All-Aboard/issues/78) — thread API/BFF/UI (#79–#81) |
-| [api-rails-parity-phase1/](api-rails-parity-phase1/) | Parité Rails **Phase 1** — feed/subjects/help-requests enrichis (API livré) |
-| [api-rails-parity-phase2/](api-rails-parity-phase2/) | Parité Rails **Phase 2** — likes, bookmarks, `/me/*`, CRUD réponses (API livré) |
-| [api-rails-parity-phase3/](api-rails-parity-phase3/) | Parité Rails **Phase 3** — auth register, profils, CGU |
-| [api-rails-parity-phase4/](api-rails-parity-phase4/) | Parité Rails **Phase 4** — resources, subject requests, mentor dashboard |
-| [api-rails-parity-phase5/](api-rails-parity-phase5/) | Parité Rails **Phase 5** — messagerie REST |
-| [api-rails-parity-phase6/](api-rails-parity-phase6/) | Parité Rails **Phase 6** — admin & modération — ✅ livré |
-| [api-rails-parity/](api-rails-parity/) | **Hub** parité Rails phases 1–7 + lots A / 5b / 7 |
-| [api-parity-delete-reject/](api-parity-delete-reject/) | Lot A — soft delete post + reject resource mentor (OpenAPI 0.8.1) |
-| [api-rails-parity-phase5b/](api-rails-parity-phase5b/) | Phase 5b — chat WebSocket (OpenAPI 0.9.0) |
+1. Pick an issue on the [Project](https://github.com/orgs/AllAboard-THP/projects/3) → **In Progress**.
+2. Create `Docs/tasks/<NN>-slug/` if notes are needed (copy `_template/`).
+3. In the issue: **Documentation** section → link to `Docs/tasks/<NN>-slug/`.
+4. In the folder `README.md`: link back to the issue.
+5. PR: `Refs #NN`; update cross-cutting docs only when Web/API contract changes.
+
+Avoid editing the same shared `Docs/` file as another active task — use the dedicated subfolder.
+
+---
+
+## Task folder index
+
+### Auth, design system, API contract
+
+| Folder | Issue |
+|--------|-------|
+| [18-adr-auth/](18-adr-auth/) | [#18 ADR auth](https://github.com/AllAboard-THP/All-Aboard/issues/18) — ✅ shipped → [ADR 0001](../adr/0001-authentication-strategy.md) |
+| [24-design-system-monorepo/](24-design-system-monorepo/) | [#24 Design system](https://github.com/AllAboard-THP/All-Aboard/issues/24) — ✅ shipped |
+| [25-app-shell-navigation/](25-app-shell-navigation/) | [#25 AppShell](https://github.com/AllAboard-THP/All-Aboard/issues/25) — ✅ shipped |
+| [49-openapi/](49-openapi/) | [#49 OpenAPI](https://github.com/AllAboard-THP/All-Aboard/issues/49) — ✅ shipped |
+| [75-i18n-web/](75-i18n-web/) | [#75 Web i18n](https://github.com/AllAboard-THP/All-Aboard/issues/75) — ✅ shipped → [ADR 0005](../adr/0005-i18n-web-next-intl.md) |
+
+### Phase 4 — Agent / Intuition
+
+| Folder | Issue |
+|--------|-------|
+| [37-agent-indexer/](37-agent-indexer/) | [#37 Agent/Intuition](https://github.com/AllAboard-THP/All-Aboard/issues/37) — [ADR 0004](../adr/0004-agent-indexer-architecture.md) |
+| [67-intuition-bridge/](67-intuition-bridge/) | [#67 Intuition bridge](https://github.com/AllAboard-THP/All-Aboard/issues/67) — outbox + publisher |
+| [68-agent-handoff/](68-agent-handoff/) | [#68 API→Agent handoff](https://github.com/AllAboard-THP/All-Aboard/issues/68) — ✅ shipped |
+| [69-agent-ci-dokploy/](69-agent-ci-dokploy/) | [#69 Agent CI + Dokploy](https://github.com/AllAboard-THP/All-Aboard/issues/69) — ✅ shipped |
+
+### Phase 2b — Responses MOC (epic #78)
+
+| Folder | Issue |
+|--------|-------|
+| [78-phase2b-responses/](78-phase2b-responses/) | [#78 Phase 2b responses](https://github.com/AllAboard-THP/All-Aboard/issues/78) |
+| [82-mentor-notifications/](82-mentor-notifications/) | [#82 Mentor notifications](https://github.com/AllAboard-THP/All-Aboard/issues/82) |
+| [83-response-filtering/](83-response-filtering/) | [#83 Certification response filter](https://github.com/AllAboard-THP/All-Aboard/issues/83) |
+
+### Rails → Fastify API parity
+
+| Folder | Issue |
+|--------|-------|
+| [api-rails-parity/](api-rails-parity/) | **Hub** — phases 1–7 + lots A / 5b / 7 |
+| [api-rails-parity-phase1/](api-rails-parity-phase1/) | Phase 1 — enriched feed/subjects/help-requests |
+| [api-rails-parity-phase2/](api-rails-parity-phase2/) | Phase 2 — likes, bookmarks, `/me/*`, responses CRUD |
+| [api-rails-parity-phase3/](api-rails-parity-phase3/) | Phase 3 — register, profiles, legal |
+| [api-rails-parity-phase4/](api-rails-parity-phase4/) | Phase 4 — resources, subject requests, mentor dashboard |
+| [api-rails-parity-phase5/](api-rails-parity-phase5/) | Phase 5 — REST messaging |
+| [api-rails-parity-phase5b/](api-rails-parity-phase5b/) | Phase 5b — WebSocket chat (OpenAPI 0.9.0) |
+| [api-rails-parity-phase6/](api-rails-parity-phase6/) | Phase 6 — admin & moderation — ✅ shipped |
 | [api-rails-parity-phase7/](api-rails-parity-phase7/) | Phase 7 — suggest-tags + `ai_summary` (OpenAPI 0.10.0) |
-
-*(Ajouter une ligne ici à la création d’un nouveau dossier — une ligne par PR, conflits rares.)*
+| [api-parity-delete-reject/](api-parity-delete-reject/) | Lot A — soft delete + mentor resource reject (OpenAPI 0.8.1) |
 
 ---
 
-## Liens
+## Links
 
-- [Pilotage Project (.github/PROJECT.md)](../../.github/PROJECT.md)
-- [Map of content](../map-of-content.md)
+- [Project workflow (.github/PROJECT.md)](../../.github/PROJECT.md)
+- [Documentation index](../INDEX.md)

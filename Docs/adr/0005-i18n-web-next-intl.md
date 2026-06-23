@@ -1,50 +1,50 @@
-# ADR 0005 — i18n web (next-intl)
+# ADR 0005 — Web i18n (next-intl)
 
-**Statut :** Accepté — 2026-05-28  
-**Issue :** [#75](https://github.com/AllAboard-THP/All-Aboard/issues/75)
+**Status:** Accepted — 2026-05-28  
+**Issue:** [#75](https://github.com/AllAboard-THP/All-Aboard/issues/75)
 
-## Contexte
+## Context
 
-Le MVP web (`apps/web`) affichait l'interface uniquement en français (textes en dur, `lang="fr"`). Pour ouvrir la plateforme à un public anglophone sans dupliquer l'app, il faut une couche i18n côté Next.js uniquement — l'API et le design system restent agnostiques de la langue UI.
+The web MVP (`apps/web`) displayed the UI only in French (hardcoded strings, `lang="fr"`). To reach English-speaking users without duplicating the app, a Next.js-only i18n layer is needed — API and design system remain locale-agnostic.
 
-## Décision
+## Decision
 
-1. **Librairie :** [next-intl](https://next-intl.dev) v4 avec App Router Next.js 15.
-2. **Locales :** `fr` (défaut), `en`.
-3. **URLs :** `localePrefix: 'as-needed'` — le français conserve les URLs actuelles (`/`, `/help/new`…) ; l'anglais est préfixé (`/en`, `/en/help/new`…).
-4. **Messages :** fichiers JSON dans `apps/web/messages/{fr,en}.json`, namespaces par zone (`nav`, `home`, `errors`…).
-5. **Navigation :** `@/i18n/navigation` (`Link`, `useRouter`, `usePathname`) dans le métier — pas `next/link` direct dans `components/features/`.
-6. **Routing :** pages sous `app/[locale]/(app)/` ; `app/api/**` et `app/health/**` hors locale.
-7. **Erreurs API :** codes machine-readable inchangés côté BFF/API ; traduction à l'affichage via `lib/map-api-error.ts`.
-8. **Contenu utilisateur :** titres de demandes et corps de réponses **non traduits**.
+1. **Library:** [next-intl](https://next-intl.dev) v4 with Next.js 15 App Router.
+2. **Locales:** `fr` (default), `en`.
+3. **URLs:** `localePrefix: 'as-needed'` — French keeps current URLs (`/`, `/help/new`…); English is prefixed (`/en`, `/en/help/new`…).
+4. **Messages:** JSON files in `apps/web/messages/{fr,en}.json`, namespaces per area (`nav`, `home`, `errors`…).
+5. **Navigation:** `@/i18n/navigation` (`Link`, `useRouter`, `usePathname`) in domain code — not raw `next/link` in `components/features/`.
+6. **Routing:** pages under `app/[locale]/(app)/`; `app/api/**` and `app/health/**` outside locale.
+7. **API errors:** machine-readable codes unchanged on BFF/API; translation at display via `lib/map-api-error.ts`.
+8. **User content:** help-request titles and response bodies **not translated**.
 
-## Conséquences
+## Consequences
 
-### Positives
+### Positive
 
-- Parcours FR inchangé pour les e2e et bookmarks existants.
-- Séparation claire : tokens/composants dans `packages/ui`, textes métier dans `apps/web/messages/`.
-- LocaleSwitcher intégré à l'AppShell pour basculer FR ↔ EN sur la page courante.
+- FR journey unchanged for existing e2e and bookmarks.
+- Clear separation: tokens/components in `packages/ui`, domain copy in `apps/web/messages/`.
+- LocaleSwitcher in AppShell to toggle FR ↔ EN on current page.
 
-### Négatives / contraintes
+### Negative / constraints
 
-- Toute nouvelle page ou composant feature doit utiliser `@/i18n/navigation` et les clés JSON (parité fr/en obligatoire).
-- Tests Vitest client : helper `tests/render-with-intl.tsx` ; composants serveur : mock `next-intl/server`.
-- Middleware next-intl : matcher explicite pour exclure `/api`, `/health`, assets statiques.
+- Every new page or feature component must use `@/i18n/navigation` and JSON keys (fr/en parity required).
+- Vitest client tests: `tests/render-with-intl.tsx` helper; server components: mock `next-intl/server`.
+- next-intl middleware: explicit matcher to exclude `/api`, `/health`, static assets.
 
-## Fichiers clés
+## Key files
 
-| Fichier | Rôle |
-|---------|------|
+| File | Role |
+|------|------|
 | `apps/web/i18n/routing.ts` | Locales, defaultLocale, localePrefix |
-| `apps/web/i18n/request.ts` | Chargement messages par requête |
-| `apps/web/i18n/navigation.ts` | Link / router locale-aware |
-| `apps/web/middleware.ts` | Redirection / détection locale |
-| `apps/web/messages/*.json` | Catalogue UI FR/EN |
-| `apps/web/lib/map-api-error.ts` | Codes erreur → clés `errors.*` |
+| `apps/web/i18n/request.ts` | Per-request message loading |
+| `apps/web/i18n/navigation.ts` | Locale-aware Link / router |
+| `apps/web/middleware.ts` | Locale redirect / detection |
+| `apps/web/messages/*.json` | FR/EN UI catalogue |
+| `apps/web/lib/map-api-error.ts` | Error codes → `errors.*` keys |
 
-## Références
+## References
 
-- Skill agent : `.cursor/skills/i18n-allaboard/SKILL.md`
-- Règle Cursor : `.cursor/rules/i18n.mdc`
-- Doc tâche : `Docs/tasks/75-i18n-web/README.md`
+- Agent skill: `.cursor/skills/i18n-allaboard/SKILL.md`
+- Cursor rule: `.cursor/rules/i18n.mdc`
+- Task doc: `Docs/tasks/75-i18n-web/README.md`

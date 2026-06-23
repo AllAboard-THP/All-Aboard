@@ -1,45 +1,45 @@
 # ADR 0002 — Design system monorepo (`packages/ui` + `apps/storybook`)
 
-## Statut
+## Status
 
-Accepté — 2026-05-20 (Epic #24, PRs 24a–24e sur `feat/design-system-ui-storybook`).
+Accepted — 2026-05-20 (Epic #24, PRs 24a–24e on `feat/design-system-ui-storybook`).
 
-## Contexte
+## Context
 
-All-Aboard avait des styles inline dans `apps/web` et pas de package UI partagé. L’objectif produit est un **design system** documenté (Storybook), consommé par Next, sans mélanger métier, primitives et outillage doc.
+All-Aboard had inline styles in `apps/web` and no shared UI package. The product goal is a **design system** documented in Storybook, consumed by Next, without mixing domain logic, primitives, and documentation tooling.
 
-## Décision
+## Decision
 
-1. **`packages/ui` (`@allaboard/ui`)** — source de vérité : tokens Tailwind v4 (`globals.css`, `@theme inline`), primitives shadcn v4, stories colocalisées, tests Vitest légers (`cn`, `Button`). **Pas** de dépendance `@allaboard/types`.
-2. **`apps/storybook` (`@allaboard/storybook`)** — application **documentation** uniquement (Storybook 10.4 + Vite) ; scan `packages/ui/**/*.stories`. **Hors** image Docker `web`.
-3. **`apps/web`** — consommateur : `transpilePackages`, `app/globals.css` avec `@import "@allaboard/ui/globals.css"` et `@source` vers `packages/ui` ; métier dans `components/features/`, blocks shadcn locaux dans `components/blocks/`. **Interdit** : `components/ui/` (régression).
-4. **CLI shadcn** — exécutée depuis `apps/web` (`components.json` monorepo) ; les primitives sont générées dans `packages/ui/src/components/`.
-5. **Garde-fous ESLint** — `no-restricted-imports` : `web` ↮ `storybook`, `ui` ↮ `apps/*` (voir `@allaboard/config-eslint/design-system-boundaries`).
+1. **`packages/ui` (`@allaboard/ui`)** — source of truth: Tailwind v4 tokens (`globals.css`, `@theme inline`), shadcn v4 primitives, colocated stories, light Vitest tests (`cn`, `Button`). **No** `@allaboard/types` dependency.
+2. **`apps/storybook` (`@allaboard/storybook`)** — **documentation** app only (Storybook 10.4 + Vite); scans `packages/ui/**/*.stories`. **Excluded** from `web` Docker image.
+3. **`apps/web`** — consumer: `transpilePackages`, `app/globals.css` with `@import "@allaboard/ui/globals.css"` and `@source` to `packages/ui`; domain in `components/features/`, local shadcn blocks in `components/blocks/`. **Forbidden**: `components/ui/` (regression).
+4. **shadcn CLI** — run from `apps/web` (monorepo `components.json`); primitives generated in `packages/ui/src/components/`.
+5. **ESLint guardrails** — `no-restricted-imports`: `web` ↮ `storybook`, `ui` ↮ `apps/*` (see `@allaboard/config-eslint/design-system-boundaries`).
 
-## Conséquences
+## Consequences
 
-- Stack : Tailwind **4.3**, shadcn **v4**, Storybook **10.4**, React 19, Next 15.
-- Scripts racine : `pnpm storybook`, `pnpm build:storybook`, `pnpm dev:ui` (Storybook).
-- `pnpm verify` / CI MVP excluent `thp-final` ; Graphify inclut `packages/` (dont `ui`).
-- Évolutions UI produit : importer `@allaboard/ui/components/*` depuis les features ; nouveaux composants via `pnpm dlx shadcn add` depuis `apps/web`.
-- **CI (T21)** : job `storybook` conditionnel (`dorny/paths-filter`) sur diff `packages/ui`, `apps/storybook`, lockfile, turbo, `ci.yml` ; artefact `storybook-static` 7j.
-- **Hooks (T22)** : `verify:push` inclut `build:storybook` (parité locale ↔ CI).
-- **AppShell (#25)** : routes produit sous `app/(app)/` ; shell documenté dans [app-shell.md](../design-system/app-shell.md) — hors package `ui`, métier dans `components/features/`.
+- Stack: Tailwind **4.3**, shadcn **v4**, Storybook **10.4**, React 19, Next 15.
+- Root scripts: `pnpm storybook`, `pnpm build:storybook`, `pnpm dev:ui` (Storybook).
+- `pnpm verify` / MVP CI exclude `thp-final`; Graphify includes `packages/` (incl. `ui`).
+- Product UI changes: import `@allaboard/ui/components/*` from features; new components via `pnpm dlx shadcn add` from `apps/web`.
+- **CI (T21)**: conditional `storybook` job (`dorny/paths-filter`) on diff `packages/ui`, `apps/storybook`, lockfile, turbo, `ci.yml`; `storybook-static` artifact 7d.
+- **Hooks (T22)**: `verify:push` includes `build:storybook` (local ↔ CI parity).
+- **AppShell (#25)**: product routes under `app/(app)/`; shell documented in [app-shell.md](../design-system/app-shell.md) — outside `ui` package, domain in `components/features/`.
 
-## Documentation canonique
+## Canonical documentation
 
-Hub contributeur (Diátaxis) : [Docs/design-system/README.md](../design-system/README.md) — ne pas dupliquer le spec Hermes `WorkSpace/Todo/…`.
+Contributor hub (Diátaxis): [Docs/design-system/README.md](../design-system/README.md) — do not duplicate Hermes spec `WorkSpace/Todo/…`.
 
-## Alternatives non retenues
+## Alternatives not chosen
 
-- **Storybook dans `apps/web`** — rejeté (deps doc en prod, coupling).
-- **Package UI buildé (tsup)** — rejeté pour le MVP (exports source, transpilation Next/SB).
-- **Merge wholesale `feature/ui-tailwind-foundation`** — rejeté (cherry-pick tokens v4 uniquement).
+- **Storybook in `apps/web`** — rejected (doc deps in prod, coupling).
+- **Built UI package (tsup)** — rejected for MVP (source exports, Next/SB transpilation).
+- **Wholesale merge `feature/ui-tailwind-foundation`** — rejected (cherry-pick v4 tokens only).
 
-## Liens
+## Links
 
-- [Epic #24 — doc tâche](https://github.com/AllAboard-THP/All-Aboard/issues/24) · [tasks/24](../tasks/24-design-system-monorepo/)
+- [Epic #24 — task doc](https://github.com/AllAboard-THP/All-Aboard/issues/24) · [tasks/24](../tasks/24-design-system-monorepo/)
 - [#25 AppShell](../tasks/25-app-shell-navigation/) · [app-shell.md](../design-system/app-shell.md)
-- [Hub design-system](../design-system/README.md) · [Map of content](../map-of-content.md)
-- [AGENTS.md](../../AGENTS.md) — section Design system
+- [Design system hub](../design-system/README.md) · [Documentation index](../INDEX.md)
+- [AGENTS.md](../../AGENTS.md) — Design system section
 - [shadcn monorepo](https://ui.shadcn.com/docs/monorepo)

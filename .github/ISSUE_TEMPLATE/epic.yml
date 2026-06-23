@@ -59,5 +59,5 @@ body:
       label: Documentation (liens)
       value: |
         - [README MVP](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/README.md)
-        - [Parcours MOC](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/moc-parcours-utilisateur.md)
+        - [Parcours MOC](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/product/user-journeys.md)
         - [PROJECT.md](https://github.com/AllAboard-THP/All-Aboard/blob/Dev/.github/PROJECT.md)

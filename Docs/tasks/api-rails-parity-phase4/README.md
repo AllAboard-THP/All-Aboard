@@ -1,69 +1,69 @@
-# API parité Rails — Phase 4 (resources & subject requests)
+# Rails API parity — Phase 4 (resources & subject requests)
 
-**Branche** : `feat/api-rails-parity-phase4`  
-**OpenAPI** : `0.6.0` — [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml)  
-**Prérequis** : [Phase 3](../api-rails-parity-phase3/README.md)
+**Branch:** `feat/api-rails-parity-phase4`  
+**OpenAPI:** `0.6.0` — [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml)  
+**Prerequisite:** [Phase 3](../api-rails-parity-phase3/README.md)
 
-## Objectif
+## Goal
 
-Ressources pédagogiques, demandes de nouvelles matières et tableau de bord mentor (file d’approbation).
+Learning resources, new subject requests, and mentor dashboard (approval queue).
 
 ## Migration `0008_api_rails_phase4_resources.sql`
 
 - Tables `resources`, `resource_tags`, `subject_requests`
-- Seed : compétence mentor Alice → subject `react`
+- Seed: Alice mentor skill → subject `react`
 
 ## Endpoints
 
 | Route | Auth | Description |
 |-------|------|-------------|
-| `GET /resources` | public | Publiées uniquement ; `?q=` recherche |
-| `POST /resources` | JWT | Student → `pending` ; mentor/admin → `published` |
-| `GET /resources/:id` | public | Détail ressource publiée |
-| `PATCH /resources/:id` | JWT auteur | Édition |
-| `DELETE /resources/:id` | JWT auteur | Suppression |
-| `POST /subject-requests` | JWT | Demande nouvelle matière |
-| `GET /mentor/dashboard` | mentor JWT | Stats + ressources + pending + `helpMentorQueue` |
+| `GET /resources` | public | Published only; `?q=` search |
+| `POST /resources` | JWT | Student → `pending`; mentor/admin → `published` |
+| `GET /resources/:id` | public | Published resource detail |
+| `PATCH /resources/:id` | JWT author | Edit |
+| `DELETE /resources/:id` | JWT author | Delete |
+| `POST /subject-requests` | JWT | Request new subject |
+| `GET /mentor/dashboard` | mentor JWT | Stats + resources + pending + `helpMentorQueue` |
 | `POST /mentor/resources/:id/approve` | mentor JWT | `pending` → `published` |
 
-`GET /mentor/feed` inchangé (compat #82).
+`GET /mentor/feed` unchanged (compat #82).
 
 ## Behaviour (Rails-aligned)
 
 | Action | Rule |
 |--------|------|
-| `POST /resources` | Workflow publication selon rôle |
-| `GET /resources` | Published only ; recherche title/body/subject/tags |
-| `POST /mentor/resources/:id/approve` | Ressource pending sur sujet de compétence mentor |
-| `GET /mentor/dashboard` | Stats + own resources + pending queue + file help-mentor |
+| `POST /resources` | Publication workflow by role |
+| `GET /resources` | Published only; search title/body/subject/tags |
+| `POST /mentor/resources/:id/approve` | Pending resource on mentor skill subject |
+| `GET /mentor/dashboard` | Stats + own resources + pending queue + help-mentor queue |
 
-## Modules code
+## Code modules
 
-| Fichier | Rôle |
-|---------|------|
-| [`apps/api/src/routes/resources.ts`](../../../apps/api/src/routes/resources.ts) | CRUD resources |
-| [`apps/api/src/routes/subject-requests.ts`](../../../apps/api/src/routes/subject-requests.ts) | Demandes matière |
+| File | Role |
+|------|------|
+| [`apps/api/src/routes/resources.ts`](../../../apps/api/src/routes/resources.ts) | Resources CRUD |
+| [`apps/api/src/routes/subject-requests.ts`](../../../apps/api/src/routes/subject-requests.ts) | Subject requests |
 | [`apps/api/src/routes/mentor.ts`](../../../apps/api/src/routes/mentor.ts) | Dashboard, approve |
 
 ## Types
 
-[`packages/types`](../../../packages/types/src/index.ts) : `Resource`, `SubjectRequest`, `MentorDashboardResponse`, etc.
+[`packages/types`](../../../packages/types/src/index.ts): `Resource`, `SubjectRequest`, `MentorDashboardResponse`, etc.
 
-## Vérification
+## Verification
 
 ```bash
 pnpm --filter api exec tsc --noEmit
 pnpm --filter api test
 ```
 
-## Suite
+## Next
 
-**Phase 5** : [api-rails-parity-phase5](../api-rails-parity-phase5/README.md)  
-**Lot A reject** (complément) : [api-parity-delete-reject](../api-parity-delete-reject/README.md)  
-Hub : [api-rails-parity](../api-rails-parity/README.md)
+**Phase 5:** [api-rails-parity-phase5](../api-rails-parity-phase5/README.md)  
+**Lot A reject** (supplement): [api-parity-delete-reject](../api-parity-delete-reject/README.md)  
+Hub: [api-rails-parity](../api-rails-parity/README.md)
 
-## Fichiers
+## Files
 
-| Fichier | Rôle |
-|---------|------|
-| `README.md` | Ce fichier |
+| File | Role |
+|------|------|
+| `README.md` | This file |

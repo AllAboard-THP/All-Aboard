@@ -1,45 +1,45 @@
-# API parité Rails — Phase 5b (chat WebSocket)
+# Rails API parity — Phase 5b (WebSocket chat)
 
-**PR** : [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104)  
-**OpenAPI** : `0.9.0` — [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml)  
-**Prérequis** : [Phase 5 REST](../api-rails-parity-phase5/README.md)  
-**Référence Rails** : `Message#broadcast_to_conversation` → `ConversationChannel` (`apps/thp-final`)
+**PR:** [#104](https://github.com/AllAboard-THP/All-Aboard/pull/104)  
+**OpenAPI:** `0.9.0` — [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml)  
+**Prerequisite:** [Phase 5 REST](../api-rails-parity-phase5/README.md)  
+**Rails reference:** `Message#broadcast_to_conversation` → `ConversationChannel` (`apps/thp-final`)
 
-## Objectif
+## Goal
 
-Pousser les nouveaux messages en temps réel aux participants d’une conversation, en complément du REST phase 5 (envoi via `POST …/messages`).
+Push new messages in real time to conversation participants, complementing Phase 5 REST (send via `POST …/messages`).
 
-## Dépendances
+## Dependencies
 
-- `@fastify/websocket` dans `apps/api/package.json`
+- `@fastify/websocket` in `apps/api/package.json`
 - `@types/ws` (dev)
 
 ## Endpoints
 
 | Route | Auth | Description |
 |-------|------|-------------|
-| `GET /conversations/:id/ws` | JWT (upgrade WebSocket) | Abonnement broadcast ; participant uniquement |
+| `GET /conversations/:id/ws` | JWT (WebSocket upgrade) | Broadcast subscription; participant only |
 
-REST inchangé : `GET/POST /conversations`, `GET/POST …/messages`, `PATCH …/read` — voir [phase5](../api-rails-parity-phase5/README.md).
+REST unchanged: `GET/POST /conversations`, `GET/POST …/messages`, `PATCH …/read` — see [phase5](../api-rails-parity-phase5/README.md).
 
-## Auth WebSocket
+## WebSocket auth
 
-1. Cookie `access_token` (comme REST après login), **ou** query `?token=<JWT>` (clients sans cookie)
-2. Vérification participant via `isConversationParticipant`
-3. Codes fermeture : `4401` (non authentifié), `4403` (non participant), `4503` (conversation introuvable)
+1. Cookie `access_token` (like REST after login), **or** query `?token=<JWT>` (clients without cookie)
+2. Participant check via `isConversationParticipant`
+3. Close codes: `4401` (unauthenticated), `4403` (not participant), `4503` (conversation not found)
 
-## Payload broadcast
+## Broadcast payload
 
-Identique à `ChatMessage` REST (`type: "message"`) — aligné `Message#as_chat_json` Rails. Envoyé à tous les abonnés de la conversation **sauf** l’expéditeur REST (qui reçoit déjà la réponse `201`).
+Same as REST `ChatMessage` (`type: "message"`) — aligned with Rails `Message#as_chat_json`. Sent to all conversation subscribers **except** REST sender (already gets `201` response).
 
 ## Architecture
 
-| Fichier | Rôle |
-|---------|------|
-| [`apps/api/src/services/chat-broadcast.ts`](../../../apps/api/src/services/chat-broadcast.ts) | Hub `Map<conversationId, Set<WebSocket>>` en mémoire |
-| [`apps/api/src/routes/conversations-ws.ts`](../../../apps/api/src/routes/conversations-ws.ts) | Route upgrade WS |
-| [`apps/api/src/routes/conversations.ts`](../../../apps/api/src/routes/conversations.ts) | Appelle `broadcastChatMessage` après `insertMessage` |
-| [`apps/api/src/app.ts`](../../../apps/api/src/app.ts) | Enregistrement plugin WS |
+| File | Role |
+|------|------|
+| [`apps/api/src/services/chat-broadcast.ts`](../../../apps/api/src/services/chat-broadcast.ts) | In-memory `Map<conversationId, Set<WebSocket>>` hub |
+| [`apps/api/src/routes/conversations-ws.ts`](../../../apps/api/src/routes/conversations-ws.ts) | WS upgrade route |
+| [`apps/api/src/routes/conversations.ts`](../../../apps/api/src/routes/conversations.ts) | Calls `broadcastChatMessage` after `insertMessage` |
+| [`apps/api/src/app.ts`](../../../apps/api/src/app.ts) | WS plugin registration |
 
 ```mermaid
 sequenceDiagram
@@ -52,26 +52,26 @@ sequenceDiagram
   API-->>ClientB: WS push ChatMessage
 ```
 
-## Limites (MVP)
+## Limits (MVP)
 
-- **Mono-instance** API : hub en mémoire process ; pas de Redis pub/sub dans ce lot (OK dev/staging Dokploy mono-replica)
-- **Hors scope** : événements `typing`, pièces jointes (présents côté Rails, v2)
+- **Single-instance** API: in-process memory hub; no Redis pub/sub in this lot (OK dev/staging Dokploy single replica)
+- **Out of scope:** `typing` events, attachments (present in Rails, v2)
 
-## Vérification
+## Verification
 
 ```bash
-pnpm --filter api test    # unit hub : chat-broadcast.test.ts
+pnpm --filter api test    # unit hub: chat-broadcast.test.ts
 ```
 
-Smoke manuel : deux clients WS sur la même conversation ; envoi REST → push sur le pair.
+Manual smoke: two WS clients on same conversation; REST send → push to peer.
 
-## Suite
+## Next
 
-**Phase 7** (IA) : [api-rails-parity-phase7](../api-rails-parity-phase7/README.md)  
-Hub : [api-rails-parity](../api-rails-parity/README.md)
+**Phase 7** (AI): [api-rails-parity-phase7](../api-rails-parity-phase7/README.md)  
+Hub: [api-rails-parity](../api-rails-parity/README.md)
 
-## Fichiers
+## Files
 
-| Fichier | Rôle |
-|---------|------|
-| `README.md` | Ce fichier |
+| File | Role |
+|------|------|
+| `README.md` | This file |

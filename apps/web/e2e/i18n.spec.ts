@@ -11,8 +11,8 @@ function e2eTitle(label: string): string {
 }
 
 test.describe("i18n — locale routing", () => {
-  test("default French feed at /", async ({ page }) => {
-    await page.goto("/");
+  test("default French feed at /feed", async ({ page }) => {
+    await page.goto("/feed");
     await expect(
       page.getByRole("heading", { level: 1, name: "Feed communautaire" }),
     ).toBeVisible({ timeout: 30_000 });
@@ -34,9 +34,9 @@ test.describe("i18n — locale routing", () => {
   });
 
   test("switch FR → EN from feed", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/feed");
     await page.getByTestId("locale-switch-en").click();
-    await expect(page).toHaveURL(/\/en\/?$/);
+    await expect(page).toHaveURL(/\/en\/feed\/?$/);
     await expect(
       page.getByRole("heading", { level: 1, name: "Community feed" }),
     ).toBeVisible();

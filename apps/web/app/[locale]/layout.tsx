@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 
 import "../globals.css";
 
+import { LocaleBridge } from "@/components/features/locale-bridge";
 import { Providers } from "../providers";
 import { routing } from "@/i18n/routing";
 
@@ -41,8 +42,10 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={locale} className="dark" suppressHydrationWarning>
       <body className="min-h-screen antialiased">
-        <NextIntlClientProvider messages={messages}>
-          <Providers>{children}</Providers>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <Providers>
+            <LocaleBridge>{children}</LocaleBridge>
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>

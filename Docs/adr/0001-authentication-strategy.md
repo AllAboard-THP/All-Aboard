@@ -1,32 +1,32 @@
-# ADR 0001 — Authentification MVP (Phase 2)
+# ADR 0001 — MVP authentication (Phase 2)
 
-## Statut
+## Status
 
-Accepté — 2026-05-14 (implémentation alignée sur ce document).
+Accepted — 2026-05-14 (implementation aligned with this document).
 
-## Contexte
+## Context
 
-All-Aboard expose une API Fastify (`apps/api`) et une app Next (`apps/web`) avec **BFF** same-origin (`/api/*`) pour le feed. La Phase 2 exige de protéger la création de demandes d’aide tout en limitant le rework (CORS, TanStack `credentials`, secrets Dokploy).
+All-Aboard exposes a Fastify API (`apps/api`) and a Next app (`apps/web`) with a same-origin **BFF** (`/api/*`) for the feed. Phase 2 requires protecting help-request creation while limiting rework (CORS, TanStack `credentials`, Dokploy secrets).
 
-## Décision
+## Decision
 
-1. **Jetons JWT (HS256)** signés avec `JWT_SECRET`, transportés dans un cookie **httpOnly** nommé `access_token` (émission côté API sur `POST /auth/login`).
-2. **Le navigateur ne parle pas directement à Fastify** pour les flux authentifiés MVP : le **Route Handler Next** relaie la requête vers l’API et transmet le cookie entrant en en-tête `Authorization: Bearer <jwt>` (lecture du cookie côté serveur Next uniquement).
-3. **Fastify** valide le JWT via `@fastify/jwt` sur les routes protégées (ex. `POST /help-requests`). `GET /feed` reste **public** pour le MVP.
-4. **CORS navigateur → API** : **hors périmètre** tant que le pattern BFF reste la règle — pas de `NEXT_PUBLIC_API_URL` obligatoire pour l’auth MVP. Une évolution « client direct vers l’API » exigerait ADR complémentaire + `CORS_ALLOWED_ORIGINS` + TanStack `credentials`.
+1. **JWT tokens (HS256)** signed with `JWT_SECRET`, carried in an **httpOnly** cookie named `access_token` (issued by API on `POST /auth/login`).
+2. **The browser does not talk directly to Fastify** for MVP authenticated flows: the **Next Route Handler** relays the request to the API and forwards the incoming cookie as `Authorization: Bearer <jwt>` (cookie read server-side in Next only).
+3. **Fastify** validates the JWT via `@fastify/jwt` on protected routes (e.g. `POST /help-requests`). `GET /feed` remains **public** for MVP.
+4. **Browser CORS → API**: **out of scope** while the BFF pattern is the rule — no mandatory `NEXT_PUBLIC_API_URL` for MVP auth. A future "client direct to API" evolution would require a supplementary ADR + `CORS_ALLOWED_ORIGINS` + TanStack `credentials`.
 
-## Conséquences
+## Consequences
 
-- Variables : `JWT_SECRET` (API, obligatoire hors tests) ; pas de session serveur ni Redis pour cette tranche.
-- Login MVP : `POST /auth/login` avec corps JSON `{ "userId": string, "password": string }` ; le mot de passe attendu est `MVP_LOGIN_PASSWORD` (env), permettant un compte de démo partagé en dev. **À remplacer** avant toute exposition large (hash utilisateur, inscription, etc.).
-- Web : les formulaires authentifiés passent par `POST /api/help-requests` (et futurs BFF) qui forwardent le bearer.
+- Variables: `JWT_SECRET` (API, required outside tests); no server session or Redis for this slice.
+- MVP login: `POST /auth/login` with JSON body `{ "userId": string, "password": string }`; expected password is `MVP_LOGIN_PASSWORD` (env), allowing a shared demo account in dev. **Replace** before any broad exposure (user hash, registration, etc.).
+- Web: authenticated forms go through `POST /api/help-requests` (and future BFFs) which forward the bearer.
 
-## Alternatives non retenues
+## Alternatives not chosen
 
-- **Session cookie opaque + store Postgres** : plus proche de certains parcours Next classiques, mais charge opérationnelle supérieure pour le MVP.
-- **JWT uniquement en mémoire client (localStorage)** : rejeté (XSS).
+- **Opaque session cookie + Postgres store**: closer to some classic Next flows, but higher operational load for MVP.
+- **JWT only in client memory (localStorage)**: rejected (XSS).
 
-## Liens
+## Links
 
-- [Plan Web/API](../plan-mise-en-place-web-api-donnees.md)
-- [Matrice déploiement](../matrice-deploiement-dokploy-coolify.md)
+- [Web/API plan](../guides/web-api-integration.md)
+- [Deployment matrix](../deployment/environment-variables.md)

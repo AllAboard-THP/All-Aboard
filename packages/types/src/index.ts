@@ -22,6 +22,8 @@ export type HelpRequest = {
   id: string;
   title: string;
   authorId: string;
+  /** Public profile UUID (`users.id`) when the author is a registered user. */
+  authorProfileId?: string;
   createdAt: string;
   /** Tags mentor / domaine (MOC). Absent ou vide si non utilisé. */
   tags?: string[];
@@ -76,6 +78,8 @@ export type Response = {
   helpRequestId: string;
   body: string;
   authorId: string;
+  /** Public profile UUID (`users.id`) when the author is a registered user. */
+  authorProfileId?: string;
   createdAt?: string;
   codeSnippet?: string;
   codeLanguage?: string;
@@ -215,6 +219,7 @@ export type UserPublicProfile = {
     postsCount: number;
     responsesCount: number;
   };
+  createdAt?: string;
 };
 
 export type UserStats = UserPublicProfile["stats"];
@@ -306,10 +311,20 @@ export type LogoutResponse = {
   ok: true;
 };
 
+/** Erreurs OAuth query string landing (`?auth_error=`). */
+export type OAuthAuthError = "oauth_failed";
+
+/** Erreur API lorsque Google OAuth n'est pas configuré. */
+export type OAuthNotConfiguredError = "oauth_not_configured";
+
 /** Réponse `GET /auth/me`. */
 export type AuthMeResponse = {
   userId: string;
+  /** Internal user UUID (`users.id`) for public profile URLs. */
+  id?: string;
   role: UserRole;
+  email?: string;
+  createdAt?: string;
   displayName?: string;
   fullName?: string;
   headline?: string;
@@ -339,6 +354,16 @@ export type UpdateUserMeBody = {
 /** Réponse `PATCH /users/me`. */
 export type UpdateUserMeResponse = {
   item: UserProfile;
+};
+
+/** Réponse `POST /users/me/avatar`. */
+export type UploadAvatarResponse = {
+  avatarUrl: string;
+};
+
+/** Réponse `DELETE /users/me/avatar`. */
+export type DeleteAvatarResponse = {
+  ok: true;
 };
 
 /** Réponse `POST /legal/accept`. */

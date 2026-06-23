@@ -66,5 +66,6 @@ export function rowToUserPublicProfile(
     competenceSubjects:
       competenceSubjects.length > 0 ? competenceSubjects : undefined,
     stats,
+    createdAt: row.createdAt.toISOString(),
   };
 }

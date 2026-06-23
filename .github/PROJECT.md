@@ -39,7 +39,7 @@ Configurer Roadmap : **group by Vague** ou **Pilier** ; deps = `blocked by` sur 
 
 1. Issue sur Project ; doc optionnelle dans `Docs/tasks/<NN>-slug/` ([convention](../Docs/tasks/README.md)).
 2. `feat/<num>-slug` depuis `Dev` → PR → `pnpm verify` ([AGENTS.md](../AGENTS.md)).
-3. Transverse Web/API : journal [plan opérationnel](../Docs/plan-mise-en-place-web-api-donnees.md).
+3. Transverse Web/API : journal [plan opérationnel](../Docs/guides/web-api-integration.md).
 4. ADR validé : `Docs/adr/` (brouillon dans `tasks/`).
 
 ---

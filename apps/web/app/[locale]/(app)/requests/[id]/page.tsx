@@ -1,5 +1,6 @@
-import { fetchHelpRequest } from "@/lib/api-server";
 import { HelpRequestDetailContent } from "@/components/features/help-request-detail-content";
+import { fetchHelpRequest } from "@/lib/api-server";
+import { initPageLocale } from "@/lib/init-page-locale";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +9,8 @@ type PageProps = {
 };
 
 export default async function HelpRequestDetailPage({ params }: PageProps) {
-  const { id } = await params;
+  const { locale, id } = await params;
+  initPageLocale(locale);
   const result = await fetchHelpRequest(id);
 
   if (result.ok) {

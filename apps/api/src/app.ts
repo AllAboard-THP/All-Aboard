@@ -2,6 +2,7 @@ import "./fastify-augmentation.js";
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
+import fastifyStatic from "@fastify/static";
 import jwt from "@fastify/jwt";
 import type pg from "pg";
 import { createDb, createPool } from "./db/client.js";
@@ -15,6 +16,10 @@ import {
   type EvaluateRoutingFn,
 } from "./agent/routing.js";
 import { jwtSecret } from "./lib/auth-helpers.js";
+import {
+  ensureAvatarStorageDir,
+  getAvatarStorageDir,
+} from "./lib/avatar-storage.js";
 import { registerOpenApiDocs } from "./openapi.js";
 import { registerAdminRoutes } from "./routes/admin.js";
 import { registerAuthRoutes } from "./routes/auth.js";
@@ -32,6 +37,7 @@ import { registerSubjectRoutes } from "./routes/subjects.js";
 import { registerSuggestTagsRoutes } from "./routes/suggest-tags.js";
 import { registerPasskeyRoutes } from "./routes/passkey.js";
 import { registerUserRoutes } from "./routes/users.js";
+import { registerAvatarRoutes } from "./routes/avatar.js";
 import type { SuggestTagsFn } from "./agent/tag-suggestion.js";
 
 export type BuildAppOptions = {
@@ -96,6 +102,13 @@ export async function buildApp(options?: BuildAppOptions) {
   registerAuthRoutes(app, db);
   registerPasskeyRoutes(app, db);
   registerUserRoutes(app, db);
+  await ensureAvatarStorageDir();
+  await app.register(fastifyStatic, {
+    root: getAvatarStorageDir(),
+    prefix: "/uploads/avatars/",
+    decorateReply: false,
+  });
+  await registerAvatarRoutes(app, db);
   registerLegalRoutes(app, db);
   registerResourceRoutes(app, db);
   registerSubjectRequestRoutes(app, db);

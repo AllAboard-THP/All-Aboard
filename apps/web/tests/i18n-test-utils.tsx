@@ -2,6 +2,7 @@ import type { ReactElement, ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { render, type RenderOptions } from "@testing-library/react";
 
+import enMessages from "../messages/en.json";
 import frMessages from "../messages/fr.json";
 import enMessages from "../messages/en.json";
 
