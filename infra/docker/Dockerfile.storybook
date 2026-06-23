@@ -17,6 +17,8 @@ COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN pnpm install --frozen-lockfile
 COPY --from=builder /app/out/full/ .
+# turbo prune keeps UI asset symlinks but omits Docs/branding — resolve targets for Storybook.
+COPY --from=builder /app/Docs/branding/assets ./Docs/branding/assets
 RUN pnpm exec turbo run build:storybook --filter=@allaboard/storybook
 
 FROM nginx:1.27-alpine AS runner
