@@ -7,6 +7,18 @@ RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
 FROM base AS builder
 COPY . .
+# Explicit COPY bypasses .dockerignore — UI assets are symlinks into Docs/branding.
+RUN mkdir -p Docs/branding/assets
+COPY Docs/branding/assets/concept-feed-hero.png \
+  Docs/branding/assets/concept-landing-hero.png \
+  Docs/branding/assets/concept-landing-hero.webp \
+  Docs/branding/assets/logo-mark.png \
+  Docs/branding/assets/logo-mark.svg \
+  ./Docs/branding/assets/
+RUN set -eux; \
+  for f in packages/ui/src/assets/*; do \
+    if [ -L "$f" ]; then cp -L "$f" "${f}.resolved" && mv -f "${f}.resolved" "$f"; fi; \
+  done
 RUN pnpm install --frozen-lockfile
 RUN pnpm exec turbo prune web --docker
 
@@ -15,8 +27,6 @@ COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN pnpm install --frozen-lockfile
 COPY --from=builder /app/out/full/ .
-# turbo prune keeps UI asset symlinks but omits Docs/branding — resolve targets for Next/Vite.
-COPY --from=builder /app/Docs/branding/assets ./Docs/branding/assets
 RUN pnpm exec turbo run build
 
 FROM base AS runner
