@@ -8,7 +8,7 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const monorepoRoot = path.join(__dirname, "../..");
 
-const brandingAssets = path.join(monorepoRoot, "Docs/branding/assets");
+const brandingAssets = path.join(monorepoRoot, "packages/ui/src/assets");
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@allaboard/ui"],

@@ -1,14 +1,14 @@
 ---
 description: logo-mark.png must never be modified by agents or scripts
 globs:
-  - Docs/branding/assets/logo-mark.png
+  - packages/ui/src/assets/logo-mark.png
   - scripts/branding/**
   - packages/ui/src/components/allaboard-logo-mark.tsx
 ---
 
 # logo-mark.png — immutable for automation
 
-`Docs/branding/assets/logo-mark.png` is the **canonical logo** (human-provided raster).
+`packages/ui/src/assets/logo-mark.png` is the **canonical logo** (human-provided raster).
 
 ## Forbidden (agents and scripts)
 
@@ -17,10 +17,10 @@ globs:
 
 ## Allowed
 
-- **Read** for compositing (e.g. landing hero script) or display (`AllAboardLogoMark` imports PNG via symlink)
+- **Read** for compositing (e.g. landing hero script) or display (`AllAboardLogoMark` uses inline SVG traced from PNG)
 - **Human-only** replacement of `logo-mark.png`
 - **Regenerate** `logo-mark.svg` via `scripts/branding/export-logo-mark-svg.py` (read-only on PNG)
 
 ## UI
 
-`AllAboardLogoMark` uses **logo-mark.svg** (transparent embed from PNG; `packages/ui/src/assets/logo-mark.svg` → Docs).
+`AllAboardLogoMark` uses **logo-mark.svg** (transparent embed from PNG; lives beside PNG in `packages/ui/src/assets/`).

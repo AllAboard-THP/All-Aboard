@@ -16,7 +16,7 @@ When generating or replacing a **hero / concept background** for landing or feed
 | Term | Meaning |
 |------|---------|
 | **Native 4K** | Source file **≥ 3840 px wide** before any upscale — true detail |
-| **Deploy 4K** | Canonical output **3840 × 2560** in `Docs/branding/assets/` — dimensions for production |
+| **Deploy 4K** | Canonical output **3840 × 2560** in `packages/ui/src/assets/` — dimensions for production |
 
 **Priority order:**
 
@@ -37,7 +37,7 @@ node scripts/branding/export-hero-raster-4k.mjs \
 ```
 
 4. **Bump** `LANDING_CONCEPT_BG_REVISION` / `FEED_CONCEPT_BG_REVISION` in `*-concept-background.tsx`.
-5. **Symlinks** `packages/ui/src/assets/` → `Docs/branding/assets/`.
+5. **Commit** rasters under `packages/ui/src/assets/` (never symlink from `Docs/` — Docker excludes `Docs`).
 
 ## Landing composition (illustration)
 
@@ -51,7 +51,7 @@ node scripts/branding/export-hero-raster-4k.mjs \
 | Field | Value |
 |-------|-------|
 | Output | **3840 × 2560** PNG (RGB 24-bit) + WebP q=94 |
-| Paths | `Docs/branding/assets/{basename}.{png,webp}` |
+| Paths | `packages/ui/src/assets/{basename}.{png,webp}` |
 
 ## Forbidden
 

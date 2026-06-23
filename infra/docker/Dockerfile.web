@@ -7,19 +7,6 @@ RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
 FROM base AS builder
 COPY . .
-# Explicit COPY bypasses .dockerignore — UI assets are symlinks into Docs/branding.
-RUN mkdir -p Docs/branding/assets
-COPY Docs/branding/assets/concept-feed-hero.png \
-  Docs/branding/assets/concept-landing-hero.png \
-  Docs/branding/assets/concept-landing-hero.webp \
-  Docs/branding/assets/logo-mark.png \
-  Docs/branding/assets/logo-mark.svg \
-  ./Docs/branding/assets/
-RUN set -eux; \
-  for f in concept-feed-hero.png concept-landing-hero.png concept-landing-hero.webp logo-mark.png logo-mark.svg; do \
-    src="packages/ui/src/assets/${f}"; \
-    if [ -L "${src}" ]; then cp -L "${src}" "${src}.resolved" && mv -f "${src}.resolved" "${src}"; fi; \
-  done
 RUN pnpm install --frozen-lockfile
 RUN pnpm exec turbo prune web --docker
 
