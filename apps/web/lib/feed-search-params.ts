@@ -58,13 +58,15 @@ export function buildFeedQueryString(
   return query.length > 0 ? `?${query}` : "";
 }
 
+const FEED_PATH = "/feed";
+
 /** Path + query for next-intl `Link` (locale prefix added by router). */
 export function feedHref(
   params: FeedPageParams,
   options?: { includeWidgets?: boolean },
 ): string {
   const query = buildFeedQueryString(params, options);
-  return query.length > 0 ? `/${query}` : "/";
+  return query.length > 0 ? `${FEED_PATH}${query}` : FEED_PATH;
 }
 
 export function feedPageHref(

@@ -59,7 +59,7 @@ test.describe("parcours création demande", () => {
     const searchTerm = title.slice(0, 40);
     await page.getByRole("searchbox", { name: "Rechercher dans le feed" }).fill(searchTerm);
     await page.getByRole("button", { name: "Rechercher" }).click();
-    await expect(page).toHaveURL(/\?q=/);
+    await expect(page).toHaveURL(/\/feed\?q=/);
 
     await expect(
       page.getByTestId("feed-ssr-list").getByRole("link", { name: title }),
@@ -84,7 +84,9 @@ test.describe("pages passkey", () => {
   test("register page renders passkey form", async ({ page }) => {
     await page.goto("/register");
     await expect(page.getByText("Créer un compte")).toBeVisible();
-    await expect(page.getByLabel("Prénom")).toBeVisible();
-    await expect(page.getByLabel("Nom")).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Prénom" })).toBeVisible();
+    await expect(
+      page.getByRole("textbox", { name: "Nom", exact: true }),
+    ).toBeVisible();
   });
 });

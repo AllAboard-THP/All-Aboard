@@ -58,14 +58,14 @@ describe("buildFeedQueryString", () => {
 });
 
 describe("feedHref", () => {
-  it("returns root path with query string", () => {
+  it("returns feed path with query string", () => {
     expect(
       feedHref({
         page: 2,
         limit: FEED_DEFAULT_LIMIT,
         subject: "rails",
       }),
-    ).toBe("/?subject=rails&page=2");
+    ).toBe("/feed?subject=rails&page=2");
   });
 
   it("builds pagination links preserving filters", () => {
@@ -75,6 +75,6 @@ describe("feedHref", () => {
       subject: "rails",
       q: "hooks",
     };
-    expect(feedPageHref(current, 3)).toBe("/?subject=rails&q=hooks&page=3");
+    expect(feedPageHref(current, 3)).toBe("/feed?subject=rails&q=hooks&page=3");
   });
 });
