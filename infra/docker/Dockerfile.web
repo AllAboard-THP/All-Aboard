@@ -16,8 +16,9 @@ COPY Docs/branding/assets/concept-feed-hero.png \
   Docs/branding/assets/logo-mark.svg \
   ./Docs/branding/assets/
 RUN set -eux; \
-  for f in packages/ui/src/assets/*; do \
-    if [ -L "$f" ]; then cp -L "$f" "${f}.resolved" && mv -f "${f}.resolved" "$f"; fi; \
+  for f in concept-feed-hero.png concept-landing-hero.png concept-landing-hero.webp logo-mark.png logo-mark.svg; do \
+    src="packages/ui/src/assets/${f}"; \
+    if [ -L "${src}" ]; then cp -L "${src}" "${src}.resolved" && mv -f "${src}.resolved" "${src}"; fi; \
   done
 RUN pnpm install --frozen-lockfile
 RUN pnpm exec turbo prune web --docker
