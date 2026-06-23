@@ -15,7 +15,7 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm verify       # lint + typecheck + test + build (avant commit / PR)
-pnpm smoke:dev    # smoke HTTP(S) web + api (voir Docs/plan-mise-en-place-web-api-donnees.md)
+pnpm smoke:dev    # smoke HTTP(S) web + api (voir Docs/guides/web-api-integration.md)
 ```
 
 - **web**: Next.js — `http://localhost:3000` (feed SSR via `API_URL` + TanStack ; BFF `/api/feed`, `/api/auth/login`, `/api/help-requests` ; formulaire `/help/new` — voir [Docs/README.md](Docs/README.md))
@@ -78,10 +78,10 @@ Workflow [.github/workflows/ci.yml](.github/workflows/ci.yml) sur PR et pushes (
 Détail hooks, gates et chemins : [Docs/design-system/verification-and-ci.md](Docs/design-system/verification-and-ci.md).
 ## Documentation
 
-1. [Docs/README.md](Docs/README.md) — phases MVP, principes, état code  
-2. [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3) — backlog, kanban, roadmap  
-3. [Docs/tasks/README.md](Docs/tasks/README.md) — doc par issue (`Docs/tasks/<NN>-slug/`)  
-4. [plan opérationnel Web/API](Docs/plan-mise-en-place-web-api-donnees.md) — contrat `/feed`, journal smoke  
-5. [map of content](Docs/map-of-content.md) — sources canoniques  
+1. [Docs/README.md](Docs/README.md) — MVP phases, principles, repository state  
+2. [Docs/INDEX.md](Docs/INDEX.md) — topic → canonical source map  
+3. [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3) — backlog, kanban, roadmap  
+4. [Docs/tasks/README.md](Docs/tasks/README.md) — per-issue notes (`Docs/tasks/<NN>-slug/`)  
+5. [Web ↔ API integration](Docs/guides/web-api-integration.md) — `/feed` contract, smoke journal  
 
-Références : [Design system (hub)](Docs/design-system/README.md) · [parcours MOC](Docs/moc-parcours-utilisateur.md) · [Dokploy instance](Docs/deploiement-dokploy-instance-allaboard.md) · [vision](Docs/vision/README.md) · [.github/PROJECT.md](.github/PROJECT.md)
+See also: [Design system](Docs/design-system/README.md) · [User journeys](Docs/product/user-journeys.md) · [Deployment](Docs/deployment/README.md) · [Vision](Docs/vision/README.md) · [.github/PROJECT.md](.github/PROJECT.md)

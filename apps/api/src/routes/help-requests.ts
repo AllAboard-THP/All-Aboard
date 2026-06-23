@@ -34,6 +34,9 @@ import {
 import { loadHelpRequestRow } from "../lib/help-request-query.js";
 import { rowToHelpRequest, rowToResponse } from "../lib/mappers.js";
 import {
+  loadProfileIdsByEmails,
+} from "../services/user-profile.js";
+import {
   createHelpRequestBodySchema,
   createResponseBodySchema,
   updateHelpRequestBodySchema,
@@ -230,9 +233,23 @@ export function registerHelpRequestRoutes(
         );
       }
 
+      const profileIdsByEmail = await loadProfileIdsByEmails(db, [
+        loaded.helpRequest.authorId,
+        ...visibleRows.map((row) => row.authorId),
+      ]);
+
       return {
-        item: rowToHelpRequest(loaded.helpRequest, loaded.subject),
-        responses: visibleRows.map(rowToResponse),
+        item: rowToHelpRequest(
+          loaded.helpRequest,
+          loaded.subject,
+          profileIdsByEmail.get(loaded.helpRequest.authorId.toLowerCase()),
+        ),
+        responses: visibleRows.map((row) =>
+          rowToResponse(
+            row,
+            profileIdsByEmail.get(row.authorId.toLowerCase()),
+          ),
+        ),
         ...(filterByCertifications
           ? {
               certificationFilter: {

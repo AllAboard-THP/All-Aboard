@@ -35,7 +35,7 @@ export const WithLabel: Story = {
       <label htmlFor="email" className="text-sm font-medium text-foreground">
         Email
       </label>
-      <Input id="email" type="email" placeholder="you@example.com" />
+      <Input id="email" type="email" />
     </div>
   ),
 };

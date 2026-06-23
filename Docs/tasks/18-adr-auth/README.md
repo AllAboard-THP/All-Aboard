@@ -1,17 +1,17 @@
-# Tâche #18 — ADR stratégie d'authentification
+# Task #18 — Authentication strategy ADR
 
-**Issue** : https://github.com/AllAboard-THP/All-Aboard/issues/18
+**Issue:** https://github.com/AllAboard-THP/All-Aboard/issues/18
 
-## Objectif
+## Goal
 
-Rédiger l’ADR auth (session vs JWT, BFF, variables Dokploy) avant #21 et #27.
+Draft the auth ADR (session vs JWT, BFF, Dokploy variables) before #21 and #27.
 
-## Notes de travail
+## Working notes
 
-Ajouter ici brouillons et comparatifs — le ADR validé ira dans `Docs/adr/` à la merge de la PR.
+Add drafts and comparisons here — the accepted ADR goes to `Docs/adr/` when the PR merges.
 
-## Doc canonique
+## Canonical docs
 
-- [Matrice auth / JWT](../../matrice-deploiement-dokploy-coolify.md)
-- [Plan Web/API — auth cross-origin](../../plan-mise-en-place-web-api-donnees.md)
-- [README Phase 2](../../README.md)
+- [Auth / JWT matrix](../../deployment/environment-variables.md)
+- [Web/API plan — cross-origin auth](../../guides/web-api-integration.md)
+- [Phase 2 README](../../README.md)

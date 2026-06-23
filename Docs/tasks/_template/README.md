@@ -1,22 +1,18 @@
-# Tâche #NN — Titre court
+# Issue #NN — Short title
 
-**Issue** : https://github.com/AllAboard-THP/All-Aboard/issues/NN
+**Issue:** https://github.com/AllAboard-THP/All-Aboard/issues/NN
 
-## Objectif
+## Goal
 
-(Une phrase.)
+One-sentence objective (copy or summarize from the issue).
 
-## Notes de travail
+## Files in this folder
 
-(Brouillons, décisions locales, liens — tout reste dans ce dossier.)
+| File | Role |
+|------|------|
+| `README.md` | This index |
 
-## Fichiers
+## Links
 
-| Fichier | Rôle |
-|---------|------|
-| `README.md` | Ce fichier |
-
-## Doc canonique (lecture)
-
-- [Docs/README.md](../../README.md)
-- (Liens spécifiques à la tâche)
+- [Documentation README](../../README.md)
+- [Documentation index](../../INDEX.md)

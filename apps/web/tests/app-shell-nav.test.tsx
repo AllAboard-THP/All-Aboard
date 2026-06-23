@@ -6,7 +6,7 @@ import {
 } from "@/components/features/app-shell-nav";
 import { renderWithI18n } from "./i18n-test-utils";
 
-const usePathname = vi.fn(() => "/");
+const usePathname = vi.fn(() => "/feed");
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({
@@ -33,7 +33,7 @@ function getPrimaryNav() {
 
 describe("AppShellNav", () => {
   beforeEach(() => {
-    usePathname.mockReturnValue("/");
+    usePathname.mockReturnValue("/feed");
   });
 
   it("renders primary navigation links including messages", () => {
@@ -47,10 +47,11 @@ describe("AppShellNav", () => {
     expect(nav.getByRole("link", { name: "Mentor" })).toBeTruthy();
   });
 
-  it("marks Feed as current page on /", () => {
+  it("marks Feed as current page on /feed", () => {
     renderWithI18n(<AppShellNav />);
     const nav = getPrimaryNav();
     const home = nav.getByRole("link", { name: "Feed" });
+    expect(home.getAttribute("href")).toBe("/");
     expect(home.getAttribute("aria-current")).toBe("page");
     expect(nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute("aria-current")).toBeNull();
   });

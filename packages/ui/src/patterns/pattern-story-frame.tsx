@@ -3,7 +3,10 @@ import type { ReactNode } from "react";
 
 import { cn } from "@allaboard/ui/lib/utils";
 
-type FrameWidth = "feed" | "form";
+import { AppAbstractBackground } from "./app-abstract-background";
+import { APP_STAGE_CLASS } from "./landing-layout";
+
+type FrameWidth = "feed" | "form" | "full";
 
 /** Spacing compact pour cartes feed en prod (apps/web). */
 export const patternListCardClassName = "gap-0 py-4";
@@ -45,6 +48,15 @@ export function PatternStoryFrame({
   children: ReactNode;
   width?: FrameWidth;
 }) {
+  if (width === "full") {
+    // items-center: bounded children (max-w-*) sit centered like prod mx-auto layouts
+    return (
+      <div className="flex min-h-[100dvh] w-full flex-col items-center p-6">
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-[100dvh] w-full items-center justify-center p-6">
       <div className={width === "form" ? "w-full max-w-md" : "flex justify-center"}>
@@ -62,6 +74,33 @@ export function withPatternStoryFrame(width: FrameWidth = "feed"): Decorator {
   );
 }
 
+/** App mesh background — canonical `(app)/` pages (profile, feed, dashboard). */
+export function withAppStageStoryFrame(width: FrameWidth = "full"): Decorator {
+  return (Story) => (
+    <div className={cn("relative min-h-[100dvh]", APP_STAGE_CLASS)}>
+      <AppAbstractBackground />
+      <div className="relative z-10">
+        <PatternStoryFrame width={width}>
+          <Story />
+        </PatternStoryFrame>
+      </div>
+    </div>
+  );
+}
+
 export const patternStoryParameters = {
+  layout: "fullscreen" as const,
+};
+
+export const mobileStoryParameters = {
+  ...patternStoryParameters,
+  layout: "fullscreen" as const,
+  viewport: {
+    defaultViewport: "mobile1",
+  },
+};
+
+export const screenStoryParameters = {
+  ...patternStoryParameters,
   layout: "fullscreen" as const,
 };

@@ -43,6 +43,7 @@ export function rowToSubject(row: SubjectRow): Subject {
 export function rowToHelpRequest(
   row: HelpRequestRow,
   subject?: SubjectRow | null,
+  authorProfileId?: string,
 ): HelpRequest {
   const tags = row.tags?.length ? row.tags : undefined;
   const item: HelpRequest = {
@@ -52,6 +53,8 @@ export function rowToHelpRequest(
     createdAt: row.createdAt.toISOString(),
     ...(tags ? { tags } : {}),
   };
+
+  if (authorProfileId) item.authorProfileId = authorProfileId;
 
   if (row.body.trim()) item.body = row.body;
   if (row.codeSnippet) item.codeSnippet = row.codeSnippet;
@@ -126,7 +129,10 @@ export function rowToSubjectRequest(row: SubjectRequestRow): SubjectRequest {
   return item;
 }
 
-export function rowToResponse(row: ResponseRow): Response {
+export function rowToResponse(
+  row: ResponseRow,
+  authorProfileId?: string,
+): Response {
   const item: Response = {
     id: row.id,
     helpRequestId: row.helpRequestId,
@@ -134,6 +140,7 @@ export function rowToResponse(row: ResponseRow): Response {
     authorId: row.authorId,
     createdAt: row.createdAt.toISOString(),
   };
+  if (authorProfileId) item.authorProfileId = authorProfileId;
   if (row.codeSnippet) item.codeSnippet = row.codeSnippet;
   if (row.codeLanguage) item.codeLanguage = row.codeLanguage;
   if (row.flaggedForModeration) item.flaggedForModeration = true;

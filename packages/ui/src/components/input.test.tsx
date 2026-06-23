@@ -5,10 +5,10 @@ import { Input } from "./input";
 
 describe("Input", () => {
   it("renders with data-slot input", () => {
-    render(<Input aria-label="Email" placeholder="you@example.com" />);
+    render(<Input aria-label="Email" placeholder="…" />);
     const input = screen.getByLabelText("Email");
     expect(input.getAttribute("data-slot")).toBe("input");
-    expect(input.getAttribute("placeholder")).toBe("you@example.com");
+    expect(input.getAttribute("placeholder")).toBe("…");
   });
 
   it("supports aria-invalid", () => {

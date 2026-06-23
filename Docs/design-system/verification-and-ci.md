@@ -1,49 +1,49 @@
-# Vérification locale et CI — design system
+# Local verification and CI — design system
 
-**Audience** : référence rapide avant commit, push ou review PR.
+**Audience:** quick reference before commit, push or PR review.
 
 ---
 
-## Scripts racine (`package.json`)
+## Root scripts (`package.json`)
 
-| Script | Contenu | Quand |
-|--------|---------|-------|
-| `pnpm verify:commit` | `lint` + `typecheck` | pre-commit, avant commit |
+| Script | Content | When |
+|--------|---------|------|
+| `pnpm verify:commit` | `lint` + `typecheck` | pre-commit, before commit |
 | `pnpm verify:push` | `test` + `build` + `build:storybook` | pre-push |
-| `pnpm verify` | commit + push | revue complète / agents |
+| `pnpm verify` | commit + push | full review / agents |
 | `pnpm lint` | turbo lint, `--filter=!thp-final` | |
 | `pnpm typecheck` | turbo typecheck, `--filter=!thp-final` | |
 | `pnpm test` | turbo test, `--filter=!thp-final` | |
 | `pnpm build` | turbo build, `--filter=!thp-final` | |
-| `pnpm build:storybook` | build static SB | inclus dans `verify:push` |
-| `pnpm storybook` | dev SB port 6006 | exploration UI |
+| `pnpm build:storybook` | static SB build | included in `verify:push` |
+| `pnpm storybook` | dev SB port 6006 | UI exploration |
 
-**Hors scope MVP** : `apps/thp-final` (Rails archive) — pas dans verify/CI/dev racine.
+**Outside MVP scope:** `apps/thp-final` (Rails archive) — not in root verify/CI/dev.
 
 ---
 
-## Hooks Git (`githooks/`)
+## Git hooks (`githooks/`)
 
 ```bash
-pnpm setup:hooks   # une fois
+pnpm setup:hooks   # once
 ```
 
 - **pre-commit** → `pnpm verify:commit`
-- **pre-push** → `pnpm verify:push` (inclut Storybook depuis T22)
+- **pre-push** → `pnpm verify:push` (includes Storybook since T22)
 
-Ne pas utiliser `--no-verify` sans accord explicite.
+Do not use `--no-verify` without explicit agreement.
 
 ---
 
-## CI GitHub Actions (`.github/workflows/ci.yml`)
+## GitHub Actions CI (`.github/workflows/ci.yml`)
 
-| Job | Déclenchement | Étapes |
-|-----|---------------|--------|
-| **`verify`** | Toujours | install → lint → typecheck → `db:migrate` (api) → test → build |
-| **`changes`** | Toujours | `dorny/paths-filter@v3` — détecte diff DS/SB |
-| **`storybook`** | Si filtre `storybook == true` | install → `pnpm build:storybook` → artefact 7j |
+| Job | Trigger | Steps |
+|-----|---------|-------|
+| **`verify`** | Always | install → lint → typecheck → `db:migrate` (api) → test → build |
+| **`changes`** | Always | `dorny/paths-filter@v3` — detects DS/SB diff |
+| **`storybook`** | If filter `storybook == true` | install → `pnpm build:storybook` → 7d artefact |
 
-**Chemins déclenchant le job `storybook`** :
+**Paths triggering `storybook` job:**
 
 - `packages/ui/**`
 - `apps/storybook/**`
@@ -51,58 +51,58 @@ Ne pas utiliser `--no-verify` sans accord explicite.
 - `turbo.json`, `package.json`
 - `.github/workflows/ci.yml`
 
-PR **API-only** → job `storybook` **skipped** (pas de surcharge inutile).
+API-only PR → `storybook` job **skipped** (no unnecessary overhead).
 
-**Node** : 22 · **pnpm** : 9 (lockfile).
+**Node:** 22 · **pnpm:** 9 (lockfile).
 
 ---
 
-## Gates par type de changement
+## Gates by change type
 
-| Changement | Minimum local |
+| Change | Local minimum |
 |------------|----------------|
-| Primitive / story UI | `verify:commit` + `build:storybook` + `pnpm --filter @allaboard/ui test` |
+| Primitive / UI story | `verify:commit` + `build:storybook` + `pnpm --filter @allaboard/ui test` |
 | Web (features, pages) | `verify:commit` + `pnpm --filter web test` + `pnpm --filter web build` |
-| CI workflow seul | push **SSH** ; le job `storybook` doit passer car `ci.yml` est dans le filtre |
-| Doc seule `Docs/` | `verify:commit` si pas de code ; sinon selon périmètre |
+| CI workflow only | push via **SSH**; `storybook` job must pass because `ci.yml` is in filter |
+| Doc only `Docs/` | `verify:commit` if no code; otherwise per scope |
 
-Durée indicative locale : `build:storybook` ~**15 s** (machine de référence 2026-05-20).
+Indicative local duration: `build:storybook` ~**15 s** (reference machine 2026-05-20).
 
 ---
 
-## ESLint — frontières (`@allaboard/config-eslint`)
+## ESLint — boundaries (`@allaboard/config-eslint`)
 
-Règles `design-system-boundaries` :
+`design-system-boundaries` rules:
 
 - `apps/web` ↮ `apps/storybook`
 - `packages/ui` ↮ `apps/*`
 
-Fichier : `packages/config-eslint/design-system-boundaries.mjs`.
+File: `packages/config-eslint/design-system-boundaries.mjs`.
 
 ---
 
-## Graphify (carte codebase)
+## Graphify (codebase map)
 
 ```bash
-uv tool install graphifyy    # une fois — binaire graphify
+uv tool install graphifyy    # once — graphify binary
 ./scripts/graphify-update.sh
 ```
 
-Corpus : `packages/`, `apps/web`, `apps/api`, `Docs/` — pas `thp-final`.  
-Sortie : `graphify-out/GRAPH_REPORT.md`.
+Corpus: `packages/`, `apps/web`, `apps/api`, `Docs/` — not `thp-final`.  
+Output: `graphify-out/GRAPH_REPORT.md`.
 
 ---
 
-## Dépannage
+## Troubleshooting
 
-| Problème | Action |
+| Problem | Action |
 |----------|--------|
-| Push rejeté sur `ci.yml` (OAuth scope `workflow`) | `git remote set-url origin git@github.com:AllAboard-THP/All-Aboard.git` |
-| Classes Tailwind absentes en prod | vérifier `@source` dans `apps/web/app/globals.css` |
-| Storybook : alias `@allaboard/ui` | `apps/storybook/.storybook/main.ts` → `viteFinal` |
-| Image Docker déploiement | `infra/docker/Dockerfile.storybook` + `nginx-storybook.conf` (port **8080**) |
+| Push rejected on `ci.yml` (OAuth scope `workflow`) | `git remote set-url origin git@github.com:AllAboard-THP/All-Aboard.git` |
+| Tailwind classes missing in prod | check `@source` in `apps/web/app/globals.css` |
+| Storybook: `@allaboard/ui` alias | `apps/storybook/.storybook/main.ts` → `viteFinal` |
+| Docker deploy image | `infra/docker/Dockerfile.storybook` + `nginx-storybook.conf` (port **8080**) |
 
 ```bash
 docker build -f infra/docker/Dockerfile.storybook -t allaboard-storybook:local .
 ```
-| Vitest web / Vite conflit | `apps/web/tsconfig.json` exclut `vitest.config.ts` ; Vitest UI isolé dans `packages/ui` |
+| Web Vitest / Vite conflict | `apps/web/tsconfig.json` excludes `vitest.config.ts`; UI Vitest isolated in `packages/ui` |

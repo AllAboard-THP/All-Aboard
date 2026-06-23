@@ -1,61 +1,61 @@
-# Tâche #37 — Phase 4 Agent All-Aboard & Intuition
+# Task #37 — Phase 4 All-Aboard Agent & Intuition
 
-**Issue** : https://github.com/AllAboard-THP/All-Aboard/issues/37
+**Issue:** https://github.com/AllAboard-THP/All-Aboard/issues/37
 
-## Objectif
+## Goal
 
-Cadrer et livrer le backlog Phase 4 **`apps/agent` (agent All-Aboard) + handoff Rubberduck (externe) + intégration Intuition** : ADR architecture, sous-tâches #66–#69, implémentation MVP merge sur `Dev` (2026-06-03).
+Frame and deliver Phase 4 backlog **`apps/agent` (All-Aboard agent) + Rubberduck handoff (external) + Intuition integration**: architecture ADR, sub-tasks #66–#69, MVP implementation merged on `Dev` (2026-06-03).
 
-**Rubberduck** n’est pas `apps/agent` : service IA géré par une autre équipe ; All-Aboard redirige l’utilisateur pour certaines demandes. **`apps/agent`** orchestre l’IA in-app et la décision de handoff.
+**Rubberduck** is not `apps/agent`: AI service owned by another team; All-Aboard redirects users for certain requests. **`apps/agent`** orchestrates in-app AI and handoff decisions.
 
-## Livrables (cadrage)
+## Deliverables (framing)
 
-| Livrable | Fichier / artefact |
-|----------|-------------------|
-| ADR Phase 4 | [Docs/adr/0004-agent-indexer-architecture.md](../../adr/0004-agent-indexer-architecture.md) |
-| Sous-tâches backlog | Issues #66–#69 (enfants #37) |
+| Deliverable | File / artifact |
+|-------------|-----------------|
+| Phase 4 ADR | [Docs/adr/0004-agent-indexer-architecture.md](../../adr/0004-agent-indexer-architecture.md) |
+| Backlog sub-tasks | Issues #66–#69 (children of #37) |
 
-## Sous-tâches
+## Sub-tasks
 
-| Issue | Titre | PR | Statut |
+| Issue | Title | PR | Status |
 |-------|-------|-----|--------|
-| [#66](https://github.com/AllAboard-THP/All-Aboard/issues/66) | Scaffold `apps/agent` (healthcheck, stubs agent + handoff) | [#93](https://github.com/AllAboard-THP/All-Aboard/pull/93) | Livré — [`apps/agent`](../../../apps/agent/README.md) |
-| [#67](https://github.com/AllAboard-THP/All-Aboard/issues/67) | Bridge Intuition (publisher outbox + GraphQL) | [#94](https://github.com/AllAboard-THP/All-Aboard/pull/94) | Livré — [README](../67-intuition-bridge/README.md), [spike GraphQL](./intuition-graphql-spike.md) |
-| [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68) | Intégration API — handoff Rubberduck via agent | [#95](https://github.com/AllAboard-THP/All-Aboard/pull/95) | Livré — [README](../68-agent-handoff/README.md) |
-| [#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) | CI/Dokploy Agent + retrait placeholder Indexer | [#96](https://github.com/AllAboard-THP/All-Aboard/pull/96) | Livré — [README](../69-agent-ci-dokploy/README.md), job CI `agent` |
+| [#66](https://github.com/AllAboard-THP/All-Aboard/issues/66) | `apps/agent` scaffold (healthcheck, agent + handoff stubs) | [#93](https://github.com/AllAboard-THP/All-Aboard/pull/93) | Shipped — [`apps/agent`](../../../apps/agent/README.md) |
+| [#67](https://github.com/AllAboard-THP/All-Aboard/issues/67) | Intuition bridge (outbox publisher + GraphQL) | [#94](https://github.com/AllAboard-THP/All-Aboard/pull/94) | Shipped — [README](../67-intuition-bridge/README.md), [GraphQL spike](./intuition-graphql-spike.md) |
+| [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68) | API integration — Rubberduck handoff via agent | [#95](https://github.com/AllAboard-THP/All-Aboard/pull/95) | Shipped — [README](../68-agent-handoff/README.md) |
+| [#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) | Agent CI/Dokploy + Indexer placeholder removal | [#96](https://github.com/AllAboard-THP/All-Aboard/pull/96) | Shipped — [README](../69-agent-ci-dokploy/README.md), CI job `agent` |
 
-## Décision architecture (2026-05-27)
+## Architecture decision (2026-05-27)
 
-- **Indexer** = infra **Intuition** (subnet + GraphQL) — pas de `apps/indexer` maison.
-- All-Aboard développe un **bridge publisher** (#67) : outbox Postgres → SDK Intuition ; lecture via GraphQL Intuition.
-- `infra/docker/Dockerfile.indexer` et service Dokploy « Indexer » = **legacy** — à retirer, ne pas réactiver.
+- **Indexer** = **Intuition** infra (subnet + GraphQL) — no in-house `apps/indexer`.
+- All-Aboard builds a **publisher bridge** (#67): Postgres outbox → Intuition SDK; read via Intuition GraphQL.
+- `infra/docker/Dockerfile.indexer` and Dokploy "Indexer" service = **legacy** — remove, do not reactivate.
 
-## Décision architecture (2026-06-02)
+## Architecture decision (2026-06-02)
 
-- **`apps/agent`** = agent IA **All-Aboard** (réponses in-app, orchestration).
-- **Rubberduck** = produit **externe** ; `POST /routing/evaluate` → `suggestRubberduckRedirect` (pas de route respond sur l’agent).
+- **`apps/agent`** = **All-Aboard** AI agent (in-app responses, orchestration).
+- **Rubberduck** = **external** product; `POST /routing/evaluate` → `suggestRubberduckRedirect` (no respond route on agent).
 
-## État actuel (Phase 4 MVP — 2026-06-03)
+## Current state (Phase 4 MVP — 2026-06-03)
 
-- **Handoff Rubberduck** : `POST /help-requests` appelle `apps/agent` `POST /routing/evaluate` avec fallback heuristique ([`apps/api/src/agent/routing.ts`](../../../apps/api/src/agent/routing.ts)).
-- **UI** : redirect externe Rubberduck si `RUBBERDUCK_URL` configurée ([`help-request-form.tsx`](../../../apps/web/components/features/help-request-form.tsx)).
-- **`apps/agent`** : scaffold (#66), CI Docker + smoke `/health` (#69) ; service Dokploy Agent **désactivé** jusqu’à validation ops humaine.
-- **Intuition** : outbox + publisher stub (#67) ; SDK testnet et lecture GraphQL en évolution post-MVP.
+- **Rubberduck handoff**: `POST /help-requests` calls `apps/agent` `POST /routing/evaluate` with heuristic fallback ([`apps/api/src/agent/routing.ts`](../../../apps/api/src/agent/routing.ts)).
+- **UI**: external Rubberduck redirect when `RUBBERDUCK_URL` configured ([`help-request-form.tsx`](../../../apps/web/components/features/help-request-form.tsx)).
+- **`apps/agent`**: scaffold (#66), Docker CI + `/health` smoke (#69); Dokploy Agent service **disabled** until human ops validation.
+- **Intuition**: outbox + stub publisher (#67); testnet SDK and GraphQL read evolving post-MVP.
 
-## Critères de clôture (#37)
+## Closure criteria (#37)
 
-- [x] ADR 0004 rédigé
-- [x] ADR révisé — indexer Intuition, pas `apps/indexer`
-- [x] ADR 0004 accepté (2026-06-01) — implémentation #66–#69 débloquée
-- [x] ADR révisé (2026-06-02) — `apps/agent` distinct de Rubberduck
-- [x] Sous-issues backlog créées et liées dans #37
-- [x] Implémentation #66–#69 merge sur `Dev` (PRs #93, #94, #95, #96)
-- [x] Epic #37 fermée (2026-06-03)
+- [x] ADR 0004 drafted
+- [x] ADR revised — Intuition indexer, not `apps/indexer`
+- [x] ADR 0004 accepted (2026-06-01) — #66–#69 implementation unblocked
+- [x] ADR revised (2026-06-02) — `apps/agent` distinct from Rubberduck
+- [x] Backlog sub-issues created and linked in #37
+- [x] #66–#69 implementation merged on `Dev` (PRs #93, #94, #95, #96)
+- [x] Epic #37 closed (2026-06-03)
 
-## Doc canonique (lecture)
+## Canonical reading
 
 - [ADR 0004](../../adr/0004-agent-indexer-architecture.md)
-- [Parcours MOC](../../moc-parcours-utilisateur.md)
-- [Dataflow cible](../../dataflow-architecture.md)
-- [Index doc Intuition](../../intuition-documentation-index.md)
-- [Instance Dokploy — Agent/Indexer legacy](../../deploiement-dokploy-instance-allaboard.md)
+- [User journeys](../../product/user-journeys.md)
+- [Target dataflow](../../architecture/dataflow.md)
+- [Intuition docs index](../../integrations/intuition-docs-index.md)
+- [Dokploy instance — Agent/Indexer legacy](../../deployment/dokploy-instance.md)

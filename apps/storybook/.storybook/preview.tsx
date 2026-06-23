@@ -1,10 +1,40 @@
-import type { Preview } from "@storybook/react";
+import type { Decorator, Preview } from "@storybook/react";
 import { withThemeByClassName } from "@storybook/addon-themes";
+import { Toaster } from "sonner";
 import { themes } from "storybook/theming";
+
+import {
+  resolveStorybookLocale,
+  StorybookLocaleProvider,
+} from "@allaboard/ui/i18n/storybook-locale";
 import "@allaboard/ui/globals.css";
 import "./preview.css";
 
+const withStorybookLocale: Decorator = (Story, { globals }) => (
+  <StorybookLocaleProvider locale={resolveStorybookLocale(globals.locale)}>
+    <Story />
+    <Toaster theme="dark" richColors closeButton />
+  </StorybookLocaleProvider>
+);
+
 const preview: Preview = {
+  globalTypes: {
+    locale: {
+      description: "Langue des stories (UI + fixtures)",
+      toolbar: {
+        title: "Langue",
+        icon: "globe",
+        items: [
+          { value: "fr", title: "Français" },
+          { value: "en", title: "English" },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
+  initialGlobals: {
+    locale: "fr",
+  },
   parameters: {
     backgrounds: { disable: true },
     docs: {
@@ -13,8 +43,29 @@ const preview: Preview = {
     themes: {
       disable: true,
     },
+    options: {
+      storySort: {
+        order: [
+          "Documentation",
+          ["Catalog", ["Patterns"]],
+          "Foundations",
+          "Components",
+          "Patterns",
+          "Screens",
+          ["Auth", "App", "Help", "UserDashboard", "MentorDashboard", "Admin", "Legal"],
+          "Mobile",
+          [
+            "Screens",
+            ["Auth", "App", "Dashboards", "Admin", "Legal"],
+            "BottomNav",
+          ],
+        ],
+        method: "alphabetical",
+      },
+    },
   },
   decorators: [
+    withStorybookLocale,
     withThemeByClassName({
       themes: {
         dark: "dark",

@@ -91,8 +91,8 @@ describe("ExploreContent", () => {
     const grid = screen.getByTestId("explore-subject-grid");
     const links = within(grid).getAllByRole("link");
     expect(links).toHaveLength(2);
-    expect(links[0]?.getAttribute("href")).toBe("/?subject=javascript");
-    expect(links[1]?.getAttribute("href")).toBe("/?subject=rails");
+    expect(links[0]?.getAttribute("href")).toBe("/feed?subject=javascript");
+    expect(links[1]?.getAttribute("href")).toBe("/feed?subject=rails");
     expect(within(grid).getByText("JavaScript")).toBeTruthy();
     expect(within(grid).getByText("Rails")).toBeTruthy();
     expect(screen.getByTestId("subject-request-explore-card")).toBeTruthy();

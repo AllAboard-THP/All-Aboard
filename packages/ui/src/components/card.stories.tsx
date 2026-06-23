@@ -73,7 +73,7 @@ export const LoginForm: Story = {
       <CardContent className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <Label htmlFor="login-email">Email</Label>
-          <Input id="login-email" type="email" placeholder="you@example.com" />
+          <Input id="login-email" type="email" />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="login-password">Password</Label>

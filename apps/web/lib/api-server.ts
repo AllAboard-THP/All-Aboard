@@ -201,6 +201,9 @@ export function parseAuthMeResponse(data: unknown): AuthMeResponse {
     throw new Error("Invalid auth/me: role");
   }
   const result: AuthMeResponse = { userId: o.userId, role: o.role };
+  if (typeof o.id === "string") result.id = o.id;
+  if (typeof o.email === "string") result.email = o.email;
+  if (typeof o.createdAt === "string") result.createdAt = o.createdAt;
   if (typeof o.displayName === "string") result.displayName = o.displayName;
   if (typeof o.fullName === "string") result.fullName = o.fullName;
   if (typeof o.headline === "string") result.headline = o.headline;

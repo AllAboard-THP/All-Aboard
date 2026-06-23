@@ -66,7 +66,7 @@ export default async function MentorDashboardPage() {
         </Alert>
         <div className="mt-4">
           <Button variant="outline" asChild>
-            <Link href="/">{tFeed("backToFeed")}</Link>
+            <Link href="/feed">{tFeed("backToFeed")}</Link>
           </Button>
         </div>
       </div>

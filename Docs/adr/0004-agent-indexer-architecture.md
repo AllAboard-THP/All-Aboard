@@ -1,110 +1,110 @@
-# ADR 0004 — Architecture Agent All-Aboard & Intuition (Phase 4)
+# ADR 0004 — All-Aboard Agent & Intuition architecture (Phase 4)
 
-## Statut
+## Status
 
-Accepté — 2026-06-01 (cadrage backlog [#37](https://github.com/AllAboard-THP/All-Aboard/issues/37) validé ; révisé 2026-05-27 — **indexer Intuition**, pas de `apps/indexer` maison ; révisé 2026-06-02 — **`apps/agent` ≠ Rubberduck** (Rubberduck = service externe) ; implémentation Phase 4 [#66](https://github.com/AllAboard-THP/All-Aboard/issues/66)–[#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) peut démarrer).
+Accepted — 2026-06-01 (backlog framing [#37](https://github.com/AllAboard-THP/All-Aboard/issues/37) validated; revised 2026-05-27 — **Intuition indexer**, no in-house `apps/indexer`; revised 2026-06-02 — **`apps/agent` ≠ Rubberduck** (Rubberduck = external service); Phase 4 implementation [#66](https://github.com/AllAboard-THP/All-Aboard/issues/66)–[#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) may start).
 
-## Contexte
+## Context
 
-All-Aboard décrit un parcours produit où **Rubberduck** (IA, **service externe**, autre équipe) peut aider rapidement sur des demandes simples ([moc-parcours-utilisateur.md](../moc-parcours-utilisateur.md) étapes 4–5 : redirection utilisateur), et où la couche **Intuition** (blockchain / graphe de connaissance) alimente la vision long terme ([dataflow-architecture.md](../dataflow-architecture.md), [intuition-documentation-index.md](../intuition-documentation-index.md)).
+All-Aboard describes a product journey where **Rubberduck** (AI, **external service**, other team) can help quickly on simple requests ([user-journeys.md](../product/user-journeys.md) steps 4–5: user redirect), and where the **Intuition** layer (blockchain / knowledge graph) feeds the long-term vision ([architecture/dataflow.md](../architecture/dataflow.md), [integrations/intuition-docs-index.md](../integrations/intuition-docs-index.md)).
 
-À terme, All-Aboard expose son **propre agent** in-app (`apps/agent`) ; pour certaines tâches, l’agent (ou l’API via lui) propose un **handoff** vers Rubberduck plutôt qu’une réponse locale.
+Eventually, All-Aboard exposes its **own in-app agent** (`apps/agent`); for some tasks, the agent (or API via it) proposes a **handoff** to Rubberduck rather than a local response.
 
-**État du dépôt (Phase 2 livrée)** :
+**Repository state (Phase 2 shipped):**
 
-| Composant | État | Emplacement actuel |
-|-----------|------|-------------------|
-| Heuristique handoff Rubberduck | **Stub** — titre ≤ 6 mots → `hints.rubberduckEligible` | [`apps/api/src/app.ts`](../../apps/api/src/app.ts) (`POST /help-requests`) |
-| UI handoff Rubberduck | **Stub** — message informatif, pas de redirect externe | [`apps/web/components/features/help-request-form.tsx`](../../apps/web/components/features/help-request-form.tsx) |
-| `apps/agent` | **Scaffold** (#66) — agent All-Aboard interne | [`apps/agent`](../../apps/agent/README.md) |
-| Rubberduck (produit externe) | **Hors dépôt** | Intégration URL / contrat à définir avec l’équipe Rubberduck |
-| Indexation Intuition | **Absent** | Lecture cible : GraphQL Intuition ; écriture : SDK / contrats |
-| `apps/indexer` | **Non retenu** | `Dockerfile.indexer` = placeholder historique bootstrap — **hors scope Phase 4** |
-| Déploiement Dokploy | Agent **désactivé** ; placeholder Indexer **à retirer** | [deploiement-dokploy-instance-allaboard.md](../deploiement-dokploy-instance-allaboard.md) |
+| Component | State | Current location |
+|-----------|-------|------------------|
+| Rubberduck handoff heuristic | **Stub** — title ≤ 6 words → `hints.rubberduckEligible` | [`apps/api/src/app.ts`](../../apps/api/src/app.ts) (`POST /help-requests`) |
+| Rubberduck handoff UI | **Stub** — informational message, no external redirect | [`apps/web/components/features/help-request-form.tsx`](../../apps/web/components/features/help-request-form.tsx) |
+| `apps/agent` | **Scaffold** (#66) — internal All-Aboard agent | [`apps/agent`](../../apps/agent/README.md) |
+| Rubberduck (external product) | **Outside repo** | URL / contract TBD with Rubberduck team |
+| Intuition indexing | **Absent** | Read target: Intuition GraphQL; write: SDK / contracts |
+| `apps/indexer` | **Not retained** | `Dockerfile.indexer` = historical bootstrap placeholder — **out of Phase 4 scope** |
+| Dokploy deployment | Agent **disabled**; Indexer placeholder **to remove** | [deployment/dokploy-instance.md](../deployment/dokploy-instance.md) |
 
-**Décision produit (2026-05-27)** : utiliser l’**indexer du réseau Intuition** (subnet Rust + API GraphQL documentés), pas un service d’indexation maison dans le monorepo. All-Aboard **publie** des primitives Intuition ; Intuition **indexe** et **expose** le graphe.
+**Product decision (2026-05-27):** use the **Intuition network indexer** (documented Rust subnet + GraphQL API), not an in-house indexing service in the monorepo. All-Aboard **publishes** Intuition primitives; Intuition **indexes** and **exposes** the graph.
 
-**Décision produit (2026-06-02)** : **`apps/agent` = agent All-Aboard** (orchestration IA interne). **Rubberduck n’est pas `apps/agent`** — c’est un service tiers ; All-Aboard ne fait que décider du handoff et rediriger l’utilisateur.
+**Product decision (2026-06-02):** **`apps/agent` = All-Aboard agent** (internal AI orchestration). **Rubberduck is not `apps/agent`** — it is a third-party service; All-Aboard only decides handoff and redirects the user.
 
-L’epic [#37](https://github.com/AllAboard-THP/All-Aboard/issues/37) exige une **ADR** avant tout développement Phase 4. Ce document cadrage le découpage services, les frontières avec l’API Fastify existante et le backlog d’implémentation.
+Epic [#37](https://github.com/AllAboard-THP/All-Aboard/issues/37) requires an **ADR** before any Phase 4 development. This document frames service split, boundaries with the existing Fastify API, and implementation backlog.
 
-## Décision
+## Decision
 
-### 1. Rôle de `apps/agent` (agent All-Aboard)
+### 1. Role of `apps/agent` (All-Aboard agent)
 
-Service **HTTP interne** dédié à l’**orchestration IA All-Aboard** — **hors** processus Fastify API et **distinct** de Rubberduck.
+Dedicated **internal HTTP service** for **All-Aboard AI orchestration** — **outside** the Fastify API process and **distinct** from Rubberduck.
 
-| Responsabilité | `apps/agent` (All-Aboard) | API Fastify | Rubberduck (externe) |
+| Responsibility | `apps/agent` (All-Aboard) | Fastify API | Rubberduck (external) |
 |----------------|---------------------------|-------------|----------------------|
-| Évaluation / routage (dont redirect Rubberduck ?) | Oui (`POST /routing/evaluate`) | Appelle l’agent ou fallback | Non |
-| Orchestration IA in-app future (LLM, prompts) | Oui (hors scaffold #66) | Non — délègue | Non |
-| Réponses conversationnelles Rubberduck | Non | Non | Oui (équipe Rubberduck) |
-| Session / UI Rubberduck | Non | Hint + redirect web | Oui (produit externe) |
-| Persistance demande d’aide | Non | Oui (Postgres via Drizzle) | Non |
-| Auth utilisateur (JWT) | Non | Oui | Non |
-| Exposition publique | **Non** — réseau interne / BFF uniquement | Oui (REST Phase 2) | Oui (produit séparé) |
+| Evaluation / routing (incl. Rubberduck redirect?) | Yes (`POST /routing/evaluate`) | Calls agent or fallback | No |
+| Future in-app AI orchestration (LLM, prompts) | Yes (beyond #66 scaffold) | No — delegates | No |
+| Rubberduck conversational responses | No | No | Yes (Rubberduck team) |
+| Rubberduck session / UI | No | Hint + web redirect | Yes (external product) |
+| Help-request persistence | No | Yes (Postgres via Drizzle) | No |
+| User auth (JWT) | No | Yes | No |
+| Public exposure | **No** — internal network / BFF only | Yes (REST Phase 2) | Yes (separate product) |
 
-**Contrat MVP Phase 4a** (scaffold #66) :
+**MVP Phase 4a contract** (#66 scaffold):
 
-- `GET /health` — healthcheck Dokploy (port **4100**).
-- `POST /routing/evaluate` — entrée : `{ title, tags?, authorId? }` ; sortie : `{ suggestRubberduckRedirect: boolean, reason?: string }` — l’agent décide si l’utilisateur doit être **redirigé** vers Rubberduck (stub règle ≤ 6 mots, puis modèle configurable). En [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68), l’API mappe `suggestRubberduckRedirect` → `hints.rubberduckEligible`.
+- `GET /health` — Dokploy healthcheck (port **4100**).
+- `POST /routing/evaluate` — input: `{ title, tags?, authorId? }`; output: `{ suggestRubberduckRedirect: boolean, reason?: string }` — agent decides if user should be **redirected** to Rubberduck (stub ≤ 6 words rule, then configurable model). In [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68), API maps `suggestRubberduckRedirect` → `hints.rubberduckEligible`.
 
-Pas de route « respond » sur `apps/agent` : répondre à l’utilisateur sur Rubberduck relève du **service externe**, pas de cet agent.
+No "respond" route on `apps/agent`: answering the user on Rubberduck is the **external service**, not this agent.
 
-**Évolution** : workflows multi-étapes (tools, safety, streaming) pour l’agent All-Aboard restent dans `apps/agent` ; l’API ne transporte que le résultat métier vers le client (via BFF). L’URL et le contrat **Rubberduck** vivent côté web/config (hors monorepo).
+**Evolution:** multi-step workflows (tools, safety, streaming) for the All-Aboard agent stay in `apps/agent`; API only carries business results to the client (via BFF). **Rubberduck** URL and contract live in web/config (outside monorepo).
 
-### 2. Intuition — indexer réseau + bridge All-Aboard
+### 2. Intuition — network indexer + All-Aboard bridge
 
-**Indexer Intuition (infra réseau — consommé, pas développé)** :
+**Intuition indexer (network infra — consumed, not built):**
 
-- Couche d’indexation **Rust (subnet Intuition)** — voir [Intuition Network](https://www.docs.intuition.systems/docs/intuition-network).
-- **GraphQL** comme interface principale de **lecture** sur le graphe — voir [GraphQL API](https://www.docs.intuition.systems/docs/graphql-api/overview).
-- All-Aboard **ne réimplémente pas** cette brique.
+- **Rust indexing layer (Intuition subnet)** — see [Intuition Network](https://www.docs.intuition.systems/docs/intuition-network).
+- **GraphQL** as primary **read** interface on the graph — see [GraphQL API](https://www.docs.intuition.systems/docs/graphql-api/overview).
+- All-Aboard **does not reimplement** this layer.
 
-**Bridge All-Aboard (à développer — issue #67)** :
+**All-Aboard bridge (to build — issue #67):**
 
-Module ou worker léger qui **mappe le métier Postgres → primitives Intuition** (atoms, triples, signals — mapping détaillé en spike #67) et **gère la fiabilité d’écriture** (retry, idempotence).
+Light module or worker that **maps Postgres domain → Intuition primitives** (atoms, triples, signals — detailed mapping in #67 spike) and **handles write reliability** (retry, idempotence).
 
-| Responsabilité | Indexer Intuition (réseau) | Bridge All-Aboard | API Fastify |
+| Responsibility | Intuition indexer (network) | All-Aboard bridge | Fastify API |
 |----------------|---------------------------|-------------------|-------------|
-| Indexer données on-chain | Oui | Non | Non |
-| Exposer GraphQL de lecture | Oui | Non | Non (consomme en client serveur) |
-| Publier vers Intuition (SDK / contrats) | Non | Oui | Émet outbox ou délègue |
-| Feed communautaire Phase 2 (Postgres) | Non | Non | Oui (`GET /feed`) |
-| Healthcheck ops All-Aboard | N/A | Optionnel si worker séparé | `GET /health` |
+| Index on-chain data | Yes | No | No |
+| Expose GraphQL read API | Yes | No | No (consumes server-side) |
+| Publish to Intuition (SDK / contracts) | No | Yes | Emits outbox or delegates |
+| Phase 2 community feed (Postgres) | No | No | Yes (`GET /feed`) |
+| All-Aboard ops healthcheck | N/A | Optional if separate worker | `GET /health` |
 
-**Périmètre MVP Phase 4b** (#67) :
+**MVP Phase 4b scope** (#67):
 
-- Outbox Postgres (`outbox_events`) : événements `help_request.created` (et ultérieurement réponses, signaux).
-- **Publisher stub** : consomme l’outbox, log + métriques ; puis SDK Intuition testnet sans bloquer le merge initial.
-- Idempotence par `helpRequestId` + statut `intuition_published_at` (ou table `intuition_publish_jobs`).
-- **Lecture** : spike requête GraphQL Intuition (ex. claims liés à une demande) — pas de duplication dans Postgres sauf cache explicite.
+- Postgres outbox (`outbox_events`): `help_request.created` events (later responses, signals).
+- **Publisher stub:** consumes outbox, log + metrics; then Intuition testnet SDK without blocking initial merge.
+- Idempotence via `helpRequestId` + `intuition_published_at` status (or `intuition_publish_jobs` table).
+- **Read:** Intuition GraphQL query spike (e.g. claims linked to a request) — no Postgres duplication except explicit cache.
 
-**Emplacement du bridge** (choix en impl #67, ordre de préférence) :
+**Bridge placement** (#67 implementation choice, preference order):
 
-1. Module `packages/blockchain` ou `apps/api/src/intuition/` + worker outbox **dans le processus API** (MVP simple).
-2. Service Node minimal **sans** logique d’indexation — uniquement publish + retry — si isolation secrets/rate-limit requise.
+1. Module `packages/blockchain` or `apps/api/src/intuition/` + outbox worker **in API process** (simple MVP).
+2. Minimal Node service **without** indexing logic — publish + retry only — if secret/rate-limit isolation required.
 
-**Pas de `apps/indexer`** : le nom prêt dans le bootstrap Turborepo/Dokploy désignait à tort un indexer maison ; il ne sera pas implémenté.
+**No `apps/indexer`:** the Turborepo/Dokploy bootstrap name wrongly implied an in-house indexer; it will not be implemented.
 
-### 3. Files d’attente et communication inter-services
+### 3. Queues and inter-service communication
 
-**Décision MVP** : pattern **hybride progressif**.
+**MVP decision:** progressive **hybrid** pattern.
 
 ```mermaid
 flowchart LR
   Web["apps/web BFF"]
   API["apps/api Fastify"]
   Agent["apps/agent<br/>All-Aboard"]
-  RD["Rubberduck<br/>externe"]
-  Bridge["Bridge Intuition<br/>(module API ou worker léger)"]
+  RD["Rubberduck<br/>external"]
+  Bridge["Intuition bridge<br/>(API module or light worker)"]
   PG[("Postgres")]
   Intuition["Intuition<br/>(SDK write)"]
-  Idx["Indexer Intuition<br/>(subnet + GraphQL)"]
-  Q["Redis / BullMQ<br/>(reporté)"]
+  Idx["Intuition indexer<br/>(subnet + GraphQL)"]
+  Q["Redis / BullMQ<br/>(deferred)"]
 
   Web --> API
-  Web -.->|"redirect utilisateur"| RD
+  Web -.->|"user redirect"| RD
   API --> PG
   API -->|"sync HTTP Phase 4c"| Agent
   API -->|"INSERT outbox"| PG
@@ -112,97 +112,97 @@ flowchart LR
   Bridge -->|"publish atoms/triples"| Intuition
   Intuition --> Idx
   Idx -->|"GraphQL read"| API
-  API -.->|"events async"| Q
+  API -.->|"async events"| Q
   Q -.-> Bridge
   Q -.-> Agent
 ```
 
 | Phase | Agent ↔ API | Intuition ↔ All-Aboard |
 |-------|-------------|------------------------|
-| **4a** (scaffold agent) | Aucune — service isolé + health | Aucune |
-| **4b** (bridge) | — | Outbox + publisher stub ; spike GraphQL lecture |
-| **4c** (routage agent) | HTTP sync `POST /routing/evaluate` | Publisher réel testnet (non bloquant création demande) |
-| **4d+** (charge) | Redis + BullMQ pour jobs IA longs | BullMQ optionnel pour publish batch ; indexer reste Intuition |
+| **4a** (agent scaffold) | None — isolated service + health | None |
+| **4b** (bridge) | — | Outbox + publisher stub; GraphQL read spike |
+| **4c** (agent routing) | Sync HTTP `POST /routing/evaluate` | Real testnet publisher (non-blocking request create) |
+| **4d+** (load) | Redis + BullMQ for long AI jobs | Optional BullMQ for batch publish; indexer stays Intuition |
 
-**Redis/BullMQ** : **reporté** au-delà des scaffolds (#66, #67) ; outbox Postgres suffit pour le premier incrément publisher.
+**Redis/BullMQ:** **deferred** beyond scaffolds (#66, #67); Postgres outbox suffices for initial publisher increment.
 
-### 4. Frontière avec l’API Fastify
+### 4. Boundary with Fastify API
 
-L’API reste le **point d’entrée unique** pour le web (BFF) et le contrat REST versionné ([openapi.yaml](../../apps/api/openapi.yaml)).
+API remains the **single entry point** for web (BFF) and versioned REST contract ([openapi.yaml](../../apps/api/openapi.yaml)).
 
-| Flux | Mécanisme | Notes |
+| Flow | Mechanism | Notes |
 |------|-----------|-------|
-| Création demande + hint `rubberduckEligible` | API appelle `POST /routing/evaluate` (sync) ou fallback ; mappe `suggestRubberduckRedirect` | [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68) |
-| Redirect Rubberduck | Web — URL/config produit externe | Hors `apps/agent` ; réponses = équipe Rubberduck |
-| Publication Intuition post-création | API insère outbox ; bridge publish | Async — ne bloque pas `201` |
-| Lecture enrichie (graphe, certifications) | API ou BFF interroge **GraphQL Intuition** | Complète Postgres, ne le remplace pas en Phase 4b |
-| Auth | JWT validé **uniquement** dans API/BFF | Secrets Intuition / LLM hors Web |
+| Request create + `rubberduckEligible` hint | API calls `POST /routing/evaluate` (sync) or fallback; maps `suggestRubberduckRedirect` | [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68) |
+| Rubberduck redirect | Web — external product URL/config | Outside `apps/agent`; responses = Rubberduck team |
+| Intuition publish post-create | API inserts outbox; bridge publishes | Async — does not block `201` |
+| Enriched read (graph, certifications) | API or BFF queries **Intuition GraphQL** | Complements Postgres, does not replace in Phase 4b |
+| Auth | JWT validated **only** in API/BFF | Intuition / LLM secrets off Web |
 
-**Événements outbox** (forme cible) :
+**Target outbox events:**
 
 ```typescript
-// packages/types — évolution Phase 4
+// packages/types — Phase 4 evolution
 type OutboxEvent =
   | { type: "help_request.created"; payload: { id: string; title: string; authorId: string } }
   | { type: "help_request.rubberduck_handoff"; payload: { id: string; title: string } };
 ```
 
-Pas de breaking change sur `CreateHelpRequestResponse` Phase 2 : `hints.rubberduckEligible` reste (sémantique : **éligible au handoff Rubberduck**) ; la **source** du booléen change (Agent au lieu de `wordCount`).
+No breaking change on Phase 2 `CreateHelpRequestResponse`: `hints.rubberduckEligible` remains (semantics: **eligible for Rubberduck handoff**); the **source** of the boolean changes (Agent instead of `wordCount`).
 
-### 5. Déploiement Dokploy
+### 5. Dokploy deployment
 
-Aligné sur [matrice](../matrice-deploiement-dokploy-coolify.md) et [instance](../deploiement-dokploy-instance-allaboard.md).
+Aligned with [matrix](../deployment/environment-variables.md) and [instance](../deployment/dokploy-instance.md).
 
-| Service | Image | Port | Exposition | Activation |
-|---------|-------|------|------------|------------|
-| Agent All-Aboard | `infra/docker/Dockerfile.agent` | 4100 | **Interne** | Après #66 + CI #69 |
-| Bridge Intuition | *Aucune image dédiée MVP* — module API ou worker partagé | — | Interne | Avec #67 |
-| Indexer (placeholder Dokploy) | `Dockerfile.indexer` **legacy** | 4200 | — | **Ne pas réactiver** — retirer du projet Dokploy (#69) |
-| Indexer Intuition | Infra réseau Intuition | — | Endpoints GraphQL publics / RPC | Hors Dokploy All-Aboard |
-| Rubberduck | Produit externe | — | URL publique équipe Rubberduck | Hors monorepo All-Aboard |
+| Service | Image | Port | Exposure | Activation |
+|---------|-------|------|----------|------------|
+| All-Aboard Agent | `infra/docker/Dockerfile.agent` | 4100 | **Internal** | After #66 + CI #69 |
+| Intuition bridge | *No dedicated MVP image* — API module or shared worker | — | Internal | With #67 |
+| Indexer (Dokploy placeholder) | `Dockerfile.indexer` **legacy** | 4200 | — | **Do not reactivate** — remove from Dokploy project (#69) |
+| Intuition indexer | Intuition network infra | — | Public GraphQL / RPC endpoints | Outside All-Aboard Dokploy |
+| Rubberduck | External product | — | Public Rubberduck team URL | Outside All-Aboard monorepo |
 
-**Règles ops** :
+**Ops rules:**
 
-1. Garder **Agent** désactivé jusqu’au scaffold #66 et job CI #69.
-2. **Supprimer ou laisser désactivé** le placeholder Dokploy « Indexer » All-Aboard — il ne correspond plus à l’architecture.
-3. Variables bridge : `INTUITION_*` (RPC, clés wallet publish, network id) — voir [Network Details](https://www.docs.intuition.systems/docs/quick-start/network-details) ; secrets LLM **uniquement** sur Agent All-Aboard.
-4. `pnpm verify` reste hors agent tant que non implémenté ; pas de gate `apps/indexer`.
+1. Keep **Agent** disabled until #66 scaffold and CI #69.
+2. **Remove or leave disabled** Dokploy All-Aboard "Indexer" placeholder — no longer matches architecture.
+3. Bridge vars: `INTUITION_*` (RPC, publish wallet keys, network id) — see [Network Details](https://www.docs.intuition.systems/docs/quick-start/network-details); LLM secrets **only** on All-Aboard Agent.
+4. `pnpm verify` excludes agent until implemented; no `apps/indexer` gate.
 
-### 6. Découpage backlog (issues enfants #37)
+### 6. Backlog split (child issues of #37)
 
-| Issue | Titre | Livrable | Dépendances |
-|-------|-------|----------|-------------|
-| [#66](https://github.com/AllAboard-THP/All-Aboard/issues/66) | Scaffold `apps/agent` | Package Turbo, `GET /health`, stub `POST /routing/evaluate`, tests, Dockerfile build OK | ADR 0004 |
-| [#67](https://github.com/AllAboard-THP/All-Aboard/issues/67) | Bridge Intuition (publisher + GraphQL) | Outbox, publisher stub → SDK testnet, spike lecture GraphQL, idempotence | ADR 0004 |
-| [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68) | Intégration API — handoff Rubberduck via agent | Heuristique API → Agent handoff ; BFF agent in-app ; redirect Rubberduck côté web | #66 |
-| [#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) | CI/Dokploy Agent + nettoyage placeholder Indexer | Build image Agent ; doc retrait Indexer Dokploy | #66 |
+| Issue | Title | Deliverable | Dependencies |
+|-------|-------|-------------|--------------|
+| [#66](https://github.com/AllAboard-THP/All-Aboard/issues/66) | `apps/agent` scaffold | Turbo package, `GET /health`, stub `POST /routing/evaluate`, tests, Dockerfile build OK | ADR 0004 |
+| [#67](https://github.com/AllAboard-THP/All-Aboard/issues/67) | Intuition bridge (publisher + GraphQL) | Outbox, publisher stub → testnet SDK, GraphQL read spike, idempotence | ADR 0004 |
+| [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68) | API integration — Rubberduck handoff via agent | API heuristic → Agent handoff; in-app agent BFF; Rubberduck web redirect | #66 |
+| [#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) | Agent CI/Dokploy + Indexer placeholder cleanup | Agent image build; Dokploy Indexer removal doc | #66 |
 
-L’epic **#37 est fermée** (2026-06-03) — implémentation MVP #66–#69 merge sur `Dev` (PRs #93–#96). Évolutions post-MVP : SDK Intuition testnet, réactivation Dokploy Agent après validation ops.
+Epic **#37 is closed** (2026-06-03) — MVP #66–#69 merged on `Dev` (PRs #93–#96). Post-MVP: Intuition testnet SDK, Dokploy Agent reactivation after ops validation.
 
-## Conséquences
+## Consequences
 
-- **Positives** : pas de 4ᵉ service indexer à opérer ; alignement avec l’écosystème Intuition ; séparation claire agent All-Aboard / Rubberduck externe ; séparation IA (agent) / publish (bridge) / REST (API).
-- **Négatives** : dépendance réseau Intuition (latence, dispo testnet/mainnet) ; contrat handoff Rubberduck à coordonner avec l’équipe externe ; mapping métier → primitives à concevoir.
-- **Risques** : double source de vérité Postgres vs graphe — mitiger par statuts outbox et requêtes GraphQL explicites ; clés publish en prod — revue ADR sécurité avant mainnet.
-- **Hors scope Phase 4 MVP** : `apps/indexer` maison, implémentation Rubberduck dans le monorepo, GraphQL All-Aboard public, mobile, codegen client Agent, Intuition mainnet sans spike testnet.
+- **Positive:** no 4th indexer service to operate; alignment with Intuition ecosystem; clear split All-Aboard agent / external Rubberduck; clear split AI (agent) / publish (bridge) / REST (API).
+- **Negative:** Intuition network dependency (latency, testnet/mainnet availability); Rubberduck handoff contract to coordinate with external team; domain → primitives mapping to design.
+- **Risks:** dual source of truth Postgres vs graph — mitigate with outbox statuses and explicit GraphQL queries; publish keys in prod — security ADR review before mainnet.
+- **Out of Phase 4 MVP scope:** in-house `apps/indexer`, Rubberduck implementation in monorepo, public All-Aboard GraphQL, mobile, Agent client codegen, Intuition mainnet without testnet spike.
 
-## Alternatives non retenues
+## Alternatives not chosen
 
-| Alternative | Raison du rejet |
-|-------------|-----------------|
-| **`apps/agent` = Rubberduck** | Rubberduck est un service externe ; confond les responsabilités et le déploiement |
-| Routes `/rubberduck/*` ou `/respond` sur `apps/agent` | Suggère que l’agent All-Aboard *est* Rubberduck ou qu’il répond à sa place |
-| **`apps/indexer` maison** (worker Node port 4200) | Duplique l’indexer Intuition déjà fourni (subnet + GraphQL) |
-| LLM inline dans `apps/api` | Couplage latence + secrets ; difficile à scaler |
-| Agent appelé directement depuis le navigateur | Expose clés API ; casse modèle BFF |
-| Indexer fusionné dans API avec logique d’indexation graphe | Confond publish et index ; responsabilités Intuition |
-| Redis obligatoire dès le scaffold | Outbox Postgres suffit pour publish initial |
-| Implémentation immédiate sans ADR | Explicitement interdit par #37 |
+| Alternative | Rejection reason |
+|-------------|------------------|
+| **`apps/agent` = Rubberduck** | Rubberduck is external; conflates responsibilities and deployment |
+| `/rubberduck/*` or `/respond` routes on `apps/agent` | Implies All-Aboard agent *is* Rubberduck or answers on its behalf |
+| **In-house `apps/indexer`** (Node worker port 4200) | Duplicates Intuition indexer (subnet + GraphQL) |
+| Inline LLM in `apps/api` | Latency + secret coupling; hard to scale |
+| Agent called directly from browser | Exposes API keys; breaks BFF model |
+| Indexer merged into API with graph indexing logic | Conflates publish and index; Intuition responsibilities |
+| Redis mandatory from scaffold | Postgres outbox suffices for initial publish |
+| Immediate implementation without ADR | Explicitly forbidden by #37 |
 
-## Liens
+## Links
 
-- [Epic #37](https://github.com/AllAboard-THP/All-Aboard/issues/37) · [Doc tâche](../tasks/37-agent-indexer/)
-- [Parcours MOC](../moc-parcours-utilisateur.md) · [Dataflow cible](../dataflow-architecture.md)
-- [Index doc Intuition](../intuition-documentation-index.md) · [Intuition Network](https://www.docs.intuition.systems/docs/intuition-network)
-- [Instance Dokploy](../deploiement-dokploy-instance-allaboard.md)
-- Stub actuel : [`apps/api/src/app.ts`](../../apps/api/src/app.ts) · [`help-request-form.tsx`](../../apps/web/components/features/help-request-form.tsx)
+- [Epic #37](https://github.com/AllAboard-THP/All-Aboard/issues/37) · [Task doc](../tasks/37-agent-indexer/)
+- [User journeys](../product/user-journeys.md) · [Target dataflow](../architecture/dataflow.md)
+- [Intuition docs index](../integrations/intuition-docs-index.md) · [Intuition Network](https://www.docs.intuition.systems/docs/intuition-network)
+- [Dokploy instance](../deployment/dokploy-instance.md)
+- Current stub: [`apps/api/src/app.ts`](../../apps/api/src/app.ts) · [`help-request-form.tsx`](../../apps/web/components/features/help-request-form.tsx)

@@ -35,7 +35,6 @@ import {
   mapApiError,
   throwFromApiResponse,
 } from "@/lib/map-api-error";
-
 type Props = {
   requestId: string;
   initialDetail: HelpRequestDetailResponse;

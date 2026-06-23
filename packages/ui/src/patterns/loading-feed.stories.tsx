@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
+import { useMvpPatternLabels } from "../i18n/storybook-locale";
 import { Skeleton } from "../components/skeleton";
 
 const meta = {
@@ -14,12 +15,14 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const FeedList: Story = {
-  render: () => (
+function FeedListStory() {
+  const labels = useMvpPatternLabels().loadingFeed;
+
+  return (
     <div
       className="mx-auto w-full max-w-3xl space-y-6 p-6"
       aria-busy="true"
-      aria-label="Chargement du feed"
+      aria-label={labels.feedAriaLabel}
     >
       <div className="space-y-3">
         <Skeleton className="h-4 w-24" />
@@ -32,15 +35,17 @@ export const FeedList: Story = {
         <Skeleton className="h-28 w-full rounded-lg" />
       </div>
     </div>
-  ),
-};
+  );
+}
 
-export const RequestDetail: Story = {
-  render: () => (
+function RequestDetailStory() {
+  const labels = useMvpPatternLabels().loadingFeed;
+
+  return (
     <div
       className="mx-auto w-full max-w-3xl space-y-6 p-6"
       aria-busy="true"
-      aria-label="Chargement de la demande"
+      aria-label={labels.requestAriaLabel}
     >
       <div className="space-y-3">
         <Skeleton className="h-4 w-28" />
@@ -52,5 +57,13 @@ export const RequestDetail: Story = {
         <Skeleton className="h-24 w-full rounded-lg" />
       </div>
     </div>
-  ),
+  );
+}
+
+export const FeedList: Story = {
+  render: () => <FeedListStory />,
+};
+
+export const RequestDetail: Story = {
+  render: () => <RequestDetailStory />,
 };

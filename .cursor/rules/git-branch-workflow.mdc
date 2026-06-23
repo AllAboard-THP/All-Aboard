@@ -31,7 +31,7 @@ Quand l'agent modifie le dépôt (code, doc, config), **ne pas laisser le travai
    ```bash
    git push -u origin HEAD
    ```
-5. Indiquer à l'humain : branche, commit, URL remote ; proposer PR si pertinent.
+5. Indiquer à l'humain : branche, commit, URL remote ; proposer PR si pertinent — **titre et corps en anglais pro**, sections documentées ([pr-english.mdc](./pr-english.mdc), [.github/pull_request_template.md](../../.github/pull_request_template.md)).
 
 ## Interdit sans accord explicite
 

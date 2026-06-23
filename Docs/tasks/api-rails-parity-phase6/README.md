@@ -1,69 +1,69 @@
-# API parité Rails — Phase 6 (admin & modération)
+# Rails API parity — Phase 6 (admin & moderation)
 
-**Branche** : `feat/api-rails-parity-phase6`  
-**PR** : [#102](https://github.com/AllAboard-THP/All-Aboard/pull/102)  
-**OpenAPI** : `0.8.0` — [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml)  
-**Prérequis** : [Phase 1](../api-rails-parity-phase1/README.md) (feed, help-requests)
+**Branch:** `feat/api-rails-parity-phase6`  
+**PR:** [#102](https://github.com/AllAboard-THP/All-Aboard/pull/102)  
+**OpenAPI:** `0.8.0` — [`apps/api/openapi.yaml`](../../../apps/api/openapi.yaml)  
+**Prerequisite:** [Phase 1](../api-rails-parity-phase1/README.md) (feed, help-requests)
 
-## Objectif
+## Goal
 
-Espace admin : modération contenu, denylist regex, gestion rôles et files subject-requests.
+Admin area: content moderation, regex denylist, role management, subject-request queues.
 
 ## Migration `0010_api_rails_phase6_admin.sql`
 
 - Table `denylist_patterns`
-- Colonnes `flagged_for_moderation` sur `help_requests` / `responses`
-- Service [`profanity.ts`](../../../apps/api/src/services/profanity.ts) (regex + patterns actifs, sans Claude)
-- Seed : `admin@dev.local` (même mot de passe que comptes dev)
+- `flagged_for_moderation` columns on `help_requests` / `responses`
+- [`profanity.ts`](../../../apps/api/src/services/profanity.ts) service (regex + active patterns, no Claude)
+- Seed: `admin@dev.local` (same password as dev accounts)
 
 ## Endpoints
 
 | Route | Description |
 |-------|-------------|
-| `GET /admin/dashboard` | Compteurs + 10 dernières demandes non flaggées |
-| `GET /admin/moderation` | File posts + réponses flaggés |
-| `POST /admin/moderation/help-requests/:id/approve` | Publier (déflag) |
-| `POST /admin/moderation/help-requests/:id/reject` | **Hard delete** demande |
-| `POST /admin/moderation/responses/:id/approve` | Publier commentaire |
-| `POST /admin/moderation/responses/:id/reject` | Supprimer commentaire |
-| `GET/POST /admin/denylist-patterns` | Liste + création regex |
-| `PATCH/DELETE /admin/denylist-patterns/:id` | Activer/désactiver, supprimer |
-| `GET /admin/users` | Liste utilisateurs |
+| `GET /admin/dashboard` | Counters + 10 latest non-flagged requests |
+| `GET /admin/moderation` | Flagged posts + responses queue |
+| `POST /admin/moderation/help-requests/:id/approve` | Publish (unflag) |
+| `POST /admin/moderation/help-requests/:id/reject` | **Hard delete** request |
+| `POST /admin/moderation/responses/:id/approve` | Publish comment |
+| `POST /admin/moderation/responses/:id/reject` | Delete comment |
+| `GET/POST /admin/denylist-patterns` | List + create regex |
+| `PATCH/DELETE /admin/denylist-patterns/:id` | Enable/disable, delete |
+| `GET /admin/users` | User list |
 | `POST /admin/users/:id/promote-admin` | `{ admin: true \| false }` |
-| `POST /admin/users/:id/promote-mentor` | Bascule student ↔ mentor |
-| `GET /admin/subject-requests` | Files pending / approved / rejected |
+| `POST /admin/users/:id/promote-mentor` | Toggle student ↔ mentor |
+| `GET /admin/subject-requests` | pending / approved / rejected queues |
 | `PATCH /admin/subject-requests/:id` | `{ status }` |
 
-## Visibilité publique
+## Public visibility
 
-- `GET /feed` : exclut contenu `flagged_for_moderation`
-- Détail / réponses : filtrés sauf auteur et admin
+- `GET /feed`: excludes `flagged_for_moderation` content
+- Detail / responses: filtered except author and admin
 
-## Modules code
+## Code modules
 
-| Fichier | Rôle |
-|---------|------|
-| [`apps/api/src/routes/admin.ts`](../../../apps/api/src/routes/admin.ts) | Namespace `/admin/*` |
-| [`apps/api/src/lib/feed-query.ts`](../../../apps/api/src/lib/feed-query.ts) | Filtre modération feed |
+| File | Role |
+|------|------|
+| [`apps/api/src/routes/admin.ts`](../../../apps/api/src/routes/admin.ts) | `/admin/*` namespace |
+| [`apps/api/src/lib/feed-query.ts`](../../../apps/api/src/lib/feed-query.ts) | Feed moderation filter |
 
 ## Types
 
-[`packages/types`](../../../packages/types/src/index.ts) : types admin dashboard, moderation, denylist, etc.
+[`packages/types`](../../../packages/types/src/index.ts): admin dashboard, moderation, denylist types, etc.
 
-## Vérification
+## Verification
 
 ```bash
 pnpm --filter api exec tsc --noEmit
 pnpm --filter api test
 ```
 
-## Suite
+## Next
 
-**Lot A** (soft delete auteur + reject resource mentor) : [api-parity-delete-reject](../api-parity-delete-reject/README.md)  
-Hub : [api-rails-parity](../api-rails-parity/README.md)
+**Lot A** (author soft delete + mentor resource reject): [api-parity-delete-reject](../api-parity-delete-reject/README.md)  
+Hub: [api-rails-parity](../api-rails-parity/README.md)
 
-## Fichiers
+## Files
 
-| Fichier | Rôle |
-|---------|------|
-| `README.md` | Ce fichier |
+| File | Role |
+|------|------|
+| `README.md` | This file |

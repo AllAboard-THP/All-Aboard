@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ThemeProvider } from "next-themes";
 import { toast } from "sonner";
 
+import { useMvpPatternLabels } from "../i18n/storybook-locale";
 import { Button } from "./button";
 import { Toaster } from "./sonner";
 
@@ -26,46 +27,72 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Success: Story = {
-  render: () => (
-    <Button onClick={() => toast.success("Demande publiée avec succès")}>
-      Toast succès
+function SuccessStory() {
+  const labels = useMvpPatternLabels().toast;
+
+  return (
+    <Button onClick={() => toast.success(labels.success)}>
+      {labels.successButton}
     </Button>
-  ),
+  );
+}
+
+function ErrorStory() {
+  const labels = useMvpPatternLabels().toast;
+
+  return (
+    <Button
+      variant="destructive"
+      onClick={() => toast.error(labels.error)}
+    >
+      {labels.errorButton}
+    </Button>
+  );
+}
+
+function InfoStory() {
+  const labels = useMvpPatternLabels().toast;
+
+  return (
+    <Button variant="outline" onClick={() => toast.info(labels.info)}>
+      {labels.infoButton}
+    </Button>
+  );
+}
+
+function AllVariantsStory() {
+  const labels = useMvpPatternLabels().toast;
+
+  return (
+    <div className="flex flex-wrap gap-2 p-4">
+      <Button onClick={() => toast.success(labels.successShort)}>
+        {labels.successShort}
+      </Button>
+      <Button variant="destructive" onClick={() => toast.error(labels.errorShort)}>
+        {labels.errorShort}
+      </Button>
+      <Button variant="outline" onClick={() => toast.warning(labels.warningShort)}>
+        {labels.warningShort}
+      </Button>
+      <Button variant="secondary" onClick={() => toast.info(labels.infoShort)}>
+        {labels.infoShort}
+      </Button>
+    </div>
+  );
+}
+
+export const Success: Story = {
+  render: () => <SuccessStory />,
 };
 
 export const Error: Story = {
-  render: () => (
-    <Button
-      variant="destructive"
-      onClick={() => toast.error("Impossible de publier la demande")}
-    >
-      Toast erreur
-    </Button>
-  ),
+  render: () => <ErrorStory />,
 };
 
 export const Info: Story = {
-  render: () => (
-    <Button variant="outline" onClick={() => toast.info("Session mentor active")}>
-      Toast info
-    </Button>
-  ),
+  render: () => <InfoStory />,
 };
 
 export const AllVariants: Story = {
-  render: () => (
-    <div className="flex flex-wrap gap-2 p-4">
-      <Button onClick={() => toast.success("Succès")}>Succès</Button>
-      <Button variant="destructive" onClick={() => toast.error("Erreur")}>
-        Erreur
-      </Button>
-      <Button variant="outline" onClick={() => toast.warning("Attention")}>
-        Warning
-      </Button>
-      <Button variant="secondary" onClick={() => toast.info("Info")}>
-        Info
-      </Button>
-    </div>
-  ),
+  render: () => <AllVariantsStory />,
 };

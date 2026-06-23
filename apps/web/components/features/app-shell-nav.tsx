@@ -23,7 +23,7 @@ function isNavActive(pathname: string | null, href: string): boolean {
     return false;
   }
   if (href === "/") {
-    return pathname === "/";
+    return pathname === "/" || pathname === "/feed";
   }
   if (href.startsWith("/requests")) {
     return pathname.startsWith("/requests");

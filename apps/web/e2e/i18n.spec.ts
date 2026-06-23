@@ -11,8 +11,8 @@ function e2eTitle(label: string): string {
 }
 
 test.describe("i18n — locale routing", () => {
-  test("default French feed at /", async ({ page }) => {
-    await page.goto("/");
+  test("default French feed at /feed", async ({ page }) => {
+    await page.goto("/feed");
     await expect(
       page.getByRole("heading", { level: 1, name: "Feed communautaire" }),
     ).toBeVisible({ timeout: 30_000 });
@@ -22,30 +22,32 @@ test.describe("i18n — locale routing", () => {
     ).toBeVisible();
   });
 
-  test("English feed at /en and navigation labels", async ({ page }) => {
-    await page.goto("/en");
+  test("English feed at /en/feed and navigation labels", async ({ page }) => {
+    await page.goto("/en/feed");
     await expect(
       page.getByRole("heading", { level: 1, name: "Community feed" }),
     ).toBeVisible({ timeout: 30_000 });
     await expect(
       page.getByRole("link", { name: "New request" }).first(),
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: "Mentor" }).first()).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Peer help" }).first(),
+    ).toBeVisible();
   });
 
   test("switch FR → EN from feed", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/feed");
     await page.getByTestId("locale-switch-en").click();
-    await expect(page).toHaveURL(/\/en\/?$/);
+    await expect(page).toHaveURL(/\/en\/feed\/?$/);
     await expect(
       page.getByRole("heading", { level: 1, name: "Community feed" }),
     ).toBeVisible();
   });
 
   test("switch EN → FR from feed", async ({ page }) => {
-    await page.goto("/en");
+    await page.goto("/en/feed");
     await page.getByTestId("locale-switch-fr").click();
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL(/\/feed\/?$/);
     await expect(
       page.getByRole("heading", { level: 1, name: "Feed communautaire" }),
     ).toBeVisible();

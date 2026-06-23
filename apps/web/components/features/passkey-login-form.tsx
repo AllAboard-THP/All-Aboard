@@ -10,6 +10,7 @@ import { useEffect, useRef } from "react";
 
 import { Button } from "@allaboard/ui/components/button";
 import { Link, useRouter } from "@/i18n/navigation";
+import { DEFAULT_POST_LOGIN_PATH } from "@/lib/app-routes";
 import {
   ApiRequestError,
   mapApiError,
@@ -24,7 +25,7 @@ type Props = {
   returnTo?: string;
 };
 
-export function PasskeyLoginForm({ returnTo = "/" }: Props) {
+export function PasskeyLoginForm({ returnTo = DEFAULT_POST_LOGIN_PATH }: Props) {
   const router = useRouter();
   const t = useTranslations("auth");
   const tErrors = useTranslations("errors");

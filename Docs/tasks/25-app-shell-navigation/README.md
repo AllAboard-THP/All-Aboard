@@ -1,40 +1,40 @@
-# Tâche #25 — Shell navigation & layout
+# Task #25 — Navigation shell & layout
 
-**Issue** : https://github.com/AllAboard-THP/All-Aboard/issues/25  
-**Statut** : ✅ **Livré** — commit `65a1596`  
-**Dépend de** : #24 (`@allaboard/ui`, structure `apps/web`)
+**Issue:** https://github.com/AllAboard-THP/All-Aboard/issues/25  
+**Status:** ✅ **Shipped** — commit `65a1596`  
+**Depends on:** #24 (`@allaboard/ui`, `apps/web` structure)
 
-## Objectif
+## Goal
 
-Shell App Router : navigation persistante, header, zones parcours MOC (accueil, création, détail, mentor).
+App Router shell: persistent navigation, header, MOC journey zones (home, create, detail, mentor).
 
-## Doc canonique
+## Canonical docs
 
-- **[app-shell.md](../../design-system/app-shell.md)** — routes, composants, a11y, extension
-- [design-system/README.md](../../design-system/README.md) — contexte DS
-- [moc-parcours-utilisateur.md](../../moc-parcours-utilisateur.md) — parcours produit
+- **[app-shell.md](../../design-system/app-shell.md)** — routes, components, a11y, extension
+- [design-system/README.md](../../design-system/README.md) — DS context
+- [product/user-journeys.md](../../product/user-journeys.md) — product journeys
 
-## Livré
+## Shipped
 
 - [x] Route group `app/(app)/` + `AppShell` / `AppShellNav`
-- [x] Pages `/`, `/help/new` migrées sous le shell
-- [x] Pages `/requests/[id]` (détail SSR) et `/mentor` (dashboard mentor)
-- [x] `/health` hors shell
-- [x] Tests Vitest (nav + landmarks)
-- [x] T23.4 Alert / Skeleton UI — livré via [PR #59](https://github.com/AllAboard-THP/All-Aboard/pull/59) (`@allaboard/ui`, 2026-05-27)
+- [x] Pages `/`, `/help/new` migrated under shell
+- [x] Pages `/requests/[id]` (SSR detail) and `/mentor` (mentor dashboard)
+- [x] `/health` outside shell
+- [x] Vitest tests (nav + landmarks)
+- [x] T23.4 Alert / Skeleton UI — shipped via [PR #59](https://github.com/AllAboard-THP/All-Aboard/pull/59) (`@allaboard/ui`, 2026-05-27)
 
-## Critères d’acceptation (#25)
+## Acceptance criteria (#25)
 
-- [x] Nav entre pages produit
-- [x] Layout responsive minimal · landmarks / focus
+- [x] Nav between product pages
+- [x] Minimal responsive layout · landmarks / focus
 
-## Suite
+## Next
 
-- [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) — feed réelle SSR (clos ; réutilise AppShell)
+- [#26](https://github.com/AllAboard-THP/All-Aboard/issues/26) — real SSR feed (closed; reuses AppShell)
 
-## Fichiers
+## Files
 
-| Fichier | Rôle |
-|---------|------|
-| `README.md` | Ce fichier |
+| File | Role |
+|------|------|
+| `README.md` | This file |
 | Code | `apps/web/app/(app)/`, `components/features/app-shell*.tsx` |
