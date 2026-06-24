@@ -167,7 +167,27 @@ describe("BFF W-P1-01 relays", () => {
       expect(res.status).toBe(200);
       expect(fetchMock).toHaveBeenCalledWith(
         "http://api.test:4000/auth/passkey/login/options",
-        expect.objectContaining({ method: "POST" }),
+        expect.objectContaining({ method: "POST", body: "{}" }),
+      );
+    });
+
+    it("POST /api/auth/passkey/login/options normalizes empty body for Fastify", async () => {
+      fetchMock.mockResolvedValueOnce(
+        new Response(JSON.stringify({ options: { challenge: "xyz" } }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+
+      const req = new Request("http://localhost/api/auth/passkey/login/options", {
+        method: "POST",
+      });
+      const res = await passkeyLoginOptionsPost(req);
+
+      expect(res.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://api.test:4000/auth/passkey/login/options",
+        expect.objectContaining({ method: "POST", body: "{}" }),
       );
     });
 

@@ -91,6 +91,10 @@ export async function relayPublicGet(
   return relayJsonResponse(res);
 }
 
+function normalizeRelayJsonBody(body: string): string {
+  return body.trim().length > 0 ? body : "{}";
+}
+
 /** POST JSON relay (no auth). */
 export async function relayPostJson(
   upstreamPath: string,
@@ -99,7 +103,7 @@ export async function relayPostJson(
   const res = await fetch(`${getApiBaseUrl()}${upstreamPath}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body,
+    body: normalizeRelayJsonBody(body),
   });
   return relayJsonResponse(res);
 }
@@ -112,7 +116,7 @@ export async function relayPostJsonWithCookies(
   const res = await fetch(`${getApiBaseUrl()}${upstreamPath}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body,
+    body: normalizeRelayJsonBody(body),
   });
   return relayJsonWithCookies(res);
 }
