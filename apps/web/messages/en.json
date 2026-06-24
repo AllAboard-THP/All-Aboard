@@ -63,6 +63,7 @@
     "messages": "Messages",
     "mentor": "Mentor",
     "mentorUnreadAria": "{count, plural, one {# item needs attention} other {# items need attention}}",
+    "adminPendingAria": "{count, plural, one {# pending admin action} other {# pending admin actions}}",
     "messagesUnreadAria": "{count, plural, one {# unread message} other {# unread messages}}"
   },
   "userMenu": {
@@ -86,13 +87,22 @@
   },
   "explore": {
     "title": "Explore",
-    "description": "Browse help requests by subject. Pick a topic to filter the feed.",
+    "description": "Browse help requests by subject. Pick a topic to open its dedicated page.",
     "sectionAria": "Subject catalogue",
     "loadErrorTitle": "Unable to load subjects",
     "emptyTitle": "No subjects available",
     "emptyDescription": "The subject catalogue will be available soon.",
     "postsCount": "{count, plural, one {# request} other {# requests}}",
     "cardLinkAria": "View requests for {name}"
+  },
+  "subjects": {
+    "eyebrow": "Subject",
+    "postsCount": "{count, plural, one {# published request} other {# published requests}}",
+    "backToExplore": "Back to explore",
+    "emptyTitle": "No requests for this subject",
+    "emptyDescription": "Be the first to publish a request in {name}.",
+    "notFoundTitle": "Subject not found",
+    "notFoundDescription": "No subject matches slug \"{slug}\"."
   },
   "resources": {
     "title": "Resources",

@@ -77,7 +77,7 @@ export function LandingRegisterPage() {
 
   return (
     <RegisterScreen
-      onSignInClick={() => router.push("/")}
+      onSignInClick={() => router.push("/login")}
       onGoogleSignInClick={() => {
         window.location.href = "/api/auth/google";
       }}

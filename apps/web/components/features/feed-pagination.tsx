@@ -13,9 +13,10 @@ type Props = {
   page: number;
   limit: number;
   total: number;
+  basePath?: string;
 };
 
-export async function FeedPagination({ params, page, limit, total }: Props) {
+export async function FeedPagination({ params, page, limit, total, basePath }: Props) {
   const t = await getTranslations("feed");
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
@@ -38,7 +39,7 @@ export async function FeedPagination({ params, page, limit, total }: Props) {
       <div className="flex gap-2">
         {hasPrev ? (
           <Button variant="outline" size="sm" asChild>
-            <Link href={feedPageHref(params, page - 1)}>{t("paginationPrev")}</Link>
+            <Link href={feedPageHref(params, page - 1, basePath)}>{t("paginationPrev")}</Link>
           </Button>
         ) : (
           <Button variant="outline" size="sm" disabled>
@@ -47,7 +48,7 @@ export async function FeedPagination({ params, page, limit, total }: Props) {
         )}
         {hasNext ? (
           <Button variant="outline" size="sm" asChild>
-            <Link href={feedPageHref(params, page + 1)}>{t("paginationNext")}</Link>
+            <Link href={feedPageHref(params, page + 1, basePath)}>{t("paginationNext")}</Link>
           </Button>
         ) : (
           <Button variant="outline" size="sm" disabled>

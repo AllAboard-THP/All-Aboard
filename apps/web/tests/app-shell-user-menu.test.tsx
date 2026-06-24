@@ -38,6 +38,20 @@ describe("AppShellUserMenu", () => {
             }),
           });
         }
+        if (url.includes("/api/admin/dashboard")) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({
+              stats: {
+                totalUsers: 10,
+                totalHelpRequests: 5,
+                flaggedCount: 2,
+                pendingSubjectRequests: 1,
+                pendingResources: 0,
+              },
+            }),
+          });
+        }
         if (url.includes("/api/auth/logout")) {
           return Promise.resolve({ ok: true, json: async () => ({ ok: true }) });
         }
@@ -104,7 +118,7 @@ describe("AppShellUserMenu", () => {
     );
   });
 
-  it("shows admin link for administrators", () => {
+  it("shows admin link and badge for administrators", async () => {
     renderWithI18n(
       <AppShellUserMenu
         userId="admin-1"
@@ -114,9 +128,11 @@ describe("AppShellUserMenu", () => {
       />,
     );
 
+    await screen.findByTestId("user-menu-admin-badge");
     const menu = screen.getByRole("menu");
     expect(screen.getByTestId("user-menu-admin-link").getAttribute("href")).toBe("/admin");
-    expect(within(menu).getByRole("menuitem", { name: "Administration" })).toBeTruthy();
+    expect(within(menu).getByRole("menuitem", { name: /Administration/ })).toBeTruthy();
+    expect(within(menu).getByText("3")).toBeTruthy();
   });
 
   it("does not show admin link for students", () => {

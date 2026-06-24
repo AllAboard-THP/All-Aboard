@@ -138,6 +138,14 @@ export function isAppSidebarItemActive(pathname: string | null, href: string): b
     );
   }
 
+  if (href === "/explore") {
+    return (
+      path === "/explore" ||
+      path.startsWith("/explore/") ||
+      path.startsWith("/subjects/")
+    );
+  }
+
   if (href === "/dashboard/demo") {
     return path === "/dashboard/demo" || path.startsWith("/dashboard/");
   }
