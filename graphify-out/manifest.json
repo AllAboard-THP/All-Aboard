@@ -105,12 +105,12 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/en.json": {
-    "mtime": 1782290845.959916,
+    "mtime": 1782291254.8575315,
     "ast_hash": "898fd745de9c3941f1653517aa33cdb2",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/fr.json": {
-    "mtime": 1782290842.5336134,
+    "mtime": 1782291254.8575315,
     "ast_hash": "8285aa38223f31b80580122b43b802de",
     "semantic_hash": ""
   },
@@ -260,17 +260,17 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/(app)/admin/page.tsx": {
-    "mtime": 1782290892.626611,
+    "mtime": 1782291254.8575315,
     "ast_hash": "e4ff70fb7abaa0c6049958ea08348fb0",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/(app)/admin/moderation/page.tsx": {
-    "mtime": 1782290893.266141,
+    "mtime": 1782291254.8575315,
     "ast_hash": "597c8cc36afed03bad41a534ea8f9b00",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/(app)/admin/users/page.tsx": {
-    "mtime": 1782290894.6371598,
+    "mtime": 1782291254.8575315,
     "ast_hash": "a7a7c4b39d6a4e2508b555cc65b2a035",
     "semantic_hash": ""
   },
@@ -590,7 +590,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/api-server.test.ts": {
-    "mtime": 1782290936.0224369,
+    "mtime": 1782291254.8575315,
     "ast_hash": "ded966feed883b2042198620872c43b1",
     "semantic_hash": ""
   },
@@ -1130,7 +1130,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/map-api-error.ts": {
-    "mtime": 1782290849.1942945,
+    "mtime": 1782291254.8575315,
     "ast_hash": "c8ff2197177a69012890310f808b499b",
     "semantic_hash": ""
   },
@@ -1155,7 +1155,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/api-server.ts": {
-    "mtime": 1782290832.6218286,
+    "mtime": 1782291254.8575315,
     "ast_hash": "25311a2ae0324c385d94987c55eb598e",
     "semantic_hash": ""
   },
@@ -3010,12 +3010,12 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/(app)/admin/subject-requests/page.tsx": {
-    "mtime": 1782290895.1517885,
+    "mtime": 1782291254.8575315,
     "ast_hash": "90e447482f220171c5de6428a9160b98",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/(app)/admin/denylist-patterns/page.tsx": {
-    "mtime": 1782290893.926571,
+    "mtime": 1782291254.8575315,
     "ast_hash": "36f569101cdaad623475938725b6a748",
     "semantic_hash": ""
   },
@@ -3060,68 +3060,83 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/admin-moderation-actions.tsx": {
-    "mtime": 1782290857.8808956,
+    "mtime": 1782291254.8575315,
     "ast_hash": "73fe4ea22b10893db5716ef620527bc8",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/admin-moderation-content.tsx": {
-    "mtime": 1782290921.51586,
+    "mtime": 1782291254.8575315,
     "ast_hash": "b1a29b85ebeec8b9806d4a9dc659d47e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/admin-subject-request-actions.tsx": {
-    "mtime": 1782290870.1104364,
+    "mtime": 1782291254.8575315,
     "ast_hash": "193ae28f70922be781bf096bb6ea68e5",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/admin-denylist-row-actions.tsx": {
-    "mtime": 1782290863.8254685,
+    "mtime": 1782291254.8575315,
     "ast_hash": "347ca731e55c2d69cd789fdfaec340e3",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/admin-users-content.tsx": {
-    "mtime": 1782290912.810093,
+    "mtime": 1782291254.8575315,
     "ast_hash": "3979921a3992d03a97a084058cbd3b3c",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/admin-page-shell.tsx": {
-    "mtime": 1782290854.6937218,
+    "mtime": 1782291254.8575315,
     "ast_hash": "8dae3b8aed01bbff806c64bc519ec40f",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/admin-dashboard-content.tsx": {
-    "mtime": 1782290912.171374,
+    "mtime": 1782291254.8575315,
     "ast_hash": "1f43a29c62b1604a3deb21860c8ba188",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/admin-user-role-actions.tsx": {
-    "mtime": 1782290867.390015,
+    "mtime": 1782291254.8575315,
     "ast_hash": "bc4011b17c74ecc571ffda5ea639e32a",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/admin-denylist-content.tsx": {
-    "mtime": 1782290912.171374,
+    "mtime": 1782291254.8575315,
     "ast_hash": "f7a0ffbcac9780d7531da8e0b970d22a",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/admin-subject-requests-content.tsx": {
-    "mtime": 1782290912.242343,
+    "mtime": 1782291254.8575315,
     "ast_hash": "d1d6c6b6c8aa9f6921a90e581e2b7195",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/admin-subject-requests-panel.tsx": {
-    "mtime": 1782290888.5678937,
+    "mtime": 1782291254.8575315,
     "ast_hash": "2a87b99ceaee058a2869dfd7b0478ccf",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/admin-denylist-create-form.tsx": {
-    "mtime": 1782290861.2184474,
+    "mtime": 1782291254.8575315,
     "ast_hash": "a6aef2962551ee71d20cec4b24ebd87f",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/admin-client.ts": {
-    "mtime": 1782290836.3294928,
+    "mtime": 1782291254.8575315,
     "ast_hash": "47f0f484c8a7fb450b256fc5cc1abb45",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/e2e/admin.spec.ts": {
+    "mtime": 1782292617.8467467,
+    "ast_hash": "ab6f2250c9b4a0d267eef6598b6002d8",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/tests/admin-moderation-actions.test.tsx": {
+    "mtime": 1782292612.7316308,
+    "ast_hash": "ed0c02da39aed54e88fbcd478975ed3d",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/tests/admin-user-role-actions.test.tsx": {
+    "mtime": 1782292615.305506,
+    "ast_hash": "26ce38bba1e078bf8d475f6588bc00a1",
     "semantic_hash": ""
   }
 }
