@@ -1,29 +1,27 @@
-import { getTranslations } from "next-intl/server";
+import { cookies } from "next/headers";
 
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@allaboard/ui/components/card";
-
+import { AdminSubjectRequestsContent } from "@/components/features/admin-subject-requests-content";
 import { initPageLocale } from "@/lib/init-page-locale";
+import { fetchAdminSubjectRequests } from "@/lib/api-server";
+
+export const dynamic = "force-dynamic";
 
 type PageProps = { params: Promise<{ locale: string }> };
 
 export default async function AdminSubjectRequestsPage({ params }: PageProps) {
   const { locale } = await params;
   initPageLocale(locale);
-  const t = await getTranslations("admin.nav");
+
+  const token = (await cookies()).get("access_token")?.value;
+  const result =
+    token ?
+      await fetchAdminSubjectRequests(token)
+    : ({ ok: false as const, error: "unauthorized" });
 
   return (
-    <div className="p-4 sm:p-6" data-testid="admin-subject-requests-page">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("subjectRequests")}</CardTitle>
-          <CardDescription>{t("subjectRequests")}</CardDescription>
-        </CardHeader>
-      </Card>
-    </div>
+    <AdminSubjectRequestsContent
+      subjectRequests={result.ok ? result.data : null}
+      error={result.ok ? null : result.error}
+    />
   );
 }

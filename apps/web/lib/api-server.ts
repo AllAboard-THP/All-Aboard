@@ -1,4 +1,10 @@
 import type {
+  AdminDashboardResponse,
+  AdminDenylistPatternsResponse,
+  AdminModerationResponse,
+  AdminSubjectRequestsResponse,
+  AdminUserSummary,
+  AdminUsersResponse,
   AuthMeResponse,
   ChatMessage,
   ConversationInboxItem,
@@ -7,6 +13,7 @@ import type {
   ConversationSummary,
   CreateConversationResponse,
   CreateMessageResponse,
+  DenylistPattern,
   FeedResponse,
   HelpRequest,
   HelpRequestDetailResponse,
@@ -22,8 +29,10 @@ import type {
   ResourcesListResponse,
   Response,
   Subject,
+  SubjectRequestStatus,
   SubjectSummary,
   SubjectsResponse,
+  UserRole,
 } from "@allaboard/types";
 
 import {
@@ -389,6 +398,180 @@ export function parseMentorDashboardResponse(
   };
 }
 
+function isAdminDashboardStats(
+  value: unknown,
+): value is AdminDashboardResponse["stats"] {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.totalUsers === "number" &&
+    typeof o.totalHelpRequests === "number" &&
+    typeof o.flaggedCount === "number" &&
+    typeof o.pendingSubjectRequests === "number" &&
+    typeof o.pendingResources === "number"
+  );
+}
+
+export function parseAdminDashboardResponse(
+  data: unknown,
+): AdminDashboardResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid admin dashboard: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!isAdminDashboardStats(o.stats)) {
+    throw new Error("Invalid admin dashboard: stats shape");
+  }
+  if (!Array.isArray(o.recentHelpRequests)) {
+    throw new Error("Invalid admin dashboard: recentHelpRequests must be an array");
+  }
+  if (!o.recentHelpRequests.every(isHelpRequest)) {
+    throw new Error("Invalid admin dashboard: recentHelpRequests item shape");
+  }
+  return {
+    stats: o.stats,
+    recentHelpRequests: o.recentHelpRequests,
+  };
+}
+
+function isAdminModerationFlaggedResponse(
+  value: unknown,
+): value is AdminModerationResponse["flaggedResponses"][number] {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  if (!isResponse(o.item)) return false;
+  if (o.helpRequest !== undefined && !isHelpRequest(o.helpRequest)) return false;
+  return true;
+}
+
+export function parseAdminModerationResponse(
+  data: unknown,
+): AdminModerationResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid admin moderation: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!Array.isArray(o.flaggedHelpRequests)) {
+    throw new Error("Invalid admin moderation: flaggedHelpRequests must be an array");
+  }
+  if (!o.flaggedHelpRequests.every(isHelpRequest)) {
+    throw new Error("Invalid admin moderation: flaggedHelpRequests item shape");
+  }
+  if (!Array.isArray(o.flaggedResponses)) {
+    throw new Error("Invalid admin moderation: flaggedResponses must be an array");
+  }
+  if (!o.flaggedResponses.every(isAdminModerationFlaggedResponse)) {
+    throw new Error("Invalid admin moderation: flaggedResponses item shape");
+  }
+  return {
+    flaggedHelpRequests: o.flaggedHelpRequests,
+    flaggedResponses: o.flaggedResponses,
+  };
+}
+
+function isDenylistPattern(value: unknown): value is DenylistPattern {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.id === "string" &&
+    typeof o.label === "string" &&
+    typeof o.pattern === "string" &&
+    typeof o.active === "boolean" &&
+    typeof o.createdAt === "string" &&
+    typeof o.updatedAt === "string"
+  );
+}
+
+export function parseAdminDenylistPatternsResponse(
+  data: unknown,
+): AdminDenylistPatternsResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid denylist patterns: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!Array.isArray(o.items)) {
+    throw new Error("Invalid denylist patterns: items must be an array");
+  }
+  if (!o.items.every(isDenylistPattern)) {
+    throw new Error("Invalid denylist patterns: item shape");
+  }
+  return { items: o.items };
+}
+
+function isUserRole(value: unknown): value is UserRole {
+  return value === "student" || value === "mentor" || value === "admin";
+}
+
+function isAdminUserSummary(value: unknown): value is AdminUserSummary {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.id === "string" &&
+    typeof o.email === "string" &&
+    isUserRole(o.role) &&
+    typeof o.displayName === "string" &&
+    typeof o.createdAt === "string"
+  );
+}
+
+export function parseAdminUsersResponse(data: unknown): AdminUsersResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid admin users: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!Array.isArray(o.items)) {
+    throw new Error("Invalid admin users: items must be an array");
+  }
+  if (!o.items.every(isAdminUserSummary)) {
+    throw new Error("Invalid admin users: item shape");
+  }
+  return { items: o.items };
+}
+
+function isSubjectRequestStatus(value: unknown): value is SubjectRequestStatus {
+  return value === "pending" || value === "approved" || value === "rejected";
+}
+
+function isAdminSubjectRequestItem(
+  value: unknown,
+): value is AdminSubjectRequestsResponse["pending"][number] {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.id === "string" &&
+    typeof o.name === "string" &&
+    isSubjectRequestStatus(o.status) &&
+    typeof o.createdAt === "string" &&
+    typeof o.updatedAt === "string" &&
+    typeof o.authorId === "string" &&
+    (o.description === undefined || typeof o.description === "string") &&
+    (o.authorEmail === undefined || typeof o.authorEmail === "string") &&
+    (o.authorDisplayName === undefined || typeof o.authorDisplayName === "string")
+  );
+}
+
+export function parseAdminSubjectRequestsResponse(
+  data: unknown,
+): AdminSubjectRequestsResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid subject requests: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  for (const key of ["pending", "approved", "rejected"] as const) {
+    if (!Array.isArray(o[key])) {
+      throw new Error(`Invalid subject requests: ${key} must be an array`);
+    }
+    if (!o[key].every(isAdminSubjectRequestItem)) {
+      throw new Error(`Invalid subject requests: ${key} item shape`);
+    }
+  }
+  return {
+    pending: o.pending as AdminSubjectRequestsResponse["pending"],
+    approved: o.approved as AdminSubjectRequestsResponse["approved"],
+    rejected: o.rejected as AdminSubjectRequestsResponse["rejected"],
+  };
+}
+
 function isChatMessage(value: unknown): value is ChatMessage {
   if (typeof value !== "object" || value === null) return false;
   const o = value as Record<string, unknown>;
@@ -566,6 +749,26 @@ export type FetchResourceResult =
 
 export type FetchMentorDashboardResult =
   | { ok: true; data: MentorDashboardResponse }
+  | { ok: false; error: string; status?: number };
+
+export type FetchAdminDashboardResult =
+  | { ok: true; data: AdminDashboardResponse }
+  | { ok: false; error: string; status?: number };
+
+export type FetchAdminModerationResult =
+  | { ok: true; data: AdminModerationResponse }
+  | { ok: false; error: string; status?: number };
+
+export type FetchAdminDenylistPatternsResult =
+  | { ok: true; data: AdminDenylistPatternsResponse }
+  | { ok: false; error: string; status?: number };
+
+export type FetchAdminUsersResult =
+  | { ok: true; data: AdminUsersResponse }
+  | { ok: false; error: string; status?: number };
+
+export type FetchAdminSubjectRequestsResult =
+  | { ok: true; data: AdminSubjectRequestsResponse }
   | { ok: false; error: string; status?: number };
 
 export type FetchConversationsResult =
@@ -1078,4 +1281,96 @@ export async function fetchConversationMessages(
     const message = e instanceof Error ? e.message : "Network error";
     return { ok: false, error: message };
   }
+}
+
+async function fetchAdminEndpoint<T>(
+  path: string,
+  accessToken: string,
+  parse: (json: unknown) => T,
+  label: string,
+): Promise<
+  | { ok: true; data: T }
+  | { ok: false; error: string; status?: number }
+> {
+  const url = `${getApiBaseUrl()}${path}`;
+  try {
+    const { ok, status, json } = await fetchJson(url, {
+      headers: { authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    });
+    if (status === 401) {
+      return { ok: false, error: "unauthorized", status: 401 };
+    }
+    if (status === 403) {
+      return { ok: false, error: "forbidden", status: 403 };
+    }
+    if (!ok) {
+      return { ok: false, error: `${label} HTTP ${status}`, status };
+    }
+    try {
+      return { ok: true, data: parse(json) };
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : `Invalid ${label.toLowerCase()} payload`;
+      return { ok: false, error: message, status };
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Network error";
+    return { ok: false, error: message };
+  }
+}
+
+export async function fetchAdminDashboard(
+  accessToken: string,
+): Promise<FetchAdminDashboardResult> {
+  return fetchAdminEndpoint(
+    "/admin/dashboard",
+    accessToken,
+    parseAdminDashboardResponse,
+    "Admin dashboard",
+  );
+}
+
+export async function fetchAdminModeration(
+  accessToken: string,
+): Promise<FetchAdminModerationResult> {
+  return fetchAdminEndpoint(
+    "/admin/moderation",
+    accessToken,
+    parseAdminModerationResponse,
+    "Admin moderation",
+  );
+}
+
+export async function fetchAdminDenylistPatterns(
+  accessToken: string,
+): Promise<FetchAdminDenylistPatternsResult> {
+  return fetchAdminEndpoint(
+    "/admin/denylist-patterns",
+    accessToken,
+    parseAdminDenylistPatternsResponse,
+    "Admin denylist patterns",
+  );
+}
+
+export async function fetchAdminUsers(
+  accessToken: string,
+): Promise<FetchAdminUsersResult> {
+  return fetchAdminEndpoint(
+    "/admin/users",
+    accessToken,
+    parseAdminUsersResponse,
+    "Admin users",
+  );
+}
+
+export async function fetchAdminSubjectRequests(
+  accessToken: string,
+): Promise<FetchAdminSubjectRequestsResult> {
+  return fetchAdminEndpoint(
+    "/admin/subject-requests",
+    accessToken,
+    parseAdminSubjectRequestsResponse,
+    "Admin subject requests",
+  );
 }
