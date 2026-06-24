@@ -77,6 +77,10 @@ export const APP_SIDEBAR_ADMIN_NAV: AppSidebarNavDef[] = [
   { id: "admin", href: "/admin", icon: Shield, group: "admin" },
 ];
 
+export const APP_SIDEBAR_ADMIN_NAV_IDS: AppSidebarNavId[] = APP_SIDEBAR_ADMIN_NAV.map(
+  (def) => def.id,
+);
+
 /** All defs for active-route matching (role-agnostic). */
 export const APP_SIDEBAR_ALL_NAV: AppSidebarNavDef[] = [
   ...APP_SIDEBAR_NAV,
@@ -187,6 +191,19 @@ export function resolveAppSidebarActiveId(pathname: string | null): AppSidebarNa
   return undefined;
 }
 
+function isNavIdVisibleForRole(
+  id: AppSidebarNavId,
+  options: { showMentorSection: boolean; showAdminSection: boolean },
+): boolean {
+  if (APP_SIDEBAR_ADMIN_NAV_IDS.includes(id)) {
+    return options.showAdminSection;
+  }
+  if (id === "mentor") {
+    return options.showMentorSection;
+  }
+  return true;
+}
+
 function resolveOpenSectionIds(options: {
   showMentorSection: boolean;
   showAdminSection: boolean;
@@ -218,8 +235,13 @@ export function resolveAppSidebarContext(
   pathname: string | null,
   options?: AppSidebarRoleOptions,
 ): AppSidebarResolvedContext {
-  const activeId = resolveAppSidebarActiveId(pathname);
+  const rawActiveId = resolveAppSidebarActiveId(pathname);
   const { showMentorSection, showAdminSection } = resolveAppSidebarRoleFlags(options);
+  const roleFlags = { showMentorSection, showAdminSection };
+  const activeId =
+    rawActiveId && isNavIdVisibleForRole(rawActiveId, roleFlags)
+      ? rawActiveId
+      : undefined;
 
   return {
     activeId,

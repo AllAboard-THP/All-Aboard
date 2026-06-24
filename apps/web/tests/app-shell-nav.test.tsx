@@ -7,6 +7,15 @@ import {
 import { renderWithI18n } from "./i18n-test-utils";
 
 const usePathname = vi.fn(() => "/feed");
+const mockUseAuthRole = vi.fn(() => ({
+  isMentor: true,
+  isAdmin: false,
+  role: "mentor" as const,
+}));
+
+vi.mock("@/lib/use-auth-role", () => ({
+  useAuthRole: () => mockUseAuthRole(),
+}));
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({
@@ -34,6 +43,11 @@ function getPrimaryNav() {
 describe("AppShellNav", () => {
   beforeEach(() => {
     usePathname.mockReturnValue("/feed");
+    mockUseAuthRole.mockReturnValue({
+      isMentor: true,
+      isAdmin: false,
+      role: "mentor",
+    });
   });
 
   it("renders primary navigation links including messages", () => {
@@ -74,5 +88,16 @@ describe("AppShellNav", () => {
       "page",
     );
     expect(nav.getByRole("link", { name: "Feed" }).getAttribute("aria-current")).toBeNull();
+  });
+
+  it("hides mentor link for students", () => {
+    mockUseAuthRole.mockReturnValue({
+      isMentor: false,
+      isAdmin: false,
+      role: "student",
+    });
+    renderWithI18n(<AppShellNav />);
+    const nav = getPrimaryNav();
+    expect(nav.queryByRole("link", { name: "Mentor" })).toBeNull();
   });
 });
