@@ -71,6 +71,7 @@
     "myPosts": "My requests",
     "myBookmarks": "My bookmarks",
     "mentor": "Mentor space",
+    "admin": "Administration",
     "logout": "Sign out",
     "logoutPending": "Signing out…",
     "login": "Sign in",
@@ -591,5 +592,20 @@
     "loginRequiredDescription": "Sign in with a passkey via <link></link> to access your messages.",
     "loginRequiredLink": "the sign-in page",
     "unknownPeer": "Conversation"
+  },
+  "admin": {
+    "loginRequiredTitle": "Sign-in required",
+    "loginRequiredDescription": "Sign in with a passkey via <link></link> to access administration.",
+    "loginRequiredLink": "the sign-in page",
+    "forbiddenTitle": "Administrators only",
+    "forbiddenDescription": "This section is restricted to accounts with the admin role.",
+    "nav": {
+      "ariaLabel": "Admin navigation",
+      "dashboard": "Dashboard",
+      "moderation": "Moderation",
+      "denylist": "Denylist",
+      "users": "Users",
+      "subjectRequests": "Subjects"
+    }
   }
 }

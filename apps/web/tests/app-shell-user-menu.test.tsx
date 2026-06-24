@@ -104,6 +104,34 @@ describe("AppShellUserMenu", () => {
     );
   });
 
+  it("shows admin link for administrators", () => {
+    renderWithI18n(
+      <AppShellUserMenu
+        userId="admin-1"
+        displayName="Carol Admin"
+        role="admin"
+        defaultOpen
+      />,
+    );
+
+    const menu = screen.getByRole("menu");
+    expect(screen.getByTestId("user-menu-admin-link").getAttribute("href")).toBe("/admin");
+    expect(within(menu).getByRole("menuitem", { name: "Administration" })).toBeTruthy();
+  });
+
+  it("does not show admin link for students", () => {
+    renderWithI18n(
+      <AppShellUserMenu
+        userId="user-1"
+        displayName="Alice Martin"
+        role="student"
+        defaultOpen
+      />,
+    );
+
+    expect(screen.queryByTestId("user-menu-admin-link")).toBeNull();
+  });
+
   it("logs out via BFF and refreshes the app shell", async () => {
     renderWithI18n(
       <AppShellUserMenu
