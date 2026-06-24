@@ -1,4 +1,6 @@
 import type {
+  SuggestTagsBody,
+  SuggestTagsResponse,
   UpdateHelpRequestBody,
   UpdateHelpRequestResponse,
   UpdateResponseBody,
@@ -17,6 +19,39 @@ export async function updateHelpRequest(
     credentials: "include",
     body: JSON.stringify(body),
   });
+  const text = await res.text();
+  if (!res.ok) {
+    throwFromApiResponse(res.status, text);
+  }
+  return JSON.parse(text) as UpdateHelpRequestResponse;
+}
+
+export async function suggestHelpRequestTags(
+  body: SuggestTagsBody,
+): Promise<SuggestTagsResponse> {
+  const res = await fetch("/api/help-requests/suggest-tags", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    throwFromApiResponse(res.status, text);
+  }
+  return JSON.parse(text) as SuggestTagsResponse;
+}
+
+export async function requestMentorHelp(
+  id: string,
+): Promise<UpdateHelpRequestResponse> {
+  const res = await fetch(
+    `/api/help-requests/${encodeURIComponent(id)}/help-mentor`,
+    {
+      method: "POST",
+      credentials: "include",
+    },
+  );
   const text = await res.text();
   if (!res.ok) {
     throwFromApiResponse(res.status, text);
