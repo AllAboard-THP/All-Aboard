@@ -55,7 +55,7 @@ export function AppShellUserMenu({
   const [pending, startTransition] = useTransition();
   const [mentorUnreadCount, setMentorUnreadCount] = useState(0);
   const [adminPendingCountState, setAdminPendingCountState] = useState(0);
-  const isMentor = role === "mentor";
+  const isMentor = role === "mentor" || role === "admin";
   const isAdmin = role === "admin";
 
   useEffect(() => {

@@ -65,6 +65,23 @@ describe("app-sidebar-nav", () => {
     expect(admin.openSectionIds).toEqual(["navigation", "community", "mentor", "admin"]);
   });
 
+  it("hides admin active route and context for non-admin users", () => {
+    const studentOnAdmin = resolveAppSidebarContext("/admin/moderation", {
+      isMentor: false,
+      isAdmin: false,
+    });
+    expect(studentOnAdmin.activeId).toBeUndefined();
+    expect(studentOnAdmin.showAdminSection).toBe(false);
+    expect(studentOnAdmin.openSectionIds).toEqual(["navigation", "community"]);
+
+    const mentorOnAdmin = resolveAppSidebarContext("/admin/users", {
+      isMentor: true,
+      isAdmin: false,
+    });
+    expect(mentorOnAdmin.activeId).toBeUndefined();
+    expect(mentorOnAdmin.showAdminSection).toBe(false);
+  });
+
   it("builds student sections with eight navigation+community items", () => {
     const labels = {
       navigationGroup: "Nav",

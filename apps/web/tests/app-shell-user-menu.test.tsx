@@ -146,6 +146,21 @@ describe("AppShellUserMenu", () => {
     );
 
     expect(screen.queryByTestId("user-menu-admin-link")).toBeNull();
+    expect(screen.queryByTestId("user-menu-admin-badge")).toBeNull();
+  });
+
+  it("does not show admin link for mentors", () => {
+    renderWithI18n(
+      <AppShellUserMenu
+        userId="mentor-1"
+        displayName="Bob Mentor"
+        role="mentor"
+        defaultOpen
+      />,
+    );
+
+    expect(screen.queryByTestId("user-menu-admin-link")).toBeNull();
+    expect(screen.queryByTestId("user-menu-admin-badge")).toBeNull();
   });
 
   it("logs out via BFF and refreshes the app shell", async () => {
