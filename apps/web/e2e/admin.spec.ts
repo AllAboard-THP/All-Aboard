@@ -24,12 +24,9 @@ test.describe("admin — accès", () => {
   test("utilisateur non-admin voit accès refusé sur /admin", async ({ page }) => {
     await login(page, "bob@dev.local");
     await page.goto("/admin");
-    await expect(page.getByTestId("admin-forbidden")).toBeVisible({
-      timeout: 30_000,
-    });
-    await expect(
-      page.getByRole("heading", { name: "Accès réservé aux administrateurs" }),
-    ).toBeVisible();
+    const forbidden = page.getByTestId("admin-forbidden");
+    await expect(forbidden).toBeVisible({ timeout: 30_000 });
+    await expect(forbidden.getByText("Accès réservé aux administrateurs")).toBeVisible();
   });
 });
 
