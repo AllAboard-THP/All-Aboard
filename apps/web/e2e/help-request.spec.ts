@@ -73,9 +73,13 @@ test.describe("parcours création demande", () => {
 test.describe("pages passkey", () => {
   test("login page renders passkey CTA", async ({ page }) => {
     await page.goto("/login");
+    await expect(page.getByTestId("login-page-card")).toBeVisible({
+      timeout: 30_000,
+    });
     await expect(
       page.getByRole("heading", { level: 1, name: "Se connecter avec une passkey" }),
     ).toBeVisible();
+    await expect(page.getByTestId("passkey-login-form")).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Utiliser une passkey" }),
     ).toBeVisible();

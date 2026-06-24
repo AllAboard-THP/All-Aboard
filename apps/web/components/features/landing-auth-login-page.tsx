@@ -7,7 +7,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@allaboard/ui/components/card";
 import { useLegacyLabels } from "@allaboard/ui/i18n/storybook-locale";
 import { LandingPageShell } from "@allaboard/ui/patterns/landing-page-shell";
@@ -43,9 +42,9 @@ export function LandingAuthLoginPage({
             <p className="m-0 text-xs font-bold tracking-widest text-primary uppercase">
               {t("loginEyebrow")}
             </p>
-            <CardTitle className="text-2xl leading-none font-semibold">
+            <h1 className="text-2xl leading-none font-semibold">
               {t("loginTitle")}
-            </CardTitle>
+            </h1>
             <CardDescription>{t("loginDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
