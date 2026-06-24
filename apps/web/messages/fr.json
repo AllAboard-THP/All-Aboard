@@ -71,6 +71,7 @@
     "myPosts": "Mes demandes",
     "myBookmarks": "Mes sauvegardes",
     "mentor": "Espace mentor",
+    "admin": "Administration",
     "logout": "Déconnexion",
     "logoutPending": "Déconnexion…",
     "login": "Se connecter",
@@ -591,5 +592,20 @@
     "loginRequiredDescription": "Connectez-vous avec une passkey via <link></link> pour accéder à vos messages.",
     "loginRequiredLink": "la page de connexion",
     "unknownPeer": "Conversation"
+  },
+  "admin": {
+    "loginRequiredTitle": "Connexion requise",
+    "loginRequiredDescription": "Connectez-vous avec une passkey via <link></link> pour accéder à l'administration.",
+    "loginRequiredLink": "la page de connexion",
+    "forbiddenTitle": "Accès réservé aux administrateurs",
+    "forbiddenDescription": "Cette section est réservée aux comptes avec le rôle administrateur.",
+    "nav": {
+      "ariaLabel": "Navigation administration",
+      "dashboard": "Tableau de bord",
+      "moderation": "Modération",
+      "denylist": "Liste noire",
+      "users": "Utilisateurs",
+      "subjectRequests": "Matières"
+    }
   }
 }

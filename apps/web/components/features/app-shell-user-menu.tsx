@@ -51,6 +51,7 @@ export function AppShellUserMenu({
   const [pending, startTransition] = useTransition();
   const [mentorUnreadCount, setMentorUnreadCount] = useState(0);
   const isMentor = role === "mentor";
+  const isAdmin = role === "admin";
 
   useEffect(() => {
     if (!isMentor) return;
@@ -133,6 +134,18 @@ export function AppShellUserMenu({
                   {mentorUnreadCount > 0 ? (
                     <Badge variant="destructive">{mentorUnreadCount}</Badge>
                   ) : null}
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </>
+        ) : null}
+        {isAdmin ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem asChild>
+                <Link href="/admin" data-testid="user-menu-admin-link">
+                  {t("admin")}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
