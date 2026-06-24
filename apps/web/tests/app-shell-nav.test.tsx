@@ -51,7 +51,7 @@ describe("AppShellNav", () => {
     renderWithI18n(<AppShellNav />);
     const nav = getPrimaryNav();
     const home = nav.getByRole("link", { name: "Feed" });
-    expect(home.getAttribute("href")).toBe("/");
+    expect(home.getAttribute("href")).toBe("/feed");
     expect(home.getAttribute("aria-current")).toBe("page");
     expect(nav.getByRole("link", { name: "Nouvelle demande" }).getAttribute("aria-current")).toBeNull();
   });

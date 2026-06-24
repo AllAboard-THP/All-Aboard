@@ -91,5 +91,8 @@ flowchart TD
 - **Rails API parity — Phase 6 (shipped, API):** admin moderation, denylist, roles. Doc: [tasks/api-rails-parity-phase6/README.md](../tasks/api-rails-parity-phase6/README.md).
 - **Rails API parity — Lot A (PR #104, API):** soft delete `DELETE /help-requests/:id`, `POST /mentor/resources/:id/reject`. Doc: [tasks/api-parity-delete-reject/README.md](../tasks/api-parity-delete-reject/README.md).
 - **Rails API parity — Phase 7 (PR #104, API):** `POST /help-requests/suggest-tags`, `ai_summary` on resolution. Doc: [tasks/api-rails-parity-phase7/README.md](../tasks/api-rails-parity-phase7/README.md).
-- **Parity doc hub:** [tasks/api-rails-parity/README.md](../tasks/api-rails-parity/README.md); contract: [integration guide](../guides/web-api-integration.md#rails-parity-thp-final--api).
+- **Web parity P3 — Plan 6 (shipped, web):** admin UI + BFF (`/admin/*`, moderation, denylist, users, subject-requests). Doc: [tasks/web-parity-p3/README.md](../tasks/web-parity-p3/README.md).
+- **Web parity P3 — Plan 7 (shipped, web):** help-request forms (body, code, subject, urgent), owner actions (resolve, help-mentor), AI summary display, suggest-tags button.
+- **Web parity P3 — Plan 7b (shipped, web):** public landing `/` (marketing + login, auth redirect → `/feed`), subject pages `/subjects/[slug]`, admin nav badge.
+- **Parity doc hub:** [tasks/api-rails-parity/README.md](../tasks/api-rails-parity/README.md); web closeout: [tasks/web-parity-p3/README.md](../tasks/web-parity-p3/README.md); contract: [integration guide](../guides/web-api-integration.md#rails-parity-thp-final--api).
 - See also technical view: [Dataflow & architecture](../architecture/dataflow.md).

@@ -52,6 +52,11 @@ describe("app-sidebar-nav", () => {
     expect(mentor.openSectionIds).toEqual(["navigation", "community", "mentor"]);
   });
 
+  it("marks explore routes active for subject pages", () => {
+    expect(isAppSidebarItemActive("/subjects/javascript", "/explore")).toBe(true);
+    expect(isAppSidebarItemActive("/feed", "/explore")).toBe(false);
+  });
+
   it("resolves admin sidebar with mentor and admin sections", () => {
     const admin = resolveAppSidebarContext("/admin/users", { isAdmin: true });
     expect(admin.activeId).toBe("adminUsers");

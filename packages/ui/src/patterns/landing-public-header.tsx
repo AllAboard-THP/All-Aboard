@@ -21,8 +21,8 @@ import { legacyDemoToast } from "./legacy-story-feedback";
 export type LandingPublicHeaderProps = {
   labels?: LegacyLabels;
   className?: string;
-  /** Highlights the sign-in affordance on the login landing screen. */
-  activeAction?: "signIn" | "signUp";
+  /** Highlights the matching header action; omit for the marketing home (neither highlighted). */
+  activeAction?: "signIn" | "signUp" | null;
   onSignInClick?: () => void;
   onSignUpClick?: () => void;
   onLogoClick?: () => void;
@@ -31,7 +31,7 @@ export type LandingPublicHeaderProps = {
 export function LandingPublicHeader({
   labels = legacyLabelsFr,
   className,
-  activeAction = "signIn",
+  activeAction,
   onSignInClick,
   onSignUpClick,
   onLogoClick,

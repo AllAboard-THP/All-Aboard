@@ -63,15 +63,17 @@ const FEED_PATH = "/feed";
 /** Path + query for next-intl `Link` (locale prefix added by router). */
 export function feedHref(
   params: FeedPageParams,
-  options?: { includeWidgets?: boolean },
+  options?: { includeWidgets?: boolean; basePath?: string },
 ): string {
+  const basePath = options?.basePath ?? FEED_PATH;
   const query = buildFeedQueryString(params, options);
-  return query.length > 0 ? `${FEED_PATH}${query}` : FEED_PATH;
+  return query.length > 0 ? `${basePath}${query}` : basePath;
 }
 
 export function feedPageHref(
   current: FeedPageParams,
   page: number,
+  basePath?: string,
 ): string {
-  return feedHref({ ...current, page });
+  return feedHref({ ...current, page }, basePath ? { basePath } : undefined);
 }

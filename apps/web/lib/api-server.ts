@@ -32,6 +32,7 @@ import type {
   SubjectRequestStatus,
   SubjectSummary,
   SubjectsResponse,
+  SubjectDetailResponse,
   UserRole,
 } from "@allaboard/types";
 
@@ -267,6 +268,17 @@ export function parseSubjectsResponse(data: unknown): SubjectsResponse {
     throw new Error("Invalid subjects: item shape");
   }
   return { items: o.items };
+}
+
+export function parseSubjectDetailResponse(data: unknown): SubjectDetailResponse {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid subject detail: expected object");
+  }
+  const o = data as Record<string, unknown>;
+  if (!isSubject(o.item)) {
+    throw new Error("Invalid subject detail: item shape");
+  }
+  return { item: o.item };
 }
 
 function isSubjectSummary(value: unknown): value is SubjectSummary {
@@ -719,6 +731,10 @@ export type FetchSubjectsResult =
   | { ok: true; data: SubjectsResponse }
   | { ok: false; error: string };
 
+export type FetchSubjectBySlugResult =
+  | { ok: true; data: SubjectDetailResponse }
+  | { ok: false; error: string; status?: number };
+
 export type FetchHelpRequestResult =
   | { ok: true; data: HelpRequestDetailResponse }
   | { ok: false; error: string; status?: number };
@@ -940,6 +956,33 @@ export async function fetchSubjects(): Promise<FetchSubjectsResult> {
       const message =
         e instanceof Error ? e.message : "Invalid subjects payload";
       return { ok: false, error: message };
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Network error";
+    return { ok: false, error: message };
+  }
+}
+
+export async function fetchSubjectBySlug(
+  slug: string,
+): Promise<FetchSubjectBySlugResult> {
+  const url = `${getApiBaseUrl()}/subjects/${encodeURIComponent(slug)}`;
+  try {
+    const { ok, status, json } = await fetchJson(url, {
+      next: { revalidate: 300 },
+    });
+    if (status === 404) {
+      return { ok: false, error: "not_found", status: 404 };
+    }
+    if (!ok) {
+      return { ok: false, error: `Subject HTTP ${status}`, status };
+    }
+    try {
+      return { ok: true, data: parseSubjectDetailResponse(json) };
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Invalid subject detail payload";
+      return { ok: false, error: message, status };
     }
   } catch (e) {
     const message = e instanceof Error ? e.message : "Network error";

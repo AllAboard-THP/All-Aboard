@@ -61,6 +61,7 @@ import { Input } from "../../components/input";
 import { Label } from "../../components/label";
 import { LandingForgotPasswordBody } from "../landing-forgot-password-body";
 import { LandingHeroBody } from "../landing-hero-body";
+import { LandingPresentationBody } from "../landing-presentation-body";
 import { LandingOnboardingBody } from "../landing-onboarding-body";
 import { LandingPageShell } from "../landing-page-shell";
 import { LandingRegisterBody } from "../landing-register-body";
@@ -82,6 +83,29 @@ import { legacyDemoToast } from "../legacy-story-feedback";
 import { GraduationCap } from "lucide-react";
 
 import { MentorDashboardScreen as MentorDashboardPage } from "../mentor-dashboard-screen";
+
+export function LandingPresentationScreen({
+  onSignInClick,
+  onSignUpClick,
+  onLogoClick,
+}: {
+  onSignInClick?: () => void;
+  onSignUpClick?: () => void;
+  onLogoClick?: () => void;
+} = {}) {
+  const labels = useLegacyLabels();
+
+  return (
+    <LandingPageShell
+      labels={labels}
+      onSignInClick={onSignInClick}
+      onSignUpClick={onSignUpClick}
+      onLogoClick={onLogoClick}
+    >
+      <LandingPresentationBody labels={labels} />
+    </LandingPageShell>
+  );
+}
 
 export function LandingLoginScreen({
   onForgotPasswordClick,

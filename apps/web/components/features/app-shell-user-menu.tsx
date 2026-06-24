@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 
-import type { UserRole } from "@allaboard/types";
+import type { AdminDashboardStats, UserRole } from "@allaboard/types";
 import {
   Avatar,
   AvatarBadge,
@@ -39,6 +39,10 @@ function userInitials(displayName: string): string {
   return `${parts[0]![0] ?? ""}${parts[1]![0] ?? ""}`.toUpperCase();
 }
 
+function adminPendingCount(stats: AdminDashboardStats): number {
+  return stats.flaggedCount + stats.pendingSubjectRequests + stats.pendingResources;
+}
+
 export function AppShellUserMenu({
   displayName,
   avatarUrl,
@@ -50,6 +54,7 @@ export function AppShellUserMenu({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [mentorUnreadCount, setMentorUnreadCount] = useState(0);
+  const [adminPendingCountState, setAdminPendingCountState] = useState(0);
   const isMentor = role === "mentor";
   const isAdmin = role === "admin";
 
@@ -70,6 +75,23 @@ export function AppShellUserMenu({
       cancelled = true;
     };
   }, [isMentor]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let cancelled = false;
+    fetch("/api/admin/dashboard", { cache: "no-store", credentials: "include" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { stats?: AdminDashboardStats } | null) => {
+        if (cancelled || !data?.stats) return;
+        setAdminPendingCountState(adminPendingCount(data.stats));
+      })
+      .catch(() => {
+        /* admin-only route — ignore errors */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdmin]);
 
   function handleLogout() {
     startTransition(async () => {
@@ -103,6 +125,12 @@ export function AppShellUserMenu({
               <AvatarBadge
                 data-testid="user-menu-mentor-badge"
                 aria-label={tNav("mentorUnreadAria", { count: mentorUnreadCount })}
+              />
+            ) : null}
+            {isAdmin && adminPendingCountState > 0 ? (
+              <AvatarBadge
+                data-testid="user-menu-admin-badge"
+                aria-label={tNav("adminPendingAria", { count: adminPendingCountState })}
               />
             ) : null}
           </Avatar>
@@ -144,8 +172,11 @@ export function AppShellUserMenu({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/admin" data-testid="user-menu-admin-link">
-                  {t("admin")}
+                <Link href="/admin" data-testid="user-menu-admin-link" className="flex w-full items-center justify-between">
+                  <span>{t("admin")}</span>
+                  {adminPendingCountState > 0 ? (
+                    <Badge variant="destructive">{adminPendingCountState}</Badge>
+                  ) : null}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>

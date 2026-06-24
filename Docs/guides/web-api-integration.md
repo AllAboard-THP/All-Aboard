@@ -258,7 +258,9 @@ Manual Dokploy runbook: [deployment/runbooks/dev-phase2.md](../deployment/runboo
 
 Config: [apps/web/playwright.config.ts](../apps/web/playwright.config.ts) — starts **API** (port 4000) then **Web** (port 3000) unless `PLAYWRIGHT_SKIP_WEBSERVER` is set.
 
-Scenarios: [apps/web/e2e/](../apps/web/e2e/) — feed (shell navigation) + request creation (MVP login → detail → back to feed).
+Scenarios: [apps/web/e2e/](../apps/web/e2e/) — feed, help-request, admin, landing (public `/`), subjects (`/subjects/[slug]`), i18n, chat, mentor.
+
+**Web parity P3 staging checklist:** [tasks/web-parity-p3/README.md](../tasks/web-parity-p3/README.md#e2e--staging-https-manual).
 
 | Command | Context |
 |---------|---------|
