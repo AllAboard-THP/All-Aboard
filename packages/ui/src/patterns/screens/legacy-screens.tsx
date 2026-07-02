@@ -221,7 +221,7 @@ export function EventsListScreen({ mobileChrome = false }: { mobileChrome?: bool
   const events = useLegacyEvents().slice(0, 3);
 
   return (
-    <AppChrome activeLink="events" mobileChrome={mobileChrome} sidebarActiveId="events">
+    <AppChrome activeLink="events" mobileChrome={mobileChrome}>
       <div className="mx-auto max-w-4xl animate-fade-in">
         <EventsPageHeader labels={labels} />
         <EventsListWithFilters

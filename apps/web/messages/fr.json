@@ -329,7 +329,6 @@
       "dashboard": "Mon dashboard",
       "subjects": "Matières",
       "resources": "Ressources",
-      "events": "Événements",
       "newRequest": "Nouvelle demande",
       "feed": "Entraide",
       "messages": "Messages",
@@ -356,10 +355,6 @@
         "resources": {
           "title": "Ressources",
           "all": "Toutes les ressources"
-        },
-        "events": {
-          "title": "Événements",
-          "all": "Agenda complet"
         },
         "newRequest": {
           "title": "Nouvelle demande",
@@ -422,14 +417,12 @@
       "replyOn": "Activité sur « {title} »",
       "kinds": {
         "reply": "Réponse",
-        "resource": "Ressource",
-        "event": "Événement"
+        "resource": "Ressource"
       }
     },
     "shortcuts": {
       "subjects": "Explorer",
       "resources": "Ressources",
-      "events": "Événements",
       "profile": "Mon profil"
     },
     "loginRequiredTitle": "Connexion requise",

@@ -62,7 +62,6 @@ describe("app-shell-sidebar", () => {
       dashboard: "Dashboard",
       subjects: "Subjects",
       resources: "Resources",
-      events: "Events",
       newRequest: "New",
       feed: "Feed",
       messages: "Messages",

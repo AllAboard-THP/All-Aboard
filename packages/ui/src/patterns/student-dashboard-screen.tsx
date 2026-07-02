@@ -4,7 +4,6 @@ import type { ComponentType, MouseEvent, ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
-  Calendar,
   Compass,
   Library,
   MessageSquare,
@@ -65,7 +64,6 @@ export type DashboardLinkProps = {
 const SHORTCUT_ICONS: Record<DashboardShortcutId, LucideIcon> = {
   subjects: Compass,
   resources: Library,
-  events: Calendar,
   profile: User,
 };
 
@@ -375,8 +373,7 @@ function ActivityRow({
   onNavigate?: (href: string) => void;
 }) {
   const accent = DASHBOARD_ACTIVITY_ACCENT[item.kind];
-  const ActivityIcon =
-    item.kind === "reply" ? Reply : item.kind === "resource" ? Library : Calendar;
+  const ActivityIcon = item.kind === "reply" ? Reply : Library;
 
   return (
     <DashboardNavLink
