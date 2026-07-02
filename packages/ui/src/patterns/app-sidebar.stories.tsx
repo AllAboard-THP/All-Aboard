@@ -116,7 +116,6 @@ const meta = {
         "dashboard",
         "subjects",
         "resources",
-        "events",
         "newRequest",
         "feed",
         "messages",

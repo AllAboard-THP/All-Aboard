@@ -1,7 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpen,
-  Calendar,
   Compass,
   GraduationCap,
   LayoutDashboard,
@@ -22,7 +21,6 @@ export type AppSidebarNavId =
   | "dashboard"
   | "subjects"
   | "resources"
-  | "events"
   | "newRequest"
   | "feed"
   | "messages"
@@ -58,7 +56,6 @@ export const APP_SIDEBAR_NAV: AppSidebarNavDef[] = [
   { id: "dashboard", href: "/dashboard/demo", icon: LayoutDashboard, group: "navigation" },
   { id: "subjects", href: "/explore", icon: Compass, group: "navigation" },
   { id: "resources", href: "/resources", icon: Library, group: "navigation" },
-  { id: "events", href: "/events", icon: Calendar, group: "navigation" },
   { id: "newRequest", href: "/help/new", icon: Plus, group: "community" },
   { id: "feed", href: "/feed", icon: Users, group: "community" },
   { id: "messages", href: "/messages", icon: MessageSquare, group: "community" },
@@ -330,23 +327,22 @@ export function buildAppSidebarItems(
 
 /** Storybook legacy top nav → sidebar active item. */
 export const LEGACY_NAV_TO_SIDEBAR: Partial<
-  Record<"feed" | "explore" | "resources" | "events" | "messages", AppSidebarNavId>
+  Record<"feed" | "explore" | "resources" | "messages", AppSidebarNavId>
 > = {
   feed: "feed",
   explore: "subjects",
   resources: "resources",
-  events: "events",
   messages: "messages",
 };
 
 export function resolveSidebarActiveId(
   activeId: AppSidebarNavId | undefined,
-  legacyNav?: keyof typeof LEGACY_NAV_TO_SIDEBAR,
+  legacyNav?: keyof typeof LEGACY_NAV_TO_SIDEBAR | "events",
 ): AppSidebarNavId | undefined {
   if (activeId) {
     return activeId;
   }
-  if (legacyNav) {
+  if (legacyNav && legacyNav !== "events") {
     return LEGACY_NAV_TO_SIDEBAR[legacyNav];
   }
   return undefined;
@@ -357,7 +353,6 @@ export const APP_SIDEBAR_ACTIVE_ID_PATH: Record<AppSidebarNavId, string> = {
   dashboard: "/dashboard/demo",
   subjects: "/explore",
   resources: "/resources",
-  events: "/events",
   newRequest: "/help/new",
   feed: "/feed",
   messages: "/messages",
@@ -398,7 +393,6 @@ export const APP_SIDEBAR_CONTEXT_LINKS: Partial<
   ],
   subjects: [{ id: "explore", href: "/explore" }],
   resources: [{ id: "all", href: "/resources" }],
-  events: [{ id: "all", href: "/events" }],
   newRequest: [
     { id: "create", href: "/help/new" },
     { id: "backToFeed", href: "/feed" },
@@ -474,7 +468,6 @@ type SidebarContextSource = {
   };
   subjects: { title: string; explore: string };
   resources: { title: string; all: string };
-  events: { title: string; all: string };
   newRequest: { title: string; description: string; create: string; backToFeed: string };
   feed: {
     title: string;
@@ -524,11 +517,6 @@ export function buildSidebarContextPanelLabels(
       return {
         title: context.resources.title,
         links: { all: context.resources.all },
-      };
-    case "events":
-      return {
-        title: context.events.title,
-        links: { all: context.events.all },
       };
     case "newRequest":
       return {

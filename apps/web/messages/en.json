@@ -329,7 +329,6 @@
       "dashboard": "My dashboard",
       "subjects": "Subjects",
       "resources": "Resources",
-      "events": "Events",
       "newRequest": "New request",
       "feed": "Peer help",
       "messages": "Messages",
@@ -356,10 +355,6 @@
         "resources": {
           "title": "Resources",
           "all": "All resources"
-        },
-        "events": {
-          "title": "Events",
-          "all": "Full calendar"
         },
         "newRequest": {
           "title": "New request",
@@ -422,14 +417,12 @@
       "replyOn": "Activity on “{title}”",
       "kinds": {
         "reply": "Reply",
-        "resource": "Resource",
-        "event": "Event"
+        "resource": "Resource"
       }
     },
     "shortcuts": {
       "subjects": "Explore",
       "resources": "Resources",
-      "events": "Events",
       "profile": "My profile"
     },
     "loginRequiredTitle": "Sign-in required",

@@ -82,7 +82,7 @@ describe("app-sidebar-nav", () => {
     expect(mentorOnAdmin.showAdminSection).toBe(false);
   });
 
-  it("builds student sections with eight navigation+community items", () => {
+  it("builds student sections with seven navigation+community items", () => {
     const labels = {
       navigationGroup: "Nav",
       communityGroup: "Comm",
@@ -95,7 +95,6 @@ describe("app-sidebar-nav", () => {
       dashboard: "Dashboard",
       subjects: "Subjects",
       resources: "Resources",
-      events: "Events",
       newRequest: "New",
       feed: "Feed",
       messages: "Messages",
@@ -112,7 +111,7 @@ describe("app-sidebar-nav", () => {
     });
 
     expect(sections).toHaveLength(2);
-    expect(sections[0]?.items).toHaveLength(4);
+    expect(sections[0]?.items).toHaveLength(3);
     expect(sections[1]?.items).toHaveLength(4);
   });
 
@@ -135,7 +134,6 @@ describe("app-sidebar-nav", () => {
       },
       subjects: { title: "Subjects", explore: "Explore" },
       resources: { title: "Resources", all: "All" },
-      events: { title: "Events", all: "All" },
       newRequest: {
         title: "New",
         description: "Desc",
