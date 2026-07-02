@@ -130,8 +130,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/(public)/page.tsx": {
-    "mtime": 1782988273.7122717,
-    "ast_hash": "7dff8cce01715ca0af9125f9d300ee79",
+    "mtime": 1782988717.287354,
+    "ast_hash": "5b293102831c5f775f7061e271f08338",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/[locale]/(public)/layout.tsx": {
@@ -1090,8 +1090,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/app-routes.ts": {
-    "mtime": 1782988273.7122717,
-    "ast_hash": "05703154d276806444b146d6c72a0d65",
+    "mtime": 1782988717.287354,
+    "ast_hash": "7d09c51b4af4ae91141e99941182fdb9",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/fetch-sidebar-badges.ts": {
