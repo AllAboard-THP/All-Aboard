@@ -1310,8 +1310,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/seed.ts": {
-    "mtime": 1779983505.1285732,
-    "ast_hash": "93b3ebf6bc6a9921ec518c9c1fca0ed1",
+    "mtime": 1783064422.2852812,
+    "ast_hash": "9d4a8a1ebc3968ecd05d6cb0a08efb7a",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/openapi.ts": {
@@ -1440,8 +1440,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/seed.ts": {
-    "mtime": 1781730692.1080253,
-    "ast_hash": "c60fa4799fec0c5b532305178da27c86",
+    "mtime": 1783064422.3923786,
+    "ast_hash": "70b197b22b7f2046458b6d97458758a6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/client.ts": {
@@ -3187,6 +3187,16 @@
   "/home/dim/AllAboard/packages/ui/src/patterns/landing-presentation-body.tsx": {
     "mtime": 1782296915.8125553,
     "ast_hash": "f5aa5b00ce31f6b31606cf753f5b2372",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/db/seed-demo-data.ts": {
+    "mtime": 1783064392.1279917,
+    "ast_hash": "487acbe486447b9e2402f3f3117e76fc",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/db/seed-demo.ts": {
+    "mtime": 1783064410.5233788,
+    "ast_hash": "bb49f6a5d415ebdccdb38419198ad139",
     "semantic_hash": ""
   }
 }
