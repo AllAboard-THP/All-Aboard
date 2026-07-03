@@ -1,6 +1,15 @@
 import pg from "pg";
 import { createDb } from "./db/client.js";
-import { defaultSeedUsers, seedUsers } from "./db/seed.js";
+import {
+  defaultSeedSubjects,
+  defaultSeedUsers,
+  allDemoSeedUsers,
+  runFullSeed,
+  seedSubjects,
+  seedUsers,
+} from "./db/seed.js";
+import { seedDemoContent, seedMentorSubjects } from "./db/seed-demo.js";
+import { demoMentorSubjectLinks } from "./db/seed-demo-data.js";
 
 const url = process.env.DATABASE_URL?.trim();
 if (!url) {
@@ -8,8 +17,12 @@ if (!url) {
   process.exit(1);
 }
 
-const specs = defaultSeedUsers();
-if (specs.length === 0) {
+const password =
+  process.env.DEV_SEED_PASSWORD?.trim() ??
+  process.env.MVP_LOGIN_PASSWORD?.trim() ??
+  "";
+
+if (!password) {
   console.error(
     "db:seed: set DEV_SEED_PASSWORD or MVP_LOGIN_PASSWORD for dev accounts",
   );
@@ -19,8 +32,23 @@ if (specs.length === 0) {
 const pool = new pg.Pool({ connectionString: url });
 const db = createDb(pool);
 try {
-  await seedUsers(db, specs);
-  console.log(`db:seed: upserted ${specs.length} user(s)`);
+  const fullReset = process.argv.includes("--full");
+  if (fullReset) {
+    await runFullSeed(db);
+  } else {
+    const subjectSpecs = defaultSeedSubjects();
+    await seedSubjects(db, subjectSpecs);
+    console.log(`db:seed: upserted ${subjectSpecs.length} subject(s)`);
+
+    const coreUsers = defaultSeedUsers();
+    const demoUsers = allDemoSeedUsers(password);
+    const allUsers = [...coreUsers, ...demoUsers];
+    await seedUsers(db, allUsers);
+    console.log(`db:seed: upserted ${allUsers.length} user(s)`);
+
+    await seedMentorSubjects(db, demoMentorSubjectLinks());
+    await seedDemoContent(db);
+  }
 } finally {
   await pool.end();
 }
