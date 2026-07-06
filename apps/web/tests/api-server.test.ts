@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
 import {
+  parseAdminDashboardResponse,
+  parseAdminDenylistPatternsResponse,
+  parseAdminModerationResponse,
+  parseAdminSubjectRequestsResponse,
+  parseAdminUsersResponse,
   parseAuthMeResponse,
   parseConversationsListResponse,
   parseFeedResponse,
@@ -426,5 +431,116 @@ describe("parseMarkConversationReadResponse", () => {
     expect(() => parseMarkConversationReadResponse({ ok: false })).toThrow(
       "shape",
     );
+  });
+});
+
+describe("parseAdminDashboardResponse", () => {
+  it("accepts valid admin dashboard payload", () => {
+    const data = {
+      stats: {
+        totalUsers: 10,
+        totalHelpRequests: 25,
+        flaggedCount: 2,
+        pendingSubjectRequests: 1,
+        pendingResources: 3,
+      },
+      recentHelpRequests: [
+        {
+          id: "hr-1",
+          title: "Need help",
+          authorId: "u1",
+          createdAt: "2020-01-01T00:00:00.000Z",
+        },
+      ],
+    };
+    expect(parseAdminDashboardResponse(data)).toEqual(data);
+  });
+});
+
+describe("parseAdminModerationResponse", () => {
+  it("accepts flagged help requests and responses", () => {
+    const data = {
+      flaggedHelpRequests: [
+        {
+          id: "hr-1",
+          title: "Flagged",
+          authorId: "u1",
+          createdAt: "2020-01-01T00:00:00.000Z",
+        },
+      ],
+      flaggedResponses: [
+        {
+          item: {
+            id: "r1",
+            helpRequestId: "hr-1",
+            body: "Bad reply",
+            authorId: "u2",
+          },
+          helpRequest: {
+            id: "hr-1",
+            title: "Flagged",
+            authorId: "u1",
+            createdAt: "2020-01-01T00:00:00.000Z",
+          },
+        },
+      ],
+    };
+    expect(parseAdminModerationResponse(data)).toEqual(data);
+  });
+});
+
+describe("parseAdminDenylistPatternsResponse", () => {
+  it("accepts denylist items", () => {
+    const data = {
+      items: [
+        {
+          id: "p1",
+          label: "Spam",
+          pattern: "spam+",
+          active: true,
+          createdAt: "2020-01-01T00:00:00.000Z",
+          updatedAt: "2020-01-01T00:00:00.000Z",
+        },
+      ],
+    };
+    expect(parseAdminDenylistPatternsResponse(data)).toEqual(data);
+  });
+});
+
+describe("parseAdminUsersResponse", () => {
+  it("accepts admin users list", () => {
+    const data = {
+      items: [
+        {
+          id: "u1",
+          email: "admin@dev.local",
+          role: "admin" as const,
+          displayName: "Admin",
+          createdAt: "2020-01-01T00:00:00.000Z",
+        },
+      ],
+    };
+    expect(parseAdminUsersResponse(data)).toEqual(data);
+  });
+});
+
+describe("parseAdminSubjectRequestsResponse", () => {
+  it("accepts grouped subject requests", () => {
+    const item = {
+      id: "sr-1",
+      name: "Physics",
+      status: "pending" as const,
+      createdAt: "2020-01-01T00:00:00.000Z",
+      updatedAt: "2020-01-01T00:00:00.000Z",
+      authorId: "u1",
+      authorEmail: "student@dev.local",
+      authorDisplayName: "Student",
+    };
+    const data = {
+      pending: [item],
+      approved: [],
+      rejected: [],
+    };
+    expect(parseAdminSubjectRequestsResponse(data)).toEqual(data);
   });
 });

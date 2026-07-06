@@ -63,6 +63,7 @@
     "messages": "Messages",
     "mentor": "Mentor",
     "mentorUnreadAria": "{count, plural, one {# item needs attention} other {# items need attention}}",
+    "adminPendingAria": "{count, plural, one {# pending admin action} other {# pending admin actions}}",
     "messagesUnreadAria": "{count, plural, one {# unread message} other {# unread messages}}"
   },
   "userMenu": {
@@ -71,6 +72,7 @@
     "myPosts": "My requests",
     "myBookmarks": "My bookmarks",
     "mentor": "Mentor space",
+    "admin": "Administration",
     "logout": "Sign out",
     "logoutPending": "Signing out…",
     "login": "Sign in",
@@ -85,13 +87,22 @@
   },
   "explore": {
     "title": "Explore",
-    "description": "Browse help requests by subject. Pick a topic to filter the feed.",
+    "description": "Browse help requests by subject. Pick a topic to open its dedicated page.",
     "sectionAria": "Subject catalogue",
     "loadErrorTitle": "Unable to load subjects",
     "emptyTitle": "No subjects available",
     "emptyDescription": "The subject catalogue will be available soon.",
     "postsCount": "{count, plural, one {# request} other {# requests}}",
     "cardLinkAria": "View requests for {name}"
+  },
+  "subjects": {
+    "eyebrow": "Subject",
+    "postsCount": "{count, plural, one {# published request} other {# published requests}}",
+    "backToExplore": "Back to explore",
+    "emptyTitle": "No requests for this subject",
+    "emptyDescription": "Be the first to publish a request in {name}.",
+    "notFoundTitle": "Subject not found",
+    "notFoundDescription": "No subject matches slug \"{slug}\"."
   },
   "resources": {
     "title": "Resources",
@@ -215,8 +226,18 @@
   },
   "helpForm": {
     "title": "Request title",
+    "body": "Detailed description",
+    "bodyPlaceholder": "Describe your problem and what you have already tried…",
     "tags": "Tags (optional, comma-separated)",
     "tagsPlaceholder": "mentor, rails",
+    "subject": "Subject (optional)",
+    "subjectPlaceholder": "Choose a subject",
+    "codeSnippet": "Code snippet (optional)",
+    "codeSnippetPlaceholder": "Paste your code here",
+    "codeLanguage": "Code language",
+    "codeLanguagePlaceholder": "javascript, python…",
+    "urgent": "Urgent request",
+    "suggestTags": "Suggest tags",
     "duplicate": "Duplicate detected (MOC).",
     "viewExisting": "View existing request",
     "rubberduckHandoff": "Rubberduck handoff: your request is published. Set RUBBERDUCK_URL to enable external redirect.",
@@ -241,7 +262,7 @@
     "certHidden": "{count, plural, one {# reply hidden} other {# replies hidden}} (outside certifications or requester).",
     "editLink": "Edit",
     "editTitle": "Edit request",
-    "editDescription": "Update the title and tags of your request.",
+    "editDescription": "Update the content of your request.",
     "editSave": "Save changes",
     "editCancel": "Cancel",
     "editBackToDetail": "Back to request",
@@ -253,7 +274,14 @@
     "responseEdit": "Edit",
     "responseDelete": "Delete",
     "responseSave": "Save",
-    "responseDeleteConfirm": "Delete this reply?"
+    "responseDeleteConfirm": "Delete this reply?",
+    "markResolved": "Mark as resolved",
+    "statusResolved": "Resolved",
+    "requestMentor": "Request a mentor",
+    "mentorRequested": "Mentor requested",
+    "aiSummaryTitle": "AI summary",
+    "aiSummaryPending": "Summary is being generated…",
+    "copyCode": "Copy"
   },
   "legal": {
     "gateTitle": "Welcome to All-Aboard",
@@ -301,7 +329,6 @@
       "dashboard": "My dashboard",
       "subjects": "Subjects",
       "resources": "Resources",
-      "events": "Events",
       "newRequest": "New request",
       "feed": "Peer help",
       "messages": "Messages",
@@ -328,10 +355,6 @@
         "resources": {
           "title": "Resources",
           "all": "All resources"
-        },
-        "events": {
-          "title": "Events",
-          "all": "Full calendar"
         },
         "newRequest": {
           "title": "New request",
@@ -394,14 +417,12 @@
       "replyOn": "Activity on “{title}”",
       "kinds": {
         "reply": "Reply",
-        "resource": "Resource",
-        "event": "Event"
+        "resource": "Resource"
       }
     },
     "shortcuts": {
       "subjects": "Explore",
       "resources": "Resources",
-      "events": "Events",
       "profile": "My profile"
     },
     "loginRequiredTitle": "Sign-in required",
@@ -591,5 +612,100 @@
     "loginRequiredDescription": "Sign in with a passkey via <link></link> to access your messages.",
     "loginRequiredLink": "the sign-in page",
     "unknownPeer": "Conversation"
+  },
+  "admin": {
+    "loginRequiredTitle": "Sign-in required",
+    "loginRequiredDescription": "Sign in with a passkey via <link></link> to access administration.",
+    "loginRequiredLink": "the sign-in page",
+    "forbiddenTitle": "Administrators only",
+    "forbiddenDescription": "This section is restricted to accounts with the admin role.",
+    "loadErrorTitle": "Unable to load data",
+    "dashboardTitle": "Administration",
+    "dashboardDescription": "Platform overview and quick access to moderation tools.",
+    "statsUsers": "Users",
+    "statsHelpRequests": "Help requests",
+    "statsFlagged": "Flagged content",
+    "statsSubjectRequests": "Pending subjects",
+    "statsPendingResources": "Pending resources",
+    "quickLinksTitle": "Quick actions",
+    "recentRequestsTitle": "Recent requests",
+    "recentRequestsEmpty": "No recent requests.",
+    "viewRequest": "View request",
+    "nav": {
+      "ariaLabel": "Admin navigation",
+      "dashboard": "Dashboard",
+      "moderation": "Moderation",
+      "denylist": "Denylist",
+      "users": "Users",
+      "subjectRequests": "Subjects"
+    },
+    "moderation": {
+      "title": "Moderation",
+      "description": "{count, plural, =0 {No flagged content.} one {# flagged item.} other {# flagged items.}}",
+      "helpRequestsTitle": "Flagged requests",
+      "responsesTitle": "Flagged responses",
+      "helpRequestsEmpty": "No flagged requests.",
+      "responsesEmpty": "No flagged responses.",
+      "pendingBadge": "Pending",
+      "responseTo": "Response to",
+      "approve": "Approve",
+      "reject": "Reject",
+      "rejectHelpConfirm": "Permanently delete this flagged request?",
+      "rejectResponseConfirm": "Permanently delete this flagged response?",
+      "actionErrorTitle": "Action failed",
+      "actionPending": "Processing…"
+    },
+    "denylist": {
+      "title": "Denylist",
+      "description": "Regex patterns blocked when publishing content.",
+      "createTitle": "Add pattern",
+      "labelField": "Label",
+      "patternField": "Regular expression",
+      "activeField": "Active on creation",
+      "submit": "Add",
+      "submitPending": "Adding…",
+      "empty": "No patterns registered.",
+      "active": "Active",
+      "inactive": "Inactive",
+      "delete": "Delete",
+      "deleteConfirm": "Remove this pattern from the denylist?",
+      "toggleActive": "Toggle active/inactive",
+      "createErrorTitle": "Unable to create",
+      "actionErrorTitle": "Action failed",
+      "actionPending": "Processing…"
+    },
+    "users": {
+      "title": "Users",
+      "description": "{count, plural, one {# registered account.} other {# registered accounts.}}",
+      "columnName": "Name",
+      "columnEmail": "Email",
+      "columnRole": "Role",
+      "columnCreatedAt": "Joined",
+      "columnActions": "Actions",
+      "roleAdmin": "Admin",
+      "roleMentor": "Mentor",
+      "roleStudent": "Student",
+      "promoteAdmin": "Promote admin",
+      "demoteAdmin": "Remove admin",
+      "promoteMentor": "Promote mentor",
+      "demoteMentor": "Remove mentor",
+      "promoteAdminConfirm": "Grant admin role to this user?",
+      "demoteAdminConfirm": "Remove admin role from this user?",
+      "actionErrorTitle": "Action failed",
+      "actionPending": "Processing…"
+    },
+    "subjectRequests": {
+      "title": "Subject requests",
+      "description": "Approve or reject proposals for new subjects.",
+      "tabPending": "Pending",
+      "tabApproved": "Approved",
+      "tabRejected": "Rejected",
+      "empty": "No requests in this category.",
+      "author": "By {name}",
+      "approve": "Approve",
+      "reject": "Reject",
+      "actionErrorTitle": "Action failed",
+      "actionPending": "Processing…"
+    }
   }
 }

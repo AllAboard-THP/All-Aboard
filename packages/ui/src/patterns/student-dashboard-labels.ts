@@ -18,7 +18,6 @@ export type StudentDashboardLabels = {
     dashboard: string;
     subjects: string;
     resources: string;
-    events: string;
     newRequest: string;
     feed: string;
     messages: string;
@@ -40,7 +39,6 @@ export type StudentDashboardLabels = {
       };
       subjects: { title: string; explore: string };
       resources: { title: string; all: string };
-      events: { title: string; all: string };
       newRequest: { title: string; description: string; create: string; backToFeed: string };
       feed: {
         title: string;
@@ -80,13 +78,11 @@ export type StudentDashboardLabels = {
     kinds: {
       reply: string;
       resource: string;
-      event: string;
     };
   };
   shortcuts: {
     subjects: string;
     resources: string;
-    events: string;
     profile: string;
   };
 };
@@ -111,7 +107,6 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
     dashboard: "Mon dashboard",
     subjects: "Matières",
     resources: "Ressources",
-    events: "Événements",
     newRequest: "Nouvelle demande",
     feed: "Entraide",
     messages: "Messages",
@@ -133,7 +128,6 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
       },
       subjects: { title: "Matières", explore: "Explorer les matières" },
       resources: { title: "Ressources", all: "Toutes les ressources" },
-      events: { title: "Événements", all: "Agenda complet" },
       newRequest: {
         title: "Nouvelle demande",
         description: "Publie une question pour l'entraide.",
@@ -182,13 +176,11 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
     kinds: {
       reply: "Réponse",
       resource: "Ressource",
-      event: "Événement",
     },
   },
   shortcuts: {
     subjects: "Explorer",
     resources: "Ressources",
-    events: "Événements",
     profile: "Mon profil",
   },
 };
@@ -213,7 +205,6 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
     dashboard: "My dashboard",
     subjects: "Subjects",
     resources: "Resources",
-    events: "Events",
     newRequest: "New request",
     feed: "Peer help",
     messages: "Messages",
@@ -235,7 +226,6 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
       },
       subjects: { title: "Subjects", explore: "Explore subjects" },
       resources: { title: "Resources", all: "All resources" },
-      events: { title: "Events", all: "Full calendar" },
       newRequest: {
         title: "New request",
         description: "Post a question for peer help.",
@@ -284,13 +274,11 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
     kinds: {
       reply: "Reply",
       resource: "Resource",
-      event: "Event",
     },
   },
   shortcuts: {
     subjects: "Explore",
     resources: "Resources",
-    events: "Events",
     profile: "My profile",
   },
 };

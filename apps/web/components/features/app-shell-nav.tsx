@@ -10,7 +10,7 @@ import { MessagesNavLink } from "@/components/features/messages-nav-link";
 import { Link, usePathname } from "@/i18n/navigation";
 
 export const APP_SHELL_NAV = [
-  { href: "/", navKey: "feed" as const },
+  { href: "/feed", navKey: "feed" as const },
   { href: "/explore", navKey: "explore" as const },
   { href: "/resources", navKey: "resources" as const },
   { href: "/help/new", navKey: "newRequest" as const },
@@ -22,8 +22,19 @@ function isNavActive(pathname: string | null, href: string): boolean {
   if (!pathname) {
     return false;
   }
-  if (href === "/") {
-    return pathname === "/" || pathname === "/feed";
+  if (href === "/feed") {
+    return (
+      pathname === "/feed" ||
+      pathname.startsWith("/feed/") ||
+      pathname.startsWith("/requests/")
+    );
+  }
+  if (href === "/explore") {
+    return (
+      pathname === "/explore" ||
+      pathname.startsWith("/explore/") ||
+      pathname.startsWith("/subjects/")
+    );
   }
   if (href.startsWith("/requests")) {
     return pathname.startsWith("/requests");

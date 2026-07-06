@@ -32,8 +32,16 @@ describe("passkey-auth", () => {
       }),
     );
 
+    const fetchMock = vi.mocked(fetch);
+
     const options = await fetchPasskeyLoginOptions();
     expect(options).toEqual({ challenge: "abc" });
+    expect(fetchMock).toHaveBeenCalledWith("/api/auth/passkey/login/options", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      credentials: "include",
+      body: "{}",
+    });
   });
 
   it("registerPasskey runs options → WebAuthn → verify", async () => {

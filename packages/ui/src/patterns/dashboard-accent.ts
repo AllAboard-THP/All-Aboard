@@ -33,12 +33,10 @@ export const DASHBOARD_TODO_ACCENT: Record<DashboardTodoKind, string> = {
 export const DASHBOARD_ACTIVITY_ACCENT: Record<DashboardActivityKind, string> = {
   reply: "#facc15",
   resource: "#60a5fa",
-  event: "#ec4899",
 };
 
 export const DASHBOARD_SHORTCUT_ACCENT: Record<DashboardShortcutId, string> = {
   subjects: "#6366f1",
   resources: "#a78bfa",
-  events: "#f472b6",
   profile: "#22d3ee",
 };

@@ -63,6 +63,7 @@
     "messages": "Messages",
     "mentor": "Mentor",
     "mentorUnreadAria": "{count, plural, one {# élément à traiter} other {# éléments à traiter}}",
+    "adminPendingAria": "{count, plural, one {# action admin en attente} other {# actions admin en attente}}",
     "messagesUnreadAria": "{count, plural, one {# message non lu} other {# messages non lus}}"
   },
   "userMenu": {
@@ -71,6 +72,7 @@
     "myPosts": "Mes demandes",
     "myBookmarks": "Mes sauvegardes",
     "mentor": "Espace mentor",
+    "admin": "Administration",
     "logout": "Déconnexion",
     "logoutPending": "Déconnexion…",
     "login": "Se connecter",
@@ -85,13 +87,22 @@
   },
   "explore": {
     "title": "Explorer",
-    "description": "Découvrez les demandes d'aide par matière. Choisissez un sujet pour filtrer le feed.",
+    "description": "Découvrez les demandes d'aide par matière. Choisissez un sujet pour ouvrir sa page dédiée.",
     "sectionAria": "Catalogue des matières",
     "loadErrorTitle": "Impossible de charger les matières",
     "emptyTitle": "Aucune matière disponible",
     "emptyDescription": "Le catalogue des matières sera bientôt disponible.",
     "postsCount": "{count, plural, one {# requête} other {# requêtes}}",
     "cardLinkAria": "Voir les requêtes pour {name}"
+  },
+  "subjects": {
+    "eyebrow": "Matière",
+    "postsCount": "{count, plural, one {# requête publiée} other {# requêtes publiées}}",
+    "backToExplore": "Retour à l'exploration",
+    "emptyTitle": "Aucune demande pour cette matière",
+    "emptyDescription": "Soyez le premier à publier une demande en {name}.",
+    "notFoundTitle": "Matière introuvable",
+    "notFoundDescription": "Aucune matière ne correspond au slug « {slug} »."
   },
   "resources": {
     "title": "Ressources",
@@ -215,8 +226,18 @@
   },
   "helpForm": {
     "title": "Titre de la demande",
+    "body": "Description détaillée",
+    "bodyPlaceholder": "Décrivez votre problème, ce que vous avez déjà essayé…",
     "tags": "Tags (optionnel, séparés par virgule)",
     "tagsPlaceholder": "mentor, rails",
+    "subject": "Matière (optionnel)",
+    "subjectPlaceholder": "Choisir une matière",
+    "codeSnippet": "Extrait de code (optionnel)",
+    "codeSnippetPlaceholder": "Collez votre code ici",
+    "codeLanguage": "Langage du code",
+    "codeLanguagePlaceholder": "javascript, python…",
+    "urgent": "Demande urgente",
+    "suggestTags": "Suggérer des tags",
     "duplicate": "Doublon détecté (MOC).",
     "viewExisting": "Voir la demande existante",
     "rubberduckHandoff": "Handoff Rubberduck : votre demande est publiée. Configurez RUBBERDUCK_URL pour activer la redirection externe.",
@@ -241,7 +262,7 @@
     "certHidden": "{count, plural, one {# réponse masquée} other {# réponses masquées}} (hors certifications ou demandeur).",
     "editLink": "Modifier",
     "editTitle": "Modifier la demande",
-    "editDescription": "Mettez à jour le titre et les tags de votre demande.",
+    "editDescription": "Mettez à jour le contenu de votre demande.",
     "editSave": "Enregistrer",
     "editCancel": "Annuler",
     "editBackToDetail": "Retour à la demande",
@@ -253,7 +274,14 @@
     "responseEdit": "Modifier",
     "responseDelete": "Supprimer",
     "responseSave": "Enregistrer",
-    "responseDeleteConfirm": "Supprimer cette réponse ?"
+    "responseDeleteConfirm": "Supprimer cette réponse ?",
+    "markResolved": "Marquer comme résolu",
+    "statusResolved": "Résolu",
+    "requestMentor": "Demander un mentor",
+    "mentorRequested": "Mentor sollicité",
+    "aiSummaryTitle": "Résumé IA",
+    "aiSummaryPending": "Le résumé est en cours de génération…",
+    "copyCode": "Copier"
   },
   "legal": {
     "gateTitle": "Bienvenue sur All-Aboard",
@@ -301,7 +329,6 @@
       "dashboard": "Mon dashboard",
       "subjects": "Matières",
       "resources": "Ressources",
-      "events": "Événements",
       "newRequest": "Nouvelle demande",
       "feed": "Entraide",
       "messages": "Messages",
@@ -328,10 +355,6 @@
         "resources": {
           "title": "Ressources",
           "all": "Toutes les ressources"
-        },
-        "events": {
-          "title": "Événements",
-          "all": "Agenda complet"
         },
         "newRequest": {
           "title": "Nouvelle demande",
@@ -394,14 +417,12 @@
       "replyOn": "Activité sur « {title} »",
       "kinds": {
         "reply": "Réponse",
-        "resource": "Ressource",
-        "event": "Événement"
+        "resource": "Ressource"
       }
     },
     "shortcuts": {
       "subjects": "Explorer",
       "resources": "Ressources",
-      "events": "Événements",
       "profile": "Mon profil"
     },
     "loginRequiredTitle": "Connexion requise",
@@ -591,5 +612,100 @@
     "loginRequiredDescription": "Connectez-vous avec une passkey via <link></link> pour accéder à vos messages.",
     "loginRequiredLink": "la page de connexion",
     "unknownPeer": "Conversation"
+  },
+  "admin": {
+    "loginRequiredTitle": "Connexion requise",
+    "loginRequiredDescription": "Connectez-vous avec une passkey via <link></link> pour accéder à l'administration.",
+    "loginRequiredLink": "la page de connexion",
+    "forbiddenTitle": "Accès réservé aux administrateurs",
+    "forbiddenDescription": "Cette section est réservée aux comptes avec le rôle administrateur.",
+    "loadErrorTitle": "Impossible de charger les données",
+    "dashboardTitle": "Administration",
+    "dashboardDescription": "Vue d'ensemble de la plateforme et accès rapide aux outils de modération.",
+    "statsUsers": "Utilisateurs",
+    "statsHelpRequests": "Demandes d'aide",
+    "statsFlagged": "Contenus signalés",
+    "statsSubjectRequests": "Matières en attente",
+    "statsPendingResources": "Ressources en attente",
+    "quickLinksTitle": "Actions rapides",
+    "recentRequestsTitle": "Dernières demandes",
+    "recentRequestsEmpty": "Aucune demande récente.",
+    "viewRequest": "Voir la demande",
+    "nav": {
+      "ariaLabel": "Navigation administration",
+      "dashboard": "Tableau de bord",
+      "moderation": "Modération",
+      "denylist": "Liste noire",
+      "users": "Utilisateurs",
+      "subjectRequests": "Matières"
+    },
+    "moderation": {
+      "title": "Modération",
+      "description": "{count, plural, =0 {Aucun contenu signalé.} one {# élément signalé.} other {# éléments signalés.}}",
+      "helpRequestsTitle": "Demandes signalées",
+      "responsesTitle": "Réponses signalées",
+      "helpRequestsEmpty": "Aucune demande signalée.",
+      "responsesEmpty": "Aucune réponse signalée.",
+      "pendingBadge": "En attente",
+      "responseTo": "Réponse à",
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "rejectHelpConfirm": "Supprimer définitivement cette demande signalée ?",
+      "rejectResponseConfirm": "Supprimer définitivement cette réponse signalée ?",
+      "actionErrorTitle": "Action impossible",
+      "actionPending": "Traitement…"
+    },
+    "denylist": {
+      "title": "Liste noire",
+      "description": "Motifs regex bloqués lors de la publication de contenu.",
+      "createTitle": "Ajouter un motif",
+      "labelField": "Libellé",
+      "patternField": "Expression régulière",
+      "activeField": "Actif dès la création",
+      "submit": "Ajouter",
+      "submitPending": "Ajout…",
+      "empty": "Aucun motif enregistré.",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "delete": "Supprimer",
+      "deleteConfirm": "Supprimer ce motif de la liste noire ?",
+      "toggleActive": "Basculer actif/inactif",
+      "createErrorTitle": "Création impossible",
+      "actionErrorTitle": "Action impossible",
+      "actionPending": "Traitement…"
+    },
+    "users": {
+      "title": "Utilisateurs",
+      "description": "{count, plural, one {# compte enregistré.} other {# comptes enregistrés.}}",
+      "columnName": "Nom",
+      "columnEmail": "E-mail",
+      "columnRole": "Rôle",
+      "columnCreatedAt": "Inscription",
+      "columnActions": "Actions",
+      "roleAdmin": "Administrateur",
+      "roleMentor": "Mentor",
+      "roleStudent": "Étudiant",
+      "promoteAdmin": "Promouvoir admin",
+      "demoteAdmin": "Retirer admin",
+      "promoteMentor": "Promouvoir mentor",
+      "demoteMentor": "Retirer mentor",
+      "promoteAdminConfirm": "Accorder le rôle administrateur à cet utilisateur ?",
+      "demoteAdminConfirm": "Retirer le rôle administrateur à cet utilisateur ?",
+      "actionErrorTitle": "Action impossible",
+      "actionPending": "Traitement…"
+    },
+    "subjectRequests": {
+      "title": "Demandes de matières",
+      "description": "Valider ou refuser les propositions de nouvelles matières.",
+      "tabPending": "En attente",
+      "tabApproved": "Approuvées",
+      "tabRejected": "Refusées",
+      "empty": "Aucune demande dans cette catégorie.",
+      "author": "Par {name}",
+      "approve": "Approuver",
+      "reject": "Refuser",
+      "actionErrorTitle": "Action impossible",
+      "actionPending": "Traitement…"
+    }
   }
 }

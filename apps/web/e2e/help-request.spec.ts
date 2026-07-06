@@ -70,9 +70,13 @@ test.describe("help request creation flow", () => {
 test.describe("passkey pages", () => {
   test("login page renders passkey CTA", async ({ page }) => {
     await page.goto("/login");
+    await expect(page.getByTestId("login-page-card")).toBeVisible({
+      timeout: 30_000,
+    });
     await expect(
       page.getByRole("heading", { level: 1, name: "Sign in with a passkey" }),
     ).toBeVisible();
+    await expect(page.getByTestId("passkey-login-form")).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Use a passkey" }),
     ).toBeVisible();
