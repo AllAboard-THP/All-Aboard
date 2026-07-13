@@ -73,6 +73,10 @@ export const LANDING_HEADER_OUTLINE_BUTTON_CLASS =
 export const LANDING_HEADER_SUBMIT_BUTTON_CLASS =
   "min-w-[7.5rem] h-8 rounded-full px-4 text-sm font-semibold";
 
+/** Header auth CTA — single combined sign-in / sign-up control. */
+export const LANDING_HEADER_AUTH_MENU_TRIGGER_CLASS =
+  "min-w-[7.5rem] rounded-full px-4 text-sm font-semibold";
+
 /** Header inner row — same alignment as `LandingPublicHeader`. */
 export const APP_CHROME_HEADER_ROW_CLASS =
   `flex min-h-[4.25rem] w-full items-center justify-between gap-4 sm:min-h-[4.75rem] ${LANDING_EDGE_PADDING_CLASS}`;
@@ -241,3 +245,35 @@ export const FEED_COMMENT_ITEM_CLASS = "feed-comment-item";
 export const FEED_COMMENT_ITEM_NEW_CLASS = "feed-comment-item--new";
 
 export const FEED_REPLY_FOOTER_CLASS = "feed-reply-footer";
+
+/** Dedicated `/login` main — vertically center the auth card between header and footer. */
+export const LOGIN_DEDICATED_MAIN_CLASS =
+  "flex w-full flex-1 items-center justify-center py-4 sm:py-6";
+
+/** @deprecated Logo now lives in `LandingPublicHeader` — kept for one-off imports. */
+export const LOGIN_DEDICATED_LOGO_CLASS = "absolute top-8 left-8 z-20";
+
+/** @deprecated Use `LOGIN_DEDICATED_MAIN_CLASS` inside `LandingPageShell` main. */
+export const LOGIN_DEDICATED_SHELL_CLASS =
+  "relative grid min-h-[100dvh] min-h-screen w-full place-items-center overflow-x-hidden text-white";
+
+/** Centered card slot — caps width for readability on wide screens. */
+export const LOGIN_DEDICATED_CARD_SLOT_CLASS =
+  "relative z-10 w-full max-w-lg px-4 sm:px-6";
+
+/** Inner layout for dedicated login card content. */
+export const LOGIN_DEDICATED_CARD_LAYOUT_CLASS =
+  "flex w-full flex-col gap-5 rounded-[2rem] p-6 sm:gap-6 sm:p-8";
+
+/** Glass surface — `.login-dedicated-card` in globals.css (blur 12px, slate 0.7). */
+export const LOGIN_DEDICATED_CARD_CLASS = "login-dedicated-card";
+
+/** Inputs on dedicated login — lighter than card bg for contrast. */
+export const LOGIN_DEDICATED_INPUT_CLASS =
+  "login-dedicated-input h-11 rounded-xl text-white placeholder:text-white/50 sm:h-12 focus-visible:ring-0";
+
+/** Labels and body copy inside dedicated login card. */
+export const LOGIN_DEDICATED_TEXT_CLASS = "text-white";
+
+/** Muted helper copy on dedicated login card. */
+export const LOGIN_DEDICATED_MUTED_TEXT_CLASS = "text-white/75";

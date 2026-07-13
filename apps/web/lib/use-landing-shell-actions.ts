@@ -18,7 +18,7 @@ export function useLandingShellActions() {
   const router = useRouter();
 
   return {
-    onSignInClick: () => router.push("/"),
+    onSignInClick: () => router.push("/login"),
     onSignUpClick: () => router.push("/register"),
     onLogoClick: () => router.push("/"),
     onLegalLinkClick: (key: LegacyLegalLinkKey) => router.push(LEGAL_PATHS[key]),

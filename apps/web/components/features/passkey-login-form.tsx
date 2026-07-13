@@ -9,6 +9,10 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 
 import { Button } from "@allaboard/ui/components/button";
+import { cn } from "@allaboard/ui/lib/utils";
+import {
+  LOGIN_DEDICATED_MUTED_TEXT_CLASS,
+} from "@allaboard/ui/patterns/landing-layout";
 import { Link, useRouter } from "@/i18n/navigation";
 import { DEFAULT_POST_LOGIN_PATH } from "@/lib/app-routes";
 import {
@@ -23,9 +27,14 @@ import {
 
 type Props = {
   returnTo?: string;
+  /** `dedicated` — white copy on dark glass login card. */
+  variant?: "default" | "dedicated";
 };
 
-export function PasskeyLoginForm({ returnTo = DEFAULT_POST_LOGIN_PATH }: Props) {
+export function PasskeyLoginForm({
+  returnTo = DEFAULT_POST_LOGIN_PATH,
+  variant = "default",
+}: Props) {
   const router = useRouter();
   const t = useTranslations("auth");
   const tErrors = useTranslations("errors");
@@ -89,6 +98,14 @@ export function PasskeyLoginForm({ returnTo = DEFAULT_POST_LOGIN_PATH }: Props) 
       ? `/register?returnTo=${encodeURIComponent(returnTo)}`
       : "/register";
 
+  const isDedicated = variant === "dedicated";
+  const hintClass = isDedicated
+    ? LOGIN_DEDICATED_MUTED_TEXT_CLASS
+    : "text-muted-foreground";
+  const linkClass = isDedicated
+    ? "font-medium text-white underline underline-offset-2 hover:text-white/90"
+    : "font-medium text-primary underline";
+
   return (
     <div className="grid gap-4" data-testid="passkey-login-form">
       <input
@@ -99,23 +116,30 @@ export function PasskeyLoginForm({ returnTo = DEFAULT_POST_LOGIN_PATH }: Props) 
         className="pointer-events-none absolute size-0 opacity-0"
         readOnly
       />
-      <p className="m-0 text-sm text-muted-foreground">{t("loginHint")}</p>
+      <p className={cn("m-0 text-sm", hintClass)}>{t("loginHint")}</p>
       {errorMessage ? (
-        <p className="m-0 text-sm text-destructive" role="alert">
+        <p
+          className={cn(
+            "m-0 text-sm",
+            isDedicated ? "text-red-300" : "text-destructive",
+          )}
+          role="alert"
+        >
           {errorMessage}
         </p>
       ) : null}
       <Button
         type="button"
+        variant={isDedicated ? "landingSubmit" : "default"}
         disabled={mutation.isPending}
-        className="w-full"
+        className={cn("w-full", isDedicated && "h-12 rounded-2xl font-semibold")}
         onClick={() => mutation.mutate()}
       >
         {mutation.isPending ? tCommon("sending") : t("loginSubmit")}
       </Button>
-      <p className="m-0 text-center text-sm text-muted-foreground">
+      <p className={cn("m-0 text-center text-sm", hintClass)}>
         {t("noAccount")}{" "}
-        <Link href={registerHref} className="font-medium text-primary underline">
+        <Link href={registerHref} className={linkClass}>
           {t("registerLink")}
         </Link>
       </p>

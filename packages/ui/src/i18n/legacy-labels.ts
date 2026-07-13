@@ -65,6 +65,8 @@ export type LegacyLabels = {
     registerSubmit: string;
     hasAccount: string;
     signIn: string;
+    /** Combined header CTA on marketing pages — "Sign in / Sign up". */
+    headerAuthMenu: string;
     forgotTitle: string;
     forgotSubtitle: string;
     forgotSubmit: string;
@@ -325,6 +327,7 @@ export const legacyLabelsFr: LegacyLabels = {
     registerSubmit: "Créer mon compte",
     hasAccount: "Déjà un compte ?",
     signIn: "Connecte-toi",
+    headerAuthMenu: "Se connecter / S'inscrire",
     forgotTitle: "Mot de passe oublié ?",
     forgotSubtitle:
       "Entrez votre email pour recevoir les instructions de réinitialisation.",
@@ -597,6 +600,7 @@ export const legacyLabelsEn: LegacyLabels = {
     registerSubmit: "Create my account",
     hasAccount: "Already have an account?",
     signIn: "Sign in",
+    headerAuthMenu: "Sign in / Sign up",
     forgotTitle: "Forgot your password?",
     forgotSubtitle: "Enter your email to receive reset instructions.",
     forgotSubmit: "Reset my password",

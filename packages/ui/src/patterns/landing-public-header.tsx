@@ -11,8 +11,7 @@ import {
   AppChromeHeaderRow,
 } from "./app-chrome-shell";
 import {
-  LANDING_HEADER_GHOST_BUTTON_CLASS,
-  LANDING_HEADER_OUTLINE_BUTTON_CLASS,
+  LANDING_HEADER_AUTH_MENU_TRIGGER_CLASS,
   LANDING_HEADER_SUBMIT_BUTTON_CLASS,
 } from "./landing-layout";
 import { BrandLogo } from "./legacy-ui";
@@ -40,6 +39,16 @@ export function LandingPublicHeader({
   const handleSignUp = onSignUpClick ?? (() => legacyDemoToast(labels.auth.signUp));
   const handleLogo = onLogoClick ?? (() => legacyDemoToast(labels.brandName));
 
+  const buttonLabel =
+    activeAction === "signUp"
+      ? labels.auth.signUp
+      : activeAction === "signIn"
+        ? labels.auth.submit
+        : labels.auth.headerAuthMenu;
+
+  const handleAuthClick =
+    activeAction === "signUp" ? handleSignUp : handleSignIn;
+
   return (
     <AppChromeHeader layout="bar" className={className}>
       <AppChromeHeaderRow>
@@ -54,34 +63,21 @@ export function LandingPublicHeader({
 
         <nav
           aria-label="Authentication"
-          className="ml-auto flex shrink-0 items-center gap-2 self-center sm:gap-4"
+          className="ml-auto flex shrink-0 items-center self-center"
         >
           <Button
             type="button"
-            variant="landingHeaderGhost"
+            variant={activeAction != null ? "landingSubmit" : "landingHeaderOutline"}
             size="sm"
             className={cn(
-              LANDING_HEADER_GHOST_BUTTON_CLASS,
-              activeAction === "signIn" && "text-white",
-            )}
-            aria-current={activeAction === "signIn" ? "page" : undefined}
-            onClick={handleSignIn}
-          >
-            {labels.auth.submit}
-          </Button>
-          <Button
-            type="button"
-            variant={activeAction === "signUp" ? "landingSubmit" : "landingHeaderOutline"}
-            size="sm"
-            className={cn(
-              activeAction === "signUp"
+              activeAction != null
                 ? LANDING_HEADER_SUBMIT_BUTTON_CLASS
-                : LANDING_HEADER_OUTLINE_BUTTON_CLASS,
+                : LANDING_HEADER_AUTH_MENU_TRIGGER_CLASS,
             )}
-            aria-current={activeAction === "signUp" ? "page" : undefined}
-            onClick={handleSignUp}
+            aria-current={activeAction != null ? "page" : undefined}
+            onClick={handleAuthClick}
           >
-            {labels.auth.signUp}
+            {buttonLabel}
           </Button>
         </nav>
       </AppChromeHeaderRow>

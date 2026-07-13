@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import {
   ForgotPasswordScreen,
   LandingLoginScreen,
+  LandingPresentationScreen,
   OAuthOnboardingScreen,
   RegisterScreen,
 } from "./screens/legacy-screens";
@@ -18,8 +19,13 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+export const LandingPresentation: Story = {
+  name: "LandingPresentation",
+  render: () => <LandingPresentationScreen />,
+};
+
 export const LandingLogin: Story = {
-  name: "LandingLogin",
+  name: "LoginDedicated",
   render: () => <LandingLoginScreen />,
 };
 

@@ -28,7 +28,7 @@ test.describe("landing publique", () => {
 
   test("le bouton connexion du header mène au formulaire", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Se connecter" }).click();
+    await page.getByRole("button", { name: "Se connecter / S'inscrire" }).click();
     await expect(page).toHaveURL(/\/login\/?$/);
     await expect(page.getByTestId("login-page-card")).toBeVisible({
       timeout: 30_000,

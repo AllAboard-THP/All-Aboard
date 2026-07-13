@@ -62,6 +62,8 @@ import { Label } from "../../components/label";
 import { LandingForgotPasswordBody } from "../landing-forgot-password-body";
 import { LandingHeroBody } from "../landing-hero-body";
 import { LandingPresentationBody } from "../landing-presentation-body";
+import { LoginDedicatedBody } from "../login-dedicated-body";
+import { LoginDedicatedShell } from "../login-dedicated-shell";
 import { LandingOnboardingBody } from "../landing-onboarding-body";
 import { LandingPageShell } from "../landing-page-shell";
 import { LandingRegisterBody } from "../landing-register-body";
@@ -111,22 +113,32 @@ export function LandingLoginScreen({
   onForgotPasswordClick,
   onSignUpClick,
   onGoogleSignInClick,
+  onSignInClick,
+  onLogoClick,
 }: {
   onForgotPasswordClick?: () => void;
   onSignUpClick?: () => void;
   onGoogleSignInClick?: () => void;
+  onSignInClick?: () => void;
+  onLogoClick?: () => void;
 } = {}) {
   const labels = useLegacyLabels();
 
   return (
-    <LandingPageShell labels={labels}>
-      <LandingHeroBody
+    <LoginDedicatedShell
+      labels={labels}
+      activeAction="signIn"
+      onSignInClick={onSignInClick}
+      onSignUpClick={onSignUpClick}
+      onLogoClick={onLogoClick}
+    >
+      <LoginDedicatedBody
         labels={labels}
         onForgotPasswordClick={onForgotPasswordClick}
         onSignUpClick={onSignUpClick}
         onGoogleSignInClick={onGoogleSignInClick}
       />
-    </LandingPageShell>
+    </LoginDedicatedShell>
   );
 }
 

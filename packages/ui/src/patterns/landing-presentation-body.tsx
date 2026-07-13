@@ -20,7 +20,7 @@ type LandingPresentationBodyProps = {
   labels: LegacyLabels;
 };
 
-/** Marketing-only landing body — hero copy and feature pills, no auth card. */
+/** Marketing-only landing body — hero copy and feature pills, no auth CTAs or login card. */
 export function LandingPresentationBody({ labels }: LandingPresentationBodyProps) {
   return (
     <div className={LANDING_HERO_BODY_CLASS} data-testid="landing-presentation-body">

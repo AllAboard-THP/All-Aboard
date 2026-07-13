@@ -7,6 +7,7 @@ import { LandingPresentationBody } from "./landing-presentation-body";
 import { LandingOnboardingBody } from "./landing-onboarding-body";
 import { LandingPageShell } from "./landing-page-shell";
 import { LandingRegisterBody } from "./landing-register-body";
+import { LandingPresentationScreen } from "./screens/legacy-screens";
 import { screenStoryParameters } from "./pattern-story-frame";
 
 const meta = {
@@ -20,13 +21,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 function LandingBgStory() {
-  const labels = useLegacyLabels();
-
-  return (
-    <LandingPageShell labels={labels} background="landing">
-      <LandingHeroBody labels={labels} />
-    </LandingPageShell>
-  );
+  return <LandingPresentationScreen />;
 }
 
 function AppBgStory() {
@@ -51,7 +46,7 @@ function PresentationBodyStory() {
   );
 }
 
-function HeroBodyStory() {
+function HeroWithLoginCardStory() {
   const labels = useLegacyLabels();
 
   return (
@@ -106,9 +101,9 @@ export const PresentationBody: Story = {
   render: () => <PresentationBodyStory />,
 };
 
-export const HeroBody: Story = {
-  name: "HeroBody",
-  render: () => <HeroBodyStory />,
+export const HeroWithLoginCard: Story = {
+  name: "HeroWithLoginCard",
+  render: () => <HeroWithLoginCardStory />,
 };
 
 export const RegisterBody: Story = {
