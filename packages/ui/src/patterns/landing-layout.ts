@@ -149,6 +149,12 @@ export const LANDING_HERO_COPY_TOP_CLASS =
 export const LANDING_HERO_PILLS_CLASS =
   "flex flex-row flex-wrap gap-2.5 sm:gap-3 lg:flex-nowrap lg:gap-3.5 lg:shrink-0";
 
+/** Hero feature pill chips — `.landing-hero-feature-pill` in globals.css. */
+export const LANDING_HERO_FEATURE_PILL_CLASS = "landing-hero-feature-pill";
+
+/** Shared metallic fill for landing hero copy on photo background. */
+export const LANDING_HERO_METAL_TEXT_CLASS = "landing-hero-metal-text";
+
 /** Right column — centers the login slot in the grid cell (horizontal + vertical). */
 export const LANDING_HERO_LOGIN_COLUMN_CLASS =
   "grid min-w-0 w-full items-center justify-items-center lg:min-h-full lg:justify-items-end";
@@ -159,6 +165,12 @@ export const LANDING_HERO_LOGIN_SLOT_CLASS =
 
 /** Hero title + subtitle — see `.landing-hero-hover-zoom` in globals.css. */
 export const LANDING_HERO_HOVER_ZOOM_CLASS = "landing-hero-hover-zoom";
+
+/** Brand primary accent on landing hero photo — `.landing-hero-accent-purple` (#6366f1). */
+export const LANDING_HERO_ACCENT_PRIMARY_CLASS = "landing-hero-accent-purple";
+
+/** Brand gradient accent on landing hero — `.gradient-text` inside `.landing-hero-heading`. */
+export const LANDING_HERO_ACCENT_GRADIENT_CLASS = "gradient-text";
 
 export const LANDING_HERO_HEADING_CLASS =
   `text-[clamp(2.5rem,4.8vw,5.25rem)] leading-[1.05] ${LANDING_HERO_HOVER_ZOOM_CLASS}`;

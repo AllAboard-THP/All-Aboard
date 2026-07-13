@@ -673,6 +673,119 @@
     box-shadow: 0 0 0 1px rgb(255 255 255 / 0.14);
   }
 
+  /** Shared metallic fill for landing hero copy on photo background. */
+  .landing-hero-metal-text {
+    background: linear-gradient(
+      110deg,
+      rgb(203 213 225) 0%,
+      rgb(241 245 249) 18%,
+      rgb(255 255 255) 32%,
+      rgb(186 198 214) 48%,
+      rgb(255 255 255) 62%,
+      rgb(226 232 240) 78%,
+      rgb(203 213 225) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /** Landing hero feature pills — subtle brushed metal over photo background. */
+  .landing-hero-feature-pill {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    background: linear-gradient(
+      155deg,
+      rgb(255 255 255 / 0.16) 0%,
+      rgb(255 255 255 / 0.07) 42%,
+      rgb(148 163 184 / 0.1) 58%,
+      rgb(51 65 85 / 0.18) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.2),
+      inset 0 -1px 0 rgb(15 23 42 / 0.2),
+      0 1px 2px rgb(15 23 42 / 0.12);
+    backdrop-filter: blur(10px);
+    transition:
+      border-color 200ms ease-out,
+      box-shadow 200ms ease-out,
+      transform 200ms ease-out;
+  }
+
+  .landing-hero-feature-pill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.12) 0%,
+      transparent 42%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .landing-hero-feature-pill::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      105deg,
+      transparent 42%,
+      rgb(255 255 255 / 0.24) 50%,
+      transparent 58%
+    );
+    transform: translateX(-130%);
+    pointer-events: none;
+    z-index: 2;
+    animation: landing-hero-pill-shine 12s ease-in-out infinite;
+  }
+
+  .landing-hero-feature-pill:nth-child(2)::after {
+    animation-delay: 3.5s;
+  }
+
+  .landing-hero-feature-pill:nth-child(3)::after {
+    animation-delay: 7s;
+  }
+
+  .landing-hero-feature-pill > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .landing-hero-feature-pill-icon {
+    filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.35));
+  }
+
+  .landing-hero-feature-pill:hover .landing-hero-feature-pill-icon {
+    filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.5))
+      drop-shadow(0 0 6px rgb(255 255 255 / 0.2));
+  }
+
+  .landing-hero-feature-pill:hover {
+    border-color: rgb(255 255 255 / 0.3);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.28),
+      inset 0 -1px 0 rgb(15 23 42 / 0.18),
+      0 2px 8px rgb(15 23 42 / 0.18);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .landing-hero-feature-pill {
+      transition: none;
+    }
+
+    .landing-hero-feature-pill::after {
+      animation: none;
+      opacity: 0;
+    }
+  }
+
   /** Landing hero copy — subtle hover zoom, no outer glow; arrow cursor (not text I-beam). */
   .landing-hero-hover-zoom {
     cursor: default;
@@ -695,22 +808,40 @@
     }
   }
 
-  /** Hero subtitle — readable on photo background (not muted-foreground). */
+  /** Hero subtitle — metallic silver on photo background. */
   .landing-hero-description {
-    color: rgb(248 250 252);
-    text-shadow:
-      0 1px 2px rgb(0 0 0 / 0.55),
-      0 0 20px rgb(15 23 42 / 0.35);
+    background: linear-gradient(
+      110deg,
+      rgb(203 213 225) 0%,
+      rgb(241 245 249) 20%,
+      rgb(255 255 255) 34%,
+      rgb(186 198 214) 50%,
+      rgb(248 250 252) 66%,
+      rgb(203 213 225) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
 
-  /** Landing hero eyebrow — pale lavender with soft purple glow (screen reference). */
+  /** Landing hero eyebrow — lavender metallic on photo background. */
   .landing-hero-eyebrow {
     font-size: 0.875rem;
     line-height: 1.5;
-    color: rgb(196 181 253);
-    text-shadow:
-      0 0 8px rgb(167 139 250 / 0.55),
-      0 0 20px rgb(129 140 248 / 0.35);
+    background: linear-gradient(
+      110deg,
+      rgb(167 139 250) 0%,
+      rgb(221 214 254) 22%,
+      rgb(255 255 255) 36%,
+      rgb(196 181 253) 52%,
+      rgb(237 233 254) 68%,
+      rgb(167 139 250) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
 
   @media (min-width: 640px) {
@@ -726,30 +857,147 @@
     }
   }
 
-  /** Landing hero title — pure white copy with legibility shadow. */
+  /** Landing hero title — metallic silver copy on photo background. */
   .landing-hero-title-light {
-    color: rgb(255 255 255);
-    text-shadow:
-      0 1px 3px rgb(0 0 0 / 0.5),
-      0 2px 12px rgb(0 0 0 / 0.28);
+    background: linear-gradient(
+      110deg,
+      rgb(186 198 214) 0%,
+      rgb(248 250 252) 18%,
+      rgb(255 255 255) 34%,
+      rgb(203 213 225) 50%,
+      rgb(255 255 255) 66%,
+      rgb(186 198 214) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
 
-  /** Landing hero accent — purple keyword before gradient tail; legible on photo. */
+  /** Landing hero accent — metallic indigo before gradient tail. */
   .landing-hero-accent-purple {
-    color: rgb(168 85 247);
-    text-shadow:
-      0 0 1px rgb(0 0 0 / 0.85),
-      0 1px 4px rgb(0 0 0 / 0.72),
-      0 2px 14px rgb(0 0 0 / 0.48),
-      0 0 22px rgb(168 85 247 / 0.5);
+    background: linear-gradient(
+      110deg,
+      rgb(99 102 241) 0%,
+      rgb(165 180 252) 22%,
+      rgb(224 231 255) 36%,
+      rgb(129 140 248) 52%,
+      rgb(199 210 254) 68%,
+      rgb(99 102 241) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
 
-  /** Landing hero heading wrapper — gradient tail legibility on photo background. */
+  /** Landing hero gradient tail — metallic brand sheen (no filter; breaks background-clip). */
   .landing-hero-heading .gradient-text {
-    filter:
-      drop-shadow(0 1px 2px rgb(0 0 0 / 0.55))
-      drop-shadow(0 2px 10px rgb(0 0 0 / 0.32))
-      drop-shadow(0 0 16px rgb(236 72 153 / 0.32));
+    background: linear-gradient(
+      110deg,
+      rgb(99 102 241) 0%,
+      rgb(165 180 252) 18%,
+      rgb(255 255 255) 32%,
+      rgb(236 72 153) 48%,
+      rgb(251 207 232) 64%,
+      rgb(236 72 153) 80%,
+      rgb(99 102 241) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  @keyframes landing-hero-metal-shimmer {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes landing-hero-pill-shine {
+    0%,
+    64%,
+    100% {
+      transform: translateX(-130%);
+      opacity: 0;
+    }
+
+    70% {
+      opacity: 0.85;
+    }
+
+    80% {
+      transform: translateX(130%);
+      opacity: 0;
+    }
+  }
+
+  /**
+   * Landing hero metallic copy — slow shimmer across clipped gradients.
+   * Staggered delays keep eyebrow, title, accents and pills from pulsing in sync.
+   */
+  .landing-hero-metal-text,
+  .landing-hero-eyebrow,
+  .landing-hero-title-light,
+  .landing-hero-description,
+  .landing-hero-accent-purple,
+  .landing-hero-heading .gradient-text {
+    background-size: 280% 100%;
+    animation: landing-hero-metal-shimmer 9s ease-in-out infinite;
+  }
+
+  .landing-hero-eyebrow {
+    animation-delay: 0s;
+  }
+
+  .landing-hero-title-light {
+    animation-delay: 0.8s;
+  }
+
+  .landing-hero-accent-purple {
+    animation-delay: 1.4s;
+  }
+
+  .landing-hero-heading .gradient-text {
+    animation-delay: 2s;
+  }
+
+  .landing-hero-description {
+    animation-delay: 2.6s;
+  }
+
+  .landing-hero-metal-text {
+    animation-delay: 3.2s;
+  }
+
+  .landing-hero-feature-pill:nth-child(1) .landing-hero-metal-text {
+    animation-delay: 3.2s;
+  }
+
+  .landing-hero-feature-pill:nth-child(2) .landing-hero-metal-text {
+    animation-delay: 3.9s;
+  }
+
+  .landing-hero-feature-pill:nth-child(3) .landing-hero-metal-text {
+    animation-delay: 4.6s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .landing-hero-metal-text,
+    .landing-hero-eyebrow,
+    .landing-hero-title-light,
+    .landing-hero-description,
+    .landing-hero-accent-purple,
+    .landing-hero-heading .gradient-text {
+      animation: none;
+      background-size: 100% 100%;
+    }
   }
 
   .landing-chrome-text--eyebrow {

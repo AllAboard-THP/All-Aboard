@@ -44,6 +44,8 @@ import {
   APP_CHROME_BRAND_WORDMARK_CLASS,
   APP_GLASS_CARD_CLASS,
   LANDING_EDGE_PADDING_CLASS,
+  LANDING_HERO_FEATURE_PILL_CLASS,
+  LANDING_HERO_METAL_TEXT_CLASS,
 } from "./landing-layout";
 import {
   legacySubjects,
@@ -182,10 +184,8 @@ export function GradientHeading({
           <span className={cn(lineClass, lightLine)}>{lead.trimEnd()}</span>
           <span className={lineClass}>
             <span className={lightLine}>{line2Prefix}</span>
-            <span className="landing-hero-accent-purple">{accentPrimary}</span>
-          </span>
-          <span className={lineClass}>
-            <span className="gradient-text">{accentSecondary}</span>.
+            <span className="landing-hero-accent-purple">{accentPrimary}</span>{" "}
+            <span className="gradient-text">{accentSecondary}.</span>
           </span>
         </>
       ) : (
@@ -193,7 +193,7 @@ export function GradientHeading({
           <span className={cn(lineClass, lightLine)}>{lead}</span>
           <span className={lineClass}>
             <span className={lightLine}>{line2Prefix}</span>
-            <span className="gradient-text">{accent}</span>.
+            <span className="gradient-text">{accent}.</span>
           </span>
         </>
       )}
@@ -225,12 +225,13 @@ export function FeaturePill({
   return (
     <span
       className={cn(
-        "subject-chip group inline-flex cursor-default items-center gap-2 rounded-full text-gray-200 shadow-none",
+        LANDING_HERO_FEATURE_PILL_CLASS,
+        "group inline-flex cursor-default items-center gap-2 rounded-full",
         size === "lg"
           ? "px-5 py-2.5 text-base sm:px-6 sm:py-3"
           : "px-4 py-2 text-sm",
-        "transition-[transform,background-color,border-color] duration-200 ease-out",
-        "hover:scale-105 hover:border-white/30 hover:bg-white/12",
+        "transition-[transform] duration-200 ease-out",
+        "hover:scale-105",
         "motion-reduce:transition-none motion-reduce:hover:scale-100",
         className,
       )}
@@ -238,11 +239,14 @@ export function FeaturePill({
       <Icon
         className={cn(
           size === "lg" ? "size-5" : "size-4",
-          "transition-[filter,transform] duration-200 group-hover:scale-110 group-hover:brightness-125",
+          "landing-hero-feature-pill-icon",
+          "transition-[filter,transform] duration-200 group-hover:scale-110",
           iconClass,
         )}
       />
-      {label}
+      <span className={cn(LANDING_HERO_METAL_TEXT_CLASS, "font-medium")}>
+        {label}
+      </span>
     </span>
   );
 }
