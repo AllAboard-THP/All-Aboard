@@ -24,9 +24,19 @@ function participantInitials(name: string): string {
   return name.slice(0, 2).toUpperCase();
 }
 
-function inboxPreview(item: ConversationInboxItem): string {
-  if (item.lastMessage?.body) {
-    return item.lastMessage.body;
+function inboxPreview(
+  item: ConversationInboxItem,
+  t: (key: "previewVoice" | "previewVideo") => string,
+): string {
+  const lastMessage = item.lastMessage;
+  if (lastMessage?.body) {
+    return lastMessage.body;
+  }
+  if (lastMessage?.kind === "audio") {
+    return t("previewVoice");
+  }
+  if (lastMessage?.kind === "video") {
+    return t("previewVideo");
   }
   if (item.topic) {
     return item.topic;
@@ -58,7 +68,7 @@ export function MessagesInbox({ items, selectedId, locale }: Props) {
               const active = item.id === selectedId;
               const peer = item.otherParticipant;
               const avatar = peer.avatarUrl?.trim() || null;
-              const preview = inboxPreview(item);
+              const preview = inboxPreview(item, t);
 
               return (
                 <li key={item.id}>

@@ -1646,6 +1646,7 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         };
       };
       expect(msg.item.body).toBe("Salut Alice !");
+      expect(msg.item.kind).toBe("text");
       expect(msg.item.userId).toBe(bobId);
       expect(msg.item.type).toBe("message");
       expect(msg.item.userName.length).toBeGreaterThan(0);

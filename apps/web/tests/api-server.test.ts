@@ -381,6 +381,7 @@ describe("parseConversationsListResponse", () => {
           unreadCount: 1,
           lastMessage: {
             id: "m1",
+            kind: "text" as const,
             body: "Hi",
             userId: "u1",
             userName: "Bob",
@@ -408,6 +409,7 @@ describe("parseMessagesListResponse", () => {
       items: [
         {
           id: "m1",
+          kind: "text" as const,
           body: "Hi",
           userId: "u1",
           userName: "Bob",

@@ -25,6 +25,7 @@ vi.mock("next/headers", () => ({
 
 const sampleMessage = {
   id: "msg-1",
+  kind: "text" as const,
   body: "Salut !",
   userId: "user-bob",
   userName: "Bob",

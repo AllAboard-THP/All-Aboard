@@ -7,6 +7,7 @@ import type {
   AdminUsersResponse,
   AuthMeResponse,
   ChatMessage,
+  ChatMessageAttachment,
   ConversationInboxItem,
   ConversationParticipantSummary,
   ConversationsListResponse,
@@ -584,12 +585,31 @@ export function parseAdminSubjectRequestsResponse(
   };
 }
 
+function isChatMessageAttachment(
+  value: unknown,
+): value is ChatMessageAttachment {
+  if (typeof value !== "object" || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.url === "string" &&
+    typeof o.mimeType === "string" &&
+    typeof o.sizeBytes === "number" &&
+    (o.durationMs === undefined || typeof o.durationMs === "number") &&
+    (o.source === undefined ||
+      o.source === "microphone" ||
+      o.source === "camera" ||
+      o.source === "screen")
+  );
+}
+
 function isChatMessage(value: unknown): value is ChatMessage {
   if (typeof value !== "object" || value === null) return false;
   const o = value as Record<string, unknown>;
   return (
     typeof o.id === "string" &&
-    typeof o.body === "string" &&
+    (o.kind === "text" || o.kind === "audio" || o.kind === "video") &&
+    (o.body === undefined || typeof o.body === "string") &&
+    (o.attachment === undefined || isChatMessageAttachment(o.attachment)) &&
     typeof o.userId === "string" &&
     typeof o.userName === "string" &&
     typeof o.createdAt === "string" &&

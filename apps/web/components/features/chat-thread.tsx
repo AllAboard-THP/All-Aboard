@@ -146,6 +146,7 @@ export function ChatThread({
 
       const optimistic: DisplayMessage = {
         id: `opt-${Date.now()}`,
+        kind: "text",
         body,
         userId: currentUser.userId,
         userName: currentUser.displayName,
@@ -251,7 +252,12 @@ export function ChatThread({
                     msg.optimistic && "opacity-70",
                   )}
                 >
-                  {msg.body}
+                  {msg.body ??
+                    (msg.kind === "audio" ?
+                      t("previewVoice")
+                    : msg.kind === "video" ?
+                      t("previewVideo")
+                    : "")}
                 </div>
                 <span className="px-1 text-[10px] text-muted-foreground">
                   {formatMessageTime(msg.createdAt, locale)}
