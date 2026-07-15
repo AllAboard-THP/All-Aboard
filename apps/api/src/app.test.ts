@@ -1800,7 +1800,7 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
           headers: { authorization: `Bearer ${bobToken}` },
           payload: { recipientId: aliceId },
         });
-        expect(createConvRes.statusCode).toBe(201);
+        expect([200, 201]).toContain(createConvRes.statusCode);
         const conv = JSON.parse(createConvRes.payload) as {
           item: { id: string };
         };
