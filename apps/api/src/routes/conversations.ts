@@ -29,6 +29,11 @@ import {
   markConversationReadForUser,
   resolveHelpRequestTopic,
 } from "../services/conversations.js";
+import {
+  createMediaMessage,
+  isMultipartMessageRequest,
+  parseMessageMediaMultipart,
+} from "../services/message-media-upload.js";
 import { loadUserFromJwtSub, loadUserById } from "../services/user-profile.js";
 
 export function registerConversationRoutes(
@@ -178,10 +183,6 @@ export function registerConversationRoutes(
         return reply.code(503).send({ error: "database_unavailable" });
       }
       const { id: conversationId } = request.params as { id: string };
-      const parsed = createMessageBodySchema.safeParse(request.body);
-      if (!parsed.success) {
-        return reply.code(400).send({ error: "invalid_body" });
-      }
 
       const jwtUser = getJwtUser(request);
       const sender = await loadUserFromJwtSub(db, jwtUser.sub);
@@ -198,12 +199,33 @@ export function registerConversationRoutes(
         return reply.code(403).send({ error: "forbidden" });
       }
 
-      const message = await insertMessage(
-        db,
-        conversationId,
-        sender.id,
-        { kind: "text", body: parsed.data.body },
-      );
+      const contentType = request.headers["content-type"];
+      let message;
+
+      if (isMultipartMessageRequest(contentType)) {
+        const parsed = await parseMessageMediaMultipart(request);
+        if (!parsed.ok) {
+          return reply.code(400).send({ error: parsed.error });
+        }
+        message = await createMediaMessage(
+          db,
+          conversationId,
+          sender.id,
+          parsed.data,
+        );
+      } else {
+        const parsed = createMessageBodySchema.safeParse(request.body);
+        if (!parsed.success) {
+          return reply.code(400).send({ error: "invalid_body" });
+        }
+        message = await insertMessage(
+          db,
+          conversationId,
+          sender.id,
+          { kind: "text", body: parsed.data.body },
+        );
+      }
+
       await markConversationReadForUser(db, conversationId, sender.id);
       broadcastChatMessage(conversationId, message);
 

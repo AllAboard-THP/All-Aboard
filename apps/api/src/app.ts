@@ -3,6 +3,7 @@ import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
+import multipart from "@fastify/multipart";
 import jwt from "@fastify/jwt";
 import type pg from "pg";
 import { createDb, createPool } from "./db/client.js";
@@ -20,6 +21,11 @@ import {
   ensureAvatarStorageDir,
   getAvatarStorageDir,
 } from "./lib/avatar-storage.js";
+import {
+  ensureMessageMediaStorageDir,
+  getMessageMediaStorageDir,
+} from "./lib/media-storage/index.js";
+import { MESSAGE_VIDEO_MAX_BYTES } from "./services/message-media-upload-rules.js";
 import { registerOpenApiDocs } from "./openapi.js";
 import { registerAdminRoutes } from "./routes/admin.js";
 import { registerAuthRoutes } from "./routes/auth.js";
@@ -77,6 +83,13 @@ export async function buildApp(options?: BuildAppOptions) {
   void app.register(cookie);
   void app.register(jwt, { secret: jwtSecret() });
 
+  await app.register(multipart, {
+    limits: {
+      fileSize: MESSAGE_VIDEO_MAX_BYTES,
+      files: 1,
+    },
+  });
+
   app.decorate(
     "authenticate",
     async function authenticate(
@@ -103,9 +116,15 @@ export async function buildApp(options?: BuildAppOptions) {
   registerPasskeyRoutes(app, db);
   registerUserRoutes(app, db);
   await ensureAvatarStorageDir();
+  await ensureMessageMediaStorageDir();
   await app.register(fastifyStatic, {
     root: getAvatarStorageDir(),
     prefix: "/uploads/avatars/",
+    decorateReply: false,
+  });
+  await app.register(fastifyStatic, {
+    root: getMessageMediaStorageDir(),
+    prefix: "/uploads/messages/",
     decorateReply: false,
   });
   await registerAvatarRoutes(app, db);
