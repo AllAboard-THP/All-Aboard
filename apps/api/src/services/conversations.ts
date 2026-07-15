@@ -334,11 +334,16 @@ export type InsertMessageInput =
       };
     };
 
+export type InsertMessageOptions = {
+  messageId?: string;
+};
+
 export async function insertMessage(
   db: AppDatabase,
   conversationId: string,
   senderId: string,
   input: InsertMessageInput,
+  options?: InsertMessageOptions,
 ): Promise<ChatMessage> {
   let values: typeof messages.$inferInsert;
 
@@ -348,6 +353,7 @@ export async function insertMessage(
       throw new Error("message_body_required");
     }
     values = {
+      ...(options?.messageId ? { id: options.messageId } : {}),
       conversationId,
       userId: senderId,
       messageKind: "text",
@@ -356,6 +362,7 @@ export async function insertMessage(
   } else {
     const { attachment, body } = input;
     values = {
+      ...(options?.messageId ? { id: options.messageId } : {}),
       conversationId,
       userId: senderId,
       messageKind: input.kind,

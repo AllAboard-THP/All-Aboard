@@ -22,6 +22,53 @@ import {
 } from "./intuition/outbox";
 import { processPendingSummaryEvents } from "./services/ai-summary-worker";
 import { isOpenApiDocsEnabled } from "./openapi";
+import { MESSAGE_AUDIO_MAX_BYTES } from "./services/message-media-upload-rules.js";
+
+function buildMultipartMessagePayload(
+  fields: Record<string, string>,
+  file: {
+    fieldName?: string;
+    filename: string;
+    contentType: string;
+    buffer: Buffer;
+  },
+): { payload: Buffer; contentType: string } {
+  const boundary = `----AllAboardTest${Date.now()}`;
+  const chunks: Buffer[] = [];
+
+  for (const [key, value] of Object.entries(fields)) {
+    chunks.push(
+      Buffer.from(
+        `--${boundary}\r\n` +
+          `Content-Disposition: form-data; name="${key}"\r\n\r\n` +
+          `${value}\r\n`,
+      ),
+    );
+  }
+
+  const fieldName = file.fieldName ?? "file";
+  chunks.push(
+    Buffer.from(
+      `--${boundary}\r\n` +
+        `Content-Disposition: form-data; name="${fieldName}"; filename="${file.filename}"\r\n` +
+        `Content-Type: ${file.contentType}\r\n\r\n`,
+    ),
+  );
+  chunks.push(file.buffer);
+  chunks.push(Buffer.from(`\r\n--${boundary}--\r\n`));
+
+  return {
+    payload: Buffer.concat(chunks),
+    contentType: `multipart/form-data; boundary=${boundary}`,
+  };
+}
+
+function mockWebmBuffer(extraBytes = 0): Buffer {
+  return Buffer.concat([
+    Buffer.from([0x1a, 0x45, 0xdf, 0xa3]),
+    Buffer.alloc(extraBytes, 0x00),
+  ]);
+}
 
 describe("api", () => {
   it("GET /health returns 200", async () => {
@@ -1715,6 +1762,261 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       };
       expect(history.pagination.total).toBeGreaterThanOrEqual(1);
       expect(history.items.some((m) => m.body === "Salut Alice !")).toBe(true);
+    });
+
+    it("POST /conversations/:id/messages accepts multipart audio and video", async () => {
+      const previousStorageDir = process.env.MESSAGE_MEDIA_STORAGE_DIR;
+      process.env.MESSAGE_MEDIA_STORAGE_DIR = path.join(
+        path.dirname(fileURLToPath(import.meta.url)),
+        "..",
+        "data",
+        "uploads",
+        "messages-test",
+      );
+
+      try {
+        const bobRows = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(eq(users.email, "bob@dev.local"))
+          .limit(1);
+        const aliceRows = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(eq(users.email, "alice@dev.local"))
+          .limit(1);
+        const bobId = bobRows[0]?.id;
+        const aliceId = aliceRows[0]?.id;
+        expect(bobId).toBeDefined();
+        expect(aliceId).toBeDefined();
+
+        const bobToken = app.jwt.sign({
+          sub: "bob@dev.local",
+          role: "student",
+        });
+        const createConvRes = await app.inject({
+          method: "POST",
+          url: "/conversations",
+          headers: { authorization: `Bearer ${bobToken}` },
+          payload: { recipientId: aliceId },
+        });
+        expect([200, 201]).toContain(createConvRes.statusCode);
+        const conv = JSON.parse(createConvRes.payload) as {
+          item: { id: string };
+        };
+
+        const audioPayload = buildMultipartMessagePayload(
+          {
+            kind: "audio",
+            durationMs: "4200",
+            source: "microphone",
+            body: "Note vocale",
+          },
+          {
+            filename: "voice.webm",
+            contentType: "audio/webm",
+            buffer: mockWebmBuffer(),
+          },
+        );
+        const audioRes = await app.inject({
+          method: "POST",
+          url: `/conversations/${conv.item.id}/messages`,
+          headers: {
+            authorization: `Bearer ${bobToken}`,
+            "content-type": audioPayload.contentType,
+          },
+          payload: audioPayload.payload,
+        });
+        expect(audioRes.statusCode).toBe(201);
+        const audioMsg = JSON.parse(audioRes.payload) as {
+          item: {
+            kind: string;
+            body?: string;
+            attachment?: {
+              url: string;
+              mimeType: string;
+              sizeBytes: number;
+              durationMs: number;
+              source: string;
+            };
+          };
+        };
+        expect(audioMsg.item.kind).toBe("audio");
+        expect(audioMsg.item.body).toBe("Note vocale");
+        expect(audioMsg.item.attachment?.mimeType).toBe("audio/webm");
+        expect(audioMsg.item.attachment?.durationMs).toBe(4200);
+        expect(audioMsg.item.attachment?.source).toBe("microphone");
+        expect(audioMsg.item.attachment?.url).toContain("/uploads/messages/");
+
+        const videoPayload = buildMultipartMessagePayload(
+          {
+            kind: "video",
+            durationMs: "9000",
+            source: "camera",
+          },
+          {
+            filename: "clip.webm",
+            contentType: "video/webm",
+            buffer: mockWebmBuffer(),
+          },
+        );
+        const videoRes = await app.inject({
+          method: "POST",
+          url: `/conversations/${conv.item.id}/messages`,
+          headers: {
+            authorization: `Bearer ${bobToken}`,
+            "content-type": videoPayload.contentType,
+          },
+          payload: videoPayload.payload,
+        });
+        expect(videoRes.statusCode).toBe(201);
+        const videoMsg = JSON.parse(videoRes.payload) as {
+          item: { kind: string; attachment?: { mimeType: string } };
+        };
+        expect(videoMsg.item.kind).toBe("video");
+        expect(videoMsg.item.attachment?.mimeType).toBe("video/webm");
+
+        const aliceToken = app.jwt.sign({
+          sub: "alice@dev.local",
+          role: "mentor",
+        });
+        const historyRes = await app.inject({
+          method: "GET",
+          url: `/conversations/${conv.item.id}/messages`,
+          headers: { authorization: `Bearer ${aliceToken}` },
+        });
+        expect(historyRes.statusCode).toBe(200);
+        const history = JSON.parse(historyRes.payload) as {
+          items: Array<{ kind: string; attachment?: { mimeType: string } }>;
+        };
+        expect(history.items.some((m) => m.kind === "audio")).toBe(true);
+        expect(history.items.some((m) => m.kind === "video")).toBe(true);
+      } finally {
+        if (previousStorageDir === undefined) {
+          delete process.env.MESSAGE_MEDIA_STORAGE_DIR;
+        } else {
+          process.env.MESSAGE_MEDIA_STORAGE_DIR = previousStorageDir;
+        }
+      }
+    });
+
+    it("POST /conversations/:id/messages rejects oversize and invalid media uploads", async () => {
+      const previousStorageDir = process.env.MESSAGE_MEDIA_STORAGE_DIR;
+      process.env.MESSAGE_MEDIA_STORAGE_DIR = path.join(
+        path.dirname(fileURLToPath(import.meta.url)),
+        "..",
+        "data",
+        "uploads",
+        "messages-test-reject",
+      );
+
+      try {
+        const aliceRows = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(eq(users.email, "alice@dev.local"))
+          .limit(1);
+        const aliceId = aliceRows[0]?.id;
+        expect(aliceId).toBeDefined();
+
+        const bobToken = app.jwt.sign({
+          sub: "bob@dev.local",
+          role: "student",
+        });
+        const createConvRes = await app.inject({
+          method: "POST",
+          url: "/conversations",
+          headers: { authorization: `Bearer ${bobToken}` },
+          payload: { recipientId: aliceId },
+        });
+        const conv = JSON.parse(createConvRes.payload) as {
+          item: { id: string };
+        };
+
+        const oversizePayload = buildMultipartMessagePayload(
+          {
+            kind: "audio",
+            durationMs: "1000",
+            source: "microphone",
+          },
+          {
+            filename: "big.webm",
+            contentType: "audio/webm",
+            buffer: mockWebmBuffer(MESSAGE_AUDIO_MAX_BYTES),
+          },
+        );
+        const oversizeRes = await app.inject({
+          method: "POST",
+          url: `/conversations/${conv.item.id}/messages`,
+          headers: {
+            authorization: `Bearer ${bobToken}`,
+            "content-type": oversizePayload.contentType,
+          },
+          payload: oversizePayload.payload,
+        });
+        expect(oversizeRes.statusCode).toBe(400);
+        expect(JSON.parse(oversizeRes.payload)).toEqual({
+          error: "file_too_large",
+        });
+
+        const badMimePayload = buildMultipartMessagePayload(
+          {
+            kind: "audio",
+            durationMs: "1000",
+            source: "microphone",
+          },
+          {
+            filename: "fake.webm",
+            contentType: "audio/webm",
+            buffer: Buffer.from("definitely-not-webm"),
+          },
+        );
+        const badMimeRes = await app.inject({
+          method: "POST",
+          url: `/conversations/${conv.item.id}/messages`,
+          headers: {
+            authorization: `Bearer ${bobToken}`,
+            "content-type": badMimePayload.contentType,
+          },
+          payload: badMimePayload.payload,
+        });
+        expect(badMimeRes.statusCode).toBe(400);
+        expect(JSON.parse(badMimeRes.payload)).toEqual({
+          error: "invalid_file_type",
+        });
+
+        const badSourcePayload = buildMultipartMessagePayload(
+          {
+            kind: "audio",
+            durationMs: "1000",
+            source: "camera",
+          },
+          {
+            filename: "voice.webm",
+            contentType: "audio/webm",
+            buffer: mockWebmBuffer(),
+          },
+        );
+        const badSourceRes = await app.inject({
+          method: "POST",
+          url: `/conversations/${conv.item.id}/messages`,
+          headers: {
+            authorization: `Bearer ${bobToken}`,
+            "content-type": badSourcePayload.contentType,
+          },
+          payload: badSourcePayload.payload,
+        });
+        expect(badSourceRes.statusCode).toBe(400);
+        expect(JSON.parse(badSourceRes.payload)).toEqual({
+          error: "invalid_media_source",
+        });
+      } finally {
+        if (previousStorageDir === undefined) {
+          delete process.env.MESSAGE_MEDIA_STORAGE_DIR;
+        } else {
+          process.env.MESSAGE_MEDIA_STORAGE_DIR = previousStorageDir;
+        }
+      }
     });
 
     it("POST /conversations returns 200 when direct thread already exists", async () => {

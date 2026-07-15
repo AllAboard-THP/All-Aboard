@@ -1741,6 +1741,9 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateMessageBody"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CreateMediaMessageForm"
       responses:
         "201":
           description: Message créé (format chat JSON)
@@ -3416,6 +3419,28 @@ components:
           type: string
           minLength: 1
           maxLength: 10000
+
+    CreateMediaMessageForm:
+      type: object
+      required: [kind, file, durationMs, source]
+      properties:
+        kind:
+          type: string
+          enum: [audio, video]
+        file:
+          type: string
+          format: binary
+        durationMs:
+          type: integer
+          minimum: 1
+          description: Recorded duration in milliseconds (max 300000 audio, 180000 video)
+        source:
+          type: string
+          enum: [microphone, camera, screen]
+        body:
+          type: string
+          maxLength: 10000
+          description: Optional caption
 
     CreateMessageResponse:
       type: object
