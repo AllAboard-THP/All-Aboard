@@ -8,16 +8,14 @@ cd "$ROOT"
 ENV_FILE="$ROOT/.env.local.dev"
 if [[ ! -f "$ENV_FILE" ]]; then
   echo "error: missing $ENV_FILE" >&2
-  echo "Create it from .env.example (DATABASE_URL, JWT_SECRET, MVP_LOGIN_PASSWORD)." >&2
+  echo "Create it from .env.local.dev.example (DATABASE_URL, JWT_SECRET, MVP_LOGIN_PASSWORD)." >&2
   echo "Web also needs apps/web/.env.local with API_URL (see .env.example)." >&2
   exit 1
 fi
 
 docker compose up -d
 
-set -a
-# shellcheck source=/dev/null
-source "$ENV_FILE"
-set +a
+# shellcheck source=scripts/load-local-dev-env.sh
+source "$ROOT/scripts/load-local-dev-env.sh"
 
 exec pnpm exec turbo run dev --filter=web --filter=api

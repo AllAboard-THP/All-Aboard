@@ -15,13 +15,14 @@ Appliquer ce skill quand l'utilisateur demande un **lancement** (mot-clé **lanc
 ## Prérequis (vérifier si échec)
 
 1. **Docker** : moteur démarré.
-2. **`/.env.local.dev`** à la racine du monorepo (gitignored), avec au minimum :
-   - `export DATABASE_URL=postgresql://allaboard:allaboard@127.0.0.1:5432/allaboard`
-   - `export JWT_SECRET=...` (≥ 32 caractères en prod ; valeur dev OK en local)
-   - `export MVP_LOGIN_PASSWORD=...`
+2. **`/.env.local.dev`** à la racine du monorepo (gitignored), copié depuis **`.env.local.dev.example`**, avec au minimum :
+   - `DATABASE_URL=postgresql://allaboard:allaboard@127.0.0.1:5432/allaboard`
+   - `JWT_SECRET=...` (≥ 32 caractères en prod ; valeur dev OK en local)
+   - `MVP_LOGIN_PASSWORD=...`
+   - `DEV_SEED_PASSWORD=...` (recommandé pour les tests API)
 3. **`apps/web/.env.local`** : `API_URL=http://127.0.0.1:4000` (voir `.env.example`).
 
-Si `.env.local.dev` manque : expliquer comment le créer depuis `.env.example` ; ne pas commiter ce fichier.
+Si `.env.local.dev` manque : `cp .env.local.dev.example .env.local.dev` ; ne pas commiter ce fichier.
 
 ## Action
 
@@ -54,5 +55,6 @@ Navigateur : http://localhost:3000 , http://localhost:3000/help/new (mot de pass
 ## Références
 
 - [README.md](../../../README.md) — `pnpm dev:local`
+- [.env.local.dev.example](../../../.env.local.dev.example)
 - [.env.example](../../../.env.example)
 - [Docs/adr/0001-authentication-strategy.md](../../../Docs/adr/0001-authentication-strategy.md)
