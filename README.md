@@ -19,7 +19,7 @@ pnpm smoke:dev    # smoke HTTP(S) web + api (voir Docs/guides/web-api-integratio
 ```
 
 - **web**: Next.js — `http://localhost:3000` (feed SSR via `API_URL` + TanStack ; BFF `/api/feed`, `/api/auth/login`, `/api/help-requests` ; formulaire `/help/new` — voir [Docs/README.md](Docs/README.md))
-- **api**: Fastify — `http://localhost:4000/health`, `GET /feed` (Postgres si `DATABASE_URL`), `POST /auth/login`, `POST /help-requests` (JWT). Migrations au démarrage. Postgres local : `pnpm dev:local` (ou `docker compose up -d` + variables dans [.env.example](.env.example), fichier `.env.local.dev` gitignored à la racine).
+- **api**: Fastify — `http://localhost:4000/health`, `GET /feed` (Postgres si `DATABASE_URL`), `POST /auth/login`, `POST /help-requests` (JWT). Migrations au démarrage. Postgres local : `cp .env.local.dev.example .env.local.dev && docker compose up -d` puis `pnpm dev:local` (voir [.env.local.dev.example](.env.local.dev.example)).
 - **thp-final**: Rails 8 — application THP (`Hotwire`, esbuild/React). Dev/test en **SQLite** (`apps/thp-final/storage/`). Postgres en production uniquement (`config/database.yml`). Démarrage :
 
   ```bash

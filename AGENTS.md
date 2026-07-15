@@ -36,6 +36,10 @@ Présence dans le monorepo : **subtree Git** conservé à titre d’archive. **H
 
    Équivalent à `pnpm verify:commit` puis `pnpm verify:push` (lint, typecheck, tests, build via Turbo, build Storybook).
 
+   **Tests DB en local** : si [`.env.local.dev`](.env.local.dev.example) existe à la racine (copie de `.env.local.dev.example`) et Postgres tourne (`docker compose up -d`), `pnpm test` / `pnpm verify` chargent automatiquement l’env et exécutent la suite API avec base. Sinon : tests unitaires seulement (message `test-with-db: DATABASE_URL unset`).
+
+   **ESLint web** : `pnpm lint` vérifie que `next` est correctement installé (`scripts/check-node-modules.sh`). En cas de symlink cassé : `pnpm install --frozen-lockfile`.
+
 2. Si une étape échoue : corriger, relancer `pnpm verify`, puis seulement proposer le commit.
 
 3. Résumer pour l’humain : commandes exécutées, succès/échec, message d’erreur pertinent.
