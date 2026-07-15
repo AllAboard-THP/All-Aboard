@@ -3283,15 +3283,39 @@ components:
         avatarUrl:
           type: string
 
+    ChatMessageAttachment:
+      type: object
+      required: [url, mimeType, sizeBytes]
+      properties:
+        url:
+          type: string
+          format: uri
+        mimeType:
+          type: string
+        sizeBytes:
+          type: integer
+          minimum: 0
+        durationMs:
+          type: integer
+          minimum: 0
+        source:
+          type: string
+          enum: [microphone, camera, screen]
+
     ChatMessage:
       type: object
-      required: [id, body, userId, userName, createdAt, type]
+      required: [id, kind, userId, userName, createdAt, type]
       properties:
         id:
           type: string
           format: uuid
+        kind:
+          type: string
+          enum: [text, audio, video]
         body:
           type: string
+        attachment:
+          $ref: "#/components/schemas/ChatMessageAttachment"
         userId:
           type: string
           format: uuid

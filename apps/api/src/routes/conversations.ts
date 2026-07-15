@@ -202,7 +202,7 @@ export function registerConversationRoutes(
         db,
         conversationId,
         sender.id,
-        parsed.data.body,
+        { kind: "text", body: parsed.data.body },
       );
       await markConversationReadForUser(db, conversationId, sender.id);
       broadcastChatMessage(conversationId, message);

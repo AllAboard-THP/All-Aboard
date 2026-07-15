@@ -232,6 +232,18 @@ export const resourceStatusEnum = pgEnum("resource_status", [
   "rejected",
 ]);
 
+export const messageKindEnum = pgEnum("message_kind", [
+  "text",
+  "audio",
+  "video",
+]);
+
+export const attachmentSourceEnum = pgEnum("attachment_source", [
+  "camera",
+  "screen",
+  "microphone",
+]);
+
 export const subjectRequestStatusEnum = pgEnum("subject_request_status", [
   "pending",
   "approved",
@@ -345,7 +357,13 @@ export const messages = pgTable("messages", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  body: text("body").notNull(),
+  messageKind: messageKindEnum("message_kind").notNull().default("text"),
+  body: text("body"),
+  attachmentKey: text("attachment_key"),
+  attachmentMime: text("attachment_mime"),
+  attachmentSizeBytes: integer("attachment_size_bytes"),
+  attachmentDurationMs: integer("attachment_duration_ms"),
+  attachmentSource: attachmentSourceEnum("attachment_source"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

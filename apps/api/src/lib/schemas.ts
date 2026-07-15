@@ -136,6 +136,10 @@ export const createMessageBodySchema = z.object({
   body: z.string().min(1).max(10_000),
 });
 
+export const messageKindSchema = z.enum(["text", "audio", "video"]);
+
+export const attachmentSourceSchema = z.enum(["microphone", "camera", "screen"]);
+
 export type MessagesListQueryParams = {
   page: number;
   limit: number;

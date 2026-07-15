@@ -7,9 +7,11 @@ import {
   ne,
 } from "drizzle-orm";
 import type {
+  AttachmentSource,
   ChatMessage,
   ConversationInboxItem,
   ConversationParticipantSummary,
+  MessageKind,
 } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import {
@@ -19,6 +21,7 @@ import {
   messages,
   users,
 } from "../db/schema.js";
+import { buildMessageMediaPublicUrl } from "../lib/message-media-url.js";
 import { displayNameFromUser } from "../lib/user-mappers.js";
 
 export function directKeyFor(userAId: string, userBId: string): string {
@@ -29,15 +32,40 @@ export function rowToChatMessage(
   row: typeof messages.$inferSelect,
   author: Pick<typeof users.$inferSelect, "id" | "fullName" | "email" | "avatarUrl">,
 ): ChatMessage {
-  return {
+  const kind = row.messageKind as MessageKind;
+  const message: ChatMessage = {
     id: row.id,
-    body: row.body,
+    kind,
     userId: row.userId,
     userName: displayNameFromUser(author),
     avatarUrl: author.avatarUrl ?? undefined,
     createdAt: row.createdAt.toISOString(),
     type: "message",
   };
+
+  if (row.body?.trim()) {
+    message.body = row.body.trim();
+  }
+
+  if (
+    row.attachmentKey &&
+    row.attachmentMime &&
+    row.attachmentSizeBytes != null
+  ) {
+    message.attachment = {
+      url: buildMessageMediaPublicUrl(row.attachmentKey),
+      mimeType: row.attachmentMime,
+      sizeBytes: row.attachmentSizeBytes,
+      ...(row.attachmentDurationMs != null ?
+        { durationMs: row.attachmentDurationMs }
+      : {}),
+      ...(row.attachmentSource ?
+        { source: row.attachmentSource as AttachmentSource }
+      : {}),
+    };
+  }
+
+  return message;
 }
 
 function rowToParticipantSummary(
@@ -292,20 +320,55 @@ export async function loadMessagesPage(
   return { items, total };
 }
 
+export type InsertMessageInput =
+  | { kind: "text"; body: string }
+  | {
+      kind: "audio" | "video";
+      body?: string;
+      attachment: {
+        key: string;
+        mimeType: string;
+        sizeBytes: number;
+        durationMs?: number;
+        source: AttachmentSource;
+      };
+    };
+
 export async function insertMessage(
   db: AppDatabase,
   conversationId: string,
   senderId: string,
-  body: string,
+  input: InsertMessageInput,
 ): Promise<ChatMessage> {
-  const inserted = await db
-    .insert(messages)
-    .values({
+  let values: typeof messages.$inferInsert;
+
+  if (input.kind === "text") {
+    const body = input.body.trim();
+    if (!body) {
+      throw new Error("message_body_required");
+    }
+    values = {
       conversationId,
       userId: senderId,
-      body: body.trim(),
-    })
-    .returning();
+      messageKind: "text",
+      body,
+    };
+  } else {
+    const { attachment, body } = input;
+    values = {
+      conversationId,
+      userId: senderId,
+      messageKind: input.kind,
+      body: body?.trim() || null,
+      attachmentKey: attachment.key,
+      attachmentMime: attachment.mimeType,
+      attachmentSizeBytes: attachment.sizeBytes,
+      attachmentDurationMs: attachment.durationMs ?? null,
+      attachmentSource: attachment.source,
+    };
+  }
+
+  const inserted = await db.insert(messages).values(values).returning();
   const message = inserted[0];
   if (!message) {
     throw new Error("message_insert_failed");

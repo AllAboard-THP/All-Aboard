@@ -611,7 +611,9 @@
     "loginRequiredTitle": "Sign-in required",
     "loginRequiredDescription": "Sign in with a passkey via <link></link> to access your messages.",
     "loginRequiredLink": "the sign-in page",
-    "unknownPeer": "Conversation"
+    "unknownPeer": "Conversation",
+    "previewVoice": "Voice message",
+    "previewVideo": "Video message"
   },
   "admin": {
     "loginRequiredTitle": "Sign-in required",
