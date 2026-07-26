@@ -42,6 +42,26 @@ export async function sendChatMessage(
   return JSON.parse(text) as CreateMessageResponse;
 }
 
+/** Sends audio/video via multipart (kind, file, durationMs, source, optional body). */
+export async function sendChatMediaMessage(
+  conversationId: string,
+  formData: FormData,
+): Promise<CreateMessageResponse> {
+  const res = await fetch(
+    `/api/conversations/${encodeURIComponent(conversationId)}/messages`,
+    {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    },
+  );
+  const text = await res.text();
+  if (!res.ok) {
+    throwFromApiResponse(res.status, text);
+  }
+  return JSON.parse(text) as CreateMessageResponse;
+}
+
 export async function markConversationRead(conversationId: string): Promise<void> {
   const res = await fetch(
     `/api/conversations/${encodeURIComponent(conversationId)}/read`,
