@@ -317,6 +317,45 @@ describe("BFF Phase 5 (W-P2-05)", () => {
         }),
       );
     });
+
+    it("relays multipart media without forcing JSON content-type", async () => {
+      mockToken();
+      fetchMock.mockResolvedValueOnce(
+        new Response(JSON.stringify({ item: sampleMessage }), {
+          status: 201,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+
+      const formData = new FormData();
+      formData.append("kind", "audio");
+      formData.append("durationMs", "1200");
+      formData.append("source", "microphone");
+      formData.append("file", new Blob(["fake-audio"], { type: "audio/webm" }), "clip.webm");
+
+      const res = await messagesPost(
+        new Request("http://localhost/api/conversations/conv-1/messages", {
+          method: "POST",
+          body: formData,
+        }),
+        { params: Promise.resolve({ id: "conv-1" }) },
+      );
+
+      expect(res.status).toBe(201);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+      expect(init.method).toBe("POST");
+      expect(init.headers).toEqual(
+        expect.objectContaining({
+          authorization: "Bearer jwt-chat",
+        }),
+      );
+      const relayContentType = (init.headers as Record<string, string>)["content-type"];
+      expect(relayContentType?.toLowerCase()).toContain("multipart/form-data");
+      expect(relayContentType?.toLowerCase()).toContain("boundary=");
+      expect(init.body).toBeDefined();
+      expect((init as RequestInit & { duplex?: string }).duplex).toBe("half");
+    });
   });
 
   describe("PATCH /api/conversations/[id]/read", () => {
