@@ -1,11 +1,11 @@
 # All-Aboard
 
-> Mentor platform for The Hacking Project (THP): Turborepo + pnpm monorepo (Next.js web, Rails-parity API, design system in `packages/ui`), docs in `Docs/` (English, capital D). Agent guide `AGENTS.md` is French; chat with the operator is French.
+> Mentor platform for The Hacking Project (THP): Turborepo + pnpm monorepo (Next.js web, Rails-parity API, design system in `packages/ui`), docs in `Docs/` (English, capital D). Agent guide `AGENTS.md` is English; chat with the operator is French.
 
 ## Root
 
 - [README.md](README.md): Repository overview and local dev commands
-- [AGENTS.md](AGENTS.md): Agent guide — Git/CI guards, Hindsight, doc map (French)
+- [AGENTS.md](AGENTS.md): Agent guide — Git/CI guards, Hindsight, doc map (English)
 - [Docs/README.md](Docs/README.md): Docs entry point
 - [Docs/INDEX.md](Docs/INDEX.md): Canonical docs index (English)
 
