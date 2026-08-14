@@ -1,0 +1,105 @@
+# All-Aboard
+
+> Mentor platform for The Hacking Project (THP): Turborepo + pnpm monorepo (Next.js web, Rails-parity API, design system in `packages/ui`), docs in `Docs/` (English, capital D). Agent guide `AGENTS.md` is French; chat with the operator is French.
+
+## Root
+
+- [README.md](README.md): Repository overview and local dev commands
+- [AGENTS.md](AGENTS.md): Agent guide — Git/CI guards, Hindsight, doc map (French)
+- [Docs/README.md](Docs/README.md): Docs entry point
+- [Docs/INDEX.md](Docs/INDEX.md): Canonical docs index (English)
+
+## ADR (Docs/adr)
+
+- [Docs/adr/README.md](Docs/adr/README.md): ADR index and conventions
+- [Docs/adr/0001-authentication-strategy.md](Docs/adr/0001-authentication-strategy.md): Auth strategy ADR
+- [Docs/adr/0002-design-system-monorepo.md](Docs/adr/0002-design-system-monorepo.md): Design system monorepo ADR
+- [Docs/adr/0003-authentication-users-production.md](Docs/adr/0003-authentication-users-production.md): Production user auth ADR
+- [Docs/adr/0004-agent-indexer-architecture.md](Docs/adr/0004-agent-indexer-architecture.md): Agent indexer architecture ADR
+- [Docs/adr/0005-i18n-web-next-intl.md](Docs/adr/0005-i18n-web-next-intl.md): i18n web next-intl ADR
+- [Docs/adr/0006-authentication-passkeys.md](Docs/adr/0006-authentication-passkeys.md): Passkeys auth ADR
+- [Docs/adr/0007-oauth-google-sso.md](Docs/adr/0007-oauth-google-sso.md): Google OAuth SSO ADR
+
+## Architecture (Docs/architecture)
+
+- [Docs/architecture/README.md](Docs/architecture/README.md): Architecture docs index
+- [Docs/architecture/dataflow.md](Docs/architecture/dataflow.md): Data flow across apps
+
+## Vision (Docs/vision)
+
+- [Docs/vision/README.md](Docs/vision/README.md): Vision docs index
+- [Docs/vision/roadmap-v1-plus.md](Docs/vision/roadmap-v1-plus.md): Roadmap v1+ plans
+- [Docs/vision/technical-stack-proposal-2026.md](Docs/vision/technical-stack-proposal-2026.md): 2026 technical stack proposal
+
+## Product (Docs/product)
+
+- [Docs/product/README.md](Docs/product/README.md): Product docs index
+- [Docs/product/user-journeys.md](Docs/product/user-journeys.md): User journey definitions
+
+## Design system (Docs/design-system)
+
+- [Docs/design-system/README.md](Docs/design-system/README.md): Design system hub (canonical)
+- [Docs/design-system/app-shell.md](Docs/design-system/app-shell.md): App shell chrome specification
+- [Docs/design-system/architecture.md](Docs/design-system/architecture.md): Design system architecture
+- [Docs/design-system/contributor-guide.md](Docs/design-system/contributor-guide.md): Contributor workflow guide
+- [Docs/design-system/delivery-log.md](Docs/design-system/delivery-log.md): Delivery log of design system work
+- [Docs/design-system/verification-and-ci.md](Docs/design-system/verification-and-ci.md): CI verification for UI package
+
+## Guides (Docs/guides)
+
+- [Docs/guides/README.md](Docs/guides/README.md): Guides index
+- [Docs/guides/turbo-bootstrap.md](Docs/guides/turbo-bootstrap.md): Turborepo bootstrap guide
+- [Docs/guides/web-api-integration.md](Docs/guides/web-api-integration.md): Web/API integration guide
+
+## Deployment (Docs/deployment)
+
+- [Docs/deployment/README.md](Docs/deployment/README.md): Deployment docs index
+- [Docs/deployment/dokploy-instance.md](Docs/deployment/dokploy-instance.md): Dokploy instance setup
+- [Docs/deployment/environment-variables.md](Docs/deployment/environment-variables.md): Environment variables reference
+- [Docs/deployment/staging-promotion-checklist.md](Docs/deployment/staging-promotion-checklist.md): Staging promotion checklist
+- [Docs/deployment/runbooks/dev-phase2.md](Docs/deployment/runbooks/dev-phase2.md): Dev phase 2 runbook
+- [Docs/deployment/runbooks/staging-phase2.md](Docs/deployment/runbooks/staging-phase2.md): Staging phase 2 runbook
+
+## Integrations (Docs/integrations)
+
+- [Docs/integrations/README.md](Docs/integrations/README.md): Integrations docs index
+- [Docs/integrations/intuition-docs-index.md](Docs/integrations/intuition-docs-index.md): Intuition integration doc index
+
+## Tasks (Docs/tasks)
+
+- [Docs/tasks/README.md](Docs/tasks/README.md): Per-issue task docs convention
+- [Docs/tasks/_template/README.md](Docs/tasks/_template/README.md): Task doc template
+
+## Optional
+
+- [Docs/backlog.md](Docs/backlog.md): Product backlog
+- [Docs/map-of-content.md](Docs/map-of-content.md): Content map (French, stale)
+- [Docs/moc-parcours-utilisateur.md](Docs/moc-parcours-utilisateur.md): User journey content map (French)
+- [Docs/archive/plan-initialisation-turborepo-mvp-2026-01.md](Docs/archive/plan-initialisation-turborepo-mvp-2026-01.md): Archived initial monorepo plan
+- [Docs/branding/README.md](Docs/branding/README.md): Branding assets index
+- [Docs/branding/assets/README.md](Docs/branding/assets/README.md): Branding image drafts (large binaries)
+- [Docs/tasks/18-adr-auth/README.md](Docs/tasks/18-adr-auth/README.md): Auth ADR task log
+- [Docs/tasks/24-design-system-monorepo/README.md](Docs/tasks/24-design-system-monorepo/README.md): Design system monorepo task log
+- [Docs/tasks/25-app-shell-navigation/README.md](Docs/tasks/25-app-shell-navigation/README.md): App shell navigation task log
+- [Docs/tasks/37-agent-indexer/README.md](Docs/tasks/37-agent-indexer/README.md): Agent indexer task log
+- [Docs/tasks/37-agent-indexer/intuition-graphql-spike.md](Docs/tasks/37-agent-indexer/intuition-graphql-spike.md): Intuition GraphQL spike notes
+- [Docs/tasks/49-openapi/README.md](Docs/tasks/49-openapi/README.md): OpenAPI task log
+- [Docs/tasks/67-intuition-bridge/README.md](Docs/tasks/67-intuition-bridge/README.md): Intuition bridge task log
+- [Docs/tasks/68-agent-handoff/README.md](Docs/tasks/68-agent-handoff/README.md): Agent handoff task log
+- [Docs/tasks/69-agent-ci-dokploy/README.md](Docs/tasks/69-agent-ci-dokploy/README.md): Agent CI on Dokploy task log
+- [Docs/tasks/75-i18n-web/README.md](Docs/tasks/75-i18n-web/README.md): Web i18n task log
+- [Docs/tasks/78-phase2b-responses/README.md](Docs/tasks/78-phase2b-responses/README.md): Phase 2b responses task log
+- [Docs/tasks/82-mentor-notifications/README.md](Docs/tasks/82-mentor-notifications/README.md): Mentor notifications task log
+- [Docs/tasks/83-response-filtering/README.md](Docs/tasks/83-response-filtering/README.md): Response filtering task log
+- [Docs/tasks/api-claude-moderation/README.md](Docs/tasks/api-claude-moderation/README.md): Claude moderation API task log
+- [Docs/tasks/api-parity-delete-reject/README.md](Docs/tasks/api-parity-delete-reject/README.md): Delete/reject parity task log
+- [Docs/tasks/api-rails-parity/README.md](Docs/tasks/api-rails-parity/README.md): Rails API parity task log
+- [Docs/tasks/api-rails-parity-phase1/README.md](Docs/tasks/api-rails-parity-phase1/README.md): Parity phase 1 task log
+- [Docs/tasks/api-rails-parity-phase2/README.md](Docs/tasks/api-rails-parity-phase2/README.md): Parity phase 2 task log
+- [Docs/tasks/api-rails-parity-phase3/README.md](Docs/tasks/api-rails-parity-phase3/README.md): Parity phase 3 task log
+- [Docs/tasks/api-rails-parity-phase4/README.md](Docs/tasks/api-rails-parity-phase4/README.md): Parity phase 4 task log
+- [Docs/tasks/api-rails-parity-phase5/README.md](Docs/tasks/api-rails-parity-phase5/README.md): Parity phase 5 task log
+- [Docs/tasks/api-rails-parity-phase5b/README.md](Docs/tasks/api-rails-parity-phase5b/README.md): Parity phase 5b task log
+- [Docs/tasks/api-rails-parity-phase6/README.md](Docs/tasks/api-rails-parity-phase6/README.md): Parity phase 6 task log
+- [Docs/tasks/api-rails-parity-phase7/README.md](Docs/tasks/api-rails-parity-phase7/README.md): Parity phase 7 task log
+- [Docs/tasks/web-parity-p3/README.md](Docs/tasks/web-parity-p3/README.md): Web parity P3 task log
