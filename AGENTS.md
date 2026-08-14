@@ -1,107 +1,107 @@
-# Instructions agents (All-Aboard)
+# Instructions for agents (All-Aboard)
 
-Ce dépôt utilise des garde-fous **Git + CI** ; ce fichier définit le protocole commun pour tout agent (Cursor, Claude Code, Codex, etc.).
+This repository uses **Git + CI** guardrails; this file defines the common protocol for any agent (Cursor, Claude Code, Codex, etc.).
 
-## Hindsight (mémoire agent)
+## Hindsight (agent memory)
 
-Banque partagée **`hermes`** — tag obligatoire **`project:all-aboard`**.
+Shared bank **`hermes`** — mandatory tag **`project:all-aboard`**.
 
-1. **Nouvelle session** (non trivial) : MCP `recall` avec `tags: ["project:all-aboard"]`, `tags_match: any_strict`, `budget: mid` (prefetch IDE via `.cursor/hooks/`).
-2. **`retain`** au fil de la discussion pour décisions/préférences stables : `project:all-aboard` + `area:<domain>` + `source:cursor-session`.
-3. Détail : `.cursor/rules/hindsight.mdc`, `.cursor/references/hindsight-tagging.md`.
+1. **New session** (non-trivial): MCP `recall` with `tags: ["project:all-aboard"]`, `tags_match: any_strict`, `budget: mid` (prefetch IDE via `.cursor/hooks/`).
+2. **`retain`** as the discussion unfolds for stable decisions/preferences: `project:all-aboard` + `area:<domain>` + `source:cursor-session`.
+3. Details: `.cursor/rules/hindsight.mdc`, `.cursor/references/hindsight-tagging.md`.
 
-**Chronologie, MVP et doc** : [Docs/README.md](Docs/README.md) (EN), [Docs/INDEX.md](Docs/INDEX.md), [Docs/guides/web-api-integration.md](Docs/guides/web-api-integration.md). **Design system / UI** : [Docs/design-system/README.md](Docs/design-system/README.md) (hub canonique). **Tâches** : [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3). **Doc par issue** : `Docs/tasks/<NN>-slug/` ([convention](Docs/tasks/README.md)).
+**Timeline, MVP and docs**: [Docs/README.md](Docs/README.md) (EN), [Docs/INDEX.md](Docs/INDEX.md), [Docs/guides/web-api-integration.md](Docs/guides/web-api-integration.md). **Design system / UI**: [Docs/design-system/README.md](Docs/design-system/README.md) (canonical hub). **Tasks**: [GitHub Project #3](https://github.com/orgs/AllAboard-THP/projects/3). **Per-issue docs**: `Docs/tasks/<NN>-slug/` ([convention](Docs/tasks/README.md)).
 
-## `apps/thp-final` — artéfact THP (référence uniquement)
+## `apps/thp-final` — THP artifact (reference only)
 
-`apps/thp-final` est une **version historique** du projet All-Aboard (Rails 8, projet THP). Elle a servi de **maquette fonctionnelle** : parcours utilisateur, écrans, idées produit.
+`apps/thp-final` is a **historical version** of the All-Aboard project (Rails 8, THP project). It served as a **functional mockup**: user journeys, screens, product ideas.
 
-**Ne pas l’utiliser comme base de développement.** Le MVP actif vit dans `apps/web`, `apps/api` et `packages/`.
+**Do not use it as a development base.** The active MVP lives in `apps/web`, `apps/api` and `packages/`.
 
-| À faire | À ne pas faire |
-|--------|----------------|
-| Consulter pour **inspiration** (UX, parcours, vocabulaire métier) | Copier ou porter du code Rails/React depuis `thp-final` |
-| S’appuyer sur `Docs/` et le contrat API pour les décisions | Proposer des changements dans `apps/thp-final` sans décision humaine explicite |
-| Traiter le dossier comme **support de référence** | L’inclure dans l’analyse architecture MVP (Graphify, ADR, refactors) |
+| Do | Don't |
+|----|-------|
+| Consult it for **inspiration** (UX, journeys, business vocabulary) | Copy or port Rails/React code from `thp-final` |
+| Rely on `Docs/` and the API contract for decisions | Propose changes in `apps/thp-final` without an explicit human decision |
+| Treat the folder as **reference material** | Include it in MVP architecture analysis (Graphify, ADR, refactors) |
 
-Présence dans le monorepo : **subtree Git** conservé à titre d’archive. **Hors** `pnpm verify`, `pnpm dev` et CI MVP (`lint`, `typecheck`, `test`, `build`, `dev` via `--filter=!thp-final`) — lancer manuellement depuis `apps/thp-final` si besoin (Ruby/Bundler).
+Presence in the monorepo: **Git subtree** kept as an archive. **Outside** `pnpm verify`, `pnpm dev` and MVP CI (`lint`, `typecheck`, `test`, `build`, `dev` via `--filter=!thp-final`) — run manually from `apps/thp-final` if needed (Ruby/Bundler).
 
-## Avant de proposer un commit ou une PR
+## Before proposing a commit or PR
 
-1. Exécuter :
+1. Run:
 
    ```bash
    pnpm verify
    ```
 
-   Équivalent à `pnpm verify:commit` puis `pnpm verify:push` (lint, typecheck, tests, build via Turbo, build Storybook).
+   Equivalent to `pnpm verify:commit` then `pnpm verify:push` (lint, typecheck, tests, build via Turbo, Storybook build).
 
-   **Tests DB en local** : si [`.env.local.dev`](.env.local.dev.example) existe à la racine (copie de `.env.local.dev.example`) et Postgres tourne (`docker compose up -d`), `pnpm test` / `pnpm verify` chargent automatiquement l’env et exécutent la suite API avec base. Sinon : tests unitaires seulement (message `test-with-db: DATABASE_URL unset`).
+   **Local DB tests**: if [`.env.local.dev`](.env.local.dev.example) exists at the root (copy of `.env.local.dev.example`) and Postgres is running (`docker compose up -d`), `pnpm test` / `pnpm verify` automatically load the env and run the API suite against the database. Otherwise: unit tests only (message `test-with-db: DATABASE_URL unset`).
 
-   **ESLint web** : `pnpm lint` vérifie que `next` est correctement installé (`scripts/check-node-modules.sh`). En cas de symlink cassé : `pnpm install --frozen-lockfile`.
+   **Web ESLint**: `pnpm lint` checks that `next` is installed correctly (`scripts/check-node-modules.sh`). On broken symlink: `pnpm install --frozen-lockfile`.
 
-2. Si une étape échoue : corriger, relancer `pnpm verify`, puis seulement proposer le commit.
+2. If a step fails: fix, re-run `pnpm verify`, then propose the commit.
 
-3. Résumer pour l’humain : commandes exécutées, succès/échec, message d’erreur pertinent.
+3. Summarize for the human: commands run, success/failure, relevant error message.
 
-## Règles Git
+## Git rules
 
-- Ne pas utiliser `git commit --no-verify` ni `git push --no-verify` sans accord humain explicite.
-- Les hooks versionnés sous `githooks/` (après `pnpm setup:hooks`) appliquent :
-  - **pre-commit** : `pnpm verify:commit`
-  - **pre-push** : `pnpm verify:push`
+- Do not use `git commit --no-verify` or `git push --no-verify` without explicit human agreement.
+- Hooks versioned under `githooks/` (after `pnpm setup:hooks`) enforce:
+  - **pre-commit**: `pnpm verify:commit`
+  - **pre-push**: `pnpm verify:push`
 
 ## CI
 
-Les PR et pushes sur la branche principale déclenchent le workflow GitHub Actions qui rejoue les vérifications dans un environnement propre.
+PRs and pushes on the main branch trigger the GitHub Actions workflow that re-runs the checks in a clean environment.
 
-- Job **`verify`** : lint, typecheck, migrations API, tests, build (hors `apps/thp-final`).
-- Job **`storybook`** (conditionnel) : `pnpm build:storybook` uniquement si le diff touche `packages/ui/**`, `apps/storybook/**`, lockfile, `turbo.json`, `package.json` ou `.github/workflows/ci.yml` (`dorny/paths-filter`).
+- Job **`verify`**: lint, typecheck, API migrations, tests, build (excluding `apps/thp-final`).
+- Job **`storybook`** (conditional): `pnpm build:storybook` only if the diff touches `packages/ui/**`, `apps/storybook/**`, lockfile, `turbo.json`, `package.json` or `.github/workflows/ci.yml` (`dorny/paths-filter`).
 
 ## Design system (Epic #24, #25)
 
-**Doc complète** : [Docs/design-system/README.md](Docs/design-system/README.md) (architecture, guide contributeur, CI, AppShell, journal).
+**Full docs**: [Docs/design-system/README.md](Docs/design-system/README.md) (architecture, contributor guide, CI, AppShell, journal).
 
-Séparation **totale** : primitives et tokens dans le package UI, documentation dans Storybook, métier dans `apps/web`.
+**Total** separation: primitives and tokens in the UI package, documentation in Storybook, business logic in `apps/web`.
 
-| Package / app | Rôle | Interdit |
-|---------------|------|----------|
-| `packages/ui` (`@allaboard/ui`) | Tokens TW v4, primitives shadcn, stories, tests `cn` / `Button` | Importer `apps/*` ou `@allaboard/types` |
-| `apps/storybook` | Storybook 10 — scan `packages/ui/**/*.stories` | Importer `apps/web` ou `apps/api` ; pas dans Docker `web` |
-| `apps/web` | Pages, BFF, `components/features/`, `components/blocks/` | `components/ui/` ; importer `apps/storybook` |
+| Package / app | Role | Forbidden |
+|---------------|------|-----------|
+| `packages/ui` (`@allaboard/ui`) | TW v4 tokens, shadcn primitives, stories, `cn` / `Button` tests | Importing `apps/*` or `@allaboard/types` |
+| `apps/storybook` | Storybook 10 — scans `packages/ui/**/*.stories` | Importing `apps/web` or `apps/api`; not in Docker `web` |
+| `apps/web` | Pages, BFF, `components/features/`, `components/blocks/` | `components/ui/`; importing `apps/storybook` |
 
-**Ajouter un composant shadcn** (depuis la racine ou `apps/web`) :
+**Add a shadcn component** (from the root or `apps/web`):
 
 ```bash
 cd apps/web
 pnpm dlx shadcn@latest add <component>
 ```
 
-La CLI écrit dans `packages/ui/src/components/` (voir `apps/web/components.json` et `packages/ui/components.json`).
+The CLI writes into `packages/ui/src/components/` (see `apps/web/components.json` and `packages/ui/components.json`).
 
-**Consommer dans web** :
+**Consume in web**:
 
 ```tsx
 import { Button } from "@allaboard/ui/components/button";
-import "@allaboard/ui/globals.css"; // via app/globals.css + @source (voir layout)
+import "@allaboard/ui/globals.css"; // via app/globals.css + @source (see layout)
 ```
 
-**Vérifications utiles** : `pnpm storybook` · `pnpm build:storybook` · `pnpm --filter @allaboard/ui test` · [verification-and-ci.md](Docs/design-system/verification-and-ci.md) · ADR [0002](Docs/adr/0002-design-system-monorepo.md).
+**Useful checks**: `pnpm storybook` · `pnpm build:storybook` · `pnpm --filter @allaboard/ui test` · [verification-and-ci.md](Docs/design-system/verification-and-ci.md) · ADR [0002](Docs/adr/0002-design-system-monorepo.md).
 
-**Chrome header/footer (absolu MVP)** : [.cursor/rules/app-chrome-shell.mdc](.cursor/rules/app-chrome-shell.mdc) · [app-shell.md](Docs/design-system/app-shell.md) · composants `AppChromeHeader` / `AppChromeFooter` dans `packages/ui/src/patterns/app-chrome-shell.tsx`. Pages `(app)/` → shell automatique via layout ; ne pas dupliquer le chrome dans les pages.
+**Chrome header/footer (absolute MVP)**: [.cursor/rules/app-chrome-shell.mdc](.cursor/rules/app-chrome-shell.mdc) · [app-shell.md](Docs/design-system/app-shell.md) · `AppChromeHeader` / `AppChromeFooter` components in `packages/ui/src/patterns/app-chrome-shell.tsx`. `(app)/` pages → automatic shell via layout; do not duplicate the chrome in pages.
 
-## Graphify (carte codebase MVP)
+## Graphify (MVP codebase map)
 
-Graphe de connaissance à la racine : `graphify-out/` (`GRAPH_REPORT.md`, `graph.json`, `graph.html`).
+Knowledge graph at the root: `graphify-out/` (`GRAPH_REPORT.md`, `graph.json`, `graph.html`).
 
-- **Corpus** : `apps/web`, `apps/api`, `packages`, `Docs` — **pas** `apps/thp-final` (Rails historique, hors MVP).
-- **Avant** une question d’architecture : lire `graphify-out/GRAPH_REPORT.md`.
-- **Après** des changements code/doc dans le corpus MVP :
+- **Corpus**: `apps/web`, `apps/api`, `packages`, `Docs` — **not** `apps/thp-final` (historical Rails, outside MVP).
+- **Before** an architecture question: read `graphify-out/GRAPH_REPORT.md`.
+- **After** code/doc changes in the MVP corpus:
 
   ```bash
   ./scripts/graphify-update.sh
   ```
 
-  Prérequis CLI : `uv tool install graphifyy` (PyPI `graphifyy`, binaire `graphify` sur `PATH`, typ. `~/.local/bin`).
+  CLI prerequisite: `uv tool install graphifyy` (PyPI `graphifyy`, binary `graphify` on `PATH`, typically `~/.local/bin`).
 
-  AST uniquement (0 token LLM). Extraction sémantique des docs : `/graphify` avec une clé API (`graphify extract …`).
+  AST only (0 LLM tokens). Semantic doc extraction: `/graphify` with an API key (`graphify extract …`).

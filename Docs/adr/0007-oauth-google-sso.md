@@ -1,4 +1,4 @@
-# ADR 0006 — Google sign-in (OAuth 2.0)
+# ADR 0007 — Google sign-in (OAuth 2.0)
 
 ## Status
 

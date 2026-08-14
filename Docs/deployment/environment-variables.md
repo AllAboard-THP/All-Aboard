@@ -67,7 +67,7 @@ These variables concern **Phase 2** (API auth); see [ADR 0001](../adr/0001-authe
 | Variable | Web | API | Agent | Indexer | Required |
 |---|:---:|:---:|:---:|:---:|:---:|
 | `JWT_SECRET` |  | x | x |  | Yes (API with JWT auth — min. 32 characters) |
-| `GOOGLE_CLIENT_ID` |  | x |  |  | Yes when Google OAuth active ([ADR 0006](../adr/0006-oauth-google-sso.md)) |
+| `GOOGLE_CLIENT_ID` |  | x |  |  | Yes when Google OAuth active ([ADR 0007](../adr/0007-oauth-google-sso.md)) |
 | `GOOGLE_CLIENT_SECRET` |  | x |  |  | Yes when OAuth active |
 | `OAUTH_GOOGLE_CALLBACK_URL` |  | x |  |  | Yes when OAuth — BFF URI `/api/auth/google/callback` |
 | `WEB_APP_URL` |  | x |  |  | Yes when OAuth — web origin (post-login redirect) |

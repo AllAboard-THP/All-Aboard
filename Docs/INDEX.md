@@ -36,7 +36,7 @@ One **canonical source** per topic. Task backlog and priorities: [GitHub Project
 | Dev → staging promotion | [deployment/staging-promotion-checklist.md](deployment/staging-promotion-checklist.md) | [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31) |
 | JWT / BFF / MVP login | [adr/0001-authentication-strategy.md](adr/0001-authentication-strategy.md) | README, env matrix |
 | Production users (argon2 hash) | [adr/0003-authentication-users-production.md](adr/0003-authentication-users-production.md) | Staging checklist |
-| Google OAuth SSO | [adr/0006-oauth-google-sso.md](adr/0006-oauth-google-sso.md) | `GOOGLE_*` in env matrix |
+| Google OAuth SSO | [adr/0007-oauth-google-sso.md](adr/0007-oauth-google-sso.md) | `GOOGLE_*` in env matrix |
 | Design system (`@allaboard/ui`, Storybook) | [design-system/README.md](design-system/README.md) | [ADR 0002](adr/0002-design-system-monorepo.md) |
 | AppShell / web navigation | [design-system/app-shell.md](design-system/app-shell.md) | [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25) |
 | Branding / hero assets | [branding/README.md](branding/README.md) | `.cursor/rules/branding-hero-4k.mdc` |
