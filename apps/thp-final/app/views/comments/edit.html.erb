@@ -1,0 +1,60 @@
+<%= turbo_frame_tag dom_id(@comment) do %>
+  <div class="flex gap-3">
+    <img src="<%= @comment.user.profile_avatar %>" alt="<%= @comment.user.display_name %>" class="w-9 h-9 rounded-full flex-shrink-0">
+    <div class="flex-1">
+      <%= form_with model: @comment, url: comment_path(@comment), method: :patch, class: "space-y-2" do |form| %>
+        <%= form.text_area :body, rows: 3,
+            class: "w-full bg-black/30 border border-primary/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none" %>
+
+        <details class="group">
+          <summary class="text-xs text-gray-500 hover:text-gray-300 cursor-pointer select-none flex items-center gap-1.5 py-1 w-fit">
+            <i class="fas fa-code text-[10px]"></i>
+            Bloc de code
+            <i class="fas fa-chevron-down text-[10px] group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="mt-2 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gray-500">Langage</span>
+              <%= form.select :code_language,
+                  [
+                    ["— Langage —",  "plaintext"],
+                    ["Python",       "python"],
+                    ["JavaScript",   "javascript"],
+                    ["TypeScript",   "typescript"],
+                    ["HTML",         "html"],
+                    ["CSS",          "css"],
+                    ["Ruby",         "ruby"],
+                    ["Java",         "java"],
+                    ["C",            "c"],
+                    ["C++",          "cpp"],
+                    ["C#",           "csharp"],
+                    ["PHP",          "php"],
+                    ["Go",           "go"],
+                    ["Rust",         "rust"],
+                    ["SQL",          "sql"],
+                    ["Bash / Shell", "bash"],
+                    ["R",            "r"],
+                    ["MATLAB",       "matlab"],
+                    ["LaTeX",        "latex"],
+                    ["JSON",         "json"],
+                    ["Texte brut",   "plaintext"],
+                  ],
+                  {},
+                  class: "bg-black/40 border border-white/10 rounded-lg px-3 py-1 text-xs text-gray-300 focus:outline-none focus:border-primary" %>
+            </div>
+            <%= form.text_area :code_snippet, rows: 4,
+                placeholder: "Colle ton code ici...",
+                class: "w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:border-primary resize-y" %>
+          </div>
+        </details>
+
+        <div class="flex justify-end gap-2">
+          <%= link_to "Annuler", comment_path(@comment),
+              class: "px-4 py-1.5 rounded-lg text-sm text-gray-400 hover:text-white border border-white/10 hover:bg-white/5 transition-colors" %>
+          <%= form.submit "Enregistrer",
+              class: "px-4 py-1.5 rounded-lg bg-primary hover:bg-primary/80 text-sm font-medium transition-colors cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

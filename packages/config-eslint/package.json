@@ -6,16 +6,18 @@
   "exports": {
     "./base": "./base.mjs",
     "./node": "./node.mjs",
-    "./next": "./next.mjs"
+    "./next": "./next.mjs",
+    "./design-system-boundaries": "./design-system-boundaries.mjs"
   },
   "dependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.17.0",
-    "eslint-config-next": "^15.1.3",
+    "eslint-config-next": "^15.5.15",
     "typescript-eslint": "^8.18.2"
   },
   "peerDependencies": {
     "eslint": "^9.0.0",
+    "next": "^15.5.0",
     "typescript": ">=5.0.0"
   }
 }

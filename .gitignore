@@ -3,6 +3,11 @@
 Thumbs.db
 .idea/
 .vscode/
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
+!.cursor/skills/
+!.cursor/skills/**
 
 # Logs
 *.log
@@ -15,9 +20,17 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
+!.env.local.dev.example
 
 # Dependencies
 node_modules/
+
+# Python (local virtualenvs — never commit)
+.venv/
+.venv-*/
+__pycache__/
+*.py[cod]
+.tmp-img-edit/
 
 # Build outputs
 dist/
@@ -35,6 +48,10 @@ coverage/
 .next/
 out/
 
+# Storybook static build
+storybook-static/
+apps/storybook/storybook-static/
+
 # Expo / React Native
 .expo/
 .expo-shared/
@@ -44,11 +61,25 @@ ios/
 # Docker
 .docker/
 
+# User-uploaded avatars (local API storage)
+apps/api/data/uploads/
+
 # Test artifacts
 playwright-report/
 test-results/
 
-# Temporary files
-tmp/
-temp/
+# Temporary files (root only — apps/thp-final/tmp is tracked via .keep)
+/tmp/
+/temp/
 *.tmp
+
+# Rails THP (apps/thp-final) — Bundler install path / local SQLite buckets
+apps/thp-final/vendor/bundle/
+
+# Graphify — canonical output at repo root; per-path dirs are ephemeral during update
+apps/*/graphify-out/
+packages/graphify-out/
+Docs/graphify-out/
+graphify-out/cache/
+graphify-out/.graphify_*
+graphify-out/.graphify_python

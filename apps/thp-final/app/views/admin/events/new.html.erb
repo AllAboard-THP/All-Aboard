@@ -1,0 +1,89 @@
+<% content_for :title, "Admin - Nouvel événement" %>
+
+<div class="max-w-2xl mx-auto py-8 px-4">
+  <%= link_to admin_event_candidates_path, class: "text-primary hover:underline text-sm inline-flex items-center gap-2 mb-6" do %>
+    <i class="fas fa-arrow-left"></i> Retour aux événements
+  <% end %>
+
+  <div class="glass rounded-2xl p-8">
+    <h1 class="text-2xl font-bold mb-6">
+      <i class="fas fa-calendar-plus text-accent mr-2"></i>Créer un événement
+    </h1>
+
+    <%= form_with model: [:admin, @event], class: "space-y-5" do |f| %>
+      <% if @event.errors.any? %>
+        <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+          <ul class="text-sm text-red-400 space-y-1">
+            <% @event.errors.full_messages.each do |msg| %>
+              <li><i class="fas fa-exclamation-circle mr-2"></i><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.label :title, "Titre", class: "block text-sm font-medium text-gray-300 mb-2" %>
+        <%= f.text_field :title, class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors", placeholder: "Ex: Hackathon 48h Paris" %>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= f.label :event_type, "Type", class: "block text-sm font-medium text-gray-300 mb-2" %>
+          <%= f.select :event_type,
+              Event::EVENT_TYPES.map { |k, v| [v, k] },
+              { include_blank: "— Choisir —" },
+              class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors" %>
+        </div>
+        <div>
+          <%= f.label :subject_id, "Catégorie", class: "block text-sm font-medium text-gray-300 mb-2" %>
+          <%= f.select :subject_id,
+              options_from_collection_for_select(@subjects, :id, :name),
+              { include_blank: "— Général —" },
+              class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors" %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= f.label :starts_at, "Date de début", class: "block text-sm font-medium text-gray-300 mb-2" %>
+          <%= f.datetime_local_field :starts_at, class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors" %>
+        </div>
+        <div>
+          <%= f.label :ends_at, "Date de fin", class: "block text-sm font-medium text-gray-300 mb-2" %>
+          <%= f.datetime_local_field :ends_at, class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors" %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= f.label :location, "Lieu", class: "block text-sm font-medium text-gray-300 mb-2" %>
+          <%= f.text_field :location, class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-accent transition-colors", placeholder: "Paris 11e" %>
+        </div>
+        <div>
+          <%= f.label :organizer, "Organisateur", class: "block text-sm font-medium text-gray-300 mb-2" %>
+          <%= f.text_field :organizer, class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-accent transition-colors", placeholder: "École 42, THP…" %>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <%= f.check_box :online, class: "w-4 h-4 accent-accent" %>
+        <%= f.label :online, "Événement en ligne", class: "text-sm text-gray-300" %>
+      </div>
+
+      <div>
+        <%= f.label :external_url, "Lien d'inscription", class: "block text-sm font-medium text-gray-300 mb-2" %>
+        <%= f.url_field :external_url, class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-accent transition-colors", placeholder: "https://..." %>
+      </div>
+
+      <div>
+        <%= f.label :description, "Description", class: "block text-sm font-medium text-gray-300 mb-2" %>
+        <%= f.text_area :description, rows: 5, class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-accent transition-colors resize-y", placeholder: "Décrivez l'événement…" %>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <%= f.submit "Publier l'événement", class: "px-6 py-3 bg-accent hover:bg-accent/80 text-white rounded-xl font-semibold transition-colors cursor-pointer" %>
+        <%= link_to "Annuler", admin_event_candidates_path, class: "px-6 py-3 bg-white/5 hover:bg-white/10 text-gray-300 rounded-xl font-medium transition-colors" %>
+      </div>
+    <% end %>
+  </div>
+</div>

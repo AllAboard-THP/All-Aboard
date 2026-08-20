@@ -1,0 +1,18 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  email: one@example.com
+  full_name: User One
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123") %>
+  education_level: L1
+  headline: Test user one
+  avatar_url: https://example.com/one.png
+
+two:
+  email: two@example.com
+  full_name: User Two
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123") %>
+  education_level: L2
+  headline: Test user two
+  avatar_url: https://example.com/two.png
+# column: value
