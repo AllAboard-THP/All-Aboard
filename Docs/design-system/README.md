@@ -4,7 +4,7 @@
 **Architecture decision:** [ADR 0002](../adr/0002-design-system-monorepo.md)  
 **Agents:** [AGENTS.md](../../AGENTS.md) (Design system + verify sections)
 
-This folder is the **source of truth** for contributing to the All-Aboard design system. The detailed working spec (PR 24a–#25 history) lives in Hermes: `WorkSpace/Todo/allaboard-design-system-storybook-monorepo.md` — **do not duplicate** here; this hub summarizes **shipped** state and operational procedures.
+This folder is the **source of truth** for contributing to the All-Aboard design system. The detailed working spec (PR 24a–#25 history) lives in Hermes: `WorkSpace/archives/2026/todo-legacy/allaboard-design-system-storybook-monorepo.md` — **do not duplicate** here; this hub summarizes **shipped** state and operational procedures.
 
 ---
 
