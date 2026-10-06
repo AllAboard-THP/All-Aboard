@@ -3265,8 +3265,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/migration-pretorya/README.md": {
-    "mtime": 1791285389.170831,
-    "ast_hash": "8f119d206eb2416a27a26ee6cb769c21",
+    "mtime": 1791285894.8392498,
+    "ast_hash": "7c160469f62e022bdee424d89da63138",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/migration-pretorya/phase0-cloudflare-inventory.md": {
@@ -3295,8 +3295,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/migration-pretorya/phase2-artifacts.md": {
-    "mtime": 1791285389.4864092,
-    "ast_hash": "6e6ba6b2608acc9ee0bcd5bd96157eec",
+    "mtime": 1791286166.729022,
+    "ast_hash": "ca06e8c31d86fe10883dc81dee2613a9",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/migration-pretorya/phase2-runbook.md": {
@@ -3315,8 +3315,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/migration-pretorya/MIGRATION-PLAN.md": {
-    "mtime": 1791285386.9148734,
-    "ast_hash": "960f9d20aa958dae091cd97bd04fff77",
+    "mtime": 1791285896.6305687,
+    "ast_hash": "6d200c67e8a30e548cabe24d9a9e4286",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/deployment/migration-pretorya/phase2c-runbook.md": {
+    "mtime": 1791285891.8409235,
+    "ast_hash": "14bedd12e5a164074ce3d61464776120",
     "semantic_hash": ""
   }
 }

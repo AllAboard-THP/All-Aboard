@@ -29,7 +29,7 @@ flowchart LR
 |-----------|--------|----------------|
 | 2a | MVP **dev** (Postgres, API, Web, Storybook) | Empty + migrations + seed |
 | 2b | MVP **staging** + **production** | Empty + migrations + seed (staging); prod per ADR 0003 |
-| 2c | Rails **website** + Infra **cloudflared** | Empty Rails DB when created; new tunnel token |
+| 2c | Rails **website** ([phase2c-runbook.md](./phase2c-runbook.md)); Infra **cloudflared** is Phase 3 | Empty Rails DB when created; new tunnel token |
 
 **Not in scope for 2a/2b:** Agent, Indexer.
 

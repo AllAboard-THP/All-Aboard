@@ -32,3 +32,18 @@
 **Report:** `.allaboard-migration/phase2/staging-prod-recreate-report.json`
 
 **Not recreated (per plan):** Agent, Indexer, Storybook (dev only).
+
+## 2c — Rails website
+
+| Step | Status | Notes |
+|------|--------|--------|
+| Project `website` on Pretorya | Done (2026-10-06) | `projectId`: `tN1eeSE_mwji6DJL7dyxj` |
+| Environment `production` | Done | `environmentId`: `bbZMxW0sjsoFUxywwHz9f` |
+| Postgres 18 `Allaboard-rails` | Done | Empty DB — migrations via `db:prepare`; no Mestryx dump ([DECISIONS.md](./DECISIONS.md)). Internal app name in `.allaboard-migration/phase2/rails-recreate-report.json` |
+| App `rails-fullstack` | Done | GitHub `Projet-Final---All-aboard` branch `deploy`, root `Dockerfile`; Puma on port 3000 |
+| Traefik domain | Done | `rails.allaboard.fr` (`https: false` until tunnel cutover) |
+| `cloudflared` | Not in this step | Phase 3 — new tunnel token |
+
+**Automation:** `node scripts/migration/pretorya-phase2-recreate-rails.mjs` — see [phase2c-runbook.md](./phase2c-runbook.md).
+
+**Report:** `.allaboard-migration/phase2/rails-recreate-report.json`
