@@ -9,4 +9,5 @@ Dokploy / Coolify deployment reference for All-Aboard services.
 | [staging-promotion-checklist.md](staging-promotion-checklist.md) | Dev → staging promotion checklist ([#31](https://github.com/AllAboard-THP/All-Aboard/issues/31)) |
 | [runbooks/dev-phase2.md](runbooks/dev-phase2.md) | Manual Dokploy **dev** checklist (Postgres, secrets, smoke) |
 | [runbooks/staging-phase2.md](runbooks/staging-phase2.md) | Manual Dokploy **staging** checklist (HTTPS smoke, ADR 0003) |
+| [migration-pretorya/README.md](migration-pretorya/README.md) | Mestryx → Pretorya migration — start with [DECISIONS.md](migration-pretorya/DECISIONS.md) (empty Postgres on Pretorya) |
 | [../guides/web-api-integration.md](../guides/web-api-integration.md) | Smoke commands and API contract journal |
