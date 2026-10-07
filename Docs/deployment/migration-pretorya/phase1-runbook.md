@@ -93,7 +93,7 @@ Expect **two** Dokploy apps briefly (Mestryx + Pretorya); after offboarding, onl
 - [ ] Deploy server **Healthy** in Dokploy (Traefik listening — ports 80/443 or tunnel-ready)
 - [ ] GitHub App installed on Pretorya org with both repos
 - [ ] `pretorya-phase1-verify.mjs` passes
-- [ ] MCP / local env uses **Pretorya** API URL (not `dokploy.mestryx.dev`)
+- [x] MCP / local env uses **Pretorya** API URL (`https://app.dokploy.com/api`, verified 2026-10-07 — [phase6-runbook.md](./phase6-runbook.md))
 
 Next: [Phase 2 — recreate projects](./README.md) (same plan; not yet documented in repo).
 

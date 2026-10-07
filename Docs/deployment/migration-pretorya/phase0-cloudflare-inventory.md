@@ -6,6 +6,8 @@ Secrets (tunnel install token, API token) live only under `.allaboard-migration/
 
 ## Tunnel (Mestryx Dokploy compose export)
 
+Historical snapshot from 2026-10-05. Tunnel `dockploy Mestryx` was deleted on 2026-10-07. Live tunnel is `allaboard-pretorya` — see [dokploy-instance.md](../dokploy-instance.md).
+
 | Field | Value |
 |-------|--------|
 | Account ID | `ff2e13bece310944bfbccdc0546cf1da` |

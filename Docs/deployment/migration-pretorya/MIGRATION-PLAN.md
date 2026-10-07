@@ -47,9 +47,11 @@ flowchart LR
 
 - Checklist per env after DNS points to Pretorya (builds, auth, critical journeys).
 
-## Phase 6 — Mestryx offboarding
+## Phase 6 — docs, Pretorya MCP, Mestryx hold
 
-- Disable old tunnel/apps, rotate secrets, clean duplicate GitHub Dokploy apps.
+- **2026-10-07:** [dokploy-instance.md](../dokploy-instance.md) describes org Pretorya. MCP `user-dokploy-mcp` is `https://app.dokploy.com/api` (verified). Public hostnames are on tunnel `allaboard-pretorya`.
+- **2026-10-07:** tunnel `dockploy Mestryx` deleted (`2026-10-07T13:44:59Z`). Public DNS stays on `allaboard-pretorya`. Old Dokploy projects on the Mestryx host were not stopped (no API key, no SSH). Runbook: [phase6-runbook.md](./phase6-runbook.md).
+- **2026-10-07 offboarding:** Mestryx GitHub App `dokploy-2026-05-04-1cfoiq` uninstalled. Pretorya deploy app is `dokploy-2026-10-06-jvxt9b`. App secrets rotated on Pretorya (values stay in the gitignored password file, not in Git). `M3stryX` and `MestryxBot` were removed from the org. Log: [phase6-artifacts.md](./phase6-artifacts.md).
 
 ## Agent checklist (read first)
 

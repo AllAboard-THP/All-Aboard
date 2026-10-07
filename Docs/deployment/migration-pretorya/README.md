@@ -12,7 +12,8 @@ Documentation for moving All-Aboard from the Mestryx Dokploy organization to **P
 | Phase 2a — MVP dev recreate | [phase2-runbook.md](./phase2-runbook.md), [phase2-artifacts.md](./phase2-artifacts.md) |
 | Phase 2b — MVP staging + production | [phase2b-runbook.md](./phase2b-runbook.md), [phase2-artifacts.md](./phase2-artifacts.md) |
 | Phase 2c — Rails website | [phase2c-runbook.md](./phase2c-runbook.md), [phase2-artifacts.md](./phase2-artifacts.md) |
-| Instance reference (pre-migration) | [../dokploy-instance.md](../dokploy-instance.md) |
+| Phase 6 — Pretorya doc/MCP; Mestryx hold | [phase6-runbook.md](./phase6-runbook.md), [phase6-artifacts.md](./phase6-artifacts.md) |
+| Instance reference (Pretorya, 2026-10-07) | [../dokploy-instance.md](../dokploy-instance.md) |
 
 Scripts: `scripts/migration/pretorya-phase0-*.mjs`, `pretorya-phase0-pg-dump.sh`, `pretorya-phase1-verify.mjs`, `pretorya-phase1-provision.mjs`, `pretorya-phase2-recreate-dev.mjs`, `pretorya-phase2-recreate-staging-prod.mjs`, `pretorya-phase2-recreate-rails.mjs`, `pretorya-phase2-browser-runner.js`.
 
