@@ -1,0 +1,79 @@
+<% content_for :title, "Admin - Utilisateurs" %>
+
+<div class="max-w-7xl mx-auto py-8 px-4">
+  <div class="mb-8">
+    <div>
+      <h1 class="text-3xl font-bold mb-2">Utilisateurs</h1>
+      <p class="text-gray-400">Total: <%= @users.count %> utilisateurs</p>
+    </div>
+    <%= link_to new_admin_admin_path, class: "px-4 py-2 bg-primary hover:bg-primary/80 text-white rounded-lg font-medium transition-colors" do %>
+      <i class="fas fa-crown mr-2"></i>Créer un administrateur
+    <% end %>
+  </div>
+
+  <%= link_to admin_dashboard_path, class: "text-primary hover:underline text-sm inline-block mb-4" do %>
+    <i class="fas fa-arrow-left mr-2"></i>Retour au tableau de bord
+  <% end %>
+
+  <div class="glass rounded-2xl overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-white/10">
+        <tr>
+          <th class="px-6 py-4 text-left font-semibold">Nom</th>
+          <th class="px-6 py-4 text-left font-semibold">Email</th>
+          <th class="px-6 py-4 text-left font-semibold">Posts</th>
+          <th class="px-6 py-4 text-left font-semibold">Commentaires</th>
+          <th class="px-6 py-4 text-left font-semibold">Rôle</th>
+          <th class="px-6 py-4 text-left font-semibold">Créé le</th>
+          <th class="px-6 py-4 text-left font-semibold">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr class="border-t border-white/10 hover:bg-white/5 transition-colors">
+            <td class="px-6 py-4">
+              <img src="<%= user.profile_avatar %>" alt="<%= user.display_name %>" class="w-6 h-6 rounded-full inline-block mr-2">
+              <%= user.display_name %>
+            </td>
+            <td class="px-6 py-4 text-gray-400"><%= user.email %></td>
+            <td class="px-6 py-4"><%= user.posts.count %></td>
+            <td class="px-6 py-4"><%= user.comments.count %></td>
+            <td class="px-6 py-4">
+              <span class="<%= user.admin? ? 'text-yellow-400' : 'text-gray-400' %>">
+                <i class="<%= user.admin? ? 'fas fa-crown' : 'fas fa-user' %>"></i>
+                <%= user.role.titleize %>
+              </span>
+              <% if user.mentor? %>
+                <span class="ml-2 text-emerald-400 text-xs font-semibold">
+                  <i class="fas fa-chalkboard-teacher"></i> Mentor
+                </span>
+              <% end %>
+            </td>
+            <td class="px-6 py-4 text-gray-400"><%= time_ago_in_words(user.created_at) %></td>
+            <td class="px-6 py-4 flex flex-col gap-1">
+              <% if user.admin? %>
+                <%= button_to promote_user_admin_user_path(user, admin: false), method: :post, class: "text-xs text-orange-400 hover:text-orange-300 transition-colors", form_class: "inline-block", data: { turbo_confirm: "Rétrograder cet utilisateur ?" } do %>
+                  <i class="fas fa-shield-alt mr-1"></i>Rétrograder admin
+                <% end %>
+              <% else %>
+                <%= button_to promote_user_admin_user_path(user, admin: true), method: :post, class: "text-xs text-yellow-400 hover:text-yellow-300 transition-colors", form_class: "inline-block", data: { turbo_confirm: "Promouvoir cet utilisateur en administrateur ?" } do %>
+                  <i class="fas fa-crown mr-1"></i>Promouvoir admin
+                <% end %>
+              <% end %>
+              <% if user.mentor? %>
+                <%= button_to promote_mentor_admin_user_path(user), method: :post, class: "text-xs text-red-400 hover:text-red-300 transition-colors", form_class: "inline-block", data: { turbo_confirm: "Retirer le statut mentor ?" } do %>
+                  <i class="fas fa-chalkboard-teacher mr-1"></i>Retirer mentor
+                <% end %>
+              <% else %>
+                <%= button_to promote_mentor_admin_user_path(user), method: :post, class: "text-xs text-emerald-400 hover:text-emerald-300 transition-colors", form_class: "inline-block", data: { turbo_confirm: "Nommer cet utilisateur mentor ?" } do %>
+                  <i class="fas fa-chalkboard-teacher mr-1"></i>Nommer mentor
+                <% end %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+

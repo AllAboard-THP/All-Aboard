@@ -1,0 +1,85 @@
+<% content_for :title, @user.display_name %>
+
+<div class="py-10">
+  <div class="max-w-5xl mx-auto space-y-6">
+    <div class="glass rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-4">
+        <img src="<%= @user.profile_avatar %>" alt="<%= @user.display_name %>" class="w-20 h-20 rounded-full" />
+        <div>
+          <h1 class="text-3xl font-bold"><%= @user.display_name %></h1>
+          <% if @user.headline.present? %>
+            <p class="text-sm text-gray-300 mb-1"><%= @user.headline %></p>
+          <% end %>
+          <% if @user.education_level.present? %>
+            <p class="text-xs text-gray-400">Niveau : <%= @user.education_level %></p>
+          <% end %>
+        </div>
+      </div>
+
+      <% if current_user != @user %>
+        <%= button_to conversations_path(recipient_id: @user.id), method: :post, class: "px-5 py-2 rounded-xl bg-primary hover:bg-primary/80 text-white font-medium transition-colors" do %>
+          <i class="fas fa-envelope mr-2"></i> Envoyer un message
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if @user.bio.present? %>
+      <div class="glass rounded-2xl p-6">
+        <h2 class="text-xl font-semibold mb-3">À propos</h2>
+        <p class="text-gray-300 leading-relaxed"><%= @user.bio %></p>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="glass rounded-2xl p-4 text-center">
+        <p class="text-3xl font-bold text-primary"><%= @user.posts.count %></p>
+        <p class="text-xs text-gray-400 mt-1">Requêtes publiées</p>
+      </div>
+      <div class="glass rounded-2xl p-4 text-center">
+        <p class="text-3xl font-bold text-primary"><%= @user.comments.count %></p>
+        <p class="text-xs text-gray-400 mt-1">Réponses données</p>
+      </div>
+      <div class="glass rounded-2xl p-4 text-center">
+        <p class="text-3xl font-bold text-accent"><%= format("%.1f", @user.rating) %></p>
+        <p class="text-xs text-gray-400 mt-1">Note moyenne</p>
+      </div>
+    </div>
+
+    <div class="glass rounded-2xl p-6">
+      <div class="flex gap-2 mb-6">
+        <%= link_to "Requêtes", user_path(@user, tab: "posts"), class: "px-4 py-2 rounded-xl text-sm font-semibold #{'bg-primary text-white' if @active_tab == 'posts'} #{'text-gray-400 bg-white/5' unless @active_tab == 'posts'}" %>
+        <%= link_to "Réponses", user_path(@user, tab: "comments"), class: "px-4 py-2 rounded-xl text-sm font-semibold #{'bg-primary text-white' if @active_tab == 'comments'} #{'text-gray-400 bg-white/5' unless @active_tab == 'comments'}" %>
+      </div>
+
+      <% if @active_tab == "comments" %>
+        <% if @comments.any? %>
+          <div class="space-y-4">
+            <% @comments.each do |comment| %>
+              <div class="border border-white/10 rounded-xl p-4">
+                <p class="text-sm text-gray-300 mb-2"><strong>Sur :</strong> <%= comment.post.title %></p>
+                <p class="text-gray-300"><%= truncate(comment.body, length: 250) %></p>
+                <p class="text-xs text-gray-500 mt-2">publiée <%= relative_time(comment.created_at) %></p>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center text-gray-400 py-10">
+            <i class="fas fa-info-circle text-3xl text-primary mb-3"></i>
+            <p>Ce membre n'a encore pas répondu à des requêtes.</p>
+          </div>
+        <% end %>
+      <% else %>
+        <% if @posts.any? %>
+          <div class="space-y-6">
+            <%= render @posts %>
+          </div>
+        <% else %>
+          <div class="text-center text-gray-400 py-10">
+            <i class="fas fa-info-circle text-3xl text-primary mb-3"></i>
+            <p>Ce membre n'a pas encore publié de requêtes.</p>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

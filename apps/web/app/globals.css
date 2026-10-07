@@ -1,0 +1,6 @@
+@import "@allaboard/ui/globals.css";
+
+/* Scan classes Tailwind — UI package + app web (chemins depuis app/) */
+@source "../../packages/ui/src/**/*.{ts,tsx}";
+@source "./**/*.{ts,tsx}";
+@source "../components/**/*.{ts,tsx}";

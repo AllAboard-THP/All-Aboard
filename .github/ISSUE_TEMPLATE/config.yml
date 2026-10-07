@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation canonique (timeline MVP)
+    url: https://github.com/AllAboard-THP/All-Aboard/blob/Dev/Docs/README.md
+    about: Phases, état du dépôt, principes web/API
+  - name: GitHub Project — All-Aboard MVP
+    url: https://github.com/orgs/AllAboard-THP/projects/3
+    about: Tableau de bord équipe (Pilier, Phase, Priorité)

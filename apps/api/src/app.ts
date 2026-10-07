@@ -1,18 +1,140 @@
-import Fastify from "fastify";
-import type { HelpRequest } from "@allaboard/types";
+import "./fastify-augmentation.js";
+import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
+import cookie from "@fastify/cookie";
+import cors from "@fastify/cors";
+import fastifyStatic from "@fastify/static";
+import multipart from "@fastify/multipart";
+import jwt from "@fastify/jwt";
+import type pg from "pg";
+import { createDb, createPool } from "./db/client.js";
+import type { AppDatabase } from "./db/client.js";
+import {
+  createAgentModerationEvaluator,
+  type EvaluateModerationFn,
+} from "./agent/moderation.js";
+import {
+  createAgentRoutingEvaluator,
+  type EvaluateRoutingFn,
+} from "./agent/routing.js";
+import { jwtSecret } from "./lib/auth-helpers.js";
+import {
+  ensureAvatarStorageDir,
+  getAvatarStorageDir,
+} from "./lib/avatar-storage.js";
+import {
+  ensureMessageMediaStorageDir,
+  getMessageMediaStorageDir,
+} from "./lib/media-storage/index.js";
+import { MESSAGE_VIDEO_MAX_BYTES } from "./services/message-media-upload-rules.js";
+import { registerOpenApiDocs } from "./openapi.js";
+import { registerAdminRoutes } from "./routes/admin.js";
+import { registerAuthRoutes } from "./routes/auth.js";
+import { registerFeedRoutes } from "./routes/feed.js";
+import { registerHelpRequestRoutes } from "./routes/help-requests.js";
+import { registerLegalRoutes } from "./routes/legal.js";
+import { registerMeRoutes } from "./routes/me.js";
+import { registerConversationRoutes } from "./routes/conversations.js";
+import { registerConversationWsRoutes } from "./routes/conversations-ws.js";
+import { registerMentorRoutes } from "./routes/mentor.js";
+import { registerResourceRoutes } from "./routes/resources.js";
+import { registerSocialRoutes } from "./routes/social.js";
+import { registerSubjectRequestRoutes } from "./routes/subject-requests.js";
+import { registerSubjectRoutes } from "./routes/subjects.js";
+import { registerSuggestTagsRoutes } from "./routes/suggest-tags.js";
+import { registerPasskeyRoutes } from "./routes/passkey.js";
+import { registerUserRoutes } from "./routes/users.js";
+import { registerAvatarRoutes } from "./routes/avatar.js";
+import type { SuggestTagsFn } from "./agent/tag-suggestion.js";
 
-const mockFeed: HelpRequest[] = [
-  {
-    id: "1",
-    title: "How do I get started?",
-    authorId: "user-1",
-    createdAt: new Date().toISOString(),
-  },
-];
+export type BuildAppOptions = {
+  pool?: pg.Pool | null;
+  /** Injecté en tests (#68) ; défaut : client HTTP vers `AGENT_URL` + fallback. */
+  evaluateRouting?: EvaluateRoutingFn;
+  /** Injecté en tests ; défaut : proxy `POST /moderation/evaluate` + fallback conservateur. */
+  evaluateModeration?: EvaluateModerationFn;
+  suggestTags?: SuggestTagsFn;
+};
 
-export function buildApp() {
+export async function buildApp(options?: BuildAppOptions) {
+  const pool =
+    options?.pool !== undefined ? options.pool : createPool();
+  const db: AppDatabase | null = pool ? createDb(pool) : null;
+  const evaluateRouting =
+    options?.evaluateRouting ?? createAgentRoutingEvaluator();
+  const evaluateModeration =
+    options?.evaluateModeration ?? createAgentModerationEvaluator();
+  const suggestTags = options?.suggestTags;
+
   const app = Fastify({ logger: false });
+
+  await registerOpenApiDocs(app);
+
+  const corsOrigins = process.env.CORS_ALLOWED_ORIGINS?.split(",")
+    .map((o) => o.trim())
+    .filter((o) => o.length > 0);
+
+  if (corsOrigins && corsOrigins.length > 0) {
+    void app.register(cors, {
+      origin: corsOrigins,
+      credentials: true,
+    });
+  }
+
+  void app.register(cookie);
+  void app.register(jwt, { secret: jwtSecret() });
+
+  await app.register(multipart, {
+    limits: {
+      fileSize: MESSAGE_VIDEO_MAX_BYTES,
+      files: 1,
+    },
+  });
+
+  app.decorate(
+    "authenticate",
+    async function authenticate(
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ) {
+      try {
+        await request.jwtVerify();
+      } catch {
+        await reply.code(401).send({ error: "unauthorized" });
+      }
+    },
+  );
+
   app.get("/health", async () => ({ status: "ok" as const }));
-  app.get("/feed", async () => ({ items: mockFeed }));
+
+  registerFeedRoutes(app, db);
+  registerSubjectRoutes(app, db);
+  registerHelpRequestRoutes(app, db, evaluateRouting, evaluateModeration);
+  registerSuggestTagsRoutes(app, db, suggestTags);
+  registerSocialRoutes(app, db);
+  registerMeRoutes(app, db);
+  registerAuthRoutes(app, db);
+  registerPasskeyRoutes(app, db);
+  registerUserRoutes(app, db);
+  await ensureAvatarStorageDir();
+  await ensureMessageMediaStorageDir();
+  await app.register(fastifyStatic, {
+    root: getAvatarStorageDir(),
+    prefix: "/uploads/avatars/",
+    decorateReply: false,
+  });
+  await app.register(fastifyStatic, {
+    root: getMessageMediaStorageDir(),
+    prefix: "/uploads/messages/",
+    decorateReply: false,
+  });
+  await registerAvatarRoutes(app, db);
+  registerLegalRoutes(app, db);
+  registerResourceRoutes(app, db);
+  registerSubjectRequestRoutes(app, db);
+  registerMentorRoutes(app, db);
+  registerConversationRoutes(app, db);
+  await registerConversationWsRoutes(app, db);
+  registerAdminRoutes(app, db);
+
   return app;
 }

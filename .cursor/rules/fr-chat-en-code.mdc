@@ -1,0 +1,83 @@
+---
+description: Chat en français avec l'utilisateur ; code, config et artefacts techniques en anglais
+alwaysApply: true
+---
+
+# Français avec l'humain, anglais dans le code
+
+## Conversation
+
+- Répondre à l'utilisateur en **français** (explications, questions, retours, résumés).
+- Exception : texte PR suggéré à l'humain → **anglais** ([pr-english.mdc](./pr-english.mdc)).
+
+## Code et artefacts techniques — anglais uniquement
+
+Tout ce qui est versionné ou lu par des outils reste en **anglais** :
+
+- identifiants : variables, fonctions, classes, types, enums, fichiers, dossiers
+- commentaires et docstrings dans le code
+- messages de commit et branches Git
+- JSON, YAML, env keys, scripts shell, requêtes SQL (noms de tables/colonnes du schéma existant)
+- tests : noms de `describe` / `it`, fixtures, snapshots
+
+## Storybook — deux niveaux distincts
+
+Ne pas confondre la **navigation** (code) et le **contenu de démo** (UI).
+
+| Zone | Langue | Exemples |
+|------|--------|----------|
+| Sidebar : `title`, `name`, export CSF | **Anglais** | `Patterns/Feed`, `CommentCard`, `SidebarPanel/Empty` |
+| Canvas : labels, placeholders, fixtures, texte de démo | **Français** (défaut projet) | via `useLegacyLabels()`, `legacyLabelsFr`, toolbar locale `fr` |
+| Fichiers i18n Storybook | **Les deux** (`*Fr` / `*En`) | `legacy-labels.ts`, `mvp-pattern-labels.ts` |
+
+- Ne pas traduire les noms de stories ou de composants dans la sidebar (`CommentCard` → ~~`CarteCommentaire`~~).
+- Ne pas angliciser le copy visible dans le canvas sauf demande explicite ou story dédiée locale `en`.
+- Référence : `packages/ui/src/i18n/storybook-locale.tsx`, stories sous `packages/ui/src/patterns/*.stories.tsx`.
+
+## Exception — texte affiché à l'utilisateur final
+
+Écrire en **français** pour tout contenu **visible par l'utilisateur** (app ou preview Storybook) :
+
+- labels UI, placeholders, tooltips, toasts
+- messages d'erreur ou de validation affichés à l'écran
+- fichiers i18n / traductions (`legacyLabelsFr`, `fr.json`, etc.)
+
+Ne pas traduire le reste du code « pour faire joli » — garder la base de code homogène en anglais.
+
+## Exemples
+
+```tsx
+// ✅ GOOD — code en anglais, copy utilisateur en français si demandé
+function getBookingStatus(isConfirmed: boolean): string {
+  return isConfirmed ? "Confirmé" : "En attente";
+}
+
+// ❌ BAD — identifiants ou commentaires en français
+function obtenirStatutReservation(confirmé: boolean) {
+  // vérifie si la réservation est confirmée
+}
+```
+
+```json
+// ✅ GOOD — package.json
+{ "scripts": { "dev": "turbo run dev" } }
+
+// ❌ BAD
+{ "scripts": { "dev": "lancer le serveur" } }
+```
+
+```tsx
+// ✅ GOOD — Storybook : sidebar en anglais, démo en français
+export const QuickReplyDefault: Story = {
+  name: "QuickReply",
+  render: () => (
+    <QuickReply placeholder={labels.feed.quickReplyPlaceholder} />
+    // placeholder = "Répondre rapidement…" (FR via i18n — OK)
+  ),
+};
+
+// ❌ BAD — renommer la story en français
+export const QuickReplyDefault: Story = {
+  name: "RéponseRapide",
+};
+```
