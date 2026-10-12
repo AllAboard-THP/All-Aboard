@@ -42,7 +42,8 @@ One **canonical source** per topic. Task backlog and priorities: [GitHub Project
 | Branding / hero assets | [branding/README.md](branding/README.md) | `.cursor/rules/branding-hero-4k.mdc` |
 | i18n web FR/EN | [adr/0005-i18n-web-next-intl.md](adr/0005-i18n-web-next-intl.md) | [tasks/75-i18n-web](tasks/75-i18n-web/) |
 | Agent / Rubberduck / Intuition | [adr/0004-agent-indexer-architecture.md](adr/0004-agent-indexer-architecture.md) | [tasks/37](tasks/37-agent-indexer/), [67](tasks/67-intuition-bridge/), [68](tasks/68-agent-handoff/), [69](tasks/69-agent-ci-dokploy/) |
-| Intuition external docs index | [integrations/intuition-docs-index.md](integrations/intuition-docs-index.md) | ADR 0004 |
+| Intuition web3 sources (packages + Core) | [integrations/intuition-web3.md](integrations/intuition-web3.md) | ADR 0004, [task 67](tasks/67-intuition-bridge/) |
+| Intuition protocol docs index | [integrations/intuition-docs-index.md](integrations/intuition-docs-index.md) | ADR 0004 |
 | Product user journeys (MOC) | [product/user-journeys.md](product/user-journeys.md) | Rails parity notes |
 | Rails → Fastify API parity | [tasks/api-rails-parity/](tasks/api-rails-parity/README.md) | Phases [1](tasks/api-rails-parity-phase1/README.md)–[7](tasks/api-rails-parity-phase7/README.md) |
 | Long-term stack / dataflow vision | [vision/README.md](vision/README.md) | [architecture/dataflow.md](architecture/dataflow.md) |

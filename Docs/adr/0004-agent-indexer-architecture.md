@@ -61,6 +61,8 @@ No "respond" route on `apps/agent`: answering the user on Rubberduck is the **ex
 - **GraphQL** as primary **read** interface on the graph — see [GraphQL API](https://www.docs.intuition.systems/docs/graphql-api/overview).
 - All-Aboard **does not reimplement** this layer.
 
+**Sources added 2026-10-12** (reference, this ADR unchanged): [Unchained](https://unchained.intuition.systems) for the `@0xintuition/*` packages, and [intuition-core `feat/intuition-core-v2`](https://github.com/0xIntuition/intuition-core/tree/feat/intuition-core-v2) for a self-hosted indexer and REST query API. How they map onto the outbox bridge: [intuition-web3.md](../integrations/intuition-web3.md). Hosted GraphQL remains the read path until a later ADR revision.
+
 **All-Aboard bridge (to build — issue #67):**
 
 Light module or worker that **maps Postgres domain → Intuition primitives** (atoms, triples, signals — detailed mapping in #67 spike) and **handles write reliability** (retry, idempotence).
