@@ -75,4 +75,4 @@ flowchart TB
 - Arrow directions are simplified for mixed product/technical reading.
 - Protocol details (events, jobs, batch) will be specified in a detailed technical version.
 - **Short-term MVP**: the "API: Node" block may be **Fastify REST**; the GraphQL illustration remains valid for the **target** documented in [vision/technical-stack-proposal-2026.md](../vision/technical-stack-proposal-2026.md).
-- **Indexer (Blockchain subgraph)**: **Intuition network** indexer (subnet + GraphQL) — not an All-Aboard `apps/indexer` service. All-Aboard **publishes** via a bridge (outbox → SDK); see [ADR 0004](../adr/0004-agent-indexer-architecture.md).
+- **Indexer (Blockchain subgraph)**: **Intuition network** indexer (subnet + GraphQL) — not an All-Aboard `apps/indexer` service. All-Aboard **publishes** via a bridge (outbox → SDK); see [ADR 0004](../adr/0004-agent-indexer-architecture.md). Package catalog and self-hosted Core node: [intuition-web3.md](../integrations/intuition-web3.md).

@@ -47,3 +47,4 @@ Connect Postgres help-request creation to the **Intuition** ecosystem via a reli
 - [ADR 0004](../../adr/0004-agent-indexer-architecture.md)
 - [Epic #37](../37-agent-indexer/README.md)
 - [Intuition docs index](../../integrations/intuition-docs-index.md)
+- [Web3 sources (Unchained + Core v2)](../../integrations/intuition-web3.md)

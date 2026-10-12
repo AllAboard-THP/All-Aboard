@@ -51,7 +51,7 @@ Source : [proposition-stack-technique-monorepo-2026.md](../proposition-stack-tec
 |-------|-----------|------------|--------|------------|
 | **Observabilité** | OpenTelemetry + Sentry, logs structurés (pino) | Non implémenté | S–M (~1 sem.) | À créer : `vision-observability` |
 | **Redis** | Cache, rate limits, WS multi-instance (Phase 5b scale) | Non implémenté ; hub WS mémoire mono-instance | M | À créer : `vision-redis` |
-| **`packages/blockchain`** | Abstraction Web3 / Intuition ; lien wallet ↔ compte (optionnel) | Partiel : `apps/api/src/intuition/` | M | À créer : `vision-blockchain-package` |
+| **`packages/blockchain`** | Abstraction Web3 / Intuition — sources : [intuition-web3.md](../integrations/intuition-web3.md) | Partiel : `apps/api/src/intuition/` | M | À créer : `vision-blockchain-package` |
 | ~~**Auth Web3**~~ **Auth passkeys** | ~~Wallet / Gnosis / SIWE~~ → **WebAuthn** ([ADR 0006](../adr/0006-authentication-passkeys.md)) | En cours (Web P1 W-P1-00) | M | Web P1 + ADR 0006 |
 | **`apps/mobile`** | Expo / React Native, partage `packages/types` (+ UI si pertinent) | Absent | L–XL | À créer : `vision-mobile-expo` |
 | **GraphQL + Prisma** | BFF GraphQL, ORM Prisma, migrations | **Non** — MVP = Fastify REST + Drizzle | XL (migration) | À créer : `vision-graphql-prisma` (ADR d’abord) |

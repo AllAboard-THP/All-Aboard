@@ -2675,8 +2675,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/INDEX.md": {
-    "mtime": 1790247699.3130493,
-    "ast_hash": "fb1d825e0e6b9062d2863f1324dbfb03",
+    "mtime": 1791798198.9910536,
+    "ast_hash": "bfbf1720302c015a7e210f40bac26147",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/README.md": {
@@ -2780,8 +2780,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/67-intuition-bridge/README.md": {
-    "mtime": 1782290342.4372206,
-    "ast_hash": "a8801665e798749cb4c490029c470c4e",
+    "mtime": 1791798199.1043315,
+    "ast_hash": "fe0f358114ca1d6500de8dacdb6a466a",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/api-rails-parity-phase1/README.md": {
@@ -2820,7 +2820,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/guides/web-api-integration.md": {
-    "mtime": 1791380730.4143488,
+    "mtime": 1791797653.0045066,
     "ast_hash": "e6fea9cc3a813e0652c2e47170151d49",
     "semantic_hash": ""
   },
@@ -2840,18 +2840,18 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/architecture/dataflow.md": {
-    "mtime": 1782290342.3997905,
-    "ast_hash": "a4773d20d4ffb94a7d3265fde60dcbb6",
+    "mtime": 1791798200.9720013,
+    "ast_hash": "1258cf9a86df5b95cd44d8e1a82e236b",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/integrations/intuition-docs-index.md": {
-    "mtime": 1782290342.4372206,
-    "ast_hash": "69379f61888db04ab534e0b718ff94bb",
+    "mtime": 1791798197.0286613,
+    "ast_hash": "082f76f68aee6c8a444dc200f48fb45e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/integrations/README.md": {
-    "mtime": 1782290342.4372206,
-    "ast_hash": "e22381d00625e80beb3484424d7d3d8c",
+    "mtime": 1791798198.9910536,
+    "ast_hash": "e1157b51750a18ecdab7c388f418ab78",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/design-system/README.md": {
@@ -2885,8 +2885,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/vision/roadmap-v1-plus.md": {
-    "mtime": 1785091965.6104882,
-    "ast_hash": "f75314d17e468cdd76dd2f40bdef5e95",
+    "mtime": 1791798205.249009,
+    "ast_hash": "8193f2bb68ecb28ed938d9f1ab533959",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/vision/README.md": {
@@ -2915,8 +2915,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0004-agent-indexer-architecture.md": {
-    "mtime": 1782290342.3997905,
-    "ast_hash": "3feda116f5d1d7d808b690bf9896e896",
+    "mtime": 1791798199.1476648,
+    "ast_hash": "999cecaa23325f352a3bf687cc95a130",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0003-authentication-users-production.md": {
@@ -3265,7 +3265,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/migration-pretorya/README.md": {
-    "mtime": 1791378641.3984337,
+    "mtime": 1791797653.0001733,
     "ast_hash": "b927146be463bc04ad0f4e9e872522cd",
     "semantic_hash": ""
   },
@@ -3315,7 +3315,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/migration-pretorya/MIGRATION-PLAN.md": {
-    "mtime": 1791380728.9343488,
+    "mtime": 1791797653.0001733,
     "ast_hash": "d8c13967e9a38803f1450dd83361b3cc",
     "semantic_hash": ""
   },
@@ -3332,6 +3332,11 @@
   "/home/dim/AllAboard/Docs/deployment/migration-pretorya/phase6-artifacts.md": {
     "mtime": 1791380724.3943489,
     "ast_hash": "daeac84b1429421cadbc5efbfea5afee",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/integrations/intuition-web3.md": {
+    "mtime": 1791798193.2190435,
+    "ast_hash": "eb5d037750aa5620a733a98790334c6f",
     "semantic_hash": ""
   }
 }

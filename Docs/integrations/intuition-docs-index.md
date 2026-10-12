@@ -1,6 +1,8 @@
 # Intuition documentation index
 
-Structured index of **Intuition** documentation pages, for human navigation and agent reference.
+Structured index of **Intuition protocol** documentation pages, for human navigation and agent reference.
+
+Web3 integration sources (npm packages and the self-hosted Core node) live in [intuition-web3.md](intuition-web3.md). This file stays the index of [docs.intuition.systems](https://www.docs.intuition.systems/docs).
 
 - **Site:** [https://www.docs.intuition.systems/docs](https://www.docs.intuition.systems/docs)
 - **Sources used for this index:** introduction page content (`/docs`), [`llms.txt`](https://www.docs.intuition.systems/llms.txt) file (LLM-oriented summary), equivalent `docs.intuition.systems` variants for paths.
