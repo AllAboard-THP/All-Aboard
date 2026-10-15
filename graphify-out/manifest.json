@@ -2820,7 +2820,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/guides/web-api-integration.md": {
-    "mtime": 1791797653.0045066,
+    "mtime": 1792068745.720715,
     "ast_hash": "e6fea9cc3a813e0652c2e47170151d49",
     "semantic_hash": ""
   },
@@ -3265,7 +3265,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/migration-pretorya/README.md": {
-    "mtime": 1791797653.0001733,
+    "mtime": 1792068745.720715,
     "ast_hash": "b927146be463bc04ad0f4e9e872522cd",
     "semantic_hash": ""
   },
@@ -3315,7 +3315,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/migration-pretorya/MIGRATION-PLAN.md": {
-    "mtime": 1791797653.0001733,
+    "mtime": 1792068745.720715,
     "ast_hash": "d8c13967e9a38803f1450dd83361b3cc",
     "semantic_hash": ""
   },
@@ -3337,6 +3337,41 @@
   "/home/dim/AllAboard/Docs/integrations/intuition-web3.md": {
     "mtime": 1791798193.2190435,
     "ast_hash": "eb5d037750aa5620a733a98790334c6f",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/ui/src/hooks/media-recorder.ts": {
+    "mtime": 1792069040.1183064,
+    "ast_hash": "d54b5b853bacf6d72d9c65a3126fd395",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/ui/src/hooks/media-recorder.test.ts": {
+    "mtime": 1792069153.9270291,
+    "ast_hash": "bc956c5d102e1b6d8926abfc7e93552c",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/ui/src/hooks/use-media-recorder.ts": {
+    "mtime": 1792069325.5869794,
+    "ast_hash": "e1e0f220ad0a55b9b864b097947327d4",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/ui/src/hooks/use-media-recorder.test.tsx": {
+    "mtime": 1792069169.372755,
+    "ast_hash": "6066e90046bc3db7eec7941ca73768c0",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/ui/src/patterns/media-recorder-panel.test.tsx": {
+    "mtime": 1792069332.6848392,
+    "ast_hash": "95417ec8ff2aec8ced24f3e867ced088",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/ui/src/patterns/media-recorder-panel.tsx": {
+    "mtime": 1792069375.8703432,
+    "ast_hash": "69b46ceb3aa0c700e4b3dbca08d87cf9",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/ui/src/patterns/media-recorder-panel.stories.tsx": {
+    "mtime": 1792069146.0962396,
+    "ast_hash": "34039692932876d188a00a5828753603",
     "semantic_hash": ""
   }
 }
