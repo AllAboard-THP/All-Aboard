@@ -1,0 +1,15 @@
+---
+description: Pretorya Dokploy migration — read decisions before suggesting Postgres restore
+globs:
+  - Docs/deployment/migration-pretorya/**
+  - scripts/migration/pretorya-*
+  - .allaboard-migration/**
+---
+
+# Pretorya migration
+
+Before any cutover, smoke, or Phase 3+ work on Pretorya:
+
+1. Read [Docs/deployment/migration-pretorya/DECISIONS.md](../../Docs/deployment/migration-pretorya/DECISIONS.md).
+2. **Postgres on Pretorya = empty DBs** (migrations + API seed). **Do not** require Phase 0 `pg_dump` or Mestryx SSH/admin access unless the human explicitly reopens that decision.
+3. Plan overview: [MIGRATION-PLAN.md](../../Docs/deployment/migration-pretorya/MIGRATION-PLAN.md).

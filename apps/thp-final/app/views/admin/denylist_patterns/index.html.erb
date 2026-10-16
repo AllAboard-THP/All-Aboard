@@ -1,0 +1,91 @@
+<% content_for :title, "Denylist — Admin" %>
+
+<div class="max-w-3xl mx-auto py-8 px-4">
+  <div class="flex items-center gap-3 mb-8">
+    <%= link_to admin_moderation_path, class: "text-gray-400 hover:text-white transition-colors" do %>
+      <i class="fas fa-arrow-left"></i>
+    <% end %>
+    <div>
+      <h1 class="text-3xl font-bold">Denylist</h1>
+      <p class="text-gray-400 text-sm mt-1">Patterns regex — le contenu qui matche est mis en attente de modération.</p>
+    </div>
+  </div>
+
+  <%# Formulaire d'ajout %>
+  <div class="glass rounded-2xl p-6 mb-6">
+    <h2 class="font-semibold mb-4 flex items-center gap-2">
+      <i class="fas fa-plus text-primary"></i> Ajouter un pattern
+    </h2>
+    <%= form_with model: [:admin, @pattern], class: "space-y-4" do |f| %>
+      <% if @pattern.errors.any? %>
+        <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-sm text-red-400">
+          <% @pattern.errors.full_messages.each do |msg| %>
+            <p><i class="fas fa-exclamation-circle mr-1"></i><%= msg %></p>
+          <% end %>
+        </div>
+      <% end %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <%= f.label :label, "Label", class: "block text-sm text-gray-400 mb-1" %>
+          <%= f.text_field :label,
+              placeholder: "Ex : liens suspects",
+              class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary" %>
+        </div>
+        <div>
+          <%= f.label :pattern, "Pattern regex", class: "block text-sm text-gray-400 mb-1" %>
+          <%= f.text_field :pattern,
+              placeholder: "Ex : https?:\\/\\/[^\\s]+(bit\\.ly|tinyurl)",
+              class: "w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm font-mono focus:outline-none focus:border-primary" %>
+        </div>
+      </div>
+      <div class="flex justify-end">
+        <%= f.submit "Ajouter", class: "px-5 py-2 bg-primary hover:bg-primary/80 text-white rounded-xl text-sm font-medium transition-colors cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Liste des patterns %>
+  <div class="glass rounded-2xl">
+    <div class="p-5 border-b border-white/10 flex items-center gap-2">
+      <i class="fas fa-shield-alt text-primary"></i>
+      <h2 class="font-semibold">Patterns actifs</h2>
+      <span class="px-2 py-0.5 rounded-full text-xs bg-primary/15 text-primary font-medium"><%= @patterns.size %></span>
+    </div>
+
+    <% if @patterns.any? %>
+      <div class="divide-y divide-white/5">
+        <% @patterns.each do |p| %>
+          <div class="p-4 flex items-center gap-4">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-medium text-sm"><%= p.label %></span>
+                <% if p.active? %>
+                  <span class="px-2 py-0.5 rounded-full text-xs bg-emerald-400/15 text-emerald-400">actif</span>
+                <% else %>
+                  <span class="px-2 py-0.5 rounded-full text-xs bg-gray-400/15 text-gray-400">inactif</span>
+                <% end %>
+              </div>
+              <code class="text-xs text-gray-400 font-mono bg-black/30 px-2 py-0.5 rounded"><%= p.pattern %></code>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <%= button_to toggle_admin_denylist_pattern_path(p), method: :post,
+                  class: "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors #{p.active? ? 'bg-gray-500/20 hover:bg-gray-500/30 text-gray-400' : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400'}" do %>
+                <%= p.active? ? "Désactiver" : "Activer" %>
+              <% end %>
+              <%= button_to admin_denylist_pattern_path(p), method: :delete,
+                  data: { turbo_confirm: "Supprimer ce pattern ?" },
+                  class: "px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors" do %>
+                <i class="fas fa-trash"></i>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="p-8 text-center text-gray-500">
+        <i class="fas fa-shield-alt text-3xl mb-3 block text-gray-600"></i>
+        <p class="text-sm">Aucun pattern configuré. Seule la liste de mots intégrée est active.</p>
+      </div>
+    <% end %>
+  </div>
+</div>
