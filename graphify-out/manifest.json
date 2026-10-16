@@ -105,13 +105,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/en.json": {
-    "mtime": 1785091965.6184883,
-    "ast_hash": "94ba002572b3652d7da4ddcc3ccc14a1",
+    "mtime": 1792145730.5338786,
+    "ast_hash": "e05f4b40fc2ba44f60d3284f18e7f7cb",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/fr.json": {
-    "mtime": 1785091965.6184883,
-    "ast_hash": "37c2a5e5fb8afd76f519685c2a3c86d8",
+    "mtime": 1792145729.9289641,
+    "ast_hash": "c4837aa10a504608f97e233fd94fdc71",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/layout.tsx": {
@@ -920,8 +920,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/chat-thread.tsx": {
-    "mtime": 1785091965.6144884,
-    "ast_hash": "e4b7831472a51a8efad6d117091f6d6f",
+    "mtime": 1792145750.617265,
+    "ast_hash": "9cc5cb622a959eaff63da9cc4dbd6a4e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/mentor-resource-review-actions.tsx": {
@@ -1190,8 +1190,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/chat-client.ts": {
-    "mtime": 1785091979.4304943,
-    "ast_hash": "7127008f8700cbb45c04625e175ded0f",
+    "mtime": 1792145729.8668153,
+    "ast_hash": "21c9d29c87aeb78c5b9b6e10bd47cd56",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/package.json": {
@@ -2430,8 +2430,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/ui/src/patterns/messages-patterns.stories.tsx": {
-    "mtime": 1782290342.5619874,
-    "ast_hash": "df2caabaad55214a17b121fbb1adf3ee",
+    "mtime": 1792145763.2550948,
+    "ast_hash": "4d969f32d4035d0686a39f0b59994785",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/ui/src/patterns/app-abstract-background.tsx": {
@@ -2820,7 +2820,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/guides/web-api-integration.md": {
-    "mtime": 1792068745.720715,
+    "mtime": 1792144720.5287404,
     "ast_hash": "e6fea9cc3a813e0652c2e47170151d49",
     "semantic_hash": ""
   },
@@ -3255,8 +3255,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/chat-client.test.ts": {
-    "mtime": 1785091990.9664907,
-    "ast_hash": "328507eaf13b548546c2671e8153f5ae",
+    "mtime": 1792145796.5381172,
+    "ast_hash": "4b9cf7bfc9848ec0b48f495f8c562264",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0007-oauth-google-sso.md": {
@@ -3265,7 +3265,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/migration-pretorya/README.md": {
-    "mtime": 1792068745.720715,
+    "mtime": 1792144720.5205817,
     "ast_hash": "b927146be463bc04ad0f4e9e872522cd",
     "semantic_hash": ""
   },
@@ -3315,7 +3315,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/migration-pretorya/MIGRATION-PLAN.md": {
-    "mtime": 1792068745.720715,
+    "mtime": 1792144720.5287404,
     "ast_hash": "d8c13967e9a38803f1450dd83361b3cc",
     "semantic_hash": ""
   },
@@ -3372,6 +3372,26 @@
   "/home/dim/AllAboard/packages/ui/src/patterns/media-recorder-panel.stories.tsx": {
     "mtime": 1792069146.0962396,
     "ast_hash": "34039692932876d188a00a5828753603",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/ui/src/patterns/chat-composer.test.tsx": {
+    "mtime": 1792145771.0193336,
+    "ast_hash": "c6640382da9c26b81278091dba815c6c",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/ui/src/patterns/chat-composer.tsx": {
+    "mtime": 1792145869.586048,
+    "ast_hash": "65ee4b30850e9a351a99a667a8a577f0",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/ui/src/patterns/chat-message-bubbles.test.tsx": {
+    "mtime": 1792145764.8769329,
+    "ast_hash": "a1a67dd5694255bdba6697e3c3b831a0",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/ui/src/patterns/chat-message-bubbles.tsx": {
+    "mtime": 1792145869.586048,
+    "ast_hash": "a2e7fabead94ed72fa713f82f6fa5717",
     "semantic_hash": ""
   }
 }
