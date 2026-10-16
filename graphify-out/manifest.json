@@ -1195,8 +1195,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/package.json": {
-    "mtime": 1785091965.6104882,
-    "ast_hash": "339aa5f105ce831e50f7b8831701a21c",
+    "mtime": 1792149150.114305,
+    "ast_hash": "e7cae622812cb09d8c85cb1bb0c76464",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/eslint.config.js": {
@@ -1300,8 +1300,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.ts": {
-    "mtime": 1785091965.6104882,
-    "ast_hash": "10be8d1315cab0cea8f6e3e36666e65c",
+    "mtime": 1792149140.2319167,
+    "ast_hash": "77c8f0ccd89bd55a4919b7e5bd00a785",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/fastify-augmentation.ts": {
@@ -1375,8 +1375,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/services/conversations.ts": {
-    "mtime": 1785091965.6144884,
-    "ast_hash": "e0dbb2c5847a8239308b87c756e094fe",
+    "mtime": 1792149139.993924,
+    "ast_hash": "8c7e4d7bb1df59d4fd543680680776b7",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/services/chat-broadcast.test.ts": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/openapi.yaml": {
-    "mtime": 1785091965.6104882,
-    "ast_hash": "a2da0957b9ba1b8cf3e48216285ec0a4",
+    "mtime": 1792149150.878312,
+    "ast_hash": "7a0ef18e30cbfca1743d0e6a3f228885",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/ui/package.json": {
@@ -2675,8 +2675,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/INDEX.md": {
-    "mtime": 1791798198.9910536,
-    "ast_hash": "bfbf1720302c015a7e210f40bac26147",
+    "mtime": 1792149254.3953285,
+    "ast_hash": "dd81755bb02eb6194b5ecf42ddcb23a4",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/README.md": {
@@ -2910,8 +2910,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/README.md": {
-    "mtime": 1782290342.3997905,
-    "ast_hash": "22e0aab88ebb262062cccc769a87f9f7",
+    "mtime": 1792149274.43702,
+    "ast_hash": "58dab2e4b064acd905ba608b27d407a1",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0004-agent-indexer-architecture.md": {
@@ -2945,8 +2945,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/README.md": {
-    "mtime": 1791378643.4024343,
-    "ast_hash": "8784ce55c8834be9d070bc88eef04589",
+    "mtime": 1792149252.69199,
+    "ast_hash": "798ea4b901ce9831186dff5b27108702",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/staging-promotion-checklist.md": {
@@ -2955,8 +2955,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/environment-variables.md": {
-    "mtime": 1790247699.3173826,
-    "ast_hash": "30f704055b6818f41b9afd2c0138193b",
+    "mtime": 1792149251.998965,
+    "ast_hash": "94d3bf319a1e6df8ec3536a0cd0a3718",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/dokploy-instance.md": {
@@ -3200,8 +3200,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/services/conversations.test.ts": {
-    "mtime": 1785091965.6144884,
-    "ast_hash": "d143f97b994d42a9fe6858f3726e7e9a",
+    "mtime": 1792149215.3836248,
+    "ast_hash": "35bc757002d131f8b1c3ce4b1589a9cc",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/message-media-url.ts": {
@@ -3230,13 +3230,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/media-storage/types.ts": {
-    "mtime": 1785091965.6144884,
-    "ast_hash": "98519a7eff58bccb25cb06d4f8c254e6",
+    "mtime": 1792149062.7553186,
+    "ast_hash": "ab6407820dd3f3a6568b49c4e629b385",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/media-storage/local-provider.ts": {
-    "mtime": 1785091965.6104882,
-    "ast_hash": "5d0488af75b233a92d6ccef72d84305e",
+    "mtime": 1792149084.5455458,
+    "ast_hash": "a30511c558adab779da96750813ecf95",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/media-storage/local-provider.test.ts": {
@@ -3245,13 +3245,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/media-storage/index.ts": {
-    "mtime": 1785091965.6104882,
-    "ast_hash": "83a387c5c4ad6025deb50edfd4f3f387",
+    "mtime": 1792149149.0204804,
+    "ast_hash": "24c75da96c66396a6714810975a128c3",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/media-storage/paths.ts": {
-    "mtime": 1785091965.6144884,
-    "ast_hash": "12d5b34957377a59b0c99af8c2fc7dc4",
+    "mtime": 1792149063.9857774,
+    "ast_hash": "de2dbb386ca9d8d0844c8f058be9de61",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/chat-client.test.ts": {
@@ -3402,6 +3402,51 @@
   "/home/dim/AllAboard/apps/web/tests/chat-thread.test.tsx": {
     "mtime": 1792147704.2417736,
     "ast_hash": "6b378d3fdc1014b1963ba80f560653a2",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/scripts/migrate-message-media-to-s3.ts": {
+    "mtime": 1792149100.77391,
+    "ast_hash": "7443ddaf49b8668673ce688383bf7517",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/lib/media-storage/s3-provider.ts": {
+    "mtime": 1792149274.43702,
+    "ast_hash": "1c092ebb4b4447bd3a8c64f8517911d1",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/lib/media-storage/config.ts": {
+    "mtime": 1792149082.437939,
+    "ast_hash": "bbe3fc4ace01ecd43e6edddccdc2ea09",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/lib/media-storage/s3-provider.test.ts": {
+    "mtime": 1792149213.956311,
+    "ast_hash": "79c23ee78016c8aa6bfc444246e2b81d",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/lib/media-storage/config.test.ts": {
+    "mtime": 1792149184.1561387,
+    "ast_hash": "7ba8c875eb9b3ed91317b6159e678d7c",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/lib/media-storage/migrate-local-to-s3.test.ts": {
+    "mtime": 1792149194.868605,
+    "ast_hash": "f02e985919e895dca0d2903fbaf822cf",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/lib/media-storage/migrate-local-to-s3.ts": {
+    "mtime": 1792149097.3223429,
+    "ast_hash": "8fa0224b2a06070aa382ecd0632ce066",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/adr/0008-message-media-object-storage.md": {
+    "mtime": 1792149234.239668,
+    "ast_hash": "fba03fe8a664665fb94de7758671a183",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/deployment/message-media-storage.md": {
+    "mtime": 1792149316.312201,
+    "ast_hash": "402c280970b4b0d02b2437f803656442",
     "semantic_hash": ""
   }
 }

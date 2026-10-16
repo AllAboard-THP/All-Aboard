@@ -1,7 +1,19 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect } from "vitest";
+import { resetMediaStorageForTests } from "../lib/media-storage/index.js";
 import { rowToChatMessage } from "./conversations.js";
 
 describe("rowToChatMessage", () => {
+  const previousMode = process.env.MESSAGE_MEDIA_STORAGE;
+
+  afterEach(() => {
+    if (previousMode === undefined) {
+      delete process.env.MESSAGE_MEDIA_STORAGE;
+    } else {
+      process.env.MESSAGE_MEDIA_STORAGE = previousMode;
+    }
+    resetMediaStorageForTests();
+  });
+
   const author = {
     id: "user-1",
     fullName: "Alice",
@@ -9,8 +21,8 @@ describe("rowToChatMessage", () => {
     avatarUrl: "https://example.com/a.png",
   };
 
-  it("maps text messages with kind and body", () => {
-    const message = rowToChatMessage(
+  it("maps text messages with kind and body", async () => {
+    const message = await rowToChatMessage(
       {
         id: "msg-1",
         conversationId: "conv-1",
@@ -39,12 +51,14 @@ describe("rowToChatMessage", () => {
     expect(message.attachment).toBeUndefined();
   });
 
-  it("maps media messages with attachment metadata", () => {
+  it("maps media messages with attachment metadata", async () => {
     const previous = process.env.MESSAGE_MEDIA_PUBLIC_BASE_URL;
+    process.env.MESSAGE_MEDIA_STORAGE = "local";
     process.env.MESSAGE_MEDIA_PUBLIC_BASE_URL =
       "https://api.example.com/uploads/messages";
+    resetMediaStorageForTests();
     try {
-      const message = rowToChatMessage(
+      const message = await rowToChatMessage(
         {
           id: "msg-2",
           conversationId: "conv-1",

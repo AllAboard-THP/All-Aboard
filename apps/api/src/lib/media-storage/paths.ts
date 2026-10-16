@@ -19,8 +19,21 @@ export function getMessageMediaStorageDir(): string {
   return path.join(apiRoot, "data", "uploads", "messages");
 }
 
+/** Rejects absolute paths and `..` segments. Returns a relative POSIX-style key. */
+export function normalizeAttachmentKey(attachmentKey: string): string {
+  const normalized = attachmentKey.replace(/^\/+/, "").replace(/\\/g, "/");
+  if (
+    !normalized ||
+    path.posix.isAbsolute(normalized) ||
+    normalized.split("/").some((part) => part === "" || part === "." || part === "..")
+  ) {
+    throw new Error("invalid_attachment_key");
+  }
+  return normalized;
+}
+
 export function messageMediaFilePath(attachmentKey: string): string {
-  const normalized = attachmentKey.replace(/^\/+/, "");
+  const normalized = normalizeAttachmentKey(attachmentKey);
   const storageDir = path.resolve(getMessageMediaStorageDir());
   const resolved = path.resolve(storageDir, normalized);
   if (

@@ -3293,6 +3293,10 @@ components:
         url:
           type: string
           format: uri
+          description: >
+            Playback URL. Local disk serves /uploads/messages/. Private
+            S3 or MinIO returns a presigned GET URL created when the
+            message is read.
         mimeType:
           type: string
         sizeBytes:

@@ -55,10 +55,29 @@ Items still to harmonize **on the instance** (not in this matrix): Agent/Indexer
 |---|:---:|:---:|:---:|:---:|:---:|
 | `DATABASE_URL` |  | x | x | x | Yes (except pure web) |
 | `REDIS_URL` |  | x | x | x | Recommended |
-| `STORAGE_BUCKET` |  | x | x |  | Recommended |
-| `STORAGE_ENDPOINT` |  | x | x |  | Recommended |
+| `STORAGE_BUCKET` |  | x | x |  | Recommended (generic; **not** used by chat media) |
+| `STORAGE_ENDPOINT` |  | x | x |  | Recommended (generic; **not** used by chat media) |
 | `STORAGE_ACCESS_KEY` |  | x | x |  | Yes if used |
 | `STORAGE_SECRET_KEY` |  | x | x |  | Yes if used |
+
+### Message media (API)
+
+Chat audio and video. Local disk is the dev default. Production on Dokploy/Coolify uses S3 or MinIO — do not keep video only on a container volume. Steps: [message-media-storage.md](message-media-storage.md). Decision: [ADR 0008](../adr/0008-message-media-object-storage.md).
+
+| Variable | Required | Default | Role |
+| --- | --- | --- | --- |
+| `MESSAGE_MEDIA_STORAGE` | No | `local` | `local` or `s3` |
+| `MESSAGE_MEDIA_STORAGE_DIR` | No | `data/uploads/messages` | Local directory |
+| `MESSAGE_MEDIA_PUBLIC_BASE_URL` | Behind a proxy, or public S3 | `http://127.0.0.1:$PORT/uploads/messages` | Public URL prefix. In S3 public-read mode the object key (`messages/...`) is appended |
+| `S3_ENDPOINT` | MinIO / non-AWS | unset | S3 API endpoint. Omit for AWS |
+| `S3_REGION` | No | `us-east-1` | Region (required by the SDK; MinIO ignores it) |
+| `S3_BUCKET` | Yes when `s3` | — | Bucket |
+| `S3_ACCESS_KEY` | Yes when `s3` | — | Access key |
+| `S3_SECRET_KEY` | Yes when `s3` | — | Secret key |
+| `S3_FORCE_PATH_STYLE` | No | `true` if `S3_ENDPOINT` is set | Path-style URLs for MinIO |
+| `MESSAGE_MEDIA_S3_PREFIX` | No | `messages` | Object key prefix |
+| `MESSAGE_MEDIA_S3_PUBLIC_READ` | No | `false` | `true` = public URL; `false` = presigned GET |
+| `MESSAGE_MEDIA_SIGNED_URL_TTL_SECONDS` | No | `3600` | Presigned URL lifetime (60–604800) |
 
 ### Auth / security variables
 

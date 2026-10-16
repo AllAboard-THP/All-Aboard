@@ -22,8 +22,10 @@ import {
   getAvatarStorageDir,
 } from "./lib/avatar-storage.js";
 import {
+  assertMessageMediaStorageReady,
   ensureMessageMediaStorageDir,
   getMessageMediaStorageDir,
+  getMessageMediaStorageMode,
 } from "./lib/media-storage/index.js";
 import { MESSAGE_VIDEO_MAX_BYTES } from "./services/message-media-upload-rules.js";
 import { registerOpenApiDocs } from "./openapi.js";
@@ -116,17 +118,20 @@ export async function buildApp(options?: BuildAppOptions) {
   registerPasskeyRoutes(app, db);
   registerUserRoutes(app, db);
   await ensureAvatarStorageDir();
-  await ensureMessageMediaStorageDir();
+  assertMessageMediaStorageReady();
   await app.register(fastifyStatic, {
     root: getAvatarStorageDir(),
     prefix: "/uploads/avatars/",
     decorateReply: false,
   });
-  await app.register(fastifyStatic, {
-    root: getMessageMediaStorageDir(),
-    prefix: "/uploads/messages/",
-    decorateReply: false,
-  });
+  if (getMessageMediaStorageMode() === "local") {
+    await ensureMessageMediaStorageDir();
+    await app.register(fastifyStatic, {
+      root: getMessageMediaStorageDir(),
+      prefix: "/uploads/messages/",
+      decorateReply: false,
+    });
+  }
   await registerAvatarRoutes(app, db);
   registerLegalRoutes(app, db);
   registerResourceRoutes(app, db);

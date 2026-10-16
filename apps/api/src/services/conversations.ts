@@ -21,17 +21,17 @@ import {
   messages,
   users,
 } from "../db/schema.js";
-import { buildMessageMediaPublicUrl } from "../lib/message-media-url.js";
+import { getMediaStorage } from "../lib/media-storage/index.js";
 import { displayNameFromUser } from "../lib/user-mappers.js";
 
 export function directKeyFor(userAId: string, userBId: string): string {
   return [userAId, userBId].sort().join(":");
 }
 
-export function rowToChatMessage(
+export async function rowToChatMessage(
   row: typeof messages.$inferSelect,
   author: Pick<typeof users.$inferSelect, "id" | "fullName" | "email" | "avatarUrl">,
-): ChatMessage {
+): Promise<ChatMessage> {
   const kind = row.messageKind as MessageKind;
   const message: ChatMessage = {
     id: row.id,
@@ -53,7 +53,7 @@ export function rowToChatMessage(
     row.attachmentSizeBytes != null
   ) {
     message.attachment = {
-      url: buildMessageMediaPublicUrl(row.attachmentKey),
+      url: await getMediaStorage().resolveUrl(row.attachmentKey),
       mimeType: row.attachmentMime,
       sizeBytes: row.attachmentSizeBytes,
       ...(row.attachmentDurationMs != null ?
@@ -244,7 +244,7 @@ export async function loadLastMessage(
     .limit(1);
   const row = rows[0];
   if (!row) return undefined;
-  return rowToChatMessage(row.message, row.user);
+  return await rowToChatMessage(row.message, row.user);
 }
 
 export async function loadInboxForUser(
@@ -314,9 +314,9 @@ export async function loadMessagesPage(
     .limit(limit)
     .offset(offset);
 
-  const items = rows
-    .map((r) => rowToChatMessage(r.message, r.user))
-    .reverse();
+  const items = (
+    await Promise.all(rows.map((r) => rowToChatMessage(r.message, r.user)))
+  ).reverse();
   return { items, total };
 }
 
@@ -395,7 +395,7 @@ export async function insertMessage(
   if (!author) {
     throw new Error("message_author_not_found");
   }
-  return rowToChatMessage(message, author);
+  return await rowToChatMessage(message, author);
 }
 
 export async function resolveHelpRequestTopic(
