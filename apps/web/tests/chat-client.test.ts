@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { sendChatMediaMessage } from "@/lib/chat-client";
+import { buildChatMediaFormData, sendChatMediaMessage } from "@/lib/chat-client";
 
 describe("chat-client", () => {
   const fetchMock = vi.fn();
@@ -36,5 +36,61 @@ describe("chat-client", () => {
     );
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
     expect(init.headers).toBeUndefined();
+  });
+
+  it("buildChatMediaFormData appends kind, duration, source, file, and caption", () => {
+    const formData = buildChatMediaFormData(
+      {
+        kind: "audio",
+        blob: new Blob(["a"], { type: "audio/webm" }),
+        mimeType: "audio/webm",
+        durationMs: 1500,
+        source: "microphone",
+      },
+      "  note vocale  ",
+    );
+
+    expect(formData.get("kind")).toBe("audio");
+    expect(formData.get("durationMs")).toBe("1500");
+    expect(formData.get("source")).toBe("microphone");
+    expect(formData.get("body")).toBe("note vocale");
+    const file = formData.get("file");
+    expect(file).toBeInstanceOf(File);
+    expect((file as File).name).toBe("message.webm");
+    expect((file as File).type).toBe("audio/webm");
+  });
+
+  it("sendChatMediaMessage reports upload progress", async () => {
+    const onProgress = vi.fn();
+    class MockXHR {
+      status = 201;
+      responseText = JSON.stringify({ item: { id: "msg-2" } });
+      withCredentials = false;
+      upload = {
+        onprogress: null as ((event: ProgressEvent) => void) | null,
+      };
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      open = vi.fn();
+      send = vi.fn(() => {
+        this.upload.onprogress?.({
+          lengthComputable: true,
+          loaded: 25,
+          total: 100,
+        } as ProgressEvent);
+        this.onload?.();
+      });
+    }
+
+    vi.stubGlobal("XMLHttpRequest", MockXHR);
+    const formData = new FormData();
+    formData.append("kind", "audio");
+
+    const result = await sendChatMediaMessage("conv-7", formData, { onProgress });
+
+    expect(result.item.id).toBe("msg-2");
+    expect(onProgress).toHaveBeenCalledWith(25);
+    expect(onProgress).toHaveBeenCalledWith(100);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

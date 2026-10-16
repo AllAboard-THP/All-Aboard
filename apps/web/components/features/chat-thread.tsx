@@ -1,18 +1,27 @@
 "use client";
 
 import type { ChatMessage } from "@allaboard/types";
+import type { RecordedMedia } from "@allaboard/ui/hooks/media-recorder";
+import { cn } from "@allaboard/ui/lib/utils";
+import {
+  ChatComposerSession,
+  type ChatComposerLabels,
+} from "@allaboard/ui/patterns/chat-composer";
+import {
+  ChatMessageContent,
+  type ChatBubbleLabels,
+} from "@allaboard/ui/patterns/chat-message-bubbles";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { Button } from "@allaboard/ui/components/button";
-import { cn } from "@allaboard/ui/lib/utils";
-
+import type { AppLocale } from "@/i18n/routing";
 import {
+  buildChatMediaFormData,
   fetchConversationWsToken,
   markConversationRead,
+  sendChatMediaMessage,
   sendChatMessage,
 } from "@/lib/chat-client";
-import type { AppLocale } from "@/i18n/routing";
 import { buildConversationWsUrl } from "@/lib/public-api-url";
 
 type CurrentUser = {
@@ -61,6 +70,18 @@ function upsertMessage(
   return [...withoutOptimisticDup, message];
 }
 
+function replaceOptimistic(
+  messages: DisplayMessage[],
+  optimisticId: string,
+  message: ChatMessage,
+): DisplayMessage[] {
+  const hasReal = messages.some((item) => item.id === message.id);
+  if (hasReal) {
+    return messages.filter((item) => item.id !== optimisticId);
+  }
+  return messages.map((item) => (item.id === optimisticId ? message : item));
+}
+
 export function ChatThread({
   conversationId,
   initialMessages,
@@ -71,10 +92,42 @@ export function ChatThread({
 }: Props) {
   const t = useTranslations("messages");
   const [messages, setMessages] = useState<DisplayMessage[]>(initialMessages);
-  const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false);
-  const [sendError, setSendError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const conversationIdRef = useRef(conversationId);
+  conversationIdRef.current = conversationId;
+
+  const bubbleLabels: ChatBubbleLabels = {
+    voiceMessage: t("previewVoice"),
+    videoMessage: t("previewVideo"),
+    sending: t("sendPending"),
+    duration: t("duration"),
+  };
+
+  const composerLabels: ChatComposerLabels = {
+    send: t("send"),
+    sendPending: t("sendPending"),
+    sendLabel: t("sendLabel"),
+    sendPlaceholder: t("sendPlaceholder"),
+    sendError: t("sendError"),
+    retry: t("retrySend"),
+    uploadProgress: t("uploadProgress"),
+    captionPlaceholder: t("captionPlaceholder"),
+    microphone: t("microphone"),
+    camera: t("camera"),
+    screen: t("screen"),
+    stop: t("stopRecording"),
+    discard: t("discardRecording"),
+    livePreview: t("recorderLivePreview"),
+    previewAudio: t("recorderPreviewAudio"),
+    previewVideo: t("recorderPreviewVideo"),
+    remaining: t("recorderRemaining"),
+    permissionDenied: t("recorderPermissionDenied"),
+    insecureContext: t("recorderInsecureContext"),
+    notSupported: t("recorderNotSupported"),
+    fileTooLarge: t("recorderFileTooLarge"),
+    noData: t("recorderNoData"),
+    screenUnsupported: t("recorderScreenUnsupported"),
+  };
 
   useEffect(() => {
     setMessages(initialMessages);
@@ -138,12 +191,9 @@ export function ChatThread({
     };
   }, [conversationId]);
 
-  const sendMessage = useCallback(
-    async (event: React.FormEvent) => {
-      event.preventDefault();
-      const body = input.trim();
-      if (!body || sending) return;
-
+  const sendText = useCallback(
+    async (body: string) => {
+      const requestConversationId = conversationId;
       const optimistic: DisplayMessage = {
         id: `opt-${Date.now()}`,
         kind: "text",
@@ -157,26 +207,68 @@ export function ChatThread({
       };
 
       setMessages((prev) => [...prev, optimistic]);
-      setInput("");
-      setSending(true);
-      setSendError(null);
 
       try {
         const { item } = await sendChatMessage(conversationId, body);
-        setMessages((prev) => upsertMessage(prev, item));
-      } catch {
-        setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
-        setInput(body);
-        setSendError(t("sendError"));
-      } finally {
-        setSending(false);
+        if (conversationIdRef.current !== requestConversationId) return;
+        setMessages((prev) => replaceOptimistic(prev, optimistic.id, item));
+      } catch (error) {
+        if (conversationIdRef.current === requestConversationId) {
+          setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
+        }
+        throw error;
       }
     },
-    [conversationId, currentUser, input, sending, t],
+    [conversationId, currentUser],
   );
 
-  const peerAvatar =
-    peerAvatarUrl?.trim() ? peerAvatarUrl.trim() : null;
+  const sendMedia = useCallback(
+    async (
+      recording: RecordedMedia,
+      caption: string,
+      onProgress: (percent: number) => void,
+    ) => {
+      const requestConversationId = conversationId;
+      const optimistic: DisplayMessage = {
+        id: `opt-${Date.now()}`,
+        kind: recording.kind,
+        body: caption || undefined,
+        attachment: {
+          url: recording.previewUrl,
+          mimeType: recording.mimeType,
+          sizeBytes: recording.blob.size,
+          durationMs: recording.durationMs,
+          source: recording.source,
+        },
+        userId: currentUser.userId,
+        userName: currentUser.displayName,
+        avatarUrl: currentUser.avatarUrl,
+        createdAt: new Date().toISOString(),
+        type: "message",
+        optimistic: true,
+      };
+
+      setMessages((prev) => [...prev, optimistic]);
+
+      try {
+        const { item } = await sendChatMediaMessage(
+          conversationId,
+          buildChatMediaFormData(recording, caption),
+          { onProgress },
+        );
+        if (conversationIdRef.current !== requestConversationId) return;
+        setMessages((prev) => replaceOptimistic(prev, optimistic.id, item));
+      } catch (error) {
+        if (conversationIdRef.current === requestConversationId) {
+          setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
+        }
+        throw error;
+      }
+    },
+    [conversationId, currentUser],
+  );
+
+  const peerAvatar = peerAvatarUrl?.trim() ? peerAvatarUrl.trim() : null;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-testid="chat-thread">
@@ -207,9 +299,8 @@ export function ChatThread({
       >
         {messages.map((msg) => {
           const isMine = msg.userId === currentUser.userId;
-          const avatar =
-            isMine ?
-              currentUser.avatarUrl?.trim() || null
+          const avatar = isMine
+            ? currentUser.avatarUrl?.trim() || null
             : peerAvatar;
           const name = isMine ? currentUser.displayName : peerDisplayName;
 
@@ -222,43 +313,39 @@ export function ChatThread({
               )}
               data-testid="chat-message"
             >
-              {!isMine && (
-                avatar ?
+              {!isMine &&
+                (avatar ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={avatar}
                     alt={name}
                     className="mb-1 size-7 shrink-0 rounded-full object-cover"
                   />
-                : <div
+                ) : (
+                  <div
                     aria-hidden
                     className="mb-1 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-muted-foreground"
                   >
                     {participantInitials(name)}
                   </div>
-              )}
+                ))}
               <div
                 className={cn(
                   "flex max-w-[70%] flex-col gap-0.5",
                   isMine ? "items-end" : "items-start",
                 )}
               >
-                <div
-                  className={cn(
-                    "rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
-                    isMine ?
-                      "rounded-br-sm bg-primary text-primary-foreground"
-                    : "rounded-bl-sm bg-muted text-foreground",
-                    msg.optimistic && "opacity-70",
-                  )}
-                >
-                  {msg.body ??
-                    (msg.kind === "audio" ?
-                      t("previewVoice")
-                    : msg.kind === "video" ?
-                      t("previewVideo")
-                    : "")}
-                </div>
+                <ChatMessageContent
+                  message={{
+                    kind: msg.kind,
+                    body: msg.body,
+                    attachmentUrl: msg.attachment?.url,
+                    durationMs: msg.attachment?.durationMs,
+                    pending: msg.optimistic,
+                  }}
+                  mine={isMine}
+                  labels={bubbleLabels}
+                />
                 <span className="px-1 text-[10px] text-muted-foreground">
                   {formatMessageTime(msg.createdAt, locale)}
                 </span>
@@ -269,37 +356,12 @@ export function ChatThread({
         <div ref={bottomRef} />
       </div>
 
-      <form
-        onSubmit={sendMessage}
-        className="flex items-center gap-3 border-t border-border p-4"
-      >
-        <label className="sr-only" htmlFor="chat-message-input">
-          {t("sendLabel")}
-        </label>
-        <input
-          id="chat-message-input"
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={t("sendPlaceholder")}
-          disabled={sending}
-          data-testid="chat-message-input"
-          className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        />
-        <Button
-          type="submit"
-          size="sm"
-          disabled={sending || input.trim().length === 0}
-          data-testid="chat-send-button"
-        >
-          {sending ? t("sendPending") : t("send")}
-        </Button>
-      </form>
-      {sendError ? (
-        <p className="px-4 pb-3 text-sm text-destructive" role="alert">
-          {sendError}
-        </p>
-      ) : null}
+      <ChatComposerSession
+        key={conversationId}
+        labels={composerLabels}
+        onSendText={sendText}
+        onSendMedia={sendMedia}
+      />
     </div>
   );
 }
