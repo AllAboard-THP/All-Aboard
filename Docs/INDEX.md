@@ -30,6 +30,7 @@ One **canonical source** per topic. Task backlog and priorities: [GitHub Project
 | MVP phases, principles, code state | [README.md](README.md) | — |
 | Web ↔ API contract, smoke journal | [guides/web-api-integration.md](guides/web-api-integration.md) | — |
 | Environment variables (all services) | [deployment/environment-variables.md](deployment/environment-variables.md) | [dokploy-instance.md](deployment/dokploy-instance.md) |
+| Chat audio/video storage (S3 / MinIO) | [deployment/message-media-storage.md](deployment/message-media-storage.md) | [ADR 0008](adr/0008-message-media-object-storage.md) |
 | Dokploy instance facts (domains, internal URLs) | [deployment/dokploy-instance.md](deployment/dokploy-instance.md) | Runbooks |
 | Dokploy dev runbook (Phase 2) | [deployment/runbooks/dev-phase2.md](deployment/runbooks/dev-phase2.md) | Integration guide |
 | Dokploy staging runbook | [deployment/runbooks/staging-phase2.md](deployment/runbooks/staging-phase2.md) | [staging checklist](deployment/staging-promotion-checklist.md) |

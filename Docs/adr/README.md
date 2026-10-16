@@ -14,3 +14,5 @@ Format: `NNNN-short-title.md` (incrementing number, **no duplicates**).
 | [0004](0004-agent-indexer-architecture.md) | Agent Rubberduck & Intuition (Phase 4) — bridge publish, indexer réseau Intuition | Proposé — 2026-05-27 ([#37](https://github.com/AllAboard-THP/All-Aboard/issues/37)) |
 | [0005](0005-i18n-web-next-intl.md) | i18n web FR/EN (next-intl) | Accepté — 2026-05-28 ([#75](https://github.com/AllAboard-THP/All-Aboard/issues/75)) |
 | [0006](0006-authentication-passkeys.md) | Authentification passkeys (WebAuthn) — remplace password prod + annule Phase 3b | Accepté — 2026-06-11 |
+| [0007](0007-oauth-google-sso.md) | Google sign-in (OAuth 2.0) | Accepté — 2026-06-09 |
+| [0008](0008-message-media-object-storage.md) | Message media object storage (S3 / MinIO) | Proposé — 2026-10-16 |

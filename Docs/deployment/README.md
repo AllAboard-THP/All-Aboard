@@ -5,6 +5,7 @@ Dokploy / Coolify deployment reference for All-Aboard services.
 | Document | Description |
 |----------|-------------|
 | [environment-variables.md](environment-variables.md) | **Canonical** env var matrix (Web, API, Agent, Indexer) |
+| [message-media-storage.md](message-media-storage.md) | Chat audio/video: local disk in dev, S3/MinIO in prod ([ADR 0008](../adr/0008-message-media-object-storage.md)) |
 | [dokploy-instance.md](dokploy-instance.md) | Instance facts on Dokploy org **Pretorya** (2026-10-07): domains, branches, internal `API_URL` |
 | [staging-promotion-checklist.md](staging-promotion-checklist.md) | Dev → staging promotion checklist ([#31](https://github.com/AllAboard-THP/All-Aboard/issues/31)) |
 | [runbooks/dev-phase2.md](runbooks/dev-phase2.md) | Manual Dokploy **dev** checklist (Postgres, secrets, smoke) |

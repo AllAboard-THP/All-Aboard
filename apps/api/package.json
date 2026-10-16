@@ -10,6 +10,7 @@
     "db:migrate": "tsx src/migrate.ts",
     "db:seed": "tsx src/seed.ts",
     "db:generate": "drizzle-kit generate",
+    "migrate:message-media-s3": "tsx src/scripts/migrate-message-media-to-s3.ts",
     "lint": "eslint .",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run"
@@ -17,6 +18,8 @@
   "dependencies": {
     "@0xintuition/sdk": "2.0.2",
     "@allaboard/types": "workspace:*",
+    "@aws-sdk/client-s3": "^3.1152.0",
+    "@aws-sdk/s3-request-presigner": "^3.1152.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.2.0",
     "@fastify/jwt": "^10.0.0",
