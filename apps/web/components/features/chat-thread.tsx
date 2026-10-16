@@ -19,6 +19,7 @@ import {
   buildChatMediaFormData,
   fetchConversationWsToken,
   markConversationRead,
+  parseChatWsMessage,
   sendChatMediaMessage,
   sendChatMessage,
 } from "@/lib/chat-client";
@@ -64,9 +65,11 @@ function upsertMessage(
   if (messages.some((m) => m.id === message.id)) {
     return messages;
   }
-  const withoutOptimisticDup = messages.filter(
-    (m) => !m.optimistic || m.body !== message.body || m.userId !== message.userId,
-  );
+  const withoutOptimisticDup = messages.filter((existing) => {
+    if (!existing.optimistic || existing.userId !== message.userId) return true;
+    if (existing.kind !== message.kind) return true;
+    return existing.body !== message.body;
+  });
   return [...withoutOptimisticDup, message];
 }
 
@@ -158,9 +161,9 @@ export function ChatThread({
 
         ws.onmessage = (event) => {
           try {
-            const data = JSON.parse(String(event.data)) as ChatMessage;
-            if (data.type !== "message" || typeof data.id !== "string") return;
-            setMessages((prev) => upsertMessage(prev, data));
+            const message = parseChatWsMessage(JSON.parse(String(event.data)));
+            if (!message) return;
+            setMessages((prev) => upsertMessage(prev, message));
           } catch {
             /* ignore malformed payloads */
           }
