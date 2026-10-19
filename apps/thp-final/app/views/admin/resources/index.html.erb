@@ -1,0 +1,66 @@
+<% content_for :title, "Admin — Ressources en attente" %>
+
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <div class="flex items-center gap-3 mb-8">
+    <%= link_to admin_dashboard_path, class: "text-gray-400 hover:text-white transition-colors" do %>
+      <i class="fas fa-arrow-left"></i>
+    <% end %>
+    <div>
+      <h1 class="text-3xl font-bold">Ressources à valider</h1>
+      <p class="text-gray-400 text-sm mt-1">
+        <span class="text-emerald-400 font-semibold"><%= @pending_resources.size %></span>
+        ressource<%= "s" if @pending_resources.size != 1 %> en attente de validation
+      </p>
+    </div>
+  </div>
+
+  <% if @pending_resources.any? %>
+    <div class="space-y-4">
+      <% @pending_resources.each do |resource| %>
+        <div class="glass rounded-2xl p-6">
+          <div class="flex items-start justify-between gap-4 mb-3">
+            <div class="flex-1 min-w-0">
+              <h2 class="text-lg font-semibold mb-1"><%= resource.title %></h2>
+              <p class="text-gray-400 text-sm line-clamp-3"><%= resource.body.truncate(300) %></p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <span class="flex items-center gap-1.5 text-xs text-gray-400">
+              <img src="<%= resource.user.profile_avatar %>" class="w-4 h-4 rounded-full">
+              <%= resource.user.display_name %>
+            </span>
+            <% if resource.subject %>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border"
+                    style="color:<%= resource.subject.accent_color %>;border-color:<%= resource.subject.accent_color %>33;background-color:<%= resource.subject.accent_color %>18;">
+                <i class="fas <%= resource.subject.icon %> text-[10px]"></i>
+                <%= resource.subject.name %>
+              </span>
+            <% end %>
+            <% resource.tags.each do |tag| %>
+              <span class="px-2 py-0.5 rounded-full text-xs text-gray-400 bg-white/5 border border-white/8">#<%= tag.name %></span>
+            <% end %>
+            <span class="text-xs text-gray-500 ml-auto">Soumise <%= time_ago_in_words(resource.created_at) %></span>
+          </div>
+
+          <div class="flex gap-3 pt-3 border-t border-white/10">
+            <%= button_to approve_admin_resource_path(resource), method: :post,
+                class: "flex items-center gap-2 px-4 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 rounded-xl text-sm font-medium transition-colors" do %>
+              <i class="fas fa-check"></i> Approuver
+            <% end %>
+            <%= button_to reject_admin_resource_path(resource), method: :post,
+                data: { turbo_confirm: "Refuser cette ressource ?" },
+                class: "flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-medium transition-colors" do %>
+              <i class="fas fa-times"></i> Refuser
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="glass rounded-2xl p-12 text-center text-gray-400">
+      <i class="fas fa-check-circle text-4xl mb-4 block text-emerald-400/50"></i>
+      <p class="font-medium">Aucune ressource en attente de validation.</p>
+    </div>
+  <% end %>
+</div>

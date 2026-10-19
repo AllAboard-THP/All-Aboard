@@ -1,0 +1,106 @@
+import type { Decorator } from "@storybook/react";
+import type { ReactNode } from "react";
+
+import { cn } from "@allaboard/ui/lib/utils";
+
+import { AppAbstractBackground } from "./app-abstract-background";
+import { APP_STAGE_CLASS } from "./landing-layout";
+
+type FrameWidth = "feed" | "form" | "full";
+
+/** Spacing compact pour cartes feed en prod (apps/web). */
+export const patternListCardClassName = "gap-0 py-4";
+export const patternListCardHeaderClassName = "gap-1.5 px-4 pb-2";
+export const patternListCardHeaderSoloClassName = "gap-1.5 px-4 pb-0";
+export const patternListCardContentClassName = "px-4 pt-0";
+
+/**
+ * Enveloppe compacte type Badge — bordure, fond, padding serré, contenu centré.
+ * Utilisée dans les stories Patterns (preview) ; en prod voir Card pleine largeur.
+ */
+export function PatternDemoCardShell({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "inline-flex max-w-sm flex-col items-center gap-2 rounded-xl border bg-card px-4 py-3 text-center shadow-sm",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** Alert compacte et centrée (même logique que le shell). */
+export const patternDemoAlertClassName =
+  "!flex w-full max-w-sm flex-col items-center gap-1 rounded-lg border px-4 py-3 text-center [&_[data-slot=alert-title]]:w-full [&_[data-slot=alert-title]]:text-center [&_[data-slot=alert-description]]:w-full [&_[data-slot=alert-description]]:justify-items-center [&_[data-slot=alert-description]]:text-center";
+
+export function PatternStoryFrame({
+  children,
+  width = "feed",
+}: {
+  children: ReactNode;
+  width?: FrameWidth;
+}) {
+  if (width === "full") {
+    // items-center: bounded children (max-w-*) sit centered like prod mx-auto layouts
+    return (
+      <div className="flex min-h-[100dvh] w-full flex-col items-center p-6">
+        {children}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-[100dvh] w-full items-center justify-center p-6">
+      <div className={width === "form" ? "w-full max-w-md" : "flex justify-center"}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+export function withPatternStoryFrame(width: FrameWidth = "feed"): Decorator {
+  return (Story) => (
+    <PatternStoryFrame width={width}>
+      <Story />
+    </PatternStoryFrame>
+  );
+}
+
+/** App mesh background — canonical `(app)/` pages (profile, feed, dashboard). */
+export function withAppStageStoryFrame(width: FrameWidth = "full"): Decorator {
+  return (Story) => (
+    <div className={cn("relative min-h-[100dvh]", APP_STAGE_CLASS)}>
+      <AppAbstractBackground />
+      <div className="relative z-10">
+        <PatternStoryFrame width={width}>
+          <Story />
+        </PatternStoryFrame>
+      </div>
+    </div>
+  );
+}
+
+export const patternStoryParameters = {
+  layout: "fullscreen" as const,
+};
+
+export const mobileStoryParameters = {
+  ...patternStoryParameters,
+  layout: "fullscreen" as const,
+  viewport: {
+    defaultViewport: "mobile1",
+  },
+};
+
+export const screenStoryParameters = {
+  ...patternStoryParameters,
+  layout: "fullscreen" as const,
+};

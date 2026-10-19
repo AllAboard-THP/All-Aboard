@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "design-system-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/ui-design/skills/design-system-patterns/SKILL.md",
+      "computedHash": "5f8c9b187e77fcb31db78da2f7b55f905dcd2357454624cac93f00c766ace346"
+    },
+    "shadcn": {
+      "source": "shadcn/ui",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn/SKILL.md",
+      "computedHash": "80a6226e78f6d1fe464214ae0ef449d49d8ffaa3e7704f011e9b418c678ad4d1"
+    },
+    "storybook": {
+      "source": "dalestudy/skills",
+      "sourceType": "github",
+      "skillPath": "skills/storybook/SKILL.md",
+      "computedHash": "cd915223b409a385fd9a41965b2835c2244d256801fe3d401764fd21f75c8e31"
+    },
+    "storybook-story-writing": {
+      "source": "thebushidocollective/han",
+      "sourceType": "github",
+      "skillPath": "plugins/tools/storybook/skills/storybook-story-writing/SKILL.md",
+      "computedHash": "1b0b4120563b8e6fd97334504148cee1dac45043d42acba528679c735a22fb75"
+    },
+    "tailwind-design-system": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/frontend-mobile-development/skills/tailwind-design-system/SKILL.md",
+      "computedHash": "988d80e52c67c3692d43cc963b6a048a239895e88b272b061de55370d0f8efc3"
+    },
+    "turborepo-monorepo": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-typescript/skills/turborepo-monorepo/SKILL.md",
+      "computedHash": "dd24a9f0e1ba7586ca6ce85732b6f3388d2c2760307d4316596ab0cb155f8173"
+    }
+  }
+}
