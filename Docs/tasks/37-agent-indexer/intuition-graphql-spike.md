@@ -1,5 +1,7 @@
 # Spike — Intuition GraphQL read (All-Aboard)
 
+**Superseded for product scope (2026-10-19).** Do not publish help requests. Web3 is certifications only: [product/certifications.md](../../product/certifications.md). The query below is a historical hypothesis from issue #67, kept so the old mapping is not rediscovered as if it were current.
+
 **Context:** issue [#67](https://github.com/AllAboard-THP/All-Aboard/issues/67) · ADR [0004](../../adr/0004-agent-indexer-architecture.md).
 
 All-Aboard **does not reimplement** the Intuition indexer. **Reading** the graph (atoms, triples, claims) goes through the network **GraphQL** API. MVP writes go through outbox + publisher (stub then SDK).

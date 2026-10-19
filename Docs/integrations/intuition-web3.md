@@ -119,19 +119,20 @@ Docs worth opening before any implementation ticket:
 | Concern | Today | Source to follow next |
 | --- | --- | --- |
 | Product data | Postgres via Fastify. Help requests, feed, auth. | Stays the product source of truth. |
-| Publish reliability | `outbox_events` + poller. Stub log `intuition_publish_stub`. | Keep the outbox. Replace the stub body using the packages below. |
+| Publish reliability | `outbox_events` + poller. Stub log `intuition_publish_stub` on `help_request.created` (historical). | Keep an outbox. The event to publish is a certification, not the help request. See [certifications.md](../product/certifications.md). |
 | On-chain write | Not called. Env reserved: `INTUITION_RPC_URL`, `INTUITION_API_KEY`. | `@0xintuition/protocol` + `@0xintuition/deployments`, or `POST /api/atoms` on a Core node the operator runs. |
-| Graph read | Spike only: hosted GraphQL (`INTUITION_GRAPHQL_URL`). See [intuition-graphql-spike.md](../tasks/37-agent-indexer/intuition-graphql-spike.md). | Core REST (`GET /api/atoms/:id`) if we run or consume a Core node. Hosted GraphQL stays valid until that choice is an ADR revision. |
+| Graph read | Spike only: hosted GraphQL (`INTUITION_GRAPHQL_URL`). The spike’s help-request query is **not** the product target. | Read attestations on a profile. See [certifications.md](../product/certifications.md). Core REST (`GET /api/atoms/:id`) if we run or consume a Core node. Hosted GraphQL stays valid until that choice is an ADR revision. |
 | User login | Passkeys / JWT. Wallet is not a login. | Unchanged. Core API keys are operator keys, not end-user sessions. |
 | In-repo indexer | Forbidden (`apps/indexer`). | Still forbidden. Consuming Core images or the public RPC is not an in-house indexer. |
 | `packages/blockchain` | Not created. Listed as optional v1+ in [roadmap-v1-plus.md](../vision/roadmap-v1-plus.md). | Home for the package imports and id helpers when the stub is replaced. |
 
-Mapping hypothesis for a help request (unchanged from the GraphQL spike, now tied to package ids):
+**Product target (2026-10-19):** publish certifications, not help requests. Canonical flow: [certifications.md](../product/certifications.md).
 
-- Build a canonical payload (URL or JSON-LD) for the request.
-- `calculateAtomId` from `@0xintuition/ids` → store the `0x…` id on the row when the publisher succeeds.
-- Triples use enshrined predicates from `@0xintuition/predicates` (type, title, author), not ad hoc strings.
+- A profile +1 (skill now, mission achievement later) is the claim that goes on the graph.
+- `calculateAtomId` from `@0xintuition/ids` names the person, the shared skill or experience, and the attestation. Store the `0x…` id when a real publisher succeeds.
+- Triples use enshrined predicates from `@0xintuition/predicates`, not ad hoc strings. Predicate choice is still open.
 - The same id is what `GET /api/atoms/:id` returns after Core indexes the chain, or immediately if the write went through Core’s API.
+- The shipped `help_request.created` outbox stub stays in the API. Do not extend it into a help-request atom. The [GraphQL spike](../tasks/37-agent-indexer/intuition-graphql-spike.md) query for `help_request:{uuid}` is superseded.
 
 `INTUITION_API_KEY` in [`.env.example`](../../.env.example) matches a Core write key (`Authorization: Bearer ik_…`) more closely than a hosted GraphQL key. `INTUITION_GRAPHQL_URL` remains the hosted-indexer read path from ADR 0004.
 

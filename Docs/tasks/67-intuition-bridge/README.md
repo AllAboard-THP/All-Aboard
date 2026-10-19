@@ -39,8 +39,8 @@ Connect Postgres help-request creation to the **Intuition** ecosystem via a reli
 
 ## Follow-up (#68, SDK)
 
-- Replace stub with Intuition testnet SDK (`INTUITION_RPC_URL`, wallet keys).
-- Additional events: responses, signals, Rubberduck handoff (`help_request.rubberduck_handoff`).
+- The shipped stub records `help_request.created`. That event is **not** the web3 product. Certifications (peer +1 on a profile) are the chain scope: [product/certifications.md](../../product/certifications.md).
+- Replace the stub body with a real publisher only when that certification flow exists (`INTUITION_RPC_URL`, operator wallet). Do not add help-request, response, or Rubberduck atoms.
 
 ## Links
 
