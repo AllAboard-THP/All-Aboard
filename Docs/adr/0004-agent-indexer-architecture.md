@@ -4,6 +4,8 @@
 
 Accepted — 2026-06-01 (backlog framing [#37](https://github.com/AllAboard-THP/All-Aboard/issues/37) validated; revised 2026-05-27 — **Intuition indexer**, no in-house `apps/indexer`; revised 2026-06-02 — **`apps/agent` ≠ Rubberduck** (Rubberduck = external service); Phase 4 implementation [#66](https://github.com/AllAboard-THP/All-Aboard/issues/66)–[#69](https://github.com/AllAboard-THP/All-Aboard/issues/69) may start).
 
+**Product scope revision (2026-10-19):** chain publish is **certifications only** (peer skill +1 on a profile; mission experience certs later). Help requests stay in Postgres. The `help_request.created` outbox in this ADR is the shipped stub, not the target mapping. Canonical: [product/certifications.md](../product/certifications.md).
+
 ## Context
 
 All-Aboard describes a product journey where **Rubberduck** (AI, **external service**, other team) can help quickly on simple requests ([user-journeys.md](../product/user-journeys.md) steps 4–5: user redirect), and where the **Intuition** layer (blockchain / knowledge graph) feeds the long-term vision ([architecture/dataflow.md](../architecture/dataflow.md), [integrations/intuition-docs-index.md](../integrations/intuition-docs-index.md)).
