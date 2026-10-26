@@ -119,8 +119,8 @@ Docs worth opening before any implementation ticket:
 | Concern | Today | Source to follow next |
 | --- | --- | --- |
 | Product data | Postgres via Fastify. Help requests, feed, auth. | Stays the product source of truth. |
-| Publish reliability | `outbox_events` + poller. Stub log `intuition_publish_stub` on `help_request.created` (historical). | Keep an outbox. The event to publish is a certification, not the help request. See [certifications.md](../product/certifications.md). |
-| On-chain write | Not called. Env reserved: `INTUITION_RPC_URL`, `INTUITION_API_KEY`. | `@0xintuition/protocol` + `@0xintuition/deployments`, or `POST /api/atoms` on a Core node the operator runs. |
+| Publish reliability | `outbox_events` + poller. Stub log `intuition_publish_stub` on `help_request.created` (historical). The publisher only reads its own event type; other events (e.g. `help_request.summary_requested`) belong to their workers. | Keep an outbox. The event to publish is a certification, not the help request. See [certifications.md](../product/certifications.md). |
+| On-chain write | Not called. The help-request SDK path (`@0xintuition/sdk` + viem, wired in Lot 3) was removed on 2026-10-26: `publishHelpRequestCreatedToIntuition` is stub-only even when `INTUITION_RPC_URL` and `INTUITION_API_KEY` are set. Chain/wallet helpers (`resolveIntuitionChain`, `createIntuitionWriteConfig`) stay for the certification publisher. | `@0xintuition/protocol` + `@0xintuition/deployments`, or `POST /api/atoms` on a Core node the operator runs. |
 | Graph read | Spike only: hosted GraphQL (`INTUITION_GRAPHQL_URL`). The spike’s help-request query is **not** the product target. | Read attestations on a profile. See [certifications.md](../product/certifications.md). Core REST (`GET /api/atoms/:id`) if we run or consume a Core node. Hosted GraphQL stays valid until that choice is an ADR revision. |
 | User login | Passkeys / JWT. Wallet is not a login. | Unchanged. Core API keys are operator keys, not end-user sessions. |
 | In-repo indexer | Forbidden (`apps/indexer`). | Still forbidden. Consuming Core images or the public RPC is not an in-house indexer. |

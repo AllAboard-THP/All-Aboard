@@ -23,7 +23,7 @@ Connect Postgres help-request creation to the **Intuition** ecosystem via a reli
 
 - **`outbox_events`**: `event_type` + `aggregate_id` (request UUID) unique → insert idempotence.
 - **`help_requests.intuition_published_at`**: timestamp after stub publish (or real SDK).
-- **Publisher**: poll `INTUITION_PUBLISHER_POLL_MS` (default 5s), batch 50; log `intuition_publish_stub`; does not block `201`.
+- **Publisher**: poll `INTUITION_PUBLISHER_POLL_MS` (default 5s), batch 50, `help_request.created` events only (other outbox events, such as `help_request.summary_requested`, are left to their own worker); log `intuition_publish_stub`; does not block `201`.
 
 ## MVP rules
 
@@ -40,7 +40,8 @@ Connect Postgres help-request creation to the **Intuition** ecosystem via a reli
 ## Follow-up (#68, SDK)
 
 - The shipped stub records `help_request.created`. That event is **not** the web3 product. Certifications (peer +1 on a profile) are the chain scope: [product/certifications.md](../../product/certifications.md).
-- Replace the stub body with a real publisher only when that certification flow exists (`INTUITION_RPC_URL`, operator wallet). Do not add help-request, response, or Rubberduck atoms.
+- The help-request SDK publish (Lot 3) was removed on 2026-10-26: the stub never writes on-chain, even with credentials set.
+- Add a real publisher only when that certification flow exists (`INTUITION_RPC_URL`, operator wallet). Do not add help-request, response, or Rubberduck atoms.
 
 ## Links
 

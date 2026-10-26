@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import type { HelpRequestCreatedOutboxPayload } from "@allaboard/types";
 import { intuitionMainnet, intuitionTestnet } from "@0xintuition/sdk";
 import {
@@ -7,7 +7,6 @@ import {
   isIntuitionPublishConfigured,
   publishHelpRequestCreatedToIntuition,
   resolveIntuitionChain,
-  type IntuitionSdkDeps,
 } from "./sdk-client.js";
 import type { IntuitionConfig } from "./config.js";
 
@@ -26,25 +25,6 @@ const configuredConfig: IntuitionConfig = {
   publisherEnabled: true,
   publisherPollMs: 5_000,
 };
-
-function mockAtom(termId: string) {
-  return {
-    uri: "mock",
-    transactionHash: "0xabc" as const,
-    state: { termId },
-  };
-}
-
-function mockSdkDeps(): IntuitionSdkDeps {
-  const createAtomFromString = vi.fn(async (_config, label: string) => {
-    return mockAtom(`0x${label.length.toString(16).padStart(64, "0")}`);
-  });
-  const batchCreateTripleStatements = vi.fn(async () => ({
-    transactionHash: "0xtriple" as const,
-    state: [],
-  }));
-  return { createAtomFromString, batchCreateTripleStatements };
-}
 
 describe("helpRequestExternalId", () => {
   it("prefixes help request UUID", () => {
@@ -106,32 +86,11 @@ describe("createIntuitionWriteConfig", () => {
 });
 
 describe("publishHelpRequestCreatedToIntuition", () => {
-  it("returns stub mode without credentials", async () => {
-    const result = await publishHelpRequestCreatedToIntuition(payload, {
-      ...configuredConfig,
-      rpcUrl: null,
-    });
+  it("never writes help requests on-chain, even when configured", async () => {
+    const result = await publishHelpRequestCreatedToIntuition(payload);
     expect(result).toEqual({
       mode: "stub",
       externalId: helpRequestExternalId(payload.id),
     });
-  });
-
-  it("creates subject atom and triple batch when configured", async () => {
-    const deps = mockSdkDeps();
-    const result = await publishHelpRequestCreatedToIntuition(
-      payload,
-      configuredConfig,
-      deps,
-    );
-
-    expect(result.mode).toBe("sdk");
-    if (result.mode !== "sdk") return;
-
-    expect(result.externalId).toBe(helpRequestExternalId(payload.id));
-    expect(result.transactionHash).toBe("0xtriple");
-    expect(result.tripleCount).toBe(3);
-    expect(deps.createAtomFromString).toHaveBeenCalledTimes(7);
-    expect(deps.batchCreateTripleStatements).toHaveBeenCalledOnce();
   });
 });
