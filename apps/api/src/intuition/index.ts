@@ -17,6 +17,5 @@ export {
   isIntuitionPublishConfigured,
   publishHelpRequestCreatedToIntuition,
   resolveIntuitionChain,
-  type IntuitionSdkDeps,
   type PublishHelpRequestResult,
 } from "./sdk-client.js";

@@ -4,7 +4,11 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
 import { helpRequests, outboxEvents } from "../db/schema.js";
 import { ensureMigrated } from "../test/ensure-migrated.js";
-import { enqueueHelpRequestCreated, HELP_REQUEST_CREATED } from "./outbox.js";
+import {
+  enqueueHelpRequestCreated,
+  enqueueHelpRequestSummaryRequested,
+  HELP_REQUEST_CREATED,
+} from "./outbox.js";
 import { processPendingOutboxEvents } from "./publisher.js";
 import { helpRequestExternalId } from "./sdk-client.js";
 
@@ -52,15 +56,12 @@ describe("processPendingOutboxEvents (mocked publish)", () => {
     } as never;
   }
 
-  it("logs intuition_publish_sdk when publishFn returns sdk mode", async () => {
+  it("logs intuition_publish_stub when publishFn returns stub mode", async () => {
     const logs: Array<{ message: string; meta?: Record<string, unknown> }> =
       [];
     const publishFn = vi.fn().mockResolvedValue({
-      mode: "sdk",
+      mode: "stub",
       externalId: helpRequestExternalId("00000000-0000-0000-0000-000000000099"),
-      transactionHash: "0xmock",
-      atomTermId: "0xterm",
-      tripleCount: 3,
     });
 
     const db = mockDb({
@@ -86,9 +87,9 @@ describe("processPendingOutboxEvents (mocked publish)", () => {
     });
 
     expect(publishFn).toHaveBeenCalledOnce();
-    expect(logs.some((entry) => entry.message === "intuition_publish_sdk")).toBe(
-      true,
-    );
+    expect(
+      logs.some((entry) => entry.message === "intuition_publish_stub"),
+    ).toBe(true);
   });
 
   it("does not mark processed when publishFn throws", async () => {
@@ -195,8 +196,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
       const first = await processPendingOutboxEvents(db, { log });
       const publishLogs = logs.filter(
         (l) =>
-          (l.message === "intuition_publish_stub" ||
-            l.message === "intuition_publish_sdk") &&
+          l.message === "intuition_publish_stub" &&
           l.meta?.helpRequestId === row.id,
       );
       expect(publishLogs).toHaveLength(1);
@@ -213,8 +213,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
       expect(
         logs.filter(
           (l) =>
-            (l.message === "intuition_publish_stub" ||
-              l.message === "intuition_publish_sdk") &&
+            l.message === "intuition_publish_stub" &&
             l.meta?.helpRequestId === row.id,
         ),
       ).toHaveLength(1);
@@ -249,7 +248,28 @@ describe.skipIf(!process.env.DATABASE_URL)(
       });
       expect(result.skippedAlreadyPublished).toBe(1);
       expect(logs).not.toContain("intuition_publish_stub");
-      expect(logs).not.toContain("intuition_publish_sdk");
+    });
+
+    it("leaves summary_requested events for the AI summary worker", async () => {
+      const inserted = await db
+        .insert(helpRequests)
+        .values({
+          title: `Summary untouched ${Date.now()}`,
+          authorId: "alice@dev.local",
+          tags: [],
+        })
+        .returning();
+      const row = inserted[0]!;
+      await enqueueHelpRequestSummaryRequested(db, row.id);
+
+      await processPendingOutboxEvents(db);
+
+      const rows = await db
+        .select()
+        .from(outboxEvents)
+        .where(eq(outboxEvents.aggregateId, row.id));
+      expect(rows).toHaveLength(1);
+      expect(rows[0]?.processedAt).toBeNull();
     });
   },
 );
