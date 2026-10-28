@@ -10,12 +10,13 @@ Quand l'agent modifie le dépôt (code, doc, config), **ne pas laisser le travai
 ## Début de session (travail non trivial)
 
 1. Vérifier la branche courante (`git branch --show-current`).
-2. Si sur `Dev` / `staging` / `main` : créer une branche **avant** les edits :
+2. Si la branche courante **correspond déjà au sujet** (même issue/thème) : la garder.
+   Sinon — sur `Dev` / `staging` / `main`, **ou** sur une branche d'un autre sujet — créer une branche **avant** les edits (si des changements non commités traînent, demander à l'humain) :
    ```bash
    git fetch origin
-   git checkout Dev && git pull origin Dev
-   git checkout -b <type>/<issue>-<slug-court>
+   git checkout -b <type>/<issue>-<slug-court> origin/Dev
    ```
+   Annoncer à l'humain la branche utilisée et pourquoi (gardée vs créée).
 3. **Nommage** (aligné [.github/PROJECT.md](../../.github/PROJECT.md)) :
    - `feat/<NN>-<slug>` — feature / impl
    - `docs/<NN>-<slug>` — doc, ADR, runbook

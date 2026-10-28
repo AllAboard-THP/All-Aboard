@@ -44,6 +44,27 @@ Presence in the monorepo: **Git subtree** kept as an archive. **Outside** `pnpm 
 
 3. Summarize for the human: commands run, success/failure, relevant error message.
 
+## Branch per task
+
+Before the first edit of any task that changes the repo (code, docs, config):
+
+1. Check the current branch (`git branch --show-current`) and whether the working tree is clean.
+2. **Keep the current branch** if it already fits the task: same topic/issue, and its name matches the work (e.g. continuing a fix on `fix/<NN>-<slug>`).
+3. **Otherwise create a new branch from up-to-date `Dev`**:
+   - on `Dev`, `staging` or `main` → always branch;
+   - on a branch for a different topic → branch, do not pile unrelated work onto it;
+   - uncommitted changes from the previous task → ask the human before switching.
+
+   ```bash
+   git fetch origin
+   git checkout -b <type>/<NN>-<slug> origin/Dev
+   ```
+
+4. Naming: `feat/`, `fix/`, `docs/`, `chore/` + `<NN>-<slug>` (issue number when there is one). See [.cursor/rules/git-branch-workflow.mdc](.cursor/rules/git-branch-workflow.mdc).
+5. Tell the human which branch is used and why (kept vs created).
+
+Exception: read-only questions, or when the human explicitly names the branch to use.
+
 ## Git rules
 
 - Do not use `git commit --no-verify` or `git push --no-verify` without explicit human agreement.
