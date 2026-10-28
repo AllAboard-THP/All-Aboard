@@ -87,10 +87,13 @@ test.describe("pages passkey", () => {
 
   test("register page renders passkey form", async ({ page }) => {
     await page.goto("/register");
-    await expect(page.getByText("Créer un compte")).toBeVisible();
-    await expect(page.getByRole("textbox", { name: "Prénom" })).toBeVisible();
     await expect(
-      page.getByRole("textbox", { name: "Nom", exact: true }),
+      page.getByRole("heading", { level: 1, name: "Créer un compte" }),
     ).toBeVisible();
+    await expect(page.getByTestId("passkey-register-form")).toBeVisible();
+    await expect(
+      page.getByRole("textbox", { name: "Nom complet" }),
+    ).toBeVisible();
+    await expect(page.getByLabel(/mot de passe/i)).toHaveCount(0);
   });
 });
