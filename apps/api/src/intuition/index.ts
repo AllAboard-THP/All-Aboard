@@ -12,10 +12,7 @@ export {
   type PublishHelpRequestFn,
 } from "./publisher.js";
 export {
-  createIntuitionWriteConfig,
   helpRequestExternalId,
-  isIntuitionPublishConfigured,
   publishHelpRequestCreatedToIntuition,
-  resolveIntuitionChain,
   type PublishHelpRequestResult,
-} from "./sdk-client.js";
+} from "./stub-publisher.js";

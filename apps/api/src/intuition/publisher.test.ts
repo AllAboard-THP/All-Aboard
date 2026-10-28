@@ -10,12 +10,12 @@ import {
   HELP_REQUEST_CREATED,
 } from "./outbox.js";
 import { processPendingOutboxEvents } from "./publisher.js";
-import { helpRequestExternalId } from "./sdk-client.js";
+import { helpRequestExternalId } from "./stub-publisher.js";
 
 describe("processPendingOutboxEvents (mocked publish)", () => {
   function mockDb(options: {
     outboxEvents: Array<Record<string, unknown>>;
-    helpRequest?: { intuitionPublishedAt: Date | null } | null;
+    helpRequest?: { intuitionStubAckedAt: Date | null } | null;
     onUpdate?: () => void;
   }) {
     return {
@@ -35,7 +35,7 @@ describe("processPendingOutboxEvents (mocked publish)", () => {
                 limit: () =>
                   Promise.resolve(
                     options.helpRequest === undefined
-                      ? [{ intuitionPublishedAt: null }]
+                      ? [{ intuitionStubAckedAt: null }]
                       : options.helpRequest
                         ? [options.helpRequest]
                         : [],
@@ -206,7 +206,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
         .select()
         .from(helpRequests)
         .where(eq(helpRequests.id, row.id));
-      expect(afterFirst?.intuitionPublishedAt).not.toBeNull();
+      expect(afterFirst?.intuitionStubAckedAt).not.toBeNull();
 
       const second = await processPendingOutboxEvents(db, { log });
       expect(second.processed).toBe(0);
@@ -228,7 +228,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
           title,
           authorId: "bob@dev.local",
           tags: [],
-          intuitionPublishedAt: new Date(),
+          intuitionStubAckedAt: new Date(),
         })
         .returning();
       const row = inserted[0]!;

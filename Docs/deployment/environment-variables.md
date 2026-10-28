@@ -99,10 +99,10 @@ These variables concern **Phase 2** (API auth); see [ADR 0001](../adr/0001-authe
 
 | Variable | Web | API | Agent | Indexer (legacy) | Required |
 |---|:---:|:---:|:---:|:---:|:---:|
-| `INTUITION_RPC_URL` |  | x |  |  | SDK publish (post-stub #67) |
-| `INTUITION_API_KEY` |  | x |  |  | Per provider |
+| `INTUITION_RPC_URL` |  | x |  |  | Reserved for the certification publisher; unused today |
+| `INTUITION_API_KEY` |  | x |  |  | Intuition Core write key (`ik_…`); never a wallet private key |
 | `INTUITION_GRAPHQL_URL` |  | x |  |  | Graph read (spike #67) |
-| `INTUITION_NETWORK_ID` |  | x |  |  | Testnet / mainnet |
+| `INTUITION_NETWORK_ID` |  | x |  |  | Testnet / mainnet; reserved for the certification publisher |
 | `INTUITION_PUBLISHER_ENABLED` |  | x |  |  | Default `true`; `false` to disable poll |
 | `INTUITION_PUBLISHER_POLL_MS` |  | x |  |  | Default `5000` |
 | `INDEXER_START_BLOCK` |  |  |  | x | **Legacy** — do not reactivate |
