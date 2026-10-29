@@ -7,7 +7,7 @@ import { HELP_REQUEST_CREATED } from "./outbox.js";
 import {
   publishHelpRequestCreatedToIntuition,
   type PublishHelpRequestResult,
-} from "./sdk-client.js";
+} from "./stub-publisher.js";
 
 export type IntuitionPublisherLog = (
   message: string,
@@ -83,7 +83,7 @@ export async function processPendingOutboxEvents(
     const payload = event.payload as HelpRequestCreatedOutboxPayload;
     const [request] = await db
       .select({
-        intuitionPublishedAt: helpRequests.intuitionPublishedAt,
+        intuitionStubAckedAt: helpRequests.intuitionStubAckedAt,
       })
       .from(helpRequests)
       .where(eq(helpRequests.id, event.aggregateId))
@@ -102,7 +102,7 @@ export async function processPendingOutboxEvents(
       continue;
     }
 
-    if (request.intuitionPublishedAt) {
+    if (request.intuitionStubAckedAt) {
       await db
         .update(outboxEvents)
         .set({ processedAt: now() })
@@ -134,11 +134,11 @@ export async function processPendingOutboxEvents(
     const publishedAt = now();
     await db
       .update(helpRequests)
-      .set({ intuitionPublishedAt: publishedAt })
+      .set({ intuitionStubAckedAt: publishedAt })
       .where(
         and(
           eq(helpRequests.id, event.aggregateId),
-          isNull(helpRequests.intuitionPublishedAt),
+          isNull(helpRequests.intuitionStubAckedAt),
         ),
       );
 

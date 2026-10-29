@@ -4,13 +4,13 @@
 
 ## Goal
 
-Connect Postgres help-request creation to the **Intuition** ecosystem via a reliable **outbox** pattern: synchronous DB write, asynchronous publish (stub log → testnet SDK later).
+Connect Postgres help-request creation to the **Intuition** ecosystem via a reliable **outbox** pattern: synchronous DB write, asynchronous stub publish. Help requests are never written on-chain (web3 scope is certifications only).
 
 ## Deliverables
 
 | Deliverable | Location |
 |-------------|----------|
-| Outbox migration + `intuition_published_at` | [`apps/api/drizzle/0004_outbox_intuition.sql`](../../../apps/api/drizzle/0004_outbox_intuition.sql) |
+| Outbox migration (column renamed `intuition_stub_acked_at` in `0014_rename_intuition_published_at.sql`) | [`apps/api/drizzle/0004_outbox_intuition.sql`](../../../apps/api/drizzle/0004_outbox_intuition.sql) |
 | Drizzle schema | [`apps/api/src/db/schema.ts`](../../../apps/api/src/db/schema.ts) |
 | Bridge module | [`apps/api/src/intuition/`](../../../apps/api/src/intuition/) |
 | Emit on `POST /help-requests` | [`apps/api/src/app.ts`](../../../apps/api/src/app.ts) |
@@ -22,13 +22,13 @@ Connect Postgres help-request creation to the **Intuition** ecosystem via a reli
 ## Model
 
 - **`outbox_events`**: `event_type` + `aggregate_id` (request UUID) unique → insert idempotence.
-- **`help_requests.intuition_published_at`**: timestamp after stub publish (or real SDK).
+- **`help_requests.intuition_stub_acked_at`** (formerly `intuition_published_at`): timestamp of the stub acknowledgement. Nothing is published on-chain.
 - **Publisher**: poll `INTUITION_PUBLISHER_POLL_MS` (default 5s), batch 50, `help_request.created` events only (other outbox events, such as `help_request.summary_requested`, are left to their own worker); log `intuition_publish_stub`; does not block `201`.
 
 ## MVP rules
 
 1. `POST /help-requests` inserts the request then `help_request.created` in outbox (same logical transaction — sequential after insert).
-2. **Stub** publisher only: no blocking SDK call for merge.
+2. **Stub** publisher only: no SDK dependency in `apps/api` (`@0xintuition/sdk` and `viem` removed on 2026-10-28).
 3. Double enqueue or double poll → **one** stub publish per `helpRequestId`.
 4. No `apps/indexer` — graph read via Intuition GraphQL (spike doc).
 
@@ -37,7 +37,7 @@ Connect Postgres help-request creation to the **Intuition** ecosystem via a reli
 - [`apps/api/src/intuition/publisher.test.ts`](../../../apps/api/src/intuition/publisher.test.ts) — enqueue + publish idempotence (requires `DATABASE_URL`).
 - [`apps/api/src/app.test.ts`](../../../apps/api/src/app.test.ts) — outbox created on `POST /help-requests`.
 
-## Follow-up (#68, SDK)
+## Follow-up (certifications)
 
 - The shipped stub records `help_request.created`. That event is **not** the web3 product. Certifications (peer +1 on a profile) are the chain scope: [product/certifications.md](../../product/certifications.md).
 - The help-request SDK publish (Lot 3) was removed on 2026-10-26: the stub never writes on-chain, even with credentials set.

@@ -6,6 +6,8 @@ Accepted — 2026-06-01 (backlog framing [#37](https://github.com/AllAboard-THP/
 
 **Product scope revision (2026-10-19):** chain publish is **certifications only** (peer skill +1 on a profile; mission experience certs later). Help requests stay in Postgres. The `help_request.created` outbox in this ADR is the shipped stub, not the target mapping. Canonical: [product/certifications.md](../product/certifications.md).
 
+**Implementation revision (2026-10-28):** sections 2–5 now describe the shipped state. The help-request publisher is a stub that never writes on-chain; `@0xintuition/sdk` and `viem` were removed from `apps/api`. The package stack, on-chain identity and signer for certifications are left to a dedicated certifications ADR (to write).
+
 ## Context
 
 All-Aboard describes a product journey where **Rubberduck** (AI, **external service**, other team) can help quickly on simple requests ([user-journeys.md](../product/user-journeys.md) steps 4–5: user redirect), and where the **Intuition** layer (blockchain / knowledge graph) feeds the long-term vision ([architecture/dataflow.md](../architecture/dataflow.md), [integrations/intuition-docs-index.md](../integrations/intuition-docs-index.md)).
@@ -79,10 +81,11 @@ Light module or worker that **maps Postgres domain → Intuition primitives** (a
 
 **MVP Phase 4b scope** (#67):
 
-- Postgres outbox (`outbox_events`): `help_request.created` events (later responses, signals).
-- **Publisher stub:** consumes outbox, log + metrics; then Intuition testnet SDK without blocking initial merge.
-- Idempotence via `helpRequestId` + `intuition_published_at` status (or `intuition_publish_jobs` table).
-- **Read:** Intuition GraphQL query spike (e.g. claims linked to a request) — no Postgres duplication except explicit cache.
+- Postgres outbox (`outbox_events`): `help_request.created` events. Historical stub, kept in the API; it is **not** a web3 publish target.
+- **Publisher stub:** consumes only `help_request.created`, logs `intuition_publish_stub`, never calls the chain. Other outbox events (e.g. `help_request.summary_requested`) belong to their own workers.
+- Idempotence via `helpRequestId` + `help_requests.intuition_stub_acked_at` (renamed from `intuition_published_at` in migration `0014`).
+- **Read:** Intuition GraphQL query spike. Its help-request query is superseded; the read target is certifications on a profile.
+- **Target (not built):** a `certification.attested` outbox event and a real publisher, framed by the certifications ADR.
 
 **Bridge placement** (#67 implementation choice, preference order):
 
@@ -125,7 +128,7 @@ flowchart LR
 |-------|-------------|------------------------|
 | **4a** (agent scaffold) | None — isolated service + health | None |
 | **4b** (bridge) | — | Outbox + publisher stub; GraphQL read spike |
-| **4c** (agent routing) | Sync HTTP `POST /routing/evaluate` | Real testnet publisher (non-blocking request create) |
+| **4c** (agent routing) | Sync HTTP `POST /routing/evaluate` | No chain write. Certification publisher deferred to the certifications ADR |
 | **4d+** (load) | Redis + BullMQ for long AI jobs | Optional BullMQ for batch publish; indexer stays Intuition |
 
 **Redis/BullMQ:** **deferred** beyond scaffolds (#66, #67); Postgres outbox suffices for initial publisher increment.
@@ -138,17 +141,19 @@ API remains the **single entry point** for web (BFF) and versioned REST contract
 |------|-----------|-------|
 | Request create + `rubberduckEligible` hint | API calls `POST /routing/evaluate` (sync) or fallback; maps `suggestRubberduckRedirect` | [#68](https://github.com/AllAboard-THP/All-Aboard/issues/68) |
 | Rubberduck redirect | Web — external product URL/config | Outside `apps/agent`; responses = Rubberduck team |
-| Intuition publish post-create | API inserts outbox; bridge publishes | Async — does not block `201` |
+| Intuition outbox post-create | API inserts `help_request.created`; stub acknowledges, nothing on-chain | Async — does not block `201` |
+| Certification publish (target) | API inserts `certification.attested`; publisher writes on-chain | Not built — certifications ADR |
 | Enriched read (graph, certifications) | API or BFF queries **Intuition GraphQL** | Complements Postgres, does not replace in Phase 4b |
 | Auth | JWT validated **only** in API/BFF | Intuition / LLM secrets off Web |
 
 **Target outbox events:**
 
 ```typescript
-// packages/types — Phase 4 evolution
+// packages/types — shipped events, plus the web3 target
 type OutboxEvent =
-  | { type: "help_request.created"; payload: { id: string; title: string; authorId: string } }
-  | { type: "help_request.rubberduck_handoff"; payload: { id: string; title: string } };
+  | { type: "help_request.created"; payload: { id: string; title: string; authorId: string } } // stub, never on-chain
+  | { type: "help_request.summary_requested"; payload: { id: string } } // AI summary worker
+  | { type: "certification.attested"; payload: unknown }; // target — shape set by the certifications ADR
 ```
 
 No breaking change on Phase 2 `CreateHelpRequestResponse`: `hints.rubberduckEligible` remains (semantics: **eligible for Rubberduck handoff**); the **source** of the boolean changes (Agent instead of `wordCount`).
@@ -169,7 +174,7 @@ Aligned with [matrix](../deployment/environment-variables.md) and [instance](../
 
 1. Keep **Agent** disabled until #66 scaffold and CI #69.
 2. **Remove or leave disabled** Dokploy All-Aboard "Indexer" placeholder — no longer matches architecture.
-3. Bridge vars: `INTUITION_*` (RPC, publish wallet keys, network id) — see [Network Details](https://www.docs.intuition.systems/docs/quick-start/network-details); LLM secrets **only** on All-Aboard Agent.
+3. Bridge vars: `INTUITION_*` — `INTUITION_API_KEY` is an Intuition Core write key (`ik_…`), never a wallet private key; `INTUITION_RPC_URL` / `INTUITION_NETWORK_ID` are reserved for the certification publisher (see [Network Details](https://www.docs.intuition.systems/docs/quick-start/network-details)). The operator signer is decided by the certifications ADR. LLM secrets **only** on All-Aboard Agent.
 4. `pnpm verify` excludes agent until implemented; no `apps/indexer` gate.
 
 ### 6. Backlog split (child issues of #37)
