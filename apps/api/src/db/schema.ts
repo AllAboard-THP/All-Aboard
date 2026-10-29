@@ -132,8 +132,8 @@ export const helpRequests = pgTable("help_requests", {
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-  /** Set when the Intuition bridge has published (or stub-acknowledged) this request. */
-  intuitionPublishedAt: timestamp("intuition_published_at", {
+  /** Set when the Intuition outbox stub has acknowledged this request. Nothing is published on-chain. */
+  intuitionStubAckedAt: timestamp("intuition_stub_acked_at", {
     withTimezone: true,
   }),
 });

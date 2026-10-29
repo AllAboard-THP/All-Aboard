@@ -16,7 +16,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@0xintuition/sdk": "2.0.2",
     "@allaboard/types": "workspace:*",
     "@aws-sdk/client-s3": "^3.1152.0",
     "@aws-sdk/s3-request-presigner": "^3.1152.0",
@@ -34,7 +33,6 @@
     "drizzle-orm": "^0.45.2",
     "fastify": "^5.2.0",
     "pg": "^8.20.0",
-    "viem": "^2.0.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

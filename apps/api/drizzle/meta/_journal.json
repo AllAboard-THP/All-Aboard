@@ -99,6 +99,20 @@
       "when": 1748361600000,
       "tag": "0013_message_attachments",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1748448000000,
+      "tag": "0014_rename_intuition_published_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1748534400000,
+      "tag": "0015_oauth_accounts",
+      "breakpoints": true
     }
   ]
 }

@@ -43,7 +43,7 @@ Without these variables, `GET /auth/google` responds `503 oauth_not_configured`.
 
 ## Consequences
 
-- Migration `0012_oauth_accounts.sql`.
+- Migration `0015_oauth_accounts.sql` (replaces `0012_oauth_accounts.sql`, which was missing from the Drizzle journal and never applied).
 - API routes: `GET /auth/google`, `GET /auth/google/callback`.
 - BFF routes: `GET /api/auth/google`, `GET /api/auth/google/callback`.
 - UI: Google branding button on login card; `/onboarding` page for new OAuth accounts.
