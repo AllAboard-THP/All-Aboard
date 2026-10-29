@@ -58,6 +58,30 @@ describe("PasskeyRegisterForm", () => {
     expect(submit.hasAttribute("disabled")).toBe(true);
   });
 
+  it("shows a CGU link only when onCguClick is provided", () => {
+    renderRegisterForm();
+    expect(
+      screen.queryByRole("button", {
+        name: "Lire les conditions générales d'utilisation",
+      }),
+    ).toBeNull();
+    cleanup();
+
+    const onCguClick = vi.fn();
+    const queryClient = new QueryClient();
+    renderWithI18n(
+      <QueryClientProvider client={queryClient}>
+        <PasskeyRegisterForm onCguClick={onCguClick} />
+      </QueryClientProvider>,
+    );
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Lire les conditions générales d'utilisation",
+      }),
+    );
+    expect(onCguClick).toHaveBeenCalledOnce();
+  });
+
   it("calls registerPasskey and redirects on success", async () => {
     renderRegisterForm();
 

@@ -47,6 +47,7 @@
     "fullName": "Nom complet",
     "emailOptional": "Email (optionnel, pour les notifications)",
     "acceptCgu": "J'accepte les conditions générales d'utilisation",
+    "readCgu": "Lire les conditions générales d'utilisation",
     "hasAccount": "Déjà un compte ?",
     "loginLink": "Se connecter",
     "noAccount": "Pas encore de compte ?",
