@@ -1,0 +1,23 @@
+<% content_for :title, "Mot de passe oublié" %>
+
+<div class="auth-shell">
+  <div class="auth-grid max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen flex items-center">
+    <div class="glass rounded-[2rem] p-8 md:p-10 w-full">
+      <h1 class="text-3xl font-bold mb-2">Mot de passe oublié ?</h1>
+      <p class="text-gray-400 mb-8">Entrez votre email pour recevoir les instructions de réinitialisation.</p>
+
+      <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-5" }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div>
+          <%= f.label :email, class: "block text-sm font-medium mb-2 text-gray-300" %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" %>
+        </div>
+
+        <%= f.submit "Envoyer les instructions", class: "w-full py-3 rounded-xl bg-primary hover:bg-primary/80 text-white font-medium transition-colors" %>
+      <% end %>
+
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+</div>
