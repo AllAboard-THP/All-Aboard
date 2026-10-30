@@ -126,7 +126,7 @@ Docs worth opening before any implementation ticket:
 | In-repo indexer | Forbidden (`apps/indexer`). | Still forbidden. Consuming Core images or the public RPC is not an in-house indexer. |
 | `packages/blockchain` | Not created. Listed as optional v1+ in [roadmap-v1-plus.md](../vision/roadmap-v1-plus.md). | Home for the package imports and id helpers when the stub is replaced. |
 
-**Product target (2026-10-19):** publish certifications, not help requests. Canonical flow: [certifications.md](../product/certifications.md).
+**Product target (2026-10-19):** publish certifications, not help requests. Canonical flow: [certifications.md](../product/certifications.md). Architecture (packages, signer, graph shape): [ADR 0009](../adr/0009-certifications-intuition.md), proposed 2026-10-30.
 
 - A profile +1 (skill now, mission achievement later) is the claim that goes on the graph.
 - `calculateAtomId` from `@0xintuition/ids` names the person, the shared skill or experience, and the attestation. Store the `0x…` id when a real publisher succeeds.

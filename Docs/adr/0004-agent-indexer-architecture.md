@@ -6,7 +6,7 @@ Accepted — 2026-06-01 (backlog framing [#37](https://github.com/AllAboard-THP/
 
 **Product scope revision (2026-10-19):** chain publish is **certifications only** (peer skill +1 on a profile; mission experience certs later). Help requests stay in Postgres. The `help_request.created` outbox in this ADR is the shipped stub, not the target mapping. Canonical: [product/certifications.md](../product/certifications.md).
 
-**Implementation revision (2026-10-28):** sections 2–5 now describe the shipped state. The help-request publisher is a stub that never writes on-chain; `@0xintuition/sdk` and `viem` were removed from `apps/api`. The package stack, on-chain identity and signer for certifications are left to a dedicated certifications ADR (to write).
+**Implementation revision (2026-10-28):** sections 2–5 now describe the shipped state. The help-request publisher is a stub that never writes on-chain; `@0xintuition/sdk` and `viem` were removed from `apps/api`. The package stack, on-chain identity and signer for certifications are framed by [ADR 0009](0009-certifications-intuition.md) (proposed).
 
 ## Context
 
