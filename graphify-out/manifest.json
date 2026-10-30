@@ -2895,13 +2895,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/README.md": {
-    "mtime": 1793311442.2771945,
-    "ast_hash": "58dab2e4b064acd905ba608b27d407a1",
+    "mtime": 1793370809.7242913,
+    "ast_hash": "0f7d0ddbc0f5399c86ba91febc3658e1",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0004-agent-indexer-architecture.md": {
-    "mtime": 1793311645.7251613,
-    "ast_hash": "ed46e280226a15cd912bfb391fb5262b",
+    "mtime": 1793370809.7242913,
+    "ast_hash": "0d46cd7645d6e3eddc62bf0df7f3e89b",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0003-authentication-users-production.md": {
@@ -3320,8 +3320,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/integrations/intuition-web3.md": {
-    "mtime": 1793311645.7251613,
-    "ast_hash": "44e4e5f247ef27e26bf338dc0f4ea1ce",
+    "mtime": 1793370809.7242913,
+    "ast_hash": "c45145a3ffb7c7318714a9ca41bbe9f4",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/ui/src/hooks/media-recorder.ts": {
@@ -3435,8 +3435,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/certifications.md": {
-    "mtime": 1793311442.2811944,
-    "ast_hash": "54dbfd2928ba45aceaac3f3ed9cb2f18",
+    "mtime": 1793370809.7242913,
+    "ast_hash": "52d60ac91d0b7a2bd9990a5bb79d5a57",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0014_rename_intuition_published_at.sql": {
@@ -3457,6 +3457,11 @@
   "/home/dim/AllAboard/apps/api/drizzle/0015_oauth_accounts.sql": {
     "mtime": 1793311645.7251613,
     "ast_hash": "44e70b7fa9214dd088fb1ddeafa0b5eb",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/adr/0009-certifications-intuition.md": {
+    "mtime": 1793370801.2683003,
+    "ast_hash": "a6833998420adc7f6f9765f68f95a349",
     "semantic_hash": ""
   }
 }

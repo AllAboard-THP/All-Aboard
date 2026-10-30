@@ -1,7 +1,8 @@
 # Certifications — community CV on Intuition
 
 **Status:** product decision, 2026-10-19. Not implemented.  
-**Web3 scope:** certifications only. Help requests stay in Postgres.
+**Web3 scope:** certifications only. Help requests stay in Postgres.  
+**Architecture:** [ADR 0009](../adr/0009-certifications-intuition.md) (proposed). The optional comment stays off-chain in the first slice (product sign-off 2026-10-30).
 
 This page is the product source of truth for what All-Aboard publishes to Intuition. Protocol packages and the indexer choice stay in [intuition-web3.md](../integrations/intuition-web3.md). The Phase 4 bridge in [ADR 0004](../adr/0004-agent-indexer-architecture.md) shipped an outbox stub on `help_request.created`. That stub is not the product target.
 
@@ -27,7 +28,8 @@ Login stays passkeys ([ADR 0006](../adr/0006-authentication-passkeys.md)). A wal
 | --- | --- |
 | Profile of the person receiving the certification | Yes — the subject of the claim |
 | Skill or experience being attested | Yes — a shared entry the community reuses |
-| The +1 (who attested, and the optional short comment) | Yes — this is the certification |
+| The +1 (who attested, to whom, for which skill) | Yes — this is the certification |
+| The optional short comment | No (first slice) — kept in Postgres so it can be moderated and erased. See [ADR 0009](../adr/0009-certifications-intuition.md) §3 |
 | Help requests, feed, chat, resources, admin | No |
 | Passkey login | No |
 
@@ -79,7 +81,7 @@ The predicate names and the exact atom bytes are not chosen yet. The product obj
 | The user who receives the +1 | Person |
 | The menu entry (« Ruby on Rails », or later a mission achievement) | Shared skill or experience |
 | The +1 | Attestation from the peer to that person, for that skill or experience |
-| The optional comment | Note attached to that attestation |
+| The optional comment | Off-chain in the first slice (Postgres, linked to the +1) |
 | The profile | Reads those attestations back from the graph |
 
 Help-request atoms (`help_request:{uuid}`, title, author triples) from the [GraphQL spike](../tasks/37-agent-indexer/intuition-graphql-spike.md) are a discarded hypothesis. Do not implement that mapping.
