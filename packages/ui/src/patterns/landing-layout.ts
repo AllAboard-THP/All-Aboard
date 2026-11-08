@@ -157,10 +157,10 @@ export const LANDING_HERO_LOGIN_SLOT_CLASS =
 export const LANDING_HERO_HOVER_ZOOM_CLASS = "landing-hero-hover-zoom";
 
 export const LANDING_HERO_HEADING_CLASS =
-  `text-[clamp(2.5rem,4.8vw,5.25rem)] leading-[1.05] ${LANDING_HERO_HOVER_ZOOM_CLASS}`;
+  `text-[clamp(2.7rem,3.7vw,4.55rem)] leading-[0.98] tracking-[-0.03em] ${LANDING_HERO_HOVER_ZOOM_CLASS}`;
 
 export const LANDING_HERO_DESCRIPTION_CLASS =
-  `landing-hero-description text-pretty text-xl leading-relaxed sm:text-2xl lg:text-[clamp(1.125rem,1.35vw,1.5rem)] ${LANDING_HERO_HOVER_ZOOM_CLASS}`;
+  `landing-hero-description text-pretty text-[clamp(1.05rem,1.15vw,1.25rem)] leading-relaxed ${LANDING_HERO_HOVER_ZOOM_CLASS}`;
 
 /** Auth card width — fills its parent slot (`LANDING_HERO_LOGIN_SLOT_CLASS` on landing). */
 export const LANDING_AUTH_CARD_WIDTH_CLASS = "w-full";

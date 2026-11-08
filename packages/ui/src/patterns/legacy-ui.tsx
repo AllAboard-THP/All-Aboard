@@ -65,12 +65,14 @@ export function BrandLogo({
   labels = legacyLabelsFr,
   className,
   markClassName,
+  wordmarkClassName,
   showWordmark = true,
   tagline,
 }: {
   labels?: LegacyLabels;
   className?: string;
   markClassName?: string;
+  wordmarkClassName?: string;
   showWordmark?: boolean;
   /** Renders below the wordmark (e.g. landing header tagline). */
   tagline?: ReactNode;
@@ -81,6 +83,7 @@ export function BrandLogo({
         brandName={labels.brandName}
         className={className}
         markClassName={markClassName}
+        wordmarkClassName={wordmarkClassName}
       />
     );
   }
@@ -118,11 +121,11 @@ export function Eyebrow({
   return (
     <p
       className={cn(
-        "mb-4 uppercase tracking-[0.3em]",
+        "mb-4 uppercase",
         variant === "landing"
-          ? "landing-hero-eyebrow landing-hero-hover-zoom"
+          ? "landing-hero-eyebrow landing-hero-hover-zoom tracking-[0.22em]"
           : cn(
-              "text-xs",
+              "text-xs tracking-[0.3em]",
               chromeText ? "landing-chrome-text--eyebrow" : "text-primary",
             ),
         className,
@@ -173,7 +176,7 @@ export function GradientHeading({
     <h1
       className={cn(
         "text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.12] font-bold tracking-tight text-foreground",
-        landingHero && "landing-hero-heading font-extrabold",
+        landingHero && "landing-hero-heading font-medium",
         className,
       )}
     >
@@ -207,30 +210,38 @@ export function FeaturePill({
   label,
   iconIndex,
   size = "default",
+  tone = "brand",
   className,
 }: {
   label: string;
   iconIndex: 0 | 1 | 2;
   size?: "default" | "lg";
+  /** `ink` — single warm tone for the cell-field landing. */
+  tone?: "brand" | "ink";
   className?: string;
 }) {
   const Icon = pillIcons[iconIndex];
   const iconClass =
-    iconIndex === 0
-      ? "text-primary"
-      : iconIndex === 1
-        ? "text-accent"
-        : "text-cyan-400";
+    tone === "ink"
+      ? "text-[#e6e1d6]"
+      : iconIndex === 0
+        ? "text-primary"
+        : iconIndex === 1
+          ? "text-accent"
+          : "text-cyan-400";
 
   return (
     <span
       className={cn(
         "subject-chip group inline-flex cursor-default items-center gap-2 rounded-full text-gray-200 shadow-none",
+        tone === "ink" && "landing-ink-pill",
         size === "lg"
           ? "px-5 py-2.5 text-base sm:px-6 sm:py-3"
           : "px-4 py-2 text-sm",
         "transition-[transform,background-color,border-color] duration-200 ease-out",
-        "hover:scale-105 hover:border-white/30 hover:bg-white/12",
+        tone === "ink"
+          ? "hover:scale-100"
+          : "hover:scale-105 hover:border-white/30 hover:bg-white/12",
         "motion-reduce:transition-none motion-reduce:hover:scale-100",
         className,
       )}

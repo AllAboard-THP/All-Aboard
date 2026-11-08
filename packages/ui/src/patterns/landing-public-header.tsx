@@ -49,12 +49,17 @@ export function LandingPublicHeader({
           onClick={handleLogo}
           aria-label={labels.brandName}
         >
-          <BrandLogo labels={labels} className="min-w-0 shrink-0" />
+          <BrandLogo
+            labels={labels}
+            className="min-w-0 shrink"
+            markClassName="h-10 w-auto sm:h-14"
+            wordmarkClassName="text-[1.05rem] tracking-tight sm:text-3xl"
+          />
         </button>
 
         <nav
           aria-label="Authentication"
-          className="ml-auto flex shrink-0 items-center gap-2 self-center sm:gap-4"
+          className="ml-auto flex shrink-0 items-center gap-1 self-center sm:gap-4"
         >
           <Button
             type="button"
@@ -62,6 +67,7 @@ export function LandingPublicHeader({
             size="sm"
             className={cn(
               LANDING_HEADER_GHOST_BUTTON_CLASS,
+              "max-sm:px-2 max-sm:text-[13px]",
               activeAction === "signIn" && "text-white",
             )}
             aria-current={activeAction === "signIn" ? "page" : undefined}
@@ -77,6 +83,7 @@ export function LandingPublicHeader({
               activeAction === "signUp"
                 ? LANDING_HEADER_SUBMIT_BUTTON_CLASS
                 : LANDING_HEADER_OUTLINE_BUTTON_CLASS,
+              "max-sm:min-w-0 max-sm:px-3 max-sm:text-[13px]",
             )}
             aria-current={activeAction === "signUp" ? "page" : undefined}
             onClick={handleSignUp}

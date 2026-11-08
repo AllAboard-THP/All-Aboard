@@ -39,12 +39,13 @@ node scripts/branding/export-hero-raster-4k.mjs \
 4. **Bump** `LANDING_CONCEPT_BG_REVISION` / `FEED_CONCEPT_BG_REVISION` in `*-concept-background.tsx`.
 5. **Commit** rasters under `packages/ui/src/assets/` (never symlink from `Docs/` — Docker excludes `Docs`).
 
-## Landing composition (illustration)
+## Landing composition
 
-- **Left 40%**: calm pale sky + soft water — no sun disk, no glare (hero copy zone).
-- **Center-right**: catamaran hero, **smaller in frame** (full mast + hull visible, header/footer safe margins).
-- **Sail**: flat indigo `#6366f1` + pink `#ec4899`, no panel seams. Hull: "All-Aboard" only.
-- **Style**: match `concept-feed-hero` — premium editorial, not photo/AI realism.
+The marketing landing hero is **not a raster**. It is the ink cell field in `packages/ui/src/patterns/landing-cell-field.tsx` (irregular membranes, filaments, nucleus dashes, a signal traveling the links). Do not put a photo or generated illustration back on `/` unless a human asks for that. Feed hero rasters are unchanged.
+
+- **Left**: calm ink for the headline. No glow, no pink gradient on the type.
+- **Right**: the cell network, lines allowed to leave the frame.
+- **Motion**: membranes breathe; signals move along filaments. Honor `prefers-reduced-motion`.
 
 ## Deploy specs
 
