@@ -33,18 +33,19 @@ When generating or replacing a **hero / concept background** for landing or feed
 ```bash
 node scripts/branding/export-hero-raster-4k.mjs \
   --source <path-to-draft.png> \
-  --basename concept-landing-hero
+  --basename concept-feed-hero
 ```
 
-4. **Bump** `LANDING_CONCEPT_BG_REVISION` / `FEED_CONCEPT_BG_REVISION` in `*-concept-background.tsx`.
+4. **Bump** `FEED_CONCEPT_BG_REVISION` in `feed-concept-background.tsx`.
 5. **Commit** rasters under `packages/ui/src/assets/` (never symlink from `Docs/` — Docker excludes `Docs`).
 
-## Landing composition (illustration)
+## Landing composition
 
-- **Left 40%**: calm pale sky + soft water — no sun disk, no glare (hero copy zone).
-- **Center-right**: catamaran hero, **smaller in frame** (full mast + hull visible, header/footer safe margins).
-- **Sail**: flat indigo `#6366f1` + pink `#ec4899`, no panel seams. Hull: "All-Aboard" only.
-- **Style**: match `concept-feed-hero` — premium editorial, not photo/AI realism.
+The marketing landing hero is **not a raster**. It is the geometric network in `packages/ui/src/patterns/landing-network-field.tsx`: a minimal horizontal chain (V-shaped tails, three pods, X crossings) with signals traveling along it. Do not put a photo or generated illustration back on `/` unless a human asks for that. Feed hero rasters are unchanged.
+
+- **Left**: hero copy on the dark slate stage. White title, purple accent, fuchsia `gradient-text` tail.
+- **Right**: the network, strokes in the brand gradient `#6366f1` → `#ec4899`.
+- **Motion**: pods breathe lightly; signals move along the spine and joints. Honor `prefers-reduced-motion`.
 
 ## Deploy specs
 

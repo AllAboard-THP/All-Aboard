@@ -660,15 +660,62 @@
     }
   }
 
-  /** Hero subtitle — readable on photo background (not muted-foreground). */
+  /** Marketing stage — slate base with indigo/fuchsia wash behind the network. */
+  .landing-network-stage {
+    background-color: hsl(222 47% 4%);
+    background-image:
+      radial-gradient(
+        90% 70% at 78% 48%,
+        hsl(239 84% 67% / 0.22) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        60% 55% at 92% 42%,
+        hsl(330 81% 60% / 0.16) 0%,
+        transparent 62%
+      );
+  }
+
+  .landing-network-vignette {
+    background:
+      linear-gradient(
+        90deg,
+        hsl(222 47% 4% / 0.95) 0%,
+        hsl(222 47% 4% / 0.82) 24%,
+        hsl(222 47% 4% / 0.42) 46%,
+        transparent 70%
+      ),
+      linear-gradient(
+        180deg,
+        hsl(222 47% 4% / 0.72) 0%,
+        transparent 14%,
+        transparent 80%,
+        hsl(222 47% 4% / 0.82) 100%
+      );
+  }
+
+  @media (max-width: 1023px) {
+    .landing-network-vignette {
+      background: linear-gradient(
+        180deg,
+        hsl(222 47% 4% / 0.2) 0%,
+        hsl(222 47% 4% / 0.55) 12%,
+        hsl(222 47% 4% / 0.92) 26%,
+        hsl(222 47% 4%) 42%
+      );
+    }
+  }
+
+  /** Hero subtitle — readable on the dark stage. */
   .landing-hero-description {
     color: rgb(248 250 252);
     text-shadow:
       0 1px 2px rgb(0 0 0 / 0.55),
       0 0 20px rgb(15 23 42 / 0.35);
+    max-width: 36rem;
   }
 
-  /** Landing hero eyebrow — pale lavender with soft purple glow (screen reference). */
+  /** Landing hero eyebrow — lavender glow. */
   .landing-hero-eyebrow {
     font-size: 0.875rem;
     line-height: 1.5;
@@ -691,7 +738,7 @@
     }
   }
 
-  /** Landing hero title — pure white copy with legibility shadow. */
+  /** Landing hero title — white copy with legibility shadow. */
   .landing-hero-title-light {
     color: rgb(255 255 255);
     text-shadow:
@@ -699,7 +746,7 @@
       0 2px 12px rgb(0 0 0 / 0.28);
   }
 
-  /** Landing hero accent — purple keyword before gradient tail; legible on photo. */
+  /** Landing hero accent — purple keyword before gradient tail. */
   .landing-hero-accent-purple {
     color: rgb(168 85 247);
     text-shadow:
@@ -709,7 +756,7 @@
       0 0 22px rgb(168 85 247 / 0.5);
   }
 
-  /** Landing hero heading wrapper — gradient tail legibility on photo background. */
+  /** Landing hero heading — gradient tail legibility. */
   .landing-hero-heading .gradient-text {
     filter:
       drop-shadow(0 1px 2px rgb(0 0 0 / 0.55))

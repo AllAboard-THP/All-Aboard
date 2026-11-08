@@ -1,6 +1,7 @@
 "use client";
 
 import type { LegacyLabels } from "../i18n/legacy-labels";
+import { cn } from "@allaboard/ui/lib/utils";
 import {
   LANDING_HERO_BODY_CLASS,
   LANDING_HERO_CONTAINER_CLASS,
@@ -25,7 +26,12 @@ export function LandingPresentationBody({ labels }: LandingPresentationBodyProps
   return (
     <div className={LANDING_HERO_BODY_CLASS} data-testid="landing-presentation-body">
       <div className={LANDING_HERO_CONTAINER_CLASS}>
-        <div className={LANDING_HERO_COPY_CLASS}>
+        <div
+          className={cn(
+            LANDING_HERO_COPY_CLASS,
+            "max-w-[48rem] lg:h-auto lg:justify-start",
+          )}
+        >
           <div className={LANDING_HERO_COPY_TOP_CLASS}>
             <Eyebrow variant="landing" className="mb-0">
               {labels.landing.eyebrow}
@@ -44,7 +50,7 @@ export function LandingPresentationBody({ labels }: LandingPresentationBodyProps
               {labels.landing.description}
             </p>
           </div>
-          <div className={LANDING_HERO_PILLS_CLASS}>
+          <div className={cn(LANDING_HERO_PILLS_CLASS, "max-w-[40rem] lg:flex-wrap")}>
             {labels.landing.pills.map((pill, index) => (
               <FeaturePill
                 key={pill}
