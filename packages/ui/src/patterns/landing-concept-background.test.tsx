@@ -8,9 +8,9 @@ describe("LandingConceptBackground", () => {
     const { container } = render(<LandingConceptBackground />);
 
     expect(
-      container.querySelector("[data-testid='landing-cell-field']"),
+      container.querySelector("[data-testid='landing-network-field']"),
     ).toBeTruthy();
-    expect(container.querySelectorAll("[data-kind='cell']")).toHaveLength(3);
+    expect(container.querySelectorAll("[data-kind='pod']")).toHaveLength(3);
     expect(container.querySelector("img")).toBeNull();
   });
 });

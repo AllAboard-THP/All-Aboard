@@ -210,38 +210,30 @@ export function FeaturePill({
   label,
   iconIndex,
   size = "default",
-  tone = "brand",
   className,
 }: {
   label: string;
   iconIndex: 0 | 1 | 2;
   size?: "default" | "lg";
-  /** `ink` — single warm tone for the cell-field landing. */
-  tone?: "brand" | "ink";
   className?: string;
 }) {
   const Icon = pillIcons[iconIndex];
   const iconClass =
-    tone === "ink"
-      ? "text-[#e6e1d6]"
-      : iconIndex === 0
-        ? "text-primary"
-        : iconIndex === 1
-          ? "text-accent"
-          : "text-cyan-400";
+    iconIndex === 0
+      ? "text-primary"
+      : iconIndex === 1
+        ? "text-accent"
+        : "text-cyan-400";
 
   return (
     <span
       className={cn(
         "subject-chip group inline-flex cursor-default items-center gap-2 rounded-full text-gray-200 shadow-none",
-        tone === "ink" && "landing-ink-pill",
         size === "lg"
           ? "px-5 py-2.5 text-base sm:px-6 sm:py-3"
           : "px-4 py-2 text-sm",
         "transition-[transform,background-color,border-color] duration-200 ease-out",
-        tone === "ink"
-          ? "hover:scale-100"
-          : "hover:scale-105 hover:border-white/30 hover:bg-white/12",
+        "hover:scale-105 hover:border-white/30 hover:bg-white/12",
         "motion-reduce:transition-none motion-reduce:hover:scale-100",
         className,
       )}

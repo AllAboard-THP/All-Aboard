@@ -4,19 +4,19 @@ import { useEffect, useId, useRef } from "react";
 
 import { cn } from "@allaboard/ui/lib/utils";
 
-import { landingCellFrame, type CellFrame } from "./landing-cell-geometry";
+import { landingNetworkFrame, type NetworkFrame } from "./landing-network-geometry";
 
-const REST_FRAME = landingCellFrame(0);
+const REST_FRAME = landingNetworkFrame(0);
 
 const STROKE_WIDTH = {
-  cell: 2.35,
-  filament: 2.05,
+  pod: 2.35,
+  link: 2.05,
 } as const;
 
-function applyFrame(group: SVGGElement, frame: CellFrame) {
+function applyFrame(group: SVGGElement, frame: NetworkFrame) {
   for (const item of frame.drawables) {
     const node = group.querySelector<SVGPathElement>(
-      `[data-cell-id="${item.id}"]`,
+      `[data-network-id="${item.id}"]`,
     );
     if (!node) continue;
     node.setAttribute("d", item.d);
@@ -48,9 +48,9 @@ function applyFrame(group: SVGGElement, frame: CellFrame) {
  * Animated geometric network for the marketing landing — indigo/fuchsia
  * strokes, pods breathe lightly, brand-colored signals on the spine.
  */
-export function LandingCellField({ className }: { className?: string }) {
+export function LandingNetworkField({ className }: { className?: string }) {
   const rawId = useId().replace(/:/g, "");
-  const uid = `cell-${rawId}`;
+  const uid = `network-${rawId}`;
   const groupRef = useRef<SVGGElement>(null);
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export function LandingCellField({ className }: { className?: string }) {
       const reduced = motion.matches;
       const frame = reduced
         ? REST_FRAME
-        : landingCellFrame((now - startedAt) / 1000);
+        : landingNetworkFrame((now - startedAt) / 1000);
       applyFrame(group, frame);
 
       if (!reduced && !coarse.matches) {
@@ -104,7 +104,7 @@ export function LandingCellField({ className }: { className?: string }) {
 
   return (
     <svg
-      data-testid="landing-cell-field"
+      data-testid="landing-network-field"
       className={cn("h-full w-full", className)}
       viewBox="0 0 1600 900"
       preserveAspectRatio="xMaxYMid slice"
@@ -145,7 +145,7 @@ export function LandingCellField({ className }: { className?: string }) {
         {REST_FRAME.drawables.map((item) => (
           <path
             key={item.id}
-            data-cell-id={item.id}
+            data-network-id={item.id}
             data-kind={item.kind}
             d={item.d}
             stroke={`url(#${uid}-stroke)`}

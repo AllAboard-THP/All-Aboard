@@ -1,35 +1,35 @@
 import { describe, expect, it } from "vitest";
 
-import { landingCellFrame } from "./landing-cell-geometry";
+import { landingNetworkFrame } from "./landing-network-geometry";
 
-describe("landingCellFrame", () => {
+describe("landingNetworkFrame", () => {
   it("draws the horizontal pod chain, joints, and traveling signals", () => {
-    const frame = landingCellFrame(0);
-    const cells = frame.drawables.filter((item) => item.kind === "cell");
-    const filaments = frame.drawables.filter((item) => item.kind === "filament");
+    const frame = landingNetworkFrame(0);
+    const pods = frame.drawables.filter((item) => item.kind === "pod");
+    const links = frame.drawables.filter((item) => item.kind === "link");
 
-    expect(cells.map((cell) => cell.id)).toEqual([
+    expect(pods.map((pod) => pod.id)).toEqual([
       "pod-left",
       "pod-center",
       "pod-right",
     ]);
-    expect(filaments.length).toBeGreaterThanOrEqual(10);
+    expect(links.length).toBeGreaterThanOrEqual(10);
     expect(frame.signals.map((s) => s.id)).toEqual([
       "spine",
       "joint-left",
       "joint-right",
     ]);
-    expect(cells.every((cell) => cell.d.endsWith("Z"))).toBe(true);
+    expect(pods.every((pod) => pod.d.endsWith("Z"))).toBe(true);
   });
 
   it("shifts the center pod geometry over time", () => {
-    const resting = landingCellFrame(0).drawables.find((item) => item.id === "pod-center");
-    const later = landingCellFrame(4).drawables.find((item) => item.id === "pod-center");
+    const resting = landingNetworkFrame(0).drawables.find((item) => item.id === "pod-center");
+    const later = landingNetworkFrame(4).drawables.find((item) => item.id === "pod-center");
     expect(resting?.d).not.toEqual(later?.d);
   });
 
   it("keeps signal coordinates finite", () => {
-    const frame = landingCellFrame(12.4);
+    const frame = landingNetworkFrame(12.4);
     for (const signal of frame.signals) {
       expect(Number.isFinite(signal.x1)).toBe(true);
       expect(Number.isFinite(signal.y1)).toBe(true);

@@ -6,16 +6,16 @@
 
 export type Point = { x: number; y: number };
 
-export type CellKind = "cell" | "filament";
+export type NetworkKind = "pod" | "link";
 
-export type CellDrawable = {
+export type NetworkDrawable = {
   id: string;
-  kind: CellKind;
+  kind: NetworkKind;
   d: string;
   opacity: number;
 };
 
-export type CellSignal = {
+export type NetworkSignal = {
   id: string;
   x1: number;
   y1: number;
@@ -26,9 +26,9 @@ export type CellSignal = {
   opacity: number;
 };
 
-export type CellFrame = {
-  drawables: CellDrawable[];
-  signals: CellSignal[];
+export type NetworkFrame = {
+  drawables: NetworkDrawable[];
+  signals: NetworkSignal[];
 };
 
 type HexSpec = {
@@ -267,13 +267,13 @@ function lerp(a: Point, b: Point, t: number): Point {
 }
 
 /** One frame of the geometric network. `time` is seconds; `0` is the resting pose. */
-export function landingCellFrame(time: number): CellFrame {
-  const drawables: CellDrawable[] = [];
+export function landingNetworkFrame(time: number): NetworkFrame {
+  const drawables: NetworkDrawable[] = [];
 
   for (const hex of HEXES) {
     drawables.push({
       id: hex.id,
-      kind: "cell",
+      kind: "pod",
       d: pointsToPath(hexRing(hex, time), true),
       opacity: 1,
     });
@@ -283,13 +283,13 @@ export function landingCellFrame(time: number): CellFrame {
     const [from, to] = morphLine(line, time);
     drawables.push({
       id: line.id,
-      kind: "filament",
+      kind: "link",
       d: pointsToPath([from, to], false),
       opacity: line.id.startsWith("joint") ? 0.92 : 0.88,
     });
   }
 
-  const signals: CellSignal[] = [];
+  const signals: NetworkSignal[] = [];
   for (const spec of SIGNALS) {
     const { duration, offset } = spec;
     const progress = ((time + offset) % duration) / duration;

@@ -661,7 +661,7 @@
   }
 
   /** Marketing stage — slate base with indigo/fuchsia wash behind the network. */
-  .landing-cell-stage {
+  .landing-network-stage {
     background-color: hsl(222 47% 4%);
     background-image:
       radial-gradient(
@@ -676,7 +676,7 @@
       );
   }
 
-  .landing-cell-vignette {
+  .landing-network-vignette {
     background:
       linear-gradient(
         90deg,
@@ -695,7 +695,7 @@
   }
 
   @media (max-width: 1023px) {
-    .landing-cell-vignette {
+    .landing-network-vignette {
       background: linear-gradient(
         180deg,
         hsl(222 47% 4% / 0.2) 0%,

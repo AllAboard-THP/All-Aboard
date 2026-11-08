@@ -1,6 +1,6 @@
 import { cn } from "@allaboard/ui/lib/utils";
 
-import { LandingCellField } from "./landing-cell-field";
+import { LandingNetworkField } from "./landing-network-field";
 
 /**
  * Marketing landing stage — indigo/fuchsia network on the dark stage.
@@ -9,12 +9,12 @@ import { LandingCellField } from "./landing-cell-field";
 export function LandingConceptBackground({ className }: { className?: string }) {
   return (
     <div
-      className={cn("landing-cell-stage pointer-events-none fixed inset-0 z-0 overflow-hidden", className)}
+      className={cn("landing-network-stage pointer-events-none fixed inset-0 z-0 overflow-hidden", className)}
       aria-hidden
       data-testid="landing-concept-background"
     >
-      <LandingCellField />
-      <div className="landing-cell-vignette absolute inset-0" />
+      <LandingNetworkField />
+      <div className="landing-network-vignette absolute inset-0" />
     </div>
   );
 }

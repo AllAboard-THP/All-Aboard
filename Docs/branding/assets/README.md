@@ -6,7 +6,7 @@ This folder is reserved for **optional** marketing exports only. Do not symlink 
 
 | Asset | Path in repo |
 |-------|----------------|
-| Landing hero | Cell field — `packages/ui/src/patterns/landing-cell-field.tsx` (no raster) |
+| Landing hero | Geometric network — `packages/ui/src/patterns/landing-network-field.tsx` (no raster) |
 | Feed hero | `packages/ui/src/assets/concept-feed-hero.png` |
 | Logo mark | `packages/ui/src/assets/logo-mark.{png,svg}` |
 

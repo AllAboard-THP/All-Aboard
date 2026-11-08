@@ -33,19 +33,19 @@ When generating or replacing a **hero / concept background** for landing or feed
 ```bash
 node scripts/branding/export-hero-raster-4k.mjs \
   --source <path-to-draft.png> \
-  --basename concept-landing-hero
+  --basename concept-feed-hero
 ```
 
-4. **Bump** `LANDING_CONCEPT_BG_REVISION` / `FEED_CONCEPT_BG_REVISION` in `*-concept-background.tsx`.
+4. **Bump** `FEED_CONCEPT_BG_REVISION` in `feed-concept-background.tsx`.
 5. **Commit** rasters under `packages/ui/src/assets/` (never symlink from `Docs/` — Docker excludes `Docs`).
 
 ## Landing composition
 
-The marketing landing hero is **not a raster**. It is the ink cell field in `packages/ui/src/patterns/landing-cell-field.tsx` (irregular membranes, filaments, nucleus dashes, a signal traveling the links). Do not put a photo or generated illustration back on `/` unless a human asks for that. Feed hero rasters are unchanged.
+The marketing landing hero is **not a raster**. It is the geometric network in `packages/ui/src/patterns/landing-network-field.tsx`: a minimal horizontal chain (V-shaped tails, three pods, X crossings) with signals traveling along it. Do not put a photo or generated illustration back on `/` unless a human asks for that. Feed hero rasters are unchanged.
 
-- **Left**: calm ink for the headline. No glow, no pink gradient on the type.
-- **Right**: the cell network, lines allowed to leave the frame.
-- **Motion**: membranes breathe; signals move along filaments. Honor `prefers-reduced-motion`.
+- **Left**: hero copy on the dark slate stage. White title, purple accent, fuchsia `gradient-text` tail.
+- **Right**: the network, strokes in the brand gradient `#6366f1` → `#ec4899`.
+- **Motion**: pods breathe lightly; signals move along the spine and joints. Honor `prefers-reduced-motion`.
 
 ## Deploy specs
 
