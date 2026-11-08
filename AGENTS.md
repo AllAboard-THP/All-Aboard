@@ -51,6 +51,12 @@ Presence in the monorepo: **Git subtree** kept as an archive. **Outside** `pnpm 
   - **pre-commit**: `pnpm verify:commit`
   - **pre-push**: `pnpm verify:push`
 
+## Pull requests
+
+**Fundamental rule: every PR title and body must be in English**, with no French mixed in, even when the chat with the human is in French. This also applies when editing a PR opened by another agent.
+
+Full spec (title format, required sections): [.cursor/rules/pr-english.mdc](.cursor/rules/pr-english.mdc).
+
 ## CI
 
 PRs and pushes on the main branch trigger the GitHub Actions workflow that re-runs the checks in a clean environment.
