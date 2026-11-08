@@ -3,7 +3,7 @@ import { cn } from "@allaboard/ui/lib/utils";
 import { LandingCellField } from "./landing-cell-field";
 
 /**
- * Marketing landing stage — ink field and the cell network.
+ * Marketing landing stage — indigo/fuchsia network on the dark stage.
  * Replaces the mural photo. Auth pages keep `AppAbstractBackground`.
  */
 export function LandingConceptBackground({ className }: { className?: string }) {

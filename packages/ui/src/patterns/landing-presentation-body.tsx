@@ -57,7 +57,6 @@ export function LandingPresentationBody({ labels }: LandingPresentationBodyProps
                 label={pill}
                 iconIndex={index as 0 | 1 | 2}
                 size="lg"
-                tone="ink"
               />
             ))}
           </div>

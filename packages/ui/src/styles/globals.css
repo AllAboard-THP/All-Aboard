@@ -1,22 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@font-face {
-  font-family: "Newsreader";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("../assets/fonts/newsreader-latin-500-normal.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Newsreader";
-  font-style: italic;
-  font-weight: 500;
-  font-display: swap;
-  src: url("../assets/fonts/newsreader-latin-500-italic.woff2") format("woff2");
-}
-
 /* Tailwind v4 : scanner les classes utilisées dans le package UI (Storybook, web via re-export). */
 @source "../**/*.{ts,tsx}";
 
@@ -676,36 +660,37 @@
     }
   }
 
-  /**
-   * Marketing stage — warm ink, not the slate/indigo canvas.
-   * The cell network sits above this fill; the vignette keeps type readable.
-   */
+  /** Marketing stage — slate base with indigo/fuchsia wash behind the network. */
   .landing-cell-stage {
-    background-color: #0c0d10;
+    background-color: hsl(222 47% 4%);
+    background-image:
+      radial-gradient(
+        90% 70% at 78% 48%,
+        hsl(239 84% 67% / 0.22) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        60% 55% at 92% 42%,
+        hsl(330 81% 60% / 0.16) 0%,
+        transparent 62%
+      );
   }
 
   .landing-cell-vignette {
     background:
-      radial-gradient(
-        ellipse 85% 75% at 72% 46%,
-        transparent 0%,
-        rgb(12 13 16 / 0.18) 62%,
-        rgb(12 13 16 / 0.5) 100%
-      ),
       linear-gradient(
         90deg,
-        #0c0d10 0%,
-        rgb(12 13 16 / 0.9) 22%,
-        rgb(12 13 16 / 0.5) 42%,
-        rgb(12 13 16 / 0.08) 64%,
-        transparent 100%
+        hsl(222 47% 4% / 0.95) 0%,
+        hsl(222 47% 4% / 0.82) 24%,
+        hsl(222 47% 4% / 0.42) 46%,
+        transparent 70%
       ),
       linear-gradient(
         180deg,
-        rgb(12 13 16 / 0.78) 0%,
-        transparent 16%,
-        transparent 78%,
-        rgb(12 13 16 / 0.84) 100%
+        hsl(222 47% 4% / 0.72) 0%,
+        transparent 14%,
+        transparent 80%,
+        hsl(222 47% 4% / 0.82) 100%
       );
   }
 
@@ -713,91 +698,70 @@
     .landing-cell-vignette {
       background: linear-gradient(
         180deg,
-        rgb(12 13 16 / 0.2) 0%,
-        rgb(12 13 16 / 0.72) 10%,
-        rgb(12 13 16 / 0.94) 18%,
-        #0c0d10 30%
+        hsl(222 47% 4% / 0.2) 0%,
+        hsl(222 47% 4% / 0.55) 12%,
+        hsl(222 47% 4% / 0.92) 26%,
+        hsl(222 47% 4%) 42%
       );
     }
   }
 
-  /** Hero subtitle — ivory on the ink field. */
+  /** Hero subtitle — readable on the dark stage. */
   .landing-hero-description {
-    color: rgb(214 208 196 / 0.88);
-    text-shadow: none;
+    color: rgb(248 250 252);
+    text-shadow:
+      0 1px 2px rgb(0 0 0 / 0.55),
+      0 0 20px rgb(15 23 42 / 0.35);
     max-width: 36rem;
   }
 
-  /** Landing hero eyebrow — small sans kicker, hairline dash, no glow. */
+  /** Landing hero eyebrow — lavender glow. */
   .landing-hero-eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    line-height: 1.4;
-    letter-spacing: 0.22em;
-    color: rgb(186 180 168);
-    text-shadow: none;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: rgb(196 181 253);
+    text-shadow:
+      0 0 8px rgb(167 139 250 / 0.55),
+      0 0 20px rgb(129 140 248 / 0.35);
   }
 
-  .landing-hero-eyebrow::before {
-    content: "";
-    width: 1.35rem;
-    height: 1px;
-    flex: none;
-    background: currentColor;
+  @media (min-width: 640px) {
+    .landing-hero-eyebrow {
+      font-size: 0.9375rem;
+    }
   }
 
   @media (min-width: 1024px) {
     .landing-hero-eyebrow {
-      font-size: 0.8125rem;
-      letter-spacing: 0.24em;
+      font-size: 1rem;
+      letter-spacing: 0.06em;
     }
   }
 
-  /** Landing hero — Newsreader, set in the component class. */
-  .landing-hero-heading {
-    font-family: "Newsreader", "Iowan Old Style", Palatino, Georgia, serif;
-    font-weight: 500;
-  }
-
-  /** Landing hero title — warm paper, no photo shadow. */
+  /** Landing hero title — white copy with legibility shadow. */
   .landing-hero-title-light {
-    color: #f3efe6;
-    text-shadow: none;
+    color: rgb(255 255 255);
+    text-shadow:
+      0 1px 3px rgb(0 0 0 / 0.5),
+      0 2px 12px rgb(0 0 0 / 0.28);
   }
 
-  /**
-   * Accent phrase — same ink as the title, italic.
-   * Emphasis is typographic; the pink/purple gradient read as a template.
-   */
-  .landing-hero-accent-purple,
+  /** Landing hero accent — purple keyword before gradient tail. */
+  .landing-hero-accent-purple {
+    color: rgb(168 85 247);
+    text-shadow:
+      0 0 1px rgb(0 0 0 / 0.85),
+      0 1px 4px rgb(0 0 0 / 0.72),
+      0 2px 14px rgb(0 0 0 / 0.48),
+      0 0 22px rgb(168 85 247 / 0.5);
+  }
+
+  /** Landing hero heading — gradient tail legibility. */
   .landing-hero-heading .gradient-text {
-    font-family: "Newsreader", "Iowan Old Style", Palatino, Georgia, serif;
-    font-style: italic;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    background: none;
-    -webkit-text-fill-color: #f3efe6;
-    color: #f3efe6;
-    filter: none;
-    text-shadow: none;
-  }
-
-  /** Feature pills on the ink landing — one tone, hairline, no rainbow icons. */
-  .landing-ink-pill {
-    border-color: rgb(230 225 214 / 0.28);
-    background: rgb(12 13 16 / 0.42);
-    color: #e6e1d6;
-    box-shadow: none;
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-  }
-
-  .landing-ink-pill:hover {
-    border-color: rgb(230 225 214 / 0.45);
-    background: rgb(12 13 16 / 0.62);
+    filter:
+      drop-shadow(0 1px 2px rgb(0 0 0 / 0.55))
+      drop-shadow(0 2px 10px rgb(0 0 0 / 0.32))
+      drop-shadow(0 0 16px rgb(236 72 153 / 0.32));
   }
 
   .landing-chrome-text--eyebrow {

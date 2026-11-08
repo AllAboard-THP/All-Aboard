@@ -3,31 +3,28 @@ import { describe, expect, it } from "vitest";
 import { landingCellFrame } from "./landing-cell-geometry";
 
 describe("landingCellFrame", () => {
-  it("draws the sketch cells, filaments, and traveling signals", () => {
+  it("draws the horizontal pod chain, joints, and traveling signals", () => {
     const frame = landingCellFrame(0);
     const cells = frame.drawables.filter((item) => item.kind === "cell");
     const filaments = frame.drawables.filter((item) => item.kind === "filament");
-    const nuclei = frame.drawables.filter((item) => item.kind === "nucleus");
 
     expect(cells.map((cell) => cell.id)).toEqual([
-      "west",
-      "north",
-      "crest",
-      "east",
-      "south",
+      "pod-left",
+      "pod-center",
+      "pod-right",
     ]);
-    expect(filaments.length).toBeGreaterThanOrEqual(8);
-    expect(nuclei.map((item) => item.id)).toEqual([
-      "crest-nucleus",
-      "east-nucleus",
+    expect(filaments.length).toBeGreaterThanOrEqual(10);
+    expect(frame.signals.map((s) => s.id)).toEqual([
+      "spine",
+      "joint-left",
+      "joint-right",
     ]);
-    expect(frame.signals.length).toBe(4);
     expect(cells.every((cell) => cell.d.endsWith("Z"))).toBe(true);
   });
 
-  it("breathes the membranes instead of holding a static pose", () => {
-    const resting = landingCellFrame(0).drawables.find((item) => item.id === "north");
-    const later = landingCellFrame(4).drawables.find((item) => item.id === "north");
+  it("shifts the center pod geometry over time", () => {
+    const resting = landingCellFrame(0).drawables.find((item) => item.id === "pod-center");
+    const later = landingCellFrame(4).drawables.find((item) => item.id === "pod-center");
     expect(resting?.d).not.toEqual(later?.d);
   });
 

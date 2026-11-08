@@ -123,7 +123,7 @@ export function Eyebrow({
       className={cn(
         "mb-4 uppercase",
         variant === "landing"
-          ? "landing-hero-eyebrow landing-hero-hover-zoom tracking-[0.22em]"
+          ? "landing-hero-eyebrow landing-hero-hover-zoom"
           : cn(
               "text-xs tracking-[0.3em]",
               chromeText ? "landing-chrome-text--eyebrow" : "text-primary",
@@ -176,7 +176,7 @@ export function GradientHeading({
     <h1
       className={cn(
         "text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.12] font-bold tracking-tight text-foreground",
-        landingHero && "landing-hero-heading font-medium",
+        landingHero && "landing-hero-heading font-extrabold",
         className,
       )}
     >

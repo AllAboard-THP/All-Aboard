@@ -9,9 +9,8 @@ import { landingCellFrame, type CellFrame } from "./landing-cell-geometry";
 const REST_FRAME = landingCellFrame(0);
 
 const STROKE_WIDTH = {
-  cell: 2.45,
-  filament: 1.9,
-  nucleus: 2.5,
+  cell: 2.35,
+  filament: 2.05,
 } as const;
 
 function applyFrame(group: SVGGElement, frame: CellFrame) {
@@ -46,9 +45,8 @@ function applyFrame(group: SVGGElement, frame: CellFrame) {
 }
 
 /**
- * Animated ink network for the marketing landing.
- * Membranes breathe; a signal travels the filaments. Reduced motion
- * keeps the resting drawing.
+ * Animated geometric network for the marketing landing — indigo/fuchsia
+ * strokes, pods breathe lightly, brand-colored signals on the spine.
  */
 export function LandingCellField({ className }: { className?: string }) {
   const rawId = useId().replace(/:/g, "");
@@ -115,17 +113,17 @@ export function LandingCellField({ className }: { className?: string }) {
     >
       <defs>
         <linearGradient
-          id={`${uid}-ink`}
+          id={`${uid}-stroke`}
           gradientUnits="userSpaceOnUse"
-          x1="0"
-          y1="0"
-          x2="1600"
-          y2="0"
+          x1="620"
+          y1="420"
+          x2="1580"
+          y2="500"
         >
-          <stop offset="0%" stopColor="#e6e1d6" stopOpacity="0.2" />
-          <stop offset="30%" stopColor="#e6e1d6" stopOpacity="0.38" />
-          <stop offset="48%" stopColor="#e6e1d6" stopOpacity="0.82" />
-          <stop offset="100%" stopColor="#e6e1d6" stopOpacity="0.94" />
+          <stop offset="0%" stopColor="#6366f1" stopOpacity="0.35" />
+          <stop offset="35%" stopColor="#818cf8" stopOpacity="0.78" />
+          <stop offset="58%" stopColor="#a78bfa" stopOpacity="0.92" />
+          <stop offset="100%" stopColor="#ec4899" stopOpacity="0.95" />
         </linearGradient>
         <filter
           id={`${uid}-glow`}
@@ -150,10 +148,10 @@ export function LandingCellField({ className }: { className?: string }) {
             data-cell-id={item.id}
             data-kind={item.kind}
             d={item.d}
-            stroke={`url(#${uid}-ink)`}
+            stroke={`url(#${uid}-stroke)`}
             strokeWidth={STROKE_WIDTH[item.kind]}
             strokeLinecap="round"
-            strokeLinejoin={item.kind === "cell" ? "miter" : "round"}
+            strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
             opacity={item.opacity}
           />
@@ -166,8 +164,8 @@ export function LandingCellField({ className }: { className?: string }) {
               y1={signal.y1}
               x2={signal.x2}
               y2={signal.y2}
-              stroke="#d5dbff"
-              strokeWidth="3"
+              stroke={`url(#${uid}-stroke)`}
+              strokeWidth="2.75"
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
               filter={`url(#${uid}-glow)`}
@@ -178,7 +176,7 @@ export function LandingCellField({ className }: { className?: string }) {
               cx={signal.cx}
               cy={signal.cy}
               r="4.2"
-              fill="#e7ebff"
+              fill="#f9a8d4"
               opacity={signal.opacity}
             />
           </g>
