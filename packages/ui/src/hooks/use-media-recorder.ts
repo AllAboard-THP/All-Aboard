@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 
 import {
   baseMimeType,
@@ -59,6 +65,15 @@ function readDefaultDevices(): MediaCaptureDevices | null {
     return null;
   }
   return navigator.mediaDevices;
+}
+
+// Browser capabilities never change while the page is open.
+function subscribeToNothing(): () => void {
+  return () => {};
+}
+
+function readServerScreenCaptureSupport(): boolean {
+  return false;
 }
 
 function readDefaultSecureContext(): boolean {
@@ -136,7 +151,14 @@ export function useMediaRecorder(
     options.mediaDevices === undefined
       ? readDefaultDevices()
       : options.mediaDevices;
-  const screenCaptureSupported = isScreenCaptureSupported(devices);
+  // The server cannot see `navigator`, so it renders "unsupported". Reading
+  // the value through useSyncExternalStore lets React swap in the browser
+  // value after hydration instead of keeping the server's disabled button.
+  const screenCaptureSupported = useSyncExternalStore(
+    subscribeToNothing,
+    () => isScreenCaptureSupported(devices),
+    readServerScreenCaptureSupport,
+  );
 
   const clearTimer = useCallback(() => {
     if (timerRef.current != null) {
