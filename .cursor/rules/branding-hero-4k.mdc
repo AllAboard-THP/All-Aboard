@@ -41,11 +41,11 @@ node scripts/branding/export-hero-raster-4k.mjs \
 
 ## Landing composition
 
-The marketing landing hero is **not a raster**. It is the geometric network in `packages/ui/src/patterns/landing-network-field.tsx`: a minimal horizontal chain (V-shaped tails, three pods, X crossings) with signals traveling along it. Do not put a photo or generated illustration back on `/` unless a human asks for that. Feed hero rasters are unchanged.
+The marketing landing hero is **not a raster**. It is the geometric network in `packages/ui/src/patterns/landing-network-field.tsx`: a regular mesh of closed hexagons joined by thin links, every segment horizontal or at 45°, drawn at a fixed scale from the left edge. Do not put a photo or generated illustration back on `/` unless a human asks for that. Feed hero rasters are unchanged.
 
 - **Left**: hero copy on the dark slate stage. White title, purple accent, fuchsia `gradient-text` tail.
-- **Right**: the network, strokes in the brand gradient `#6366f1` → `#ec4899`.
-- **Motion**: pods breathe lightly; signals move along the spine and joints. Honor `prefers-reduced-motion`.
+- **Background**: the mesh runs behind the copy, in muted neutral strokes, and dissolves before the right edge so that area stays clear. Screens wider than the design reveal more mesh; they never zoom it.
+- **Motion**: the mesh stays still. Many small mint glows (`#6ee7b7`) flow left to right along its lines, around the hexagons too, drawn on a canvas. Under `prefers-reduced-motion`, show one still frame.
 
 ## Deploy specs
 

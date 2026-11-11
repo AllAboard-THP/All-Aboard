@@ -10,7 +10,9 @@ describe("LandingConceptBackground", () => {
     expect(
       container.querySelector("[data-testid='landing-network-field']"),
     ).toBeTruthy();
-    expect(container.querySelectorAll("[data-kind='pod']")).toHaveLength(3);
+    expect(container.querySelector("[data-kind='nodes']")).toBeTruthy();
+    expect(container.querySelector("[data-kind='links']")).toBeTruthy();
+    expect(container.querySelector("[data-testid='landing-network-glows']")).toBeTruthy();
     expect(container.querySelector("img")).toBeNull();
   });
 });
