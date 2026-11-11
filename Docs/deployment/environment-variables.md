@@ -62,7 +62,7 @@ Items still to harmonize **on the instance** (not in this matrix): Agent/Indexer
 
 ### Message media (API)
 
-Chat audio and video. Local disk is the dev default. Production on Dokploy/Coolify uses S3 or MinIO — do not keep video only on a container volume. Steps: [message-media-storage.md](message-media-storage.md). Decision: [ADR 0008](../adr/0008-message-media-object-storage.md).
+Chat audio and video. Local disk is the default for local development. Deployed environments (Dokploy dev, staging, production) use **Cloudflare R2** through the S3 API, with `S3_REGION=auto`. Do not keep video only on a container volume. Steps: [message-media-storage.md](message-media-storage.md#cloudflare-r2-deployed-environments). Decision: [ADR 0008](../adr/0008-message-media-object-storage.md).
 
 | Variable | Required | Default | Role |
 | --- | --- | --- | --- |
