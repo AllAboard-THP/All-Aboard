@@ -1,313 +1,242 @@
 /**
- * Landing geometric network — horizontal chain from the sketch:
- * left V tail · small pod · X · large pod · X · small pod · right V tail.
- * Coordinates in a 1600×900 viewBox, chain biased to the right for copy.
+ * Landing network — a regular mesh of hexagon nodes, drawn at a fixed scale
+ * from the left edge of the page, with small glows flowing through it.
+ *
+ * The mesh repeats one unit: a node fans out from its right tip to two nodes
+ * in the next column, whose links converge on a hub that feeds the node after.
+ * Every segment is horizontal or at 45°, and glows only ever travel on lines
+ * that are drawn.
  */
 
-export type Point = { x: number; y: number };
+export type Point = { readonly x: number; readonly y: number };
 
-export type NetworkKind = "pod" | "link";
+export type NetworkLink = readonly [Point, Point];
 
-export type NetworkDrawable = {
-  id: string;
-  kind: NetworkKind;
-  d: string;
-  opacity: number;
+export type GlowRoute = {
+  readonly points: readonly Point[];
+  /** Distance from the route start at each point. */
+  readonly distances: readonly number[];
+  readonly speed: number;
+  readonly size: number;
+  /** Starting distance, so that glows are spread along their routes. */
+  readonly offset: number;
 };
 
-export type NetworkSignal = {
-  id: string;
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  cx: number;
-  cy: number;
-  opacity: number;
+export type GlowSample = Point & { readonly strength: number };
+
+/** Mesh size in drawing units. Large enough for a 4K screen at desktop scale. */
+export const NETWORK_WIDTH = 3200;
+export const NETWORK_HEIGHT = 2400;
+
+/** Moment shown when motion is off. */
+export const NETWORK_REST_TIME = 6;
+
+const COLUMN_PERIOD = 554;
+const ROW_PERIOD = 268;
+const NODE_HALF_WIDTH = 100;
+const NODE_HALF_HEIGHT = 38;
+const HUB_OFFSET = 38;
+const COLUMNS = { first: -1, last: 5 };
+const ROWS = { first: -1, last: 9 };
+
+const AREA_PER_GLOW = 90_000;
+const MIN_GLOWS = 8;
+const MAX_GLOWS = 40;
+const BASE_SPEED = 170;
+const TRAIL_SAMPLES = 24;
+const TRAIL_STEP = 2.5;
+/** Tail samples overlap and add up, so each one stays faint. */
+const TRAIL_STRENGTH = 0.45;
+const ROW_CHANGE_CHANCE = 0.3;
+
+type Hexagon = {
+  readonly left: Point;
+  readonly topLeft: Point;
+  readonly topRight: Point;
+  readonly right: Point;
+  readonly bottomRight: Point;
+  readonly bottomLeft: Point;
 };
 
-export type NetworkFrame = {
-  drawables: NetworkDrawable[];
-  signals: NetworkSignal[];
-};
-
-type HexSpec = {
-  id: string;
-  cx: number;
-  cy: number;
-  /** Half-width to the left/right tips. */
-  length: number;
-  height: number;
-  /** Flat-top inset from each tip along the long axis. */
-  shoulder: number;
-  amp: number;
-  phase: number;
-  speed: number;
-};
-
-type LineSpec = {
-  id: string;
-  a: Point;
-  b: Point;
-  amp?: number;
-  phase?: number;
-  speed?: number;
-  seed?: number;
-};
-
-const CHAIN_CY = 452;
-
-const HEXES: HexSpec[] = [
-  {
-    id: "pod-left",
-    cx: 905,
-    cy: CHAIN_CY,
-    length: 62,
-    height: 26,
-    shoulder: 22,
-    amp: 2.5,
-    phase: 0.3,
-    speed: 0.32,
-  },
-  {
-    id: "pod-center",
-    cx: 1138,
-    cy: CHAIN_CY,
-    length: 96,
-    height: 54,
-    shoulder: 32,
-    amp: 3.5,
-    phase: 1.1,
-    speed: 0.26,
-  },
-  {
-    id: "pod-right",
-    cx: 1372,
-    cy: CHAIN_CY,
-    length: 62,
-    height: 26,
-    shoulder: 22,
-    amp: 2.5,
-    phase: 2.5,
-    speed: 0.32,
-  },
-];
-
-const SPINE_LINES: LineSpec[] = [
-  {
-    id: "tail-up",
-    a: { x: 702, y: 382 },
-    b: { x: 843, y: CHAIN_CY },
-    amp: 2,
-    phase: 0,
-    speed: 0.24,
-    seed: 1,
-  },
-  {
-    id: "tail-down",
-    a: { x: 702, y: 522 },
-    b: { x: 843, y: CHAIN_CY },
-    amp: 2,
-    phase: 0.6,
-    speed: 0.24,
-    seed: 2,
-  },
-  {
-    id: "exit-up",
-    a: { x: 1434, y: CHAIN_CY },
-    b: { x: 1578, y: 382 },
-    amp: 2,
-    phase: 1.4,
-    speed: 0.24,
-    seed: 3,
-  },
-  {
-    id: "exit-down",
-    a: { x: 1434, y: CHAIN_CY },
-    b: { x: 1578, y: 522 },
-    amp: 2,
-    phase: 2.1,
-    speed: 0.24,
-    seed: 4,
-  },
-];
-
-/** X crossings and short rails between pods (sketch joints). */
-const JOINT_LINES: LineSpec[] = [
-  {
-    id: "joint-left-a",
-    a: { x: 982, y: CHAIN_CY - 26 },
-    b: { x: 1018, y: CHAIN_CY + 26 },
-  },
-  {
-    id: "joint-left-b",
-    a: { x: 982, y: CHAIN_CY + 26 },
-    b: { x: 1018, y: CHAIN_CY - 26 },
-  },
-  {
-    id: "bridge-left-top",
-    a: { x: 967, y: CHAIN_CY - 26 },
-    b: { x: 1040, y: CHAIN_CY - 54 },
-  },
-  {
-    id: "bridge-left-bottom",
-    a: { x: 967, y: CHAIN_CY + 26 },
-    b: { x: 1040, y: CHAIN_CY + 54 },
-  },
-  {
-    id: "joint-right-a",
-    a: { x: 1256, y: CHAIN_CY - 54 },
-    b: { x: 1292, y: CHAIN_CY + 54 },
-  },
-  {
-    id: "joint-right-b",
-    a: { x: 1256, y: CHAIN_CY + 54 },
-    b: { x: 1292, y: CHAIN_CY - 54 },
-  },
-  {
-    id: "bridge-right-top",
-    a: { x: 1236, y: CHAIN_CY - 54 },
-    b: { x: 1310, y: CHAIN_CY - 26 },
-  },
-  {
-    id: "bridge-right-bottom",
-    a: { x: 1236, y: CHAIN_CY + 54 },
-    b: { x: 1310, y: CHAIN_CY + 26 },
-  },
-];
-
-type SignalSpec = {
-  id: string;
-  from: Point;
-  to: Point;
-  duration: number;
-  offset: number;
-};
-
-const SIGNALS: SignalSpec[] = [
-  {
-    id: "spine",
-    from: { x: 702, y: CHAIN_CY },
-    to: { x: 1578, y: CHAIN_CY },
-    duration: 10.5,
-    offset: 0,
-  },
-  {
-    id: "joint-left",
-    from: { x: 982, y: CHAIN_CY - 26 },
-    to: { x: 1018, y: CHAIN_CY + 26 },
-    duration: 6.8,
-    offset: 2.2,
-  },
-  {
-    id: "joint-right",
-    from: { x: 1256, y: CHAIN_CY - 54 },
-    to: { x: 1292, y: CHAIN_CY + 54 },
-    duration: 7.6,
-    offset: 4.8,
-  },
-];
-
-function round(value: number): number {
-  return Math.round(value * 10) / 10;
+function hexagon(center: Point): Hexagon {
+  const shoulder = NODE_HALF_WIDTH - NODE_HALF_HEIGHT;
+  const at = (dx: number, dy: number) => ({ x: center.x + dx, y: center.y + dy });
+  return {
+    left: at(-NODE_HALF_WIDTH, 0),
+    topLeft: at(-shoulder, -NODE_HALF_HEIGHT),
+    topRight: at(shoulder, -NODE_HALF_HEIGHT),
+    right: at(NODE_HALF_WIDTH, 0),
+    bottomRight: at(shoulder, NODE_HALF_HEIGHT),
+    bottomLeft: at(-shoulder, NODE_HALF_HEIGHT),
+  };
 }
 
-function pointsToPath(points: Point[], closed: boolean): string {
-  const [first, ...rest] = points;
-  if (!first) return "";
-  const commands = [`M ${round(first.x)} ${round(first.y)}`];
-  for (const point of rest) {
-    commands.push(`L ${round(point.x)} ${round(point.y)}`);
+/** Nodes fed by a hub: they fan out to the next column. */
+const fanNode = (column: number, row: number) =>
+  hexagon({ x: COLUMN_PERIOD * column + 20, y: ROW_PERIOD * row + 134 });
+
+/** Nodes between two fan nodes: they converge on the next hubs. */
+const relayNode = (column: number, row: number) =>
+  hexagon({ x: COLUMN_PERIOD * column + 278, y: ROW_PERIOD * row });
+
+const hub = (column: number, row: number): Point => {
+  const { left } = fanNode(column, row);
+  return { x: left.x - HUB_OFFSET, y: left.y };
+};
+
+const outline = (node: Hexagon): readonly Point[] => [
+  node.left,
+  node.topLeft,
+  node.topRight,
+  node.right,
+  node.bottomRight,
+  node.bottomLeft,
+];
+
+function buildMesh() {
+  const nodes: (readonly Point[])[] = [];
+  const links: NetworkLink[] = [];
+
+  for (let column = COLUMNS.first; column <= COLUMNS.last; column += 1) {
+    for (let row = ROWS.first; row <= ROWS.last; row += 1) {
+      const fan = fanNode(column, row);
+      nodes.push(outline(fan));
+      links.push([hub(column, row), fan.left]);
+      links.push([fan.right, relayNode(column, row).bottomLeft]);
+      links.push([fan.right, relayNode(column, row + 1).topLeft]);
+    }
+    for (let row = ROWS.first; row <= ROWS.last + 1; row += 1) {
+      const relay = relayNode(column, row);
+      nodes.push(outline(relay));
+      if (column === COLUMNS.last) continue;
+      if (row > ROWS.first) links.push([relay.topRight, hub(column + 1, row - 1)]);
+      if (row <= ROWS.last) links.push([relay.bottomRight, hub(column + 1, row)]);
+    }
   }
-  if (closed) commands.push("Z");
-  return commands.join(" ");
+  return { nodes, links };
 }
 
-function hexRing(spec: HexSpec, time: number): Point[] {
-  const { cx, cy, length: L, height: h, shoulder: s, amp, phase, speed } = spec;
-  const base = [
-    { x: cx - L, y: cy },
-    { x: cx - L + s, y: cy - h },
-    { x: cx + L - s, y: cy - h },
-    { x: cx + L, y: cy },
-    { x: cx + L - s, y: cy + h },
-    { x: cx - L + s, y: cy + h },
-  ];
-  return base.map((point, index) => {
-    const wobble = Math.sin(time * speed + phase + index * 0.9) * amp;
-    const shear = Math.cos(time * speed * 0.75 + phase + index) * amp * 0.35;
-    return { x: point.x + wobble, y: point.y + shear };
+const mesh = buildMesh();
+
+export const NETWORK_NODES: readonly (readonly Point[])[] = mesh.nodes;
+export const NETWORK_LINKS: readonly NetworkLink[] = mesh.links;
+
+const coordinates = (point: Point) => `${point.x} ${point.y}`;
+
+export const NETWORK_NODES_PATH = NETWORK_NODES.map(
+  (points) => `M${points.map(coordinates).join("L")}Z`,
+).join("");
+
+export const NETWORK_LINKS_PATH = NETWORK_LINKS.map(
+  ([from, to]) => `M${coordinates(from)}L${coordinates(to)}`,
+).join("");
+
+/** Small deterministic generator (mulberry32), so the flow is reproducible. */
+function randomSource(seed: number) {
+  let state = seed;
+  return () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let mixed = Math.imul(state ^ (state >>> 15), 1 | state);
+    mixed = (mixed + Math.imul(mixed ^ (mixed >>> 7), 61 | mixed)) ^ mixed;
+    return ((mixed ^ (mixed >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Walks one glow through the mesh, node after node, until it passes `reach`. */
+function walk(
+  startRow: number,
+  rowCount: number,
+  reach: number,
+  random: () => number,
+): readonly Point[] {
+  const fits = (row: number) => row >= 0 && row < rowCount;
+  const points: Point[] = [hub(0, startRow)];
+  let row = startRow;
+
+  for (let column = 0; column < COLUMNS.last; column += 1) {
+    const fan = fanNode(column, row);
+    points.push(fan.left);
+    points.push(
+      ...(random() < 0.5
+        ? [fan.topLeft, fan.topRight, fan.right]
+        : [fan.bottomLeft, fan.bottomRight, fan.right]),
+    );
+
+    // Going up lands on the relay's bottom-left corner, going down on its top-left.
+    const goUp = fits(row - 1) && (!fits(row + 1) || random() < 0.5);
+    const relay = relayNode(column, goUp ? row : row + 1);
+    const changeRow = random() < ROW_CHANGE_CHANCE && fits(goUp ? row - 1 : row + 1);
+
+    if (goUp) {
+      points.push(relay.bottomLeft, relay.bottomRight);
+      if (changeRow) points.push(relay.right, relay.topRight);
+    } else {
+      points.push(relay.topLeft, relay.topRight);
+      if (changeRow) points.push(relay.right, relay.bottomRight);
+    }
+    if (changeRow) row += goUp ? -1 : 1;
+
+    points.push(hub(column + 1, row));
+    if (points.at(-1)!.x > reach) break;
+  }
+  return points;
+}
+
+function cumulativeDistances(points: readonly Point[]): readonly number[] {
+  const distances = [0];
+  for (let index = 1; index < points.length; index += 1) {
+    distances.push(
+      distances[index - 1]! +
+        Math.hypot(points[index]!.x - points[index - 1]!.x, points[index]!.y - points[index - 1]!.y),
+    );
+  }
+  return distances;
+}
+
+/** Routes for the glows that cross an area of the given size, in drawing units. */
+export function createGlowRoutes(reach: number, height: number): readonly GlowRoute[] {
+  const random = randomSource(7);
+  const rowCount = Math.max(1, Math.min(ROWS.last, Math.ceil(height / ROW_PERIOD)));
+  const count = Math.min(
+    MAX_GLOWS,
+    Math.max(MIN_GLOWS, Math.round((reach * height) / AREA_PER_GLOW)),
+  );
+
+  return Array.from({ length: count }, (_, index) => {
+    const points = walk(index % rowCount, rowCount, reach, random);
+    const distances = cumulativeDistances(points);
+    return {
+      points,
+      distances,
+      speed: BASE_SPEED * (0.8 + random() * 0.45),
+      size: 0.8 + random() * 0.45,
+      offset: ((index + random()) / count) * distances.at(-1)!,
+    };
   });
 }
 
-function morphLine(
-  line: LineSpec,
-  time: number,
-): [Point, Point] {
-  const amp = line.amp ?? 0;
-  if (amp <= 0) return [line.a, line.b];
-
-  const speed = line.speed ?? 0.3;
-  const phase = line.phase ?? 0;
-  const seed = line.seed ?? 0;
-  const dx = line.b.x - line.a.x;
-  const dy = line.b.y - line.a.y;
-  const len = Math.hypot(dx, dy) || 1;
-  const nx = -dy / len;
-  const ny = dx / len;
-  const w = Math.sin(time * speed + phase + seed) * amp;
-  return [
-    { x: line.a.x + nx * w * 0.45, y: line.a.y + ny * w * 0.45 },
-    { x: line.b.x + nx * w * 0.45, y: line.b.y + ny * w * 0.45 },
-  ];
-}
-
-function lerp(a: Point, b: Point, t: number): Point {
+function pointAt(route: GlowRoute, distance: number): Point {
+  let index = 1;
+  while (index < route.distances.length - 1 && route.distances[index]! < distance) index += 1;
+  const a = route.points[index - 1]!;
+  const b = route.points[index]!;
+  const from = route.distances[index - 1]!;
+  const t = (distance - from) / (route.distances[index]! - from);
   return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
 }
 
-/** One frame of the geometric network. `time` is seconds; `0` is the resting pose. */
-export function landingNetworkFrame(time: number): NetworkFrame {
-  const drawables: NetworkDrawable[] = [];
-
-  for (const hex of HEXES) {
-    drawables.push({
-      id: hex.id,
-      kind: "pod",
-      d: pointsToPath(hexRing(hex, time), true),
-      opacity: 1,
+/** A glow at a moment in time: its head, then a tail that fades behind it. */
+export function glowSamples(route: GlowRoute, time: number): readonly GlowSample[] {
+  const length = route.distances.at(-1)!;
+  const head = (route.offset + route.speed * time) % length;
+  const samples: GlowSample[] = [];
+  for (let index = 0; index < TRAIL_SAMPLES; index += 1) {
+    const distance = head - index * TRAIL_STEP;
+    if (distance < 0) break;
+    samples.push({
+      ...pointAt(route, distance),
+      strength: index === 0 ? 1 : TRAIL_STRENGTH * (1 - index / TRAIL_SAMPLES) ** 2,
     });
   }
-
-  for (const line of [...SPINE_LINES, ...JOINT_LINES]) {
-    const [from, to] = morphLine(line, time);
-    drawables.push({
-      id: line.id,
-      kind: "link",
-      d: pointsToPath([from, to], false),
-      opacity: line.id.startsWith("joint") ? 0.92 : 0.88,
-    });
-  }
-
-  const signals: NetworkSignal[] = [];
-  for (const spec of SIGNALS) {
-    const { duration, offset } = spec;
-    const progress = ((time + offset) % duration) / duration;
-    const head = progress;
-    const tail = Math.max(0, progress - 0.16);
-    const start = lerp(spec.from, spec.to, tail);
-    const end = lerp(spec.from, spec.to, head);
-    signals.push({
-      id: spec.id,
-      x1: round(start.x),
-      y1: round(start.y),
-      x2: round(end.x),
-      y2: round(end.y),
-      cx: round(end.x),
-      cy: round(end.y),
-      opacity: Math.sin(Math.PI * progress),
-    });
-  }
-
-  return { drawables, signals };
+  return samples;
 }
