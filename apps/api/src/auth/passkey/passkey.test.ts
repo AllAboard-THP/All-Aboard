@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type {
   AuthenticationResponseJSON,
@@ -26,6 +27,11 @@ import { buildApp } from "../../app";
 import { ensureMigrated } from "../../test/ensure-migrated.js";
 import { insertPasskey } from "./credentials";
 import { users } from "../../db/schema";
+
+/** Challenges and credential ids are unique in DB, which outlives a test run locally. */
+function uniqueId(prefix: string): string {
+  return `${prefix}-${randomUUID()}`;
+}
 
 function clientDataJson(challenge: string): string {
   return Buffer.from(JSON.stringify({ challenge, type: "webauthn.create" })).toString(
@@ -61,8 +67,9 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
   });
 
   it("POST /auth/passkey/register/options returns options when CGU accepted", async () => {
+    const challenge = uniqueId("reg-challenge");
     mockGenerateRegistrationOptions.mockResolvedValue({
-      challenge: "reg-challenge-abc",
+      challenge,
       rp: { name: "All-Aboard Test", id: "localhost" },
       user: { id: "dXNlcg", name: "Test User", displayName: "Test User" },
     });
@@ -79,7 +86,7 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
 
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.payload) as { options: { challenge: string } };
-    expect(body.options.challenge).toBe("reg-challenge-abc");
+    expect(body.options.challenge).toBe(challenge);
     expect(mockGenerateRegistrationOptions).toHaveBeenCalledOnce();
   });
 
@@ -95,7 +102,8 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
   });
 
   it("POST /auth/passkey/register/verify creates user and issues JWT", async () => {
-    const challenge = "verify-reg-challenge";
+    const challenge = uniqueId("verify-reg-challenge");
+    const credentialId = uniqueId("cred-id");
     mockGenerateRegistrationOptions.mockResolvedValue({
       challenge,
       rp: { name: "All-Aboard Test", id: "localhost" },
@@ -114,7 +122,7 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
       verified: true,
       registrationInfo: {
         credential: {
-          id: "cred-id-mock",
+          id: credentialId,
           publicKey: new Uint8Array([1, 2, 3]),
           counter: 0,
           transports: ["internal"],
@@ -126,8 +134,8 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
     });
 
     const registrationResponse = {
-      id: "cred-id-mock",
-      rawId: "cred-id-mock",
+      id: credentialId,
+      rawId: credentialId,
       type: "public-key",
       response: {
         clientDataJSON: clientDataJson(challenge),
@@ -158,6 +166,7 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
 
   it("POST /auth/passkey/login/verify issues JWT for existing credential", async () => {
     const db = drizzle(pool);
+    const credentialId = uniqueId("login-cred");
     const email = `login-${Date.now()}@dev.local`;
     const inserted = await db
       .insert(users)
@@ -172,14 +181,14 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
 
     await insertPasskey(db, {
       userId,
-      credentialId: "login-cred-id",
+      credentialId,
       publicKey: new Uint8Array([9, 9, 9]),
       counter: 0,
       deviceType: "singleDevice",
       backedUp: false,
     });
 
-    const challenge = "login-challenge-xyz";
+    const challenge = uniqueId("login-challenge");
     mockGenerateAuthenticationOptions.mockResolvedValue({
       challenge,
       rpId: "localhost",
@@ -200,8 +209,8 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
     });
 
     const authResponse = {
-      id: "login-cred-id",
-      rawId: "login-cred-id",
+      id: credentialId,
+      rawId: credentialId,
       type: "public-key",
       response: {
         clientDataJSON: authClientDataJson(challenge),
@@ -225,6 +234,7 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
 
   it("GET /auth/passkey/credentials lists passkeys for authenticated user", async () => {
     const db = drizzle(pool);
+    const credentialId = uniqueId("listed-cred");
     const email = `creds-${Date.now()}@dev.local`;
     const inserted = await db
       .insert(users)
@@ -239,7 +249,7 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
 
     await insertPasskey(db, {
       userId,
-      credentialId: "listed-cred",
+      credentialId,
       publicKey: new Uint8Array([4, 4, 4]),
       counter: 2,
       deviceType: "multiDevice",
@@ -259,7 +269,7 @@ describe.skipIf(!process.env.DATABASE_URL)("passkey auth", () => {
       items: Array<{ credentialId: string; backedUp: boolean }>;
     };
     expect(body.items).toHaveLength(1);
-    expect(body.items[0]?.credentialId).toBe("listed-cred");
+    expect(body.items[0]?.credentialId).toBe(credentialId);
     expect(body.items[0]?.backedUp).toBe(true);
   });
 });

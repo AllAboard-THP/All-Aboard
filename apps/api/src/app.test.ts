@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import pg from "pg";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { drizzle } from "drizzle-orm/node-postgres";
@@ -1654,11 +1655,17 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
         .from(users)
         .where(eq(users.email, "bob@dev.local"))
         .limit(1);
+      // Fresh recipient: a direct thread is unique per pair and the DB outlives a test run locally.
+      const aliceEmail = `conv-recipient-${randomUUID()}@dev.local`;
       const aliceRows = await db
-        .select({ id: users.id })
-        .from(users)
-        .where(eq(users.email, "alice@dev.local"))
-        .limit(1);
+        .insert(users)
+        .values({
+          email: aliceEmail,
+          passwordHash: null,
+          role: "mentor",
+          fullName: "Conv Recipient",
+        })
+        .returning({ id: users.id });
       const bobId = bobRows[0]?.id;
       const aliceId = aliceRows[0]?.id;
       expect(bobId).toBeDefined();
@@ -1699,7 +1706,7 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       expect(msg.item.userName.length).toBeGreaterThan(0);
 
       const aliceToken = app.jwt.sign({
-        sub: "alice@dev.local",
+        sub: aliceEmail,
         role: "mentor",
       });
       const inboxRes = await app.inject({
