@@ -7,7 +7,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc -b",
     "start": "node dist/index.js",
-    "db:migrate": "tsx src/migrate.ts",
+    "db:migrate": "tsx src/scripts/db-migrate.ts",
     "db:seed": "tsx src/seed.ts",
     "db:generate": "drizzle-kit generate",
     "migrate:message-media-s3": "tsx src/scripts/migrate-message-media-to-s3.ts",
