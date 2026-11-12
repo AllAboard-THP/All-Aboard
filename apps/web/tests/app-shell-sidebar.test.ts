@@ -16,6 +16,7 @@ describe("app-shell-sidebar", () => {
 
   it("hides sidebar on landing and legal routes", () => {
     expect(shouldShowAppSidebar("/")).toBe(false);
+    expect(shouldShowAppSidebar("/login")).toBe(false);
     expect(shouldShowAppSidebar("/legal/cgu")).toBe(false);
     expect(shouldShowAppSidebar("/legal/privacy")).toBe(false);
     expect(shouldShowAppSidebar("/register")).toBe(false);
@@ -61,7 +62,6 @@ describe("app-shell-sidebar", () => {
       dashboard: "Dashboard",
       subjects: "Subjects",
       resources: "Resources",
-      events: "Events",
       newRequest: "New",
       feed: "Feed",
       messages: "Messages",

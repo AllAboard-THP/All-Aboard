@@ -65,12 +65,14 @@ export function BrandLogo({
   labels = legacyLabelsFr,
   className,
   markClassName,
+  wordmarkClassName,
   showWordmark = true,
   tagline,
 }: {
   labels?: LegacyLabels;
   className?: string;
   markClassName?: string;
+  wordmarkClassName?: string;
   showWordmark?: boolean;
   /** Renders below the wordmark (e.g. landing header tagline). */
   tagline?: ReactNode;
@@ -81,6 +83,7 @@ export function BrandLogo({
         brandName={labels.brandName}
         className={className}
         markClassName={markClassName}
+        wordmarkClassName={wordmarkClassName}
       />
     );
   }
@@ -118,11 +121,11 @@ export function Eyebrow({
   return (
     <p
       className={cn(
-        "mb-4 uppercase tracking-[0.3em]",
+        "mb-4 uppercase",
         variant === "landing"
           ? "landing-hero-eyebrow landing-hero-hover-zoom"
           : cn(
-              "text-xs",
+              "text-xs tracking-[0.3em]",
               chromeText ? "landing-chrome-text--eyebrow" : "text-primary",
             ),
         className,

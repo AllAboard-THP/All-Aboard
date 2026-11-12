@@ -56,6 +56,50 @@ export function upstreamQuerySuffix(request: Request): string {
   return qs.length > 0 ? `?${qs}` : "";
 }
 
+function isMultipartContentType(
+  contentType: string | null,
+): contentType is string {
+  return (
+    typeof contentType === "string" &&
+    contentType.toLowerCase().includes("multipart/form-data")
+  );
+}
+
+/** Authenticated POST relay — forwards multipart body stream without parsing (message media). */
+export async function relayAuthenticatedMultipart(
+  path: string,
+  request: Request,
+): Promise<NextResponse> {
+  const token = await getAccessToken();
+  if (!token) {
+    return missingTokenResponse();
+  }
+
+  const contentType = request.headers.get("content-type");
+  if (!isMultipartContentType(contentType)) {
+    return NextResponse.json({ error: "invalid_content_type" }, { status: 400 });
+  }
+
+  const headers: Record<string, string> = {
+    authorization: `Bearer ${token}`,
+    "content-type": contentType,
+  };
+  const contentLength = request.headers.get("content-length");
+  if (contentLength) {
+    headers["content-length"] = contentLength;
+  }
+
+  const init = {
+    method: "POST",
+    headers,
+    body: request.body,
+    duplex: "half",
+  } as RequestInit;
+
+  const res = await fetch(`${getApiBaseUrl()}${path}`, init);
+  return relayJsonResponse(res);
+}
+
 /** Authenticated relay — Bearer from `access_token` cookie. */
 export async function relayAuthenticatedFetch(
   path: string,
@@ -91,6 +135,10 @@ export async function relayPublicGet(
   return relayJsonResponse(res);
 }
 
+function normalizeRelayJsonBody(body: string): string {
+  return body.trim().length > 0 ? body : "{}";
+}
+
 /** POST JSON relay (no auth). */
 export async function relayPostJson(
   upstreamPath: string,
@@ -99,7 +147,7 @@ export async function relayPostJson(
   const res = await fetch(`${getApiBaseUrl()}${upstreamPath}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body,
+    body: normalizeRelayJsonBody(body),
   });
   return relayJsonResponse(res);
 }
@@ -112,7 +160,7 @@ export async function relayPostJsonWithCookies(
   const res = await fetch(`${getApiBaseUrl()}${upstreamPath}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body,
+    body: normalizeRelayJsonBody(body),
   });
   return relayJsonWithCookies(res);
 }

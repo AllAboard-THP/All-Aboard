@@ -17,10 +17,6 @@ import {
 import { SubjectIcon } from "@/components/features/subject-icon";
 import { SubjectRequestExploreCard } from "@/components/features/subject-request-explore-card";
 import { Link } from "@/i18n/navigation";
-import {
-  feedHref,
-  FEED_DEFAULT_LIMIT,
-} from "@/lib/feed-search-params";
 
 type Props = {
   subjects: Subject[];
@@ -76,11 +72,7 @@ export async function ExploreContent({ subjects, error }: Props) {
               <li key={subject.id} data-testid={`explore-subject-${subject.slug}`}>
                 <Card className="h-full transition-colors hover:border-primary/50">
                   <Link
-                    href={feedHref({
-                      page: 1,
-                      limit: FEED_DEFAULT_LIMIT,
-                      subject: subject.slug,
-                    })}
+                    href={`/subjects/${subject.slug}`}
                     className="flex h-full flex-col rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     aria-label={t("cardLinkAria", { name: subject.name })}
                   >

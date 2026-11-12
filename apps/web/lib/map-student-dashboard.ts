@@ -33,7 +33,6 @@ export type StudentDashboardSource = {
 const SHORTCUTS: StudentDashboardFixture["shortcuts"] = [
   { id: "subjects", href: "/explore" },
   { id: "resources", href: "/resources" },
-  { id: "events", href: "/events" },
   { id: "profile", href: "/profile" },
 ];
 

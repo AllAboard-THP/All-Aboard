@@ -11,9 +11,9 @@
 | `pnpm verify:commit` | `lint` + `typecheck` | pre-commit, before commit |
 | `pnpm verify:push` | `test` + `build` + `build:storybook` | pre-push |
 | `pnpm verify` | commit + push | full review / agents |
-| `pnpm lint` | turbo lint, `--filter=!thp-final` | |
+| `pnpm lint` | `check-node-modules.sh` + turbo lint, `--filter=!thp-final` | |
 | `pnpm typecheck` | turbo typecheck, `--filter=!thp-final` | |
-| `pnpm test` | turbo test, `--filter=!thp-final` | |
+| `pnpm test` | `scripts/test-with-db.sh` (auto `.env.local.dev` + migrate if `DATABASE_URL` set) |
 | `pnpm build` | turbo build, `--filter=!thp-final` | |
 | `pnpm build:storybook` | static SB build | included in `verify:push` |
 | `pnpm storybook` | dev SB port 6006 | UI exploration |
@@ -97,6 +97,8 @@ Output: `graphify-out/GRAPH_REPORT.md`.
 
 | Problem | Action |
 |----------|--------|
+| API DB tests skipped locally (`DATABASE_URL unset`) | `cp .env.local.dev.example .env.local.dev` + `docker compose up -d` ; `pnpm test` auto-loads env |
+| `Cannot find module 'next/dist/compiled/babel/eslint-parser'` | `pnpm install --frozen-lockfile` ; `scripts/check-node-modules.sh` runs before `pnpm lint` |
 | Push rejected on `ci.yml` (OAuth scope `workflow`) | `git remote set-url origin git@github.com:AllAboard-THP/All-Aboard.git` |
 | Tailwind classes missing in prod | check `@source` in `apps/web/app/globals.css` |
 | Storybook: `@allaboard/ui` alias | `apps/storybook/.storybook/main.ts` → `viteFinal` |

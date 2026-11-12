@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Button } from "@allaboard/ui/components/button";
 import { Input } from "@allaboard/ui/components/input";
 import { Label } from "@allaboard/ui/components/label";
+import { LegalCguButton } from "@allaboard/ui/components/legal-cgu-button";
 import { Link, useRouter } from "@/i18n/navigation";
 import {
   ApiRequestError,
@@ -16,9 +17,11 @@ import { registerPasskey } from "@/lib/passkey-auth";
 
 type Props = {
   returnTo?: string;
+  /** Opens the CGU; when set, a link is shown under the acceptance checkbox. */
+  onCguClick?: () => void;
 };
 
-export function PasskeyRegisterForm({ returnTo = "/" }: Props) {
+export function PasskeyRegisterForm({ returnTo = "/", onCguClick }: Props) {
   const router = useRouter();
   const t = useTranslations("auth");
   const tErrors = useTranslations("errors");
@@ -94,6 +97,13 @@ export function PasskeyRegisterForm({ returnTo = "/" }: Props) {
         />
         <span>{t("acceptCgu")}</span>
       </label>
+      {onCguClick ? (
+        <LegalCguButton
+          label={t("readCgu")}
+          onClick={onCguClick}
+          className="justify-self-start"
+        />
+      ) : null}
       {errorMessage ? (
         <p className="m-0 text-sm text-destructive" role="alert">
           {errorMessage}

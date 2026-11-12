@@ -55,10 +55,29 @@ Items still to harmonize **on the instance** (not in this matrix): Agent/Indexer
 |---|:---:|:---:|:---:|:---:|:---:|
 | `DATABASE_URL` |  | x | x | x | Yes (except pure web) |
 | `REDIS_URL` |  | x | x | x | Recommended |
-| `STORAGE_BUCKET` |  | x | x |  | Recommended |
-| `STORAGE_ENDPOINT` |  | x | x |  | Recommended |
+| `STORAGE_BUCKET` |  | x | x |  | Recommended (generic; **not** used by chat media) |
+| `STORAGE_ENDPOINT` |  | x | x |  | Recommended (generic; **not** used by chat media) |
 | `STORAGE_ACCESS_KEY` |  | x | x |  | Yes if used |
 | `STORAGE_SECRET_KEY` |  | x | x |  | Yes if used |
+
+### Message media (API)
+
+Chat audio and video. Local disk is the dev default. Production on Dokploy/Coolify uses S3 or MinIO — do not keep video only on a container volume. Steps: [message-media-storage.md](message-media-storage.md). Decision: [ADR 0008](../adr/0008-message-media-object-storage.md).
+
+| Variable | Required | Default | Role |
+| --- | --- | --- | --- |
+| `MESSAGE_MEDIA_STORAGE` | No | `local` | `local` or `s3` |
+| `MESSAGE_MEDIA_STORAGE_DIR` | No | `data/uploads/messages` | Local directory |
+| `MESSAGE_MEDIA_PUBLIC_BASE_URL` | Behind a proxy, or public S3 | `http://127.0.0.1:$PORT/uploads/messages` | Public URL prefix. In S3 public-read mode the object key (`messages/...`) is appended |
+| `S3_ENDPOINT` | MinIO / non-AWS | unset | S3 API endpoint. Omit for AWS |
+| `S3_REGION` | No | `us-east-1` | Region (required by the SDK; MinIO ignores it) |
+| `S3_BUCKET` | Yes when `s3` | — | Bucket |
+| `S3_ACCESS_KEY` | Yes when `s3` | — | Access key |
+| `S3_SECRET_KEY` | Yes when `s3` | — | Secret key |
+| `S3_FORCE_PATH_STYLE` | No | `true` if `S3_ENDPOINT` is set | Path-style URLs for MinIO |
+| `MESSAGE_MEDIA_S3_PREFIX` | No | `messages` | Object key prefix |
+| `MESSAGE_MEDIA_S3_PUBLIC_READ` | No | `false` | `true` = public URL; `false` = presigned GET |
+| `MESSAGE_MEDIA_SIGNED_URL_TTL_SECONDS` | No | `3600` | Presigned URL lifetime (60–604800) |
 
 ### Auth / security variables
 
@@ -67,7 +86,7 @@ These variables concern **Phase 2** (API auth); see [ADR 0001](../adr/0001-authe
 | Variable | Web | API | Agent | Indexer | Required |
 |---|:---:|:---:|:---:|:---:|:---:|
 | `JWT_SECRET` |  | x | x |  | Yes (API with JWT auth — min. 32 characters) |
-| `GOOGLE_CLIENT_ID` |  | x |  |  | Yes when Google OAuth active ([ADR 0006](../adr/0006-oauth-google-sso.md)) |
+| `GOOGLE_CLIENT_ID` |  | x |  |  | Yes when Google OAuth active ([ADR 0007](../adr/0007-oauth-google-sso.md)) |
 | `GOOGLE_CLIENT_SECRET` |  | x |  |  | Yes when OAuth active |
 | `OAUTH_GOOGLE_CALLBACK_URL` |  | x |  |  | Yes when OAuth — BFF URI `/api/auth/google/callback` |
 | `WEB_APP_URL` |  | x |  |  | Yes when OAuth — web origin (post-login redirect) |
@@ -80,10 +99,10 @@ These variables concern **Phase 2** (API auth); see [ADR 0001](../adr/0001-authe
 
 | Variable | Web | API | Agent | Indexer (legacy) | Required |
 |---|:---:|:---:|:---:|:---:|:---:|
-| `INTUITION_RPC_URL` |  | x |  |  | SDK publish (post-stub #67) |
-| `INTUITION_API_KEY` |  | x |  |  | Per provider |
+| `INTUITION_RPC_URL` |  | x |  |  | Reserved for the certification publisher; unused today |
+| `INTUITION_API_KEY` |  | x |  |  | Intuition Core write key (`ik_…`); never a wallet private key |
 | `INTUITION_GRAPHQL_URL` |  | x |  |  | Graph read (spike #67) |
-| `INTUITION_NETWORK_ID` |  | x |  |  | Testnet / mainnet |
+| `INTUITION_NETWORK_ID` |  | x |  |  | Testnet / mainnet; reserved for the certification publisher |
 | `INTUITION_PUBLISHER_ENABLED` |  | x |  |  | Default `true`; `false` to disable poll |
 | `INTUITION_PUBLISHER_POLL_MS` |  | x |  |  | Default `5000` |
 | `INDEXER_START_BLOCK` |  |  |  | x | **Legacy** — do not reactivate |

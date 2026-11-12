@@ -28,7 +28,7 @@ All-Aboard had inline styles in `apps/web` and no shared UI package. The product
 
 ## Canonical documentation
 
-Contributor hub (Diátaxis): [Docs/design-system/README.md](../design-system/README.md) — do not duplicate Hermes spec `WorkSpace/Todo/…`.
+Contributor hub (Diátaxis): [Docs/design-system/README.md](../design-system/README.md) — historical working spec archived at `WorkSpace/archives/2026/todo-legacy/allaboard-design-system-storybook-monorepo.md`.
 
 ## Alternatives not chosen
 

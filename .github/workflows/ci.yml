@@ -16,9 +16,12 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Runner image is pinned (not ubuntu-latest): ubuntu-latest moved to 26.04,
+# which Playwright 1.60 does not support (`playwright install --with-deps` fails).
+# Keep every job on the same image; bump together once Playwright supports 26.04.
 jobs:
   changes:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       storybook: ${{ steps.filter.outputs.storybook }}
       e2e: ${{ steps.filter.outputs.e2e }}
@@ -57,7 +60,7 @@ jobs:
               - '.github/workflows/ci.yml'
 
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     services:
       postgres:
@@ -112,7 +115,7 @@ jobs:
   e2e:
     needs: changes
     if: needs.changes.outputs.e2e == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     services:
       postgres:
@@ -162,7 +165,7 @@ jobs:
   storybook:
     needs: changes
     if: needs.changes.outputs.storybook == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Checkout
@@ -193,7 +196,7 @@ jobs:
   agent:
     needs: changes
     if: needs.changes.outputs.agent == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout

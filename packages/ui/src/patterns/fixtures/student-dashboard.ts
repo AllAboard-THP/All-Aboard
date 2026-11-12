@@ -9,7 +9,7 @@ export type DashboardTodoItem = {
   timeAgo?: string;
 };
 
-export type DashboardActivityKind = "reply" | "resource" | "event";
+export type DashboardActivityKind = "reply" | "resource";
 
 export type DashboardActivityItem = {
   id: string;
@@ -20,7 +20,7 @@ export type DashboardActivityItem = {
   timeAgo: string;
 };
 
-export type DashboardShortcutId = "subjects" | "resources" | "events" | "profile";
+export type DashboardShortcutId = "subjects" | "resources" | "profile";
 
 export type DashboardShortcut = {
   id: DashboardShortcutId;
@@ -92,17 +92,15 @@ export const studentDashboardFixtureFr: StudentDashboardFixture = {
     },
     {
       id: "act-3",
-      kind: "event",
-      title: "Atelier live — Bases de données",
-      excerpt: "Jeudi 18 h · session d'entraide programmée.",
-      href: "/events",
-      timeAgo: "dans 2 jours",
+      kind: "reply",
+      title: "Alice a commenté « Hooks React avancés »",
+      href: "/requests/2",
+      timeAgo: "il y a 1 j",
     },
   ],
   shortcuts: [
     { id: "subjects", href: "/explore" },
     { id: "resources", href: "/resources" },
-    { id: "events", href: "/events" },
     { id: "profile", href: "/profile" },
   ],
   badgeCounts: {
@@ -161,17 +159,15 @@ export const studentDashboardFixtureEn: StudentDashboardFixture = {
     },
     {
       id: "act-3",
-      kind: "event",
-      title: "Live workshop — Databases",
-      excerpt: "Thursday 6 PM · scheduled peer-help session.",
-      href: "/events",
-      timeAgo: "in 2 days",
+      kind: "reply",
+      title: "Alice commented on “Advanced React hooks”",
+      href: "/requests/2",
+      timeAgo: "1 d ago",
     },
   ],
   shortcuts: [
     { id: "subjects", href: "/explore" },
     { id: "resources", href: "/resources" },
-    { id: "events", href: "/events" },
     { id: "profile", href: "/profile" },
   ],
   badgeCounts: {

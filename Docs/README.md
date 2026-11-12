@@ -54,7 +54,7 @@ Docs/
 | `apps/api` | Fastify MVP + **Rails parity phases 1–7** (feed, social, auth/profiles, resources, REST+WS chat, admin, soft delete, suggest-tags, `ai_summary` outbox); `apps/agent` for tags/summary; hub [api-rails-parity](tasks/api-rails-parity/README.md); OpenAPI [`openapi.yaml`](../apps/api/openapi.yaml) **0.10.0** |
 | `apps/web` | SSR feed; BFF; `/help/new`; **AppShell** (`app/(app)/`) — [app-shell.md](design-system/app-shell.md); `@allaboard/ui` + features/blocks |
 | `packages/ui` + `apps/storybook` | Design system + Storybook catalogue — [design-system/README.md](design-system/README.md) |
-| Auth | JWT (`access_token` cookie + BFF Bearer relay) — [ADR 0001](adr/0001-authentication-strategy.md); production users — [ADR 0003](adr/0003-authentication-users-production.md); Google OAuth — [ADR 0006](adr/0006-oauth-google-sso.md) |
+| Auth | JWT (`access_token` cookie + BFF Bearer relay) — [ADR 0001](adr/0001-authentication-strategy.md); production users — [ADR 0003](adr/0003-authentication-users-production.md); Google OAuth — [ADR 0007](adr/0007-oauth-google-sso.md) |
 | TanStack Query | Feed/detail queries + create mutation — [#36](https://github.com/AllAboard-THP/All-Aboard/issues/36) |
 | `apps/thp-final` | Historical Rails app — outside JS MVP unless explicitly decided |
 

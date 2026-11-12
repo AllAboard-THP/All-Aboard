@@ -1741,6 +1741,9 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateMessageBody"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CreateMediaMessageForm"
       responses:
         "201":
           description: Message créé (format chat JSON)
@@ -3283,15 +3286,43 @@ components:
         avatarUrl:
           type: string
 
+    ChatMessageAttachment:
+      type: object
+      required: [url, mimeType, sizeBytes]
+      properties:
+        url:
+          type: string
+          format: uri
+          description: >
+            Playback URL. Local disk serves /uploads/messages/. Private
+            S3 or MinIO returns a presigned GET URL created when the
+            message is read.
+        mimeType:
+          type: string
+        sizeBytes:
+          type: integer
+          minimum: 0
+        durationMs:
+          type: integer
+          minimum: 0
+        source:
+          type: string
+          enum: [microphone, camera, screen]
+
     ChatMessage:
       type: object
-      required: [id, body, userId, userName, createdAt, type]
+      required: [id, kind, userId, userName, createdAt, type]
       properties:
         id:
           type: string
           format: uuid
+        kind:
+          type: string
+          enum: [text, audio, video]
         body:
           type: string
+        attachment:
+          $ref: "#/components/schemas/ChatMessageAttachment"
         userId:
           type: string
           format: uuid
@@ -3392,6 +3423,28 @@ components:
           type: string
           minLength: 1
           maxLength: 10000
+
+    CreateMediaMessageForm:
+      type: object
+      required: [kind, file, durationMs, source]
+      properties:
+        kind:
+          type: string
+          enum: [audio, video]
+        file:
+          type: string
+          format: binary
+        durationMs:
+          type: integer
+          minimum: 1
+          description: Recorded duration in milliseconds (max 300000 audio, 180000 video)
+        source:
+          type: string
+          enum: [microphone, camera, screen]
+        body:
+          type: string
+          maxLength: 10000
+          description: Optional caption
 
     CreateMessageResponse:
       type: object

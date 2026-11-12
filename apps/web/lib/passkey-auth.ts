@@ -14,7 +14,9 @@ import { throwFromApiResponse } from "@/lib/map-api-error";
 export async function fetchPasskeyLoginOptions(): Promise<unknown> {
   const res = await fetch("/api/auth/passkey/login/options", {
     method: "POST",
+    headers: { "content-type": "application/json" },
     credentials: "include",
+    body: "{}",
   });
   const text = await res.text();
   if (!res.ok) {

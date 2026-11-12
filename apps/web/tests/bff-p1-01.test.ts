@@ -14,6 +14,7 @@ import {
   PATCH as helpRequestPatch,
 } from "@/app/api/help-requests/[id]/route";
 import { POST as helpMentorPost } from "@/app/api/help-requests/[id]/help-mentor/route";
+import { POST as suggestTagsPost } from "@/app/api/help-requests/suggest-tags/route";
 import { POST as likesPost } from "@/app/api/help-requests/[id]/likes/route";
 import { POST as bookmarksPost } from "@/app/api/help-requests/[id]/bookmarks/route";
 import { GET as myHelpRequestsGet } from "@/app/api/me/help-requests/route";
@@ -166,7 +167,27 @@ describe("BFF W-P1-01 relays", () => {
       expect(res.status).toBe(200);
       expect(fetchMock).toHaveBeenCalledWith(
         "http://api.test:4000/auth/passkey/login/options",
-        expect.objectContaining({ method: "POST" }),
+        expect.objectContaining({ method: "POST", body: "{}" }),
+      );
+    });
+
+    it("POST /api/auth/passkey/login/options normalizes empty body for Fastify", async () => {
+      fetchMock.mockResolvedValueOnce(
+        new Response(JSON.stringify({ options: { challenge: "xyz" } }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+
+      const req = new Request("http://localhost/api/auth/passkey/login/options", {
+        method: "POST",
+      });
+      const res = await passkeyLoginOptionsPost(req);
+
+      expect(res.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://api.test:4000/auth/passkey/login/options",
+        expect.objectContaining({ method: "POST", body: "{}" }),
       );
     });
 
@@ -396,6 +417,35 @@ describe("BFF W-P1-01 relays", () => {
       expect(fetchMock).toHaveBeenCalledWith(
         "http://api.test:4000/help-requests/hr-1/help-mentor",
         expect.objectContaining({ method: "POST" }),
+      );
+    });
+
+    it("POST /api/help-requests/suggest-tags forwards Bearer and body", async () => {
+      mockToken();
+      fetchMock.mockResolvedValueOnce(
+        new Response(JSON.stringify({ tags: ["rails", "mentor"] }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+
+      const res = await suggestTagsPost(
+        new Request("http://localhost", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ title: "Need help with Rails" }),
+        }),
+      );
+
+      expect(res.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://api.test:4000/help-requests/suggest-tags",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            authorization: "Bearer jwt-bob",
+          }),
+        }),
       );
     });
 

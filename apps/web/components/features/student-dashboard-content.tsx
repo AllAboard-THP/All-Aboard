@@ -50,7 +50,6 @@ function useStudentDashboardLabels(): StudentDashboardLabels {
       dashboard: t("sidebar.dashboard"),
       subjects: t("sidebar.subjects"),
       resources: t("sidebar.resources"),
-      events: t("sidebar.events"),
       newRequest: t("sidebar.newRequest"),
       feed: t("sidebar.feed"),
       messages: t("sidebar.messages"),
@@ -77,10 +76,6 @@ function useStudentDashboardLabels(): StudentDashboardLabels {
         resources: {
           title: t("sidebar.context.resources.title"),
           all: t("sidebar.context.resources.all"),
-        },
-        events: {
-          title: t("sidebar.context.events.title"),
-          all: t("sidebar.context.events.all"),
         },
         newRequest: {
           title: t("sidebar.context.newRequest.title"),
@@ -136,13 +131,11 @@ function useStudentDashboardLabels(): StudentDashboardLabels {
       kinds: {
         reply: t("activity.kinds.reply"),
         resource: t("activity.kinds.resource"),
-        event: t("activity.kinds.event"),
       },
     },
     shortcuts: {
       subjects: t("shortcuts.subjects"),
       resources: t("shortcuts.resources"),
-      events: t("shortcuts.events"),
       profile: t("shortcuts.profile"),
     },
   };

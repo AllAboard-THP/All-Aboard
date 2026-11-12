@@ -18,7 +18,7 @@ Lay **installed foundations**: `packages/ui`, `apps/storybook`, `apps/web` wirin
 | [verification-and-ci.md](../../design-system/verification-and-ci.md) | verify, hooks, CI |
 | [delivery-log.md](../../design-system/delivery-log.md) | Commits by batch |
 
-Detailed work spec (history, snippets): Hermes copy `WorkSpace/Todo/allaboard-design-system-storybook-monorepo.md` — **do not maintain duplicate** in repo.
+Detailed work spec (history, snippets): Hermes copy `WorkSpace/archives/2026/todo-legacy/allaboard-design-system-storybook-monorepo.md` — **do not maintain duplicate** in repo.
 
 ## Done (#24 + follow-ups shipped on DS branch)
 

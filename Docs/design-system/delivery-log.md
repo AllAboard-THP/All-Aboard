@@ -3,7 +3,7 @@
 **Integration branch:** `Dev` (epics #24 / #25 merged)  
 **Last documented delivery:** [PR #59](https://github.com/AllAboard-THP/All-Aboard/pull/59) — merge `933597e` (2026-05-27)
 
-This journal traces **commits** and **issues** for audit and onboarding. Historical technical detail (snippets, T00–T23 tasklist) remains in Hermes spec `WorkSpace/Todo/allaboard-design-system-storybook-monorepo.md`.
+This journal traces **commits** and **issues** for audit and onboarding. Historical technical detail (snippets, T00–T23 tasklist) remains in Hermes spec `WorkSpace/archives/2026/todo-legacy/allaboard-design-system-storybook-monorepo.md`.
 
 ---
 

@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useLegacyLabels } from "../i18n/storybook-locale";
 import { LandingForgotPasswordBody } from "./landing-forgot-password-body";
 import { LandingHeroBody } from "./landing-hero-body";
+import { LandingPresentationBody } from "./landing-presentation-body";
 import { LandingOnboardingBody } from "./landing-onboarding-body";
 import { LandingPageShell } from "./landing-page-shell";
 import { LandingRegisterBody } from "./landing-register-body";
@@ -36,6 +37,16 @@ function AppBgStory() {
       <div className="flex flex-1 items-center justify-center p-8 text-muted-foreground">
         {labels.auth.registerTitle}
       </div>
+    </LandingPageShell>
+  );
+}
+
+function PresentationBodyStory() {
+  const labels = useLegacyLabels();
+
+  return (
+    <LandingPageShell labels={labels} background="landing">
+      <LandingPresentationBody labels={labels} />
     </LandingPageShell>
   );
 }
@@ -88,6 +99,11 @@ export const LandingBackground: Story = {
 export const AppBackground: Story = {
   name: "AppBackground",
   render: () => <AppBgStory />,
+};
+
+export const PresentationBody: Story = {
+  name: "PresentationBody",
+  render: () => <PresentationBodyStory />,
 };
 
 export const HeroBody: Story = {

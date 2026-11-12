@@ -27,11 +27,11 @@ Storybook: **Patterns/Legacy Brand** (`legacy-brand.stories.tsx`).
 
 ## Production assets (`packages/ui/src/assets/`)
 
-**Naming:** `concept-{page}-hero` — production basenames match table IDs (`landing-hero` → `concept-landing-hero`, `feed-hero` → `concept-feed-hero`). PNG + WebP siblings when exported via `export-hero-raster-4k.mjs`.
+**Naming:** feed rasters use `concept-feed-hero` (PNG, via `export-hero-raster-4k.mjs`). The landing hero is code, not a file in this folder.
 
 | ID | File | Usage | Notes |
 |----|------|-------|-------|
-| **landing-hero** | `concept-landing-hero.png` · `.webp` | Landing `/` — `LandingConceptBackground` | **Deploy 4K** 3840×2560 — port-entry editorial illustration |
+| **landing-hero** | `LandingNetworkField` in `landing-network-field.tsx` | Landing `/` — `LandingConceptBackground` | Animated indigo/fuchsia geometric network. The mural rasters were removed. |
 | **feed-hero** | `concept-feed-hero.png` | Feed `/feed` — `FeedConceptBackground` | 2704×1520 — morning illustrated scene |
 | **logo-mark** | `logo-mark.png` · `logo-mark.svg` | App chrome, Storybook, favicon source | PNG immutable per project rule |
 
@@ -80,10 +80,10 @@ When regenerating or editing concept visuals (AI or manual):
 ```bash
 node scripts/branding/export-hero-raster-4k.mjs \
   --source <draft> \
-  --basename concept-landing-hero
+  --basename concept-feed-hero
 ```
 
-After export: bump `LANDING_CONCEPT_BG_REVISION` in `landing-concept-background.tsx`.
+After a **feed** export: bump the revision constant in `feed-concept-background.tsx`. The landing hero is the geometric network, not a raster — do not reintroduce `concept-landing-hero`.
 
 ---
 
@@ -91,4 +91,4 @@ After export: bump `LANDING_CONCEPT_BG_REVISION` in `landing-concept-background.
 
 - **Format:** 16:9 hero-friendly; top area kept clear for optional headline overlay.
 - **Language:** Illustrations are locale-neutral; user-facing copy remains French in product UI.
-- **Status:** Production landing = **concept-landing-hero** ; production feed = **concept-feed-hero**.
+- **Status:** Production landing = **geometric network** (`LandingNetworkField`) ; production feed = **concept-feed-hero**.

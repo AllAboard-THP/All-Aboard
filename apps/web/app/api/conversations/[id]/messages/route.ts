@@ -7,6 +7,7 @@ import {
   getAccessToken,
   missingTokenResponse,
   relayAuthenticatedFetch,
+  relayAuthenticatedMultipart,
   upstreamQuerySuffix,
 } from "@/lib/bff-relay";
 
@@ -55,13 +56,17 @@ export async function GET(request: Request, context: RouteContext) {
 
 export async function POST(request: Request, context: RouteContext) {
   const { id } = await context.params;
+  const upstreamPath = `/conversations/${encodeURIComponent(id)}/messages`;
+
+  const contentType = request.headers.get("content-type");
+  if (contentType?.toLowerCase().includes("multipart/form-data")) {
+    return relayAuthenticatedMultipart(upstreamPath, request);
+  }
+
   const body = await request.text();
-  return relayAuthenticatedFetch(
-    `/conversations/${encodeURIComponent(id)}/messages`,
-    {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body,
-    },
-  );
+  return relayAuthenticatedFetch(upstreamPath, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body,
+  });
 }

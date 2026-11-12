@@ -4,15 +4,18 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-import type { AuthMeResponse } from "@allaboard/types";
+import type { AuthMeResponse, SubjectsResponse } from "@allaboard/types";
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from "@allaboard/ui/components/alert";
 import { Button } from "@allaboard/ui/components/button";
-import { Input } from "@allaboard/ui/components/input";
-import { Label } from "@allaboard/ui/components/label";
+import {
+  buildHelpRequestPayload,
+  HelpRequestFormFields,
+  type HelpRequestFormValues,
+} from "@/components/features/help-request-form-fields";
 import {
   buildRubberduckRedirectUrl,
   fetchRubberduckRedirectUrl,
@@ -22,6 +25,7 @@ import {
   mapApiError,
   throwFromApiResponse,
 } from "@/lib/map-api-error";
+import { suggestHelpRequestTags } from "@/lib/help-request-client";
 import { Link, useRouter } from "@/i18n/navigation";
 
 type CreateResult = {
@@ -36,18 +40,21 @@ async function fetchAuthMe(): Promise<AuthMeResponse | null> {
   return (await res.json()) as AuthMeResponse;
 }
 
-async function createHelpRequest(input: {
-  title: string;
-  tags: string[];
-}): Promise<CreateResult> {
+async function fetchSubjects(): Promise<SubjectsResponse["items"]> {
+  const res = await fetch("/api/subjects", { cache: "no-store" });
+  if (!res.ok) throw new Error(`Subjects ${res.status}`);
+  const data = (await res.json()) as SubjectsResponse;
+  return data.items;
+}
+
+async function createHelpRequest(
+  payload: Record<string, unknown>,
+): Promise<CreateResult> {
   const createRes = await fetch("/api/help-requests", {
     method: "POST",
     headers: { "content-type": "application/json" },
     credentials: "include",
-    body: JSON.stringify({
-      title: input.title,
-      ...(input.tags.length ? { tags: input.tags } : {}),
-    }),
+    body: JSON.stringify(payload),
   });
   const createText = await createRes.text();
 
@@ -57,23 +64,69 @@ async function createHelpRequest(input: {
   return JSON.parse(createText) as CreateResult;
 }
 
+const emptyValues: HelpRequestFormValues = {
+  title: "",
+  body: "",
+  tagsRaw: "",
+  codeSnippet: "",
+  codeLanguage: "",
+  subjectId: "",
+  urgent: false,
+  educationLevel: "",
+};
+
 export function HelpRequestForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const t = useTranslations("helpForm");
   const tErrors = useTranslations("errors");
   const tCommon = useTranslations("common");
-  const [title, setTitle] = useState("");
-  const [tagsRaw, setTagsRaw] = useState("");
+  const [values, setValues] = useState<HelpRequestFormValues>(emptyValues);
   const [duplicateId, setDuplicateId] = useState<string | null>(null);
   const [rubberduckMessage, setRubberduckMessage] = useState<string | null>(
     null,
   );
+  const [suggestTagsError, setSuggestTagsError] = useState<string | null>(null);
 
   const authQuery = useQuery({
     queryKey: ["auth-me"],
     queryFn: fetchAuthMe,
     staleTime: 60_000,
+  });
+
+  const subjectsQuery = useQuery({
+    queryKey: ["subjects-catalog"],
+    queryFn: fetchSubjects,
+    staleTime: 300_000,
+  });
+
+  const suggestTagsMutation = useMutation({
+    mutationFn: () =>
+      suggestHelpRequestTags({
+        ...(values.title.trim() ? { title: values.title.trim() } : {}),
+        ...(values.body.trim() ? { body: values.body.trim() } : {}),
+      }),
+    onSuccess: (data) => {
+      setSuggestTagsError(null);
+      if (data.tags.length > 0) {
+        setValues((current) => ({
+          ...current,
+          tagsRaw: data.tags.join(", "),
+        }));
+      }
+    },
+    onError: (err: Error) => {
+      setSuggestTagsError(
+        err instanceof ApiRequestError
+          ? tErrors(
+              mapApiError({
+                status: err.status,
+                body: { error: err.code },
+              }),
+            )
+          : tCommon("unknownError"),
+      );
+    },
   });
 
   const mutation = useMutation({
@@ -88,13 +141,13 @@ export function HelpRequestForm() {
           window.location.assign(
             buildRubberduckRedirectUrl(baseUrl, {
               requestId: data.item.id,
-              title: title.trim(),
+              title: values.title.trim(),
             }),
           );
           return;
         }
         setRubberduckMessage(t("rubberduckHandoff"));
-        setTitle("");
+        setValues(emptyValues);
         return;
       }
       router.push(`/requests/${data.item.id}`);
@@ -117,11 +170,11 @@ export function HelpRequestForm() {
     }
     setDuplicateId(null);
     setRubberduckMessage(null);
-    const tags = tagsRaw
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-    mutation.mutate({ title, tags });
+    const payload = buildHelpRequestPayload(
+      values,
+      authQuery.data.educationLevel,
+    );
+    mutation.mutate(payload);
   }
 
   const errorMessage =
@@ -152,23 +205,15 @@ export function HelpRequestForm() {
           </AlertDescription>
         </Alert>
       ) : null}
-      <div className="grid gap-2">
-        <Label htmlFor="help-title">{t("title")}</Label>
-        <Input
-          id="help-title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="help-tags">{t("tags")}</Label>
-        <Input
-          id="help-tags"
-          value={tagsRaw}
-          onChange={(e) => setTagsRaw(e.target.value)}
-          placeholder={t("tagsPlaceholder")}
-        />
-      </div>
+      <HelpRequestFormFields
+        idPrefix="help"
+        values={values}
+        onChange={(patch) => setValues((current) => ({ ...current, ...patch }))}
+        subjects={subjectsQuery.data ?? []}
+        suggestTagsPending={suggestTagsMutation.isPending}
+        onSuggestTags={() => suggestTagsMutation.mutate()}
+        suggestTagsError={suggestTagsError}
+      />
       {errorMessage ? (
         <p className="m-0 text-sm text-destructive">{errorMessage}</p>
       ) : null}
@@ -193,7 +238,7 @@ export function HelpRequestForm() {
       ) : null}
       <Button
         type="button"
-        disabled={mutation.isPending || authQuery.isPending || !title.trim()}
+        disabled={mutation.isPending || authQuery.isPending || !values.title.trim()}
         onClick={() => submit()}
         className="mt-1 w-full"
       >

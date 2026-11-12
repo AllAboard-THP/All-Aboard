@@ -20,6 +20,10 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
+!.env.local.dev.example
+
+# Pretorya migration exports (secrets, pg dumps) — never commit
+.allaboard-migration/
 
 # Dependencies
 node_modules/

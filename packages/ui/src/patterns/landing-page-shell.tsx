@@ -42,7 +42,7 @@ export function LandingPageShell({
   background = "landing",
   className,
   footerClassName,
-  activeAction = "signIn",
+  activeAction,
   onSignInClick,
   onSignUpClick,
   onLogoClick,

@@ -24,14 +24,54 @@ function participantInitials(name: string): string {
   return name.slice(0, 2).toUpperCase();
 }
 
-function inboxPreview(item: ConversationInboxItem): string {
-  if (item.lastMessage?.body) {
-    return item.lastMessage.body;
+function inboxPreview(
+  item: ConversationInboxItem,
+  t: (key: "previewVoice" | "previewVideo") => string,
+): string {
+  const lastMessage = item.lastMessage;
+  if (lastMessage?.kind === "audio" && !lastMessage.body) {
+    return t("previewVoice");
+  }
+  if (lastMessage?.kind === "video" && !lastMessage.body) {
+    return t("previewVideo");
+  }
+  if (lastMessage?.body) {
+    return lastMessage.body;
   }
   if (item.topic) {
     return item.topic;
   }
   return "";
+}
+
+function InboxKindIcon({ kind }: { kind: "audio" | "video" }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      className="size-3.5 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      data-testid="messages-inbox-kind"
+      data-kind={kind}
+    >
+      {kind === "audio" ? (
+        <>
+          <path d="M12 19v3" />
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+          <rect x="9" y="2" width="6" height="13" rx="3" />
+        </>
+      ) : (
+        <>
+          <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
+          <rect x="2" y="6" width="14" height="12" rx="2" />
+        </>
+      )}
+    </svg>
+  );
 }
 
 export function MessagesInbox({ items, selectedId, locale }: Props) {
@@ -58,7 +98,12 @@ export function MessagesInbox({ items, selectedId, locale }: Props) {
               const active = item.id === selectedId;
               const peer = item.otherParticipant;
               const avatar = peer.avatarUrl?.trim() || null;
-              const preview = inboxPreview(item);
+              const preview = inboxPreview(item, t);
+              const mediaKind =
+                item.lastMessage?.kind === "audio" ||
+                item.lastMessage?.kind === "video"
+                  ? item.lastMessage.kind
+                  : null;
 
               return (
                 <li key={item.id}>
@@ -102,8 +147,12 @@ export function MessagesInbox({ items, selectedId, locale }: Props) {
                         </p>
                       ) : null}
                       {preview ? (
-                        <p className="m-0 truncate text-xs text-muted-foreground">
-                          {preview}
+                        <p
+                          className="m-0 flex min-w-0 items-center gap-1 text-xs text-muted-foreground"
+                          data-testid="messages-inbox-preview"
+                        >
+                          {mediaKind ? <InboxKindIcon kind={mediaKind} /> : null}
+                          <span className="truncate">{preview}</span>
                         </p>
                       ) : null}
                     </div>

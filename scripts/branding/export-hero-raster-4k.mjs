@@ -8,7 +8,7 @@
  * Usage:
  *   node scripts/branding/export-hero-raster-4k.mjs \
  *     --source /path/to/draft.png \
- *     --basename concept-landing-hero
+ *     --basename concept-feed-hero
  */
 
 import { createHash } from "node:crypto";
@@ -152,7 +152,7 @@ async function main() {
   console.log(`Exported: ${pngDest} (${outMeta.width}×${outMeta.height})`);
   console.log(`Exported: ${webpDest}`);
   console.log(`Cache revision hint: ${revision}`);
-  console.log(`Bump LANDING_CONCEPT_BG_REVISION or FEED_CONCEPT_BG_REVISION to "${revision}"`);
+  console.log(`Bump FEED_CONCEPT_BG_REVISION to "${revision}"`);
 }
 
 main().catch((err) => {

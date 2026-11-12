@@ -1,7 +1,10 @@
 export type IntuitionConfig = {
+  /** Reserved for the certification publisher (ADR 0009). Unused today. */
   rpcUrl: string | null;
+  /** Intuition Core write key (`ik_…`). Never a wallet private key. */
   apiKey: string | null;
   graphqlUrl: string | null;
+  /** Reserved for the certification publisher (ADR 0009). Unused today. */
   networkId: string | null;
   publisherEnabled: boolean;
   publisherPollMs: number;

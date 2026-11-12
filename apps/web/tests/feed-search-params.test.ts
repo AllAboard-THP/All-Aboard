@@ -77,4 +77,14 @@ describe("feedHref", () => {
     };
     expect(feedPageHref(current, 3)).toBe("/feed?subject=rails&q=hooks&page=3");
   });
+
+  it("supports custom base path for subject pages", () => {
+    expect(
+      feedPageHref(
+        { page: 2, limit: FEED_DEFAULT_LIMIT, subject: "javascript" },
+        3,
+        "/subjects/javascript",
+      ),
+    ).toBe("/subjects/javascript?subject=javascript&page=3");
+  });
 });

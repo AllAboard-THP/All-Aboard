@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { AuthMeResponse, HelpRequest } from "@allaboard/types";
+import type { AuthMeResponse, HelpRequest, SubjectsResponse } from "@allaboard/types";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -11,14 +11,21 @@ import {
   AlertTitle,
 } from "@allaboard/ui/components/alert";
 import { Button } from "@allaboard/ui/components/button";
-import { Input } from "@allaboard/ui/components/input";
-import { Label } from "@allaboard/ui/components/label";
+import {
+  buildHelpRequestPayload,
+  HelpRequestFormFields,
+  tagsToRaw,
+  type HelpRequestFormValues,
+} from "@/components/features/help-request-form-fields";
 import { Link, useRouter } from "@/i18n/navigation";
 import {
   ApiRequestError,
   mapApiError,
 } from "@/lib/map-api-error";
-import { updateHelpRequest } from "@/lib/help-request-client";
+import {
+  suggestHelpRequestTags,
+  updateHelpRequest,
+} from "@/lib/help-request-client";
 
 type Props = {
   requestId: string;
@@ -32,8 +39,24 @@ async function fetchAuthMe(): Promise<AuthMeResponse | null> {
   return (await res.json()) as AuthMeResponse;
 }
 
-function tagsToRaw(tags?: string[]): string {
-  return tags?.join(", ") ?? "";
+async function fetchSubjects(): Promise<SubjectsResponse["items"]> {
+  const res = await fetch("/api/subjects", { cache: "no-store" });
+  if (!res.ok) throw new Error(`Subjects ${res.status}`);
+  const data = (await res.json()) as SubjectsResponse;
+  return data.items;
+}
+
+function initialValues(item: HelpRequest): HelpRequestFormValues {
+  return {
+    title: item.title,
+    body: item.body ?? "",
+    tagsRaw: tagsToRaw(item.tags),
+    codeSnippet: item.codeSnippet ?? "",
+    codeLanguage: item.codeLanguage ?? "",
+    subjectId: item.subjectId ?? "",
+    urgent: item.urgent ?? false,
+    educationLevel: item.educationLevel ?? "",
+  };
 }
 
 export function HelpRequestEditForm({ requestId, initialItem }: Props) {
@@ -43,8 +66,10 @@ export function HelpRequestEditForm({ requestId, initialItem }: Props) {
   const tForm = useTranslations("helpForm");
   const tErrors = useTranslations("errors");
   const tCommon = useTranslations("common");
-  const [title, setTitle] = useState(initialItem.title);
-  const [tagsRaw, setTagsRaw] = useState(tagsToRaw(initialItem.tags));
+  const [values, setValues] = useState<HelpRequestFormValues>(() =>
+    initialValues(initialItem),
+  );
+  const [suggestTagsError, setSuggestTagsError] = useState<string | null>(null);
 
   const authQuery = useQuery({
     queryKey: ["auth-me"],
@@ -52,16 +77,70 @@ export function HelpRequestEditForm({ requestId, initialItem }: Props) {
     staleTime: 60_000,
   });
 
+  const subjectsQuery = useQuery({
+    queryKey: ["subjects-catalog"],
+    queryFn: fetchSubjects,
+    staleTime: 300_000,
+  });
+
   const isAuthor =
     Boolean(authQuery.data) &&
     authQuery.data!.userId === initialItem.authorId;
 
-  const mutation = useMutation({
-    mutationFn: (input: { title: string; tags: string[] }) =>
-      updateHelpRequest(requestId, {
-        title: input.title,
-        tags: input.tags,
+  const suggestTagsMutation = useMutation({
+    mutationFn: () =>
+      suggestHelpRequestTags({
+        ...(values.title.trim() ? { title: values.title.trim() } : {}),
+        ...(values.body.trim() ? { body: values.body.trim() } : {}),
       }),
+    onSuccess: (data) => {
+      setSuggestTagsError(null);
+      if (data.tags.length > 0) {
+        setValues((current) => ({
+          ...current,
+          tagsRaw: data.tags.join(", "),
+        }));
+      }
+    },
+    onError: (err: Error) => {
+      setSuggestTagsError(
+        err instanceof ApiRequestError
+          ? tErrors(
+              mapApiError({
+                status: err.status,
+                body: { error: err.code },
+              }),
+            )
+          : tCommon("unknownError"),
+      );
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: () => {
+      const payload = buildHelpRequestPayload(
+        values,
+        authQuery.data?.educationLevel,
+      );
+      return updateHelpRequest(requestId, {
+        title: payload.title as string,
+        ...(payload.body ? { body: payload.body as string } : { body: "" }),
+        tags: (payload.tags as string[] | undefined) ?? [],
+        ...(payload.codeSnippet
+          ? {
+              codeSnippet: payload.codeSnippet as string,
+              codeLanguage: payload.codeLanguage as string,
+            }
+          : { codeSnippet: null, codeLanguage: values.codeLanguage.trim() || "plaintext" }),
+        ...(values.subjectId
+          ? { subjectId: values.subjectId }
+          : { subjectId: null }),
+        urgent: values.urgent,
+        ...(payload.educationLevel
+          ? { educationLevel: payload.educationLevel as string }
+          : {}),
+      });
+    },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["feed"] });
       await queryClient.invalidateQueries({
@@ -73,11 +152,7 @@ export function HelpRequestEditForm({ requestId, initialItem }: Props) {
 
   function submit() {
     if (!isAuthor) return;
-    const tags = tagsRaw
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-    mutation.mutate({ title, tags });
+    mutation.mutate();
   }
 
   const errorMessage =
@@ -120,30 +195,22 @@ export function HelpRequestEditForm({ requestId, initialItem }: Props) {
 
   return (
     <div className="grid gap-4" data-testid="help-request-edit-form">
-      <div className="grid gap-2">
-        <Label htmlFor="help-edit-title">{tForm("title")}</Label>
-        <Input
-          id="help-edit-title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="help-edit-tags">{tForm("tags")}</Label>
-        <Input
-          id="help-edit-tags"
-          value={tagsRaw}
-          onChange={(e) => setTagsRaw(e.target.value)}
-          placeholder={tForm("tagsPlaceholder")}
-        />
-      </div>
+      <HelpRequestFormFields
+        idPrefix="help-edit"
+        values={values}
+        onChange={(patch) => setValues((current) => ({ ...current, ...patch }))}
+        subjects={subjectsQuery.data ?? []}
+        suggestTagsPending={suggestTagsMutation.isPending}
+        onSuggestTags={() => suggestTagsMutation.mutate()}
+        suggestTagsError={suggestTagsError}
+      />
       {errorMessage ? (
         <p className="m-0 text-sm text-destructive">{errorMessage}</p>
       ) : null}
       <div className="flex flex-wrap gap-2">
         <Button
           type="button"
-          disabled={mutation.isPending || authQuery.isPending || !title.trim()}
+          disabled={mutation.isPending || authQuery.isPending || !values.title.trim()}
           onClick={() => submit()}
         >
           {mutation.isPending ? tCommon("sending") : t("editSave")}

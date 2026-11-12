@@ -43,7 +43,6 @@ function useSidebarLabelMap(): AppSidebarLabelMap {
       dashboard: t("dashboard"),
       subjects: t("subjects"),
       resources: t("resources"),
-      events: t("events"),
       newRequest: t("newRequest"),
       feed: t("feed"),
       messages: t("messages"),
@@ -77,10 +76,6 @@ function useSidebarContextSource() {
       resources: {
         title: t("resources.title"),
         all: t("resources.all"),
-      },
-      events: {
-        title: t("events.title"),
-        all: t("events.all"),
       },
       newRequest: {
         title: t("newRequest.title"),

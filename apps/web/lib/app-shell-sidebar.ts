@@ -16,6 +16,7 @@ export {
  */
 export const APP_SIDEBAR_EXCLUDED_PREFIXES = [
   "/legal",
+  "/login",
   "/register",
   "/forgot-password",
   "/onboarding",

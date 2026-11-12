@@ -33,18 +33,19 @@ When generating or replacing a **hero / concept background** for landing or feed
 ```bash
 node scripts/branding/export-hero-raster-4k.mjs \
   --source <path-to-draft.png> \
-  --basename concept-landing-hero
+  --basename concept-feed-hero
 ```
 
-4. **Bump** `LANDING_CONCEPT_BG_REVISION` / `FEED_CONCEPT_BG_REVISION` in `*-concept-background.tsx`.
+4. **Bump** `FEED_CONCEPT_BG_REVISION` in `feed-concept-background.tsx`.
 5. **Commit** rasters under `packages/ui/src/assets/` (never symlink from `Docs/` — Docker excludes `Docs`).
 
-## Landing composition (illustration)
+## Landing composition
 
-- **Left 40%**: calm pale sky + soft water — no sun disk, no glare (hero copy zone).
-- **Center-right**: catamaran hero, **smaller in frame** (full mast + hull visible, header/footer safe margins).
-- **Sail**: flat indigo `#6366f1` + pink `#ec4899`, no panel seams. Hull: "All-Aboard" only.
-- **Style**: match `concept-feed-hero` — premium editorial, not photo/AI realism.
+The marketing landing hero is **not a raster**. It is the geometric network in `packages/ui/src/patterns/landing-network-field.tsx`: a regular mesh of closed hexagons joined by thin links, every segment horizontal or at 45°, drawn at a fixed scale from the left edge. Do not put a photo or generated illustration back on `/` unless a human asks for that. Feed hero rasters are unchanged.
+
+- **Left**: hero copy on the dark slate stage. White title, purple accent, fuchsia `gradient-text` tail.
+- **Background**: the mesh runs behind the copy, in muted neutral strokes, and dissolves before the right edge so that area stays clear. Screens wider than the design reveal more mesh; they never zoom it.
+- **Motion**: the mesh stays still. Many small mint glows (`#6ee7b7`) flow left to right along its lines, around the hexagons too, drawn on a canvas. Under `prefers-reduced-motion`, show one still frame.
 
 ## Deploy specs
 

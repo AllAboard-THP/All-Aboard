@@ -82,7 +82,7 @@ async function renderExplore(
 }
 
 describe("ExploreContent", () => {
-  it("renders subject cards linking to filtered feed", async () => {
+  it("renders subject cards linking to subject pages", async () => {
     await renderExplore({ subjects: sampleSubjects, error: null });
 
     expect(screen.getByRole("heading", { name: "Explorer" })).toBeTruthy();
@@ -91,8 +91,8 @@ describe("ExploreContent", () => {
     const grid = screen.getByTestId("explore-subject-grid");
     const links = within(grid).getAllByRole("link");
     expect(links).toHaveLength(2);
-    expect(links[0]?.getAttribute("href")).toBe("/feed?subject=javascript");
-    expect(links[1]?.getAttribute("href")).toBe("/feed?subject=rails");
+    expect(links[0]?.getAttribute("href")).toBe("/subjects/javascript");
+    expect(links[1]?.getAttribute("href")).toBe("/subjects/rails");
     expect(within(grid).getByText("JavaScript")).toBeTruthy();
     expect(within(grid).getByText("Rails")).toBeTruthy();
     expect(screen.getByTestId("subject-request-explore-card")).toBeTruthy();

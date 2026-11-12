@@ -52,6 +52,11 @@ describe("app-sidebar-nav", () => {
     expect(mentor.openSectionIds).toEqual(["navigation", "community", "mentor"]);
   });
 
+  it("marks explore routes active for subject pages", () => {
+    expect(isAppSidebarItemActive("/subjects/javascript", "/explore")).toBe(true);
+    expect(isAppSidebarItemActive("/feed", "/explore")).toBe(false);
+  });
+
   it("resolves admin sidebar with mentor and admin sections", () => {
     const admin = resolveAppSidebarContext("/admin/users", { isAdmin: true });
     expect(admin.activeId).toBe("adminUsers");
@@ -60,7 +65,24 @@ describe("app-sidebar-nav", () => {
     expect(admin.openSectionIds).toEqual(["navigation", "community", "mentor", "admin"]);
   });
 
-  it("builds student sections with eight navigation+community items", () => {
+  it("hides admin active route and context for non-admin users", () => {
+    const studentOnAdmin = resolveAppSidebarContext("/admin/moderation", {
+      isMentor: false,
+      isAdmin: false,
+    });
+    expect(studentOnAdmin.activeId).toBeUndefined();
+    expect(studentOnAdmin.showAdminSection).toBe(false);
+    expect(studentOnAdmin.openSectionIds).toEqual(["navigation", "community"]);
+
+    const mentorOnAdmin = resolveAppSidebarContext("/admin/users", {
+      isMentor: true,
+      isAdmin: false,
+    });
+    expect(mentorOnAdmin.activeId).toBeUndefined();
+    expect(mentorOnAdmin.showAdminSection).toBe(false);
+  });
+
+  it("builds student sections with seven navigation+community items", () => {
     const labels = {
       navigationGroup: "Nav",
       communityGroup: "Comm",
@@ -73,7 +95,6 @@ describe("app-sidebar-nav", () => {
       dashboard: "Dashboard",
       subjects: "Subjects",
       resources: "Resources",
-      events: "Events",
       newRequest: "New",
       feed: "Feed",
       messages: "Messages",
@@ -90,7 +111,7 @@ describe("app-sidebar-nav", () => {
     });
 
     expect(sections).toHaveLength(2);
-    expect(sections[0]?.items).toHaveLength(4);
+    expect(sections[0]?.items).toHaveLength(3);
     expect(sections[1]?.items).toHaveLength(4);
   });
 
@@ -113,7 +134,6 @@ describe("app-sidebar-nav", () => {
       },
       subjects: { title: "Subjects", explore: "Explore" },
       resources: { title: "Resources", all: "All" },
-      events: { title: "Events", all: "All" },
       newRequest: {
         title: "New",
         description: "Desc",

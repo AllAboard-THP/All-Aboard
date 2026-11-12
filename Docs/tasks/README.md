@@ -99,6 +99,12 @@ Avoid editing the same shared `Docs/` file as another active task — use the de
 | [api-rails-parity-phase7/](api-rails-parity-phase7/) | Phase 7 — suggest-tags + `ai_summary` (OpenAPI 0.10.0) |
 | [api-parity-delete-reject/](api-parity-delete-reject/) | Lot A — soft delete + mentor resource reject (OpenAPI 0.8.1) |
 
+### Web Rails parity (Plan 6–7)
+
+| Folder | Scope |
+|--------|-------|
+| [web-parity-p3/](web-parity-p3/) | **Hub** — admin UI, help enrichi, landing, `/subjects/[slug]`, e2e staging |
+
 ---
 
 ## Links

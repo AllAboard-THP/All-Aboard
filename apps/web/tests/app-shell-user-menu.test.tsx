@@ -38,6 +38,20 @@ describe("AppShellUserMenu", () => {
             }),
           });
         }
+        if (url.includes("/api/admin/dashboard")) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({
+              stats: {
+                totalUsers: 10,
+                totalHelpRequests: 5,
+                flaggedCount: 2,
+                pendingSubjectRequests: 1,
+                pendingResources: 0,
+              },
+            }),
+          });
+        }
         if (url.includes("/api/auth/logout")) {
           return Promise.resolve({ ok: true, json: async () => ({ ok: true }) });
         }
@@ -102,6 +116,51 @@ describe("AppShellUserMenu", () => {
     expect(within(menu).getByRole("menuitem", { name: /Espace mentor/ }).getAttribute("href")).toBe(
       "/mentor",
     );
+  });
+
+  it("shows admin link and badge for administrators", async () => {
+    renderWithI18n(
+      <AppShellUserMenu
+        userId="admin-1"
+        displayName="Carol Admin"
+        role="admin"
+        defaultOpen
+      />,
+    );
+
+    await screen.findByTestId("user-menu-admin-badge");
+    const menu = screen.getByRole("menu");
+    expect(screen.getByTestId("user-menu-admin-link").getAttribute("href")).toBe("/admin");
+    expect(within(menu).getByRole("menuitem", { name: /Administration/ })).toBeTruthy();
+    expect(within(menu).getByText("3")).toBeTruthy();
+  });
+
+  it("does not show admin link for students", () => {
+    renderWithI18n(
+      <AppShellUserMenu
+        userId="user-1"
+        displayName="Alice Martin"
+        role="student"
+        defaultOpen
+      />,
+    );
+
+    expect(screen.queryByTestId("user-menu-admin-link")).toBeNull();
+    expect(screen.queryByTestId("user-menu-admin-badge")).toBeNull();
+  });
+
+  it("does not show admin link for mentors", () => {
+    renderWithI18n(
+      <AppShellUserMenu
+        userId="mentor-1"
+        displayName="Bob Mentor"
+        role="mentor"
+        defaultOpen
+      />,
+    );
+
+    expect(screen.queryByTestId("user-menu-admin-link")).toBeNull();
+    expect(screen.queryByTestId("user-menu-admin-badge")).toBeNull();
   });
 
   it("logs out via BFF and refreshes the app shell", async () => {

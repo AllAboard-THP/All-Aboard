@@ -3,7 +3,7 @@
 **Statut** : cadrage / backlog — **pas** la prochaine livraison MVP.  
 **Mise à jour** : 2026-06-11.  
 **Référence stack cible** : [proposition-stack-technique-monorepo-2026.md](../proposition-stack-technique-monorepo-2026.md).  
-**État actuel du dépôt** : [README.md](../README.md) (phases 0–4 livrées côté doc ; API parité Rails livrée ; web en retard).
+**État actuel du dépôt** : [README.md](../README.md) (phases 0–4 livrées côté doc ; API parité Rails livrée ; **web parité P1–P3 livrée** hors events).
 
 > **Mot-clé agent** : quand l’humain dit **« roadmap »**, lire ce fichier en premier, puis les plans Cursor listés en §2, puis proposer l’élaboration des plans d’exécution manquants (§4).
 
@@ -33,6 +33,9 @@ Travail **immédiat** documenté ailleurs ; à finir ou lancer **avant** les pis
 | 2 | Backend | Smoke + Intuition live + doc modération | `~/.cursor/plans/backend_smoke_intuition_*.plan.md` |
 | 3 | Web | Parité UI P1 (feed, profil, social) | `~/.cursor/plans/web_parity_p1_*.plan.md` |
 | 5 | Web | Resources, mentor dashboard, chat | `~/.cursor/plans/web_parity_p2_resources_chat_*.plan.md` |
+| 6 | Web | Admin UI + BFF (Plan 6) | [tasks/web-parity-p3](../tasks/web-parity-p3/README.md) |
+| 7 | Web | Help enrichi + agent UX (Plan 7) | [tasks/web-parity-p3](../tasks/web-parity-p3/README.md) |
+| 7b | Web | Landing, `/subjects/[slug]`, e2e staging | [tasks/web-parity-p3](../tasks/web-parity-p3/README.md) |
 
 **En suspens** (décision produit) : ~~Phase 3b auth email, ADR auth Web3 (wallet / Gnosis / hybride)~~ → **résolu** : [ADR 0006](../adr/0006-authentication-passkeys.md) (passkeys WebAuthn). Wallet Intuition = publish serveur, pas login utilisateur.
 
@@ -48,7 +51,7 @@ Source : [proposition-stack-technique-monorepo-2026.md](../proposition-stack-tec
 |-------|-----------|------------|--------|------------|
 | **Observabilité** | OpenTelemetry + Sentry, logs structurés (pino) | Non implémenté | S–M (~1 sem.) | À créer : `vision-observability` |
 | **Redis** | Cache, rate limits, WS multi-instance (Phase 5b scale) | Non implémenté ; hub WS mémoire mono-instance | M | À créer : `vision-redis` |
-| **`packages/blockchain`** | Abstraction Web3 / Intuition ; lien wallet ↔ compte (optionnel) | Partiel : `apps/api/src/intuition/` | M | À créer : `vision-blockchain-package` |
+| **`packages/blockchain`** | Abstraction Web3 / Intuition — sources : [intuition-web3.md](../integrations/intuition-web3.md) | Partiel : `apps/api/src/intuition/` | M | À créer : `vision-blockchain-package` |
 | ~~**Auth Web3**~~ **Auth passkeys** | ~~Wallet / Gnosis / SIWE~~ → **WebAuthn** ([ADR 0006](../adr/0006-authentication-passkeys.md)) | En cours (Web P1 W-P1-00) | M | Web P1 + ADR 0006 |
 | **`apps/mobile`** | Expo / React Native, partage `packages/types` (+ UI si pertinent) | Absent | L–XL | À créer : `vision-mobile-expo` |
 | **GraphQL + Prisma** | BFF GraphQL, ORM Prisma, migrations | **Non** — MVP = Fastify REST + Drizzle | XL (migration) | À créer : `vision-graphql-prisma` (ADR d’abord) |
@@ -131,3 +134,4 @@ Quand l’humain demande **roadmap** :
 | Date | Note |
 |------|------|
 | 2026-06-11 | Décision passkeys — [ADR 0006](../adr/0006-authentication-passkeys.md) ; Phase 3b annulée ; auth retirée du backlog v1+ wallet |
+| 2026-06-24 | Web parité P3 closeout — admin UI, help enrichi, landing/subjects polish ; hub [web-parity-p3](../tasks/web-parity-p3/README.md) |

@@ -7,7 +7,7 @@ import { HELP_REQUEST_CREATED } from "./outbox.js";
 import {
   publishHelpRequestCreatedToIntuition,
   type PublishHelpRequestResult,
-} from "./sdk-client.js";
+} from "./stub-publisher.js";
 
 export type IntuitionPublisherLog = (
   message: string,
@@ -33,32 +33,16 @@ function logPublishResult(
   config: IntuitionConfig,
   log: IntuitionPublisherLog,
 ): void {
-  if (result.mode === "stub") {
-    log("intuition_publish_stub", {
-      eventType: HELP_REQUEST_CREATED,
-      helpRequestId: payload.id,
-      title: payload.title,
-      authorId: payload.authorId,
-      tags: payload.tags ?? [],
-      externalId: result.externalId,
-      networkId: config.networkId,
-      rpcConfigured: Boolean(config.rpcUrl),
-      graphqlConfigured: Boolean(config.graphqlUrl),
-    });
-    return;
-  }
-
-  log("intuition_publish_sdk", {
+  log("intuition_publish_stub", {
     eventType: HELP_REQUEST_CREATED,
     helpRequestId: payload.id,
     title: payload.title,
     authorId: payload.authorId,
     tags: payload.tags ?? [],
     externalId: result.externalId,
-    transactionHash: result.transactionHash,
-    atomTermId: result.atomTermId,
-    tripleCount: result.tripleCount,
     networkId: config.networkId,
+    rpcConfigured: Boolean(config.rpcUrl),
+    graphqlConfigured: Boolean(config.graphqlUrl),
   });
 }
 
@@ -82,7 +66,12 @@ export async function processPendingOutboxEvents(
   const pending = await db
     .select()
     .from(outboxEvents)
-    .where(isNull(outboxEvents.processedAt))
+    .where(
+      and(
+        eq(outboxEvents.eventType, HELP_REQUEST_CREATED),
+        isNull(outboxEvents.processedAt),
+      ),
+    )
     .orderBy(asc(outboxEvents.createdAt))
     .limit(batchSize);
 
@@ -91,19 +80,10 @@ export async function processPendingOutboxEvents(
   let publishErrors = 0;
 
   for (const event of pending) {
-    if (event.eventType !== HELP_REQUEST_CREATED) {
-      await db
-        .update(outboxEvents)
-        .set({ processedAt: now() })
-        .where(eq(outboxEvents.id, event.id));
-      processed += 1;
-      continue;
-    }
-
     const payload = event.payload as HelpRequestCreatedOutboxPayload;
     const [request] = await db
       .select({
-        intuitionPublishedAt: helpRequests.intuitionPublishedAt,
+        intuitionStubAckedAt: helpRequests.intuitionStubAckedAt,
       })
       .from(helpRequests)
       .where(eq(helpRequests.id, event.aggregateId))
@@ -122,7 +102,7 @@ export async function processPendingOutboxEvents(
       continue;
     }
 
-    if (request.intuitionPublishedAt) {
+    if (request.intuitionStubAckedAt) {
       await db
         .update(outboxEvents)
         .set({ processedAt: now() })
@@ -154,11 +134,11 @@ export async function processPendingOutboxEvents(
     const publishedAt = now();
     await db
       .update(helpRequests)
-      .set({ intuitionPublishedAt: publishedAt })
+      .set({ intuitionStubAckedAt: publishedAt })
       .where(
         and(
           eq(helpRequests.id, event.aggregateId),
-          isNull(helpRequests.intuitionPublishedAt),
+          isNull(helpRequests.intuitionStubAckedAt),
         ),
       );
 

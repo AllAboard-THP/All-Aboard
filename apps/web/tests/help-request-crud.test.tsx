@@ -11,12 +11,15 @@ const updateHelpRequest = vi.fn();
 const deleteHelpRequest = vi.fn();
 const updateResponse = vi.fn();
 const deleteResponse = vi.fn();
+const requestMentorHelp = vi.fn();
 
 vi.mock("@/lib/help-request-client", () => ({
   updateHelpRequest: (...args: unknown[]) => updateHelpRequest(...args),
   deleteHelpRequest: (...args: unknown[]) => deleteHelpRequest(...args),
   updateResponse: (...args: unknown[]) => updateResponse(...args),
   deleteResponse: (...args: unknown[]) => deleteResponse(...args),
+  requestMentorHelp: (...args: unknown[]) => requestMentorHelp(...args),
+  suggestHelpRequestTags: vi.fn(),
 }));
 
 const mockPush = vi.fn();
@@ -83,6 +86,20 @@ function mockAuthMe(userId: string | null) {
         }
         return Response.json({ userId, role: "user" });
       }
+      if (url.includes("/api/subjects")) {
+        return Response.json({
+          items: [
+            {
+              id: "subject-1",
+              name: "Rails",
+              slug: "rails",
+              icon: "R",
+              accentColor: "#6366f1",
+              postsCount: 0,
+            },
+          ],
+        });
+      }
       if (url.includes("/api/help-requests/")) {
         return Response.json(initialDetail);
       }
@@ -122,10 +139,13 @@ describe("HelpRequestEditForm", () => {
     fireEvent.click(screen.getByRole("button", { name: "Enregistrer" }));
 
     await waitFor(() => {
-      expect(updateHelpRequest).toHaveBeenCalledWith(requestId, {
-        title: "Updated title",
-        tags: ["nextjs"],
-      });
+      expect(updateHelpRequest).toHaveBeenCalledWith(
+        requestId,
+        expect.objectContaining({
+          title: "Updated title",
+          tags: ["nextjs"],
+        }),
+      );
       expect(mockPush).toHaveBeenCalledWith(`/requests/${requestId}`);
     });
   });
@@ -145,8 +165,16 @@ describe("HelpRequestEditForm", () => {
 describe("HelpRequestOwnerActions", () => {
   beforeEach(() => {
     deleteHelpRequest.mockReset();
+    updateHelpRequest.mockReset();
+    requestMentorHelp.mockReset();
     mockPush.mockReset();
     deleteHelpRequest.mockResolvedValue(undefined);
+    updateHelpRequest.mockResolvedValue({
+      item: { ...initialItem, status: "resolved" },
+    });
+    requestMentorHelp.mockResolvedValue({
+      item: { ...initialItem, mentorHelpRequested: true },
+    });
     mockAuthMe(authorId);
   });
 
@@ -170,6 +198,43 @@ describe("HelpRequestOwnerActions", () => {
     await waitFor(() => {
       expect(deleteHelpRequest).toHaveBeenCalledWith(requestId);
       expect(mockPush).toHaveBeenCalledWith("/");
+    });
+  });
+
+  it("marks request as resolved", async () => {
+    renderWithQuery(
+      <HelpRequestOwnerActions requestId={requestId} authorId={authorId} />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("help-request-resolve-button")).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByTestId("help-request-resolve-button"));
+
+    await waitFor(() => {
+      expect(updateHelpRequest).toHaveBeenCalledWith(requestId, {
+        status: "resolved",
+      });
+    });
+  });
+
+  it("requests mentor help", async () => {
+    renderWithQuery(
+      <HelpRequestOwnerActions requestId={requestId} authorId={authorId} />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("help-request-mentor-button")).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByTestId("help-request-mentor-button"));
+
+    await waitFor(() => {
+      expect(requestMentorHelp).toHaveBeenCalledWith(requestId);
+      expect(
+        screen.getByTestId("help-request-mentor-requested-badge"),
+      ).toBeTruthy();
     });
   });
 

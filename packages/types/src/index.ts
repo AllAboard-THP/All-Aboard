@@ -483,10 +483,24 @@ export type ConversationParticipantSummary = {
   avatarUrl?: string;
 };
 
+export type MessageKind = "text" | "audio" | "video";
+
+export type AttachmentSource = "microphone" | "camera" | "screen";
+
+export type ChatMessageAttachment = {
+  url: string;
+  mimeType: string;
+  sizeBytes: number;
+  durationMs?: number;
+  source?: AttachmentSource;
+};
+
 /** Message temps réel / REST — aligné Rails `Message#as_chat_json`. */
 export type ChatMessage = {
   id: string;
-  body: string;
+  kind: MessageKind;
+  body?: string;
+  attachment?: ChatMessageAttachment;
   userId: string;
   userName: string;
   avatarUrl?: string;
