@@ -13,6 +13,8 @@ Decision record: [ADR 0008](../adr/0008-message-media-object-storage.md).
 
 `local` is the right default for `pnpm dev:local`. On Dokploy or Coolify, a container disk disappears on redeploy. **Do not use a local volume as the only copy of video in production.** Set `MESSAGE_MEDIA_STORAGE=s3` on the API service before real video traffic.
 
+**Provider for deployed environments: Cloudflare R2** (decided 2026-11-11). Setup: [Cloudflare R2](#cloudflare-r2-deployed-environments). MinIO and AWS stay supported by the same code.
+
 ## Environment variables (API)
 
 | Variable | Required | Default | Role |
@@ -21,7 +23,7 @@ Decision record: [ADR 0008](../adr/0008-message-media-object-storage.md).
 | `MESSAGE_MEDIA_STORAGE_DIR` | No | `data/uploads/messages` | Local directory. Ignored for writes when mode is `s3` |
 | `MESSAGE_MEDIA_PUBLIC_BASE_URL` | Prod local, or public S3 | API origin + `/uploads/messages` | Local: public prefix. S3 public read: origin the object key is appended to (include the bucket path, not the `messages/` prefix) |
 | `S3_ENDPOINT` | MinIO / non-AWS | unset | Example `http://minio:9000` or `https://s3.fr-par.scw.cloud`. Omit for AWS |
-| `S3_REGION` | No | `us-east-1` | AWS region. MinIO still needs a value; `us-east-1` is fine |
+| `S3_REGION` | No | `us-east-1` | AWS region. Use `auto` for R2. MinIO still needs a value; `us-east-1` is fine |
 | `S3_BUCKET` | Yes if `s3` | — | Bucket name |
 | `S3_ACCESS_KEY` | Yes if `s3` | — | Access key |
 | `S3_SECRET_KEY` | Yes if `s3` | — | Secret key |
@@ -33,6 +35,65 @@ Decision record: [ADR 0008](../adr/0008-message-media-object-storage.md).
 The API refuses to boot in `s3` mode when `S3_BUCKET`, `S3_ACCESS_KEY`, or `S3_SECRET_KEY` is missing.
 
 `STORAGE_BUCKET` / `STORAGE_ENDPOINT` in the generic matrix are not read by this feature.
+
+## Cloudflare R2 (deployed environments)
+
+R2 speaks the S3 API, so no code change is needed. Playback uses presigned GET URLs on `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`. Browsers load them directly in `<audio>` and `<video>`, so no CORS rule and no public bucket are needed. R2 has no egress fees.
+
+### 1. Buckets (Cloudflare dashboard → R2)
+
+One bucket per environment, so a dev key can never read production media:
+
+| Environment | Bucket |
+| --- | --- |
+| dev | `allaboard-media-dev` |
+| staging | `allaboard-media-staging` |
+| production | `allaboard-media-prod` |
+
+- Location: pick the **EU jurisdiction** when creating the bucket if data must stay in the EU. The endpoint then becomes `https://<ACCOUNT_ID>.eu.r2.cloudflarestorage.com`. The jurisdiction cannot be changed after creation.
+- Leave **Public access** disabled (no `r2.dev` URL, no custom domain). The API signs every read.
+- No CORS policy is needed: the web app never fetches media with `fetch()` or `crossOrigin`.
+
+### 2. API tokens (R2 → Manage R2 API tokens)
+
+Create one token per environment:
+
+- Permission: **Object Read & Write**.
+- Scope: **Apply to specific buckets only**, then pick that environment's bucket.
+- Copy the **Access Key ID** and **Secret Access Key** once. They map to `S3_ACCESS_KEY` and `S3_SECRET_KEY`. Store them in Dokploy and in the team password manager, never in Git.
+
+### 3. Dokploy variables (API application of each environment)
+
+| Variable | Value |
+| --- | --- |
+| `MESSAGE_MEDIA_STORAGE` | `s3` |
+| `S3_ENDPOINT` | `https://<ACCOUNT_ID>.r2.cloudflarestorage.com` (or `.eu.` for an EU bucket) |
+| `S3_REGION` | `auto` |
+| `S3_BUCKET` | `allaboard-media-<env>` |
+| `S3_ACCESS_KEY` | token Access Key ID (secret) |
+| `S3_SECRET_KEY` | token Secret Access Key (secret) |
+
+Leave the other media variables unset. Path-style addressing, the `messages` prefix, private reads and the 1-hour URL lifetime are the right defaults for R2. Do not set `MESSAGE_MEDIA_PUBLIC_BASE_URL`: it only applies to public-read mode.
+
+The Web application needs nothing: it receives the signed URLs through the BFF.
+
+### 4. Deploy and check
+
+1. Redeploy the API. It exits on startup if `S3_BUCKET`, `S3_ACCESS_KEY` or `S3_SECRET_KEY` is missing.
+2. With two accounts, send a voice message and a camera message, then play them from the other account.
+3. In the browser network panel, the media URL host is `<ACCOUNT_ID>.r2.cloudflarestorage.com` and carries `X-Amz-Signature`. It is not `/uploads/messages/`.
+4. In the Cloudflare dashboard, the bucket shows objects under `messages/<conversationId>/`.
+5. Redeploy the API once more and play the same messages again: they must survive.
+
+Do not skip step 2. The API only checks that the three variables are present, not that the keys work. With a wrong secret key it starts normally. Every upload then fails with HTTP 500 (`SignatureDoesNotMatch` in the API logs), and existing media URLs return 403. Chat history and text messages keep working, so the problem is easy to miss.
+
+### Existing local files
+
+If the API container has no persistent volume on `data/uploads/messages`, media sent before the switch is already lost after a redeploy, and there is nothing to copy. Those messages keep their row, but their file is gone. If an environment does have local files to keep, run the [copy script](#copy-existing-local-files) with the R2 variables before switching.
+
+### Public read on R2 (not recommended)
+
+R2 has no bucket policies. To serve media publicly, attach a custom domain to the bucket (for example `media.allaboard.fr`), then set `MESSAGE_MEDIA_S3_PUBLIC_READ=true` and `MESSAGE_MEDIA_PUBLIC_BASE_URL=https://media.allaboard.fr`. Anyone holding a link could then play a private chat message, so keep presigned URLs unless there is a strong reason.
 
 ## Private bucket (default)
 
