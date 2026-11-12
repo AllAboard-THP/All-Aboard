@@ -85,6 +85,8 @@ The Web application needs nothing: it receives the signed URLs through the BFF.
 4. In the Cloudflare dashboard, the bucket shows objects under `messages/<conversationId>/`.
 5. Redeploy the API once more and play the same messages again: they must survive.
 
+Do not skip step 2. The API only checks that the three variables are present, not that the keys work. With a wrong secret key it starts normally. Every upload then fails with HTTP 500 (`SignatureDoesNotMatch` in the API logs), and existing media URLs return 403. Chat history and text messages keep working, so the problem is easy to miss.
+
 ### Existing local files
 
 If the API container has no persistent volume on `data/uploads/messages`, media sent before the switch is already lost after a redeploy, and there is nothing to copy. Those messages keep their row, but their file is gone. If an environment does have local files to keep, run the [copy script](#copy-existing-local-files) with the R2 variables before switching.
