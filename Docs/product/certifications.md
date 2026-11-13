@@ -47,6 +47,8 @@ Professional **skill** certifications. Example: Ruby on Rails.
 4. User 2 adds a +1, with an optional short comment.
 5. The profile shows that attestation as community proof of the skill.
 
+User 2 can later withdraw the +1. All-Aboard then stops showing it, but it stays on the chain as history, and the proof page says so ([ADR 0009](../adr/0009-certifications-intuition.md) section 5).
+
 The menu entry is a shared skill, not a free-text tag stored only on the user row.
 
 ### What the code does today

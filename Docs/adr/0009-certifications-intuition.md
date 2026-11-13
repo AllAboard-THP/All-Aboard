@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed — 2026-10-30.
+Accepted — 2026-11-13. Proposed 2026-10-30; spike [#161](../tasks/161-certifications-spike/README.md): a real +1 was written on testnet on 2026-11-02. Reading it back through the hosted GraphQL is not confirmed, so the read path does not depend on it (section 6).
 
 Implements the product decision in [certifications.md](../product/certifications.md) (2026-10-19). Settles the points [ADR 0004](0004-agent-indexer-architecture.md) left open in its 2026-10-28 revision: package stack, on-chain identity, and signer.
 
@@ -50,9 +50,9 @@ Ids are computed locally with `@0xintuition/ids` before any publish and stored i
 
 | Product object | Atom / triple | Bytes or predicate |
 | --- | --- | --- |
-| Person receiving the +1 | Atom | Public profile URL on the production web domain, `https://<WEB_APP_URL>/u/<user uuid>`. No name, email, or avatar on-chain. |
+| Person receiving the +1 | Atom | Public profile URL on the production web domain, `https://<WEB_APP_URL>/u/<user uuid>`. No name, email, or avatar on-chain. Chosen over the auth-user atom from `@0xintuition/ids` (a hash of the user id) because other apps can resolve a URL, which keeps the CV reusable (decided 2026-11-13). |
 | Peer giving the +1 | Atom | Same shape as the recipient |
-| Skill (« Ruby on Rails ») | Atom | Canonical JSON-LD skill term. Use a `@0xintuition/classifications` shape if one fits; otherwise a schema.org `DefinedTerm` frozen in `packages/blockchain`. Decided in the spike (section 7). |
+| Skill (« Ruby on Rails ») | Atom | Canonical JSON-LD skill term. schema.org `DefinedTerm` built with `buildDefinedTerm` from `@0xintuition/primitives/atom`, with `name` only, frozen in `packages/blockchain`. |
 | Claim | Triple | `(person) expertIn (skill)`. Created once per person and skill, shared by every +1. |
 | +1 | Nested triple | `(claim triple) attestedBy (peer)`. One per peer, recipient, and skill. |
 
@@ -61,9 +61,13 @@ Predicates come from the `@0xintuition/predicates` registry, imported one at a t
 - `expertIn`: "The subject claims or is recognized as having deep expertise in the object domain or skill".
 - `attestedBy`: "The subject claim or credential is witnessed and signed by the object attestor".
 
+The registry defines `attestedBy` as "signed by the object attestor", but here the operator signs, not the peer. We keep the predicate (decided 2026-11-13). Every place that shows the proof states that All-Aboard recorded the +1 on the peer's behalf (section 6).
+
 Rejected predicates: `endorse` and `vouchFor` would make the peer the subject (`peer endorse person`), so they drop the skill. `certifiedBy` describes an issuing authority, not a peer.
 
-If the spike shows that the deployed MultiVault does not accept a triple as the subject of a triple, the fallback is a deposit by the operator on the claim triple, plus `(claim) attestedBy (peer)` recorded only in Postgres. This weakens the "who attested" part of the proof and requires an ADR revision.
+The two predicates do not exist yet on testnet or mainnet (checked 2026-11-02). The publisher creates them once per network, before the first +1.
+
+The deployed testnet MultiVault accepts a triple as the subject of a triple (confirmed by a real transaction on 2026-11-02). Mainnet may run an older implementation: re-check before any mainnet decision.
 
 Experience certifications (missions) reuse this shape later with another object and predicate. They are not built now.
 
@@ -94,14 +98,17 @@ Revisit after moderation is in place, for example by publishing only a hash of t
   2. creates the missing atoms and triples (person, peer, skill, claim, +1) in one `createAtoms` / `createTriples` batch, skipping those already on-chain;
   3. waits for the receipt and writes `tx_hash`, the triple ids and `published_at`.
 - **Idempotence** comes from deterministic ids: a retry checks on-chain existence before creating. Errors increment `publish_attempts` with backoff. After a ceiling, the event stays unprocessed with `publish_error` set, and an admin can replay it.
-- **Revocation** (removing a +1): set `revoked_at` and emit `certification.revoked`. The publisher redeems the operator's position on the +1 triple. The triple itself stays on-chain as history. Reads ignore revoked rows. This can ship after the first slice.
-- **Gas and deposits:** creating atoms and triples costs the protocol's minimum deposit plus gas, in the network's token. The operator wallet is funded on testnet. A low-balance check is logged at publisher start-up and exposed in the health details.
+- **Revocation** (removing a +1), decided 2026-11-13:
+  - **First slice: Postgres only.** Set `revoked_at`; reads ignore revoked rows. Nothing is sent to the chain and there is no `certification.revoked` event. No app reads these +1s outside All-Aboard yet, and this avoids locking TRUST in a deposit on every +1.
+  - **A withdrawn +1 stays on-chain.** That is the history. The proof page says so (section 6).
+  - **Before other apps consume these +1s, or before mainnet:** test a deposit in the +1's counter vault (`calculateCounterTripleId`). It is the most likely way to signal a withdrawal on-chain, especially for moderation. Redeeming the operator's position is not an option as things stand: with a deposit of exactly the triple cost, the creator holds 0 shares ([spike](../tasks/161-certifications-spike/README.md)).
+- **Gas and deposits:** creating atoms and triples costs the protocol's fee plus gas, in the network's token: 0.1 per atom and 0.1 per triple on testnet and mainnet, so 0.1 to 0.2 per +1 once the shared atoms exist ([spike results](../tasks/161-certifications-spike/README.md)). Gas is negligible next to that. The operator wallet is funded on testnet. A low-balance check is logged at publisher start-up and exposed in the health details.
 
 ### 6. Code placement and reads
 
 - **`packages/blockchain`** (`@allaboard/blockchain`, new): pure code with no secrets and no network calls. It holds the atom builders, the frozen bytes, id helpers over `@0xintuition/ids` and the predicate imports, and the golden-id tests. It depends on `@0xintuition/ids`, `@0xintuition/predicates`, `@0xintuition/primitives` and, if chosen, `@0xintuition/classifications`, plus `viem` for the peer dependency.
 - **`apps/api/src/intuition/`**: the certification publisher (`@0xintuition/protocol`, `@0xintuition/deployments`, `viem` wallet client). It stays in the API process, as ADR 0004 section 2 allows.
-- **Reads:** the profile shows +1s from Postgres. It is fast, works when the chain is down, and hides revoked rows. Each published +1 links to its triple in the Intuition explorer as the public proof. Reading back from the hosted GraphQL (`INTUITION_GRAPHQL_URL`) is used for a reconciliation check, not for rendering. Showing +1s that other apps wrote on the same claim is a later step.
+- **Reads:** the profile shows +1s from Postgres. It is fast, works when the chain is down, and hides revoked rows. Each published +1 links to its triple in the Intuition explorer as the public proof. The proof page states that All-Aboard recorded the +1 on the peer's behalf (the peer did not sign it), and that a withdrawn +1 stays on the chain as history. Reconciliation uses contract reads (`isTriple`). The hosted GraphQL (`INTUITION_GRAPHQL_URL`) is not relied on yet: it had not indexed the spike's +1 after 35 minutes. Showing +1s that other apps wrote on the same claim is a later step.
 - Pin exact alpha versions in `package.json`. The `@alpha` tag moves.
 
 ### 7. Spike before implementation
@@ -114,7 +121,7 @@ A short task, on testnet, with a throwaway wallet:
 4. Choose the skill atom shape (classification or `DefinedTerm`).
 5. Read the result back through hosted GraphQL.
 
-The results update this ADR before it moves to Accepted.
+Results (2026-11-02): items 1 to 4 confirmed, with `@0xintuition/protocol` `3.0.0-alpha.0` on testnet. Item 5 is not confirmed. Details in the [spike notes](../tasks/161-certifications-spike/README.md).
 
 ## Consequences
 
@@ -126,6 +133,7 @@ The results update this ADR before it moves to Accepted.
 - **Negative:**
   - All-Aboard holds a hot key and pays for every +1.
   - The proof says "All-Aboard recorded that this peer attested", not "this peer signed".
+  - Until counter-vault signalling exists, the chain does not show that a +1 was withdrawn. Only All-Aboard knows.
   - The stack adds alpha packages and `viem` back to the repo.
 - **Risks:**
   - **Key leak:** testnet only. On mainnet, the key needs a dedicated wallet with a small balance and a rotation plan.
@@ -139,7 +147,7 @@ The results update this ADR before it moves to Accepted.
 | --- | --- |
 | Intuition Core write API (`POST /api/atoms`) | Writes to the node's graph, not the chain. Needs a node built from an unreleased branch. |
 | Users sign with their own wallet | Contradicts passkey login and adds wallet onboarding. Revisit with embedded wallets later. |
-| Operator deposit on the claim only, peer kept in Postgres | The chain would not say who attested. Kept only as the spike fallback. |
+| Operator deposit on the claim only, peer kept in Postgres | The chain would not say who attested. Not needed: nested triples work on testnet. |
 | `(peer) endorse / vouchFor (person)` | Loses the skill. |
 | Comment on-chain | Permanent and unmoderatable. See section 3. |
 | Read the profile from GraphQL | Adds latency and a hard dependency on the indexer for every profile view. |
