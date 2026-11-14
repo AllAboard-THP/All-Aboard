@@ -1,0 +1,53 @@
+<%= form_with model: resource, class: "space-y-6" do |f| %>
+  <% if resource.errors.any? %>
+    <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+      <ul class="text-sm text-red-400 space-y-1">
+        <% resource.errors.full_messages.each do |msg| %>
+          <li><i class="fas fa-exclamation-circle mr-2"></i><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :title, "Titre", class: "block text-sm font-medium text-gray-300 mb-2" %>
+    <%= f.text_field :title,
+        class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors",
+        placeholder: "Ex: Introduction aux algorithmes de tri" %>
+  </div>
+
+  <div>
+    <div class="flex items-center gap-2 mb-2">
+      <%= f.label :subject_id, "Matière", class: "text-sm font-medium text-gray-300" %>
+      <span class="text-xs text-red-400">obligatoire</span>
+    </div>
+    <%= f.select :subject_id,
+        options_from_collection_for_select(@subjects, :id, :name, resource.subject_id),
+        { prompt: "— Sélectionner une matière —" },
+        class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors" %>
+  </div>
+
+  <div>
+    <div class="flex items-center gap-2 mb-2">
+      <span class="text-sm font-medium text-gray-300">Sous-tags</span>
+      <span class="text-xs text-gray-500 bg-white/5 px-2 py-0.5 rounded-full">optionnel · max 6</span>
+    </div>
+    <%= f.text_field :tag_list,
+        class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors text-sm",
+        placeholder: "Ex : récursivité, complexité, tri rapide — séparés par des virgules" %>
+  </div>
+
+  <div>
+    <%= f.label :body, "Contenu", class: "block text-sm font-medium text-gray-300 mb-2" %>
+    <%= f.text_area :body, rows: 12,
+        class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors resize-y",
+        placeholder: "Rédigez votre ressource pédagogique ici..." %>
+  </div>
+
+  <div class="flex gap-3 pt-2">
+    <%= f.submit (current_user.admin? || current_user.mentor? ? "Publier la ressource" : "Soumettre la ressource"),
+        class: "px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-semibold transition-colors cursor-pointer" %>
+    <% cancel_path = current_user.admin? ? admin_dashboard_path : current_user.mentor? ? mentor_dashboard_path : resources_path %>
+    <%= link_to "Annuler", cancel_path, class: "px-6 py-3 bg-white/5 hover:bg-white/10 text-gray-300 rounded-xl font-medium transition-colors" %>
+  </div>
+<% end %>

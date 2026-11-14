@@ -1,0 +1,17 @@
+---
+description: When the user says "roadmap", load the future v1+ backlog hub and MVP plan pointers before proposing new plans.
+globs:
+alwaysApply: false
+---
+
+# Roadmap (mot-clé utilisateur)
+
+Quand l'humain dit **roadmap** (ou « roadmap future », « vision v1+ », « plans long terme ») :
+
+1. Lire **[Docs/vision/roadmap-v1-plus.md](../../Docs/vision/roadmap-v1-plus.md)** en premier.
+2. Lire **[ADR 0006 passkeys](../../Docs/adr/0006-authentication-passkeys.md)** pour toute question auth (remplace wallet/password prod).
+3. Distinguer **MVP en cours** (§2 : ops, backend smoke, web P1/P2) vs **pistes v1+** (§3 : observabilité, Redis, blockchain, mobile, GraphQL/Prisma).
+4. Ne pas fusionner MVP et v1+ dans un seul plan d'implémentation.
+5. Proposer d'élaborer **un plan Cursor séparé** par piste v1+ choisie (workflow §4 du hub).
+
+Plans MVP déjà créés : voir tableau §2 du hub (`~/.cursor/plans/`).

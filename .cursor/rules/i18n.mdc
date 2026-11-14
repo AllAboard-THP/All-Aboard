@@ -1,0 +1,26 @@
+---
+description: Garde-fous i18n apps/web — next-intl, navigation locale, messages JSON
+globs: apps/web/**/*
+alwaysApply: false
+---
+
+# i18n — apps/web
+
+Corpus MVP : textes UI dans `apps/web/messages/{fr,en}.json`, pas dans `packages/ui`.
+
+## Navigation
+
+Dans `apps/web/components/features/` et pages sous `app/[locale]/` :
+
+- Utiliser `@/i18n/navigation` (Link, useRouter, usePathname)
+- Ne pas importer `next/link` ni `next/navigation` directement
+
+## API
+
+- Erreurs Fastify : codes machine-readable inchangés ; traduire à l'affichage via `lib/map-api-error.ts`
+- SSR : traduire `feedError` / `detailError`, pas de strings techniques brutes
+
+## Doc
+
+- Skill : `.cursor/skills/i18n-allaboard/SKILL.md`
+- Issue #75 · ADR 0005 (à rédiger)

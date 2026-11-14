@@ -1,0 +1,18 @@
+import "@fastify/jwt";
+import type { UserRole } from "@allaboard/types";
+import type { FastifyReply, FastifyRequest } from "fastify";
+
+export {};
+
+declare module "fastify" {
+  interface FastifyInstance {
+    authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+  }
+}
+
+declare module "@fastify/jwt" {
+  interface FastifyJWT {
+    payload: { sub: string; role?: UserRole };
+    user: { sub: string; role?: UserRole };
+  }
+}

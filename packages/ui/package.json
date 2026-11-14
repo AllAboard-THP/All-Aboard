@@ -1,0 +1,72 @@
+{
+  "name": "@allaboard/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    "./globals.css": "./src/styles/globals.css",
+    "./components/*": "./src/components/*.tsx",
+    "./i18n/post-card-labels": "./src/i18n/post-card-labels.ts",
+    "./i18n/legacy-labels": "./src/i18n/legacy-labels.ts",
+    "./i18n/storybook-locale": "./src/i18n/storybook-locale.tsx",
+    "./i18n/*": "./src/i18n/*",
+    "./lib/*": "./src/lib/*.ts",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./patterns/profile-types": "./src/patterns/profile-types.ts",
+    "./patterns/profile-panels": "./src/patterns/profile-panels.tsx",
+    "./patterns/profile-page-layout": "./src/patterns/profile-page-layout.tsx",
+    "./patterns/landing-layout": "./src/patterns/landing-layout.ts",
+    "./patterns/landing-page-shell": "./src/patterns/landing-page-shell.tsx",
+    "./patterns/legacy-auth-patterns": "./src/patterns/legacy-auth-patterns.tsx",
+    "./patterns/register-form": "./src/patterns/register-form.tsx",
+    "./patterns/feed-concept-background": "./src/patterns/feed-concept-background.tsx",
+    "./patterns/screens/legacy-screens": "./src/patterns/screens/legacy-screens.tsx",
+    "./patterns/screens/register-screen": "./src/patterns/screens/register-screen.tsx",
+    "./patterns/*": "./src/patterns/*.tsx",
+    "./patterns/student-dashboard-labels": "./src/patterns/student-dashboard-labels.ts",
+    "./patterns/mentor-dashboard-labels": "./src/patterns/mentor-dashboard-labels.ts",
+    "./patterns/app-sidebar-nav": "./src/patterns/app-sidebar-nav.ts",
+    "./patterns/fixtures/*": "./src/patterns/fixtures/*.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.16.0",
+    "next-themes": "^0.4.6",
+    "radix-ui": "^1.4.3",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.6.0"
+  },
+  "devDependencies": {
+    "@allaboard/config-eslint": "workspace:*",
+    "@allaboard/config-typescript": "workspace:*",
+    "@storybook/react": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.1.0",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.17.0",
+    "jsdom": "^25.0.1",
+    "postcss": "^8.5.3",
+    "tailwindcss": "catalog:",
+    "tw-animate-css": "^1.4.0",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9"
+  }
+}

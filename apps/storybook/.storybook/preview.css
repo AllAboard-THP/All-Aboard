@@ -1,0 +1,6 @@
+/* Storybook preview iframe — gradient on body (globals.css); .dark on html via addon-themes. */
+html,
+body,
+#storybook-root {
+  min-height: 100%;
+}
