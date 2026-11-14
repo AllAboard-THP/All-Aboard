@@ -1285,8 +1285,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/meta/_journal.json": {
-    "mtime": 1793311645.7251613,
-    "ast_hash": "0cdd3691735ff09b5328dcf10038de44",
+    "mtime": 1794679098.9973118,
+    "ast_hash": "3f2b9057575c004436f04a34a86a9476",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/migrate.ts": {
@@ -1295,8 +1295,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.ts": {
-    "mtime": 1793311442.2851944,
-    "ast_hash": "77c8f0ccd89bd55a4919b7e5bd00a785",
+    "mtime": 1794679189.17828,
+    "ast_hash": "54e127165bec91cd525300c569d51fef",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/fastify-augmentation.ts": {
@@ -1305,8 +1305,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/seed.ts": {
-    "mtime": 1785091965.6144884,
-    "ast_hash": "9d4a8a1ebc3968ecd05d6cb0a08efb7a",
+    "mtime": 1794679115.1687422,
+    "ast_hash": "51c1e8a6600abc35cd9cd3cd5a96fded",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/openapi.ts": {
@@ -1420,13 +1420,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/schema.ts": {
-    "mtime": 1793311645.7251613,
-    "ast_hash": "907d1488e35a5bdf08e55e1479e34433",
+    "mtime": 1794679098.9773118,
+    "ast_hash": "7006d18582a290fb5ee873cb7b1414f6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/seed.ts": {
-    "mtime": 1785091965.6104882,
-    "ast_hash": "6956b5e480242e0d6bc201bcbdc3e846",
+    "mtime": 1794679107.4333134,
+    "ast_hash": "5b0239801e2a53a09084a4e53928886c",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/client.ts": {
@@ -1570,8 +1570,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/schemas.ts": {
-    "mtime": 1785091965.6144884,
-    "ast_hash": "c431371eacba28ef747c21d7bbb05aaa",
+    "mtime": 1794679131.7572849,
+    "ast_hash": "ecded1948e6b010df8bfa27dd00edeb9",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/user-mappers.ts": {
@@ -1625,8 +1625,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/admin.ts": {
-    "mtime": 1781730692.1120253,
-    "ast_hash": "52770f315a51223175cdd6f6da2a6326",
+    "mtime": 1794679189.17828,
+    "ast_hash": "6de95d1681708f65c65008c1edfbf874",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/users.ts": {
@@ -1685,8 +1685,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/openapi.yaml": {
-    "mtime": 1793311442.2851944,
-    "ast_hash": "7a0ef18e30cbfca1743d0e6a3f228885",
+    "mtime": 1794679297.3641195,
+    "ast_hash": "3052b59b89fa1fefbbfedc87da1c8d5d",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/ui/package.json": {
@@ -2565,8 +2565,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/types/src/index.ts": {
-    "mtime": 1785091965.6344883,
-    "ast_hash": "6d0a746ced3d1d419349d8e74e40794e",
+    "mtime": 1794679131.7572849,
+    "ast_hash": "da876733ab6d31d23aeb98e3e4116c9c",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/config-eslint/node.mjs": {
@@ -6962,6 +6962,26 @@
   "/home/dim/AllAboard/Docs/tasks/161-certifications-spike/README.md": {
     "mtime": 1794580304.4303794,
     "ast_hash": "5e37416ac37eb0ce6c271beba4515fc4",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/drizzle/0016_skill_certifications.sql": {
+    "mtime": 1794679098.9813118,
+    "ast_hash": "d4b1091892a352df5d1afe3af79a69ff",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/routes/certifications.ts": {
+    "mtime": 1794679189.17828,
+    "ast_hash": "1fcc86305c21c84d5188fbc878e9cb77",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/routes/certifications.test.ts": {
+    "mtime": 1794679246.858522,
+    "ast_hash": "96b80da6ac80a131bb618addbdc29978",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/tasks/172-skill-certifications/README.md": {
+    "mtime": 1794679317.9356375,
+    "ast_hash": "fa66d7ba8ed4e2baad11c1424935adf2",
     "semantic_hash": ""
   }
 }

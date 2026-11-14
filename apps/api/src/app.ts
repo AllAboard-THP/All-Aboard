@@ -31,6 +31,7 @@ import { MESSAGE_VIDEO_MAX_BYTES } from "./services/message-media-upload-rules.j
 import { registerOpenApiDocs } from "./openapi.js";
 import { registerAdminRoutes } from "./routes/admin.js";
 import { registerAuthRoutes } from "./routes/auth.js";
+import { registerCertificationRoutes } from "./routes/certifications.js";
 import { registerFeedRoutes } from "./routes/feed.js";
 import { registerHelpRequestRoutes } from "./routes/help-requests.js";
 import { registerLegalRoutes } from "./routes/legal.js";
@@ -117,6 +118,7 @@ export async function buildApp(options?: BuildAppOptions) {
   registerAuthRoutes(app, db);
   registerPasskeyRoutes(app, db);
   registerUserRoutes(app, db);
+  registerCertificationRoutes(app, db, evaluateModeration);
   await ensureAvatarStorageDir();
   assertMessageMediaStorageReady();
   await app.register(fastifyStatic, {

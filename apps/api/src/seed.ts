@@ -1,10 +1,12 @@
 import pg from "pg";
 import { createDb } from "./db/client.js";
 import {
+  defaultSeedSkills,
   defaultSeedSubjects,
   defaultSeedUsers,
   allDemoSeedUsers,
   runFullSeed,
+  seedSkills,
   seedSubjects,
   seedUsers,
 } from "./db/seed.js";
@@ -39,6 +41,10 @@ try {
     const subjectSpecs = defaultSeedSubjects();
     await seedSubjects(db, subjectSpecs);
     console.log(`db:seed: upserted ${subjectSpecs.length} subject(s)`);
+
+    const skillSpecs = defaultSeedSkills();
+    await seedSkills(db, skillSpecs);
+    console.log(`db:seed: inserted missing skills (${skillSpecs.length} in catalogue)`);
 
     const coreUsers = defaultSeedUsers();
     const demoUsers = allDemoSeedUsers(password);

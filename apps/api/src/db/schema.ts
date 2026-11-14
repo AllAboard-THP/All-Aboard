@@ -1,6 +1,9 @@
+import { sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  check,
+  index,
   integer,
   jsonb,
   pgEnum,
@@ -408,3 +411,65 @@ export const webauthnChallenges = pgTable("webauthn_challenges", {
     .notNull()
     .defaultNow(),
 });
+
+/** Skill catalogue for peer +1s (ADR 0009). `label` is frozen once created: it gives the atom bytes. */
+export const skills = pgTable("skills", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  label: text("label").notNull(),
+  active: boolean("active").notNull().default(true),
+  intuitionAtomId: text("intuition_atom_id"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+/** One row per peer +1 (ADR 0009 §4). On-chain fields stay null until the publisher exists. */
+export const certifications = pgTable(
+  "certifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    recipientId: uuid("recipient_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    attesterId: uuid("attester_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    skillId: uuid("skill_id")
+      .notNull()
+      .references(() => skills.id),
+    comment: text("comment"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    claimTripleId: text("claim_triple_id"),
+    attestationTripleId: text("attestation_triple_id"),
+    txHash: text("tx_hash"),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    publishError: text("publish_error"),
+    publishAttempts: integer("publish_attempts").notNull().default(0),
+  },
+  (table) => [
+    uniqueIndex("certifications_recipient_attester_skill_unique").on(
+      table.recipientId,
+      table.attesterId,
+      table.skillId,
+    ),
+    index("certifications_recipient_revoked_idx").on(
+      table.recipientId,
+      table.revokedAt,
+    ),
+    index("certifications_attester_created_idx").on(
+      table.attesterId,
+      table.createdAt,
+    ),
+    check(
+      "certifications_not_self",
+      sql`${table.recipientId} <> ${table.attesterId}`,
+    ),
+  ],
+);

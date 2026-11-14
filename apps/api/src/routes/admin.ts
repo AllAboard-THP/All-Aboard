@@ -3,6 +3,8 @@ import { and, count, desc, eq, inArray, isNull } from "drizzle-orm";
 import type {
   AdminDashboardResponse,
   AdminDenylistPatternsResponse,
+  AdminSkillResponse,
+  AdminSkillsResponse,
   AdminModerationResponse,
   AdminSubjectRequestsResponse,
   AdminUsersResponse,
@@ -14,6 +16,7 @@ import type { AppDatabase } from "../db/client.js";
 import {
   denylistPatterns,
   helpRequests,
+  skills,
   resources,
   responses,
   subjectRequests,
@@ -35,13 +38,17 @@ import {
 import {
   adminSubjectRequestPatchSchema,
   createDenylistPatternBodySchema,
+  createSkillBodySchema,
   promoteAdminBodySchema,
+  updateSkillBodySchema,
 } from "../lib/schemas.js";
+import { rowToSkill } from "./certifications.js";
 import {
   decrementResponsesCount,
   decrementSubjectPostsCountIfNeeded,
 } from "../services/admin-moderation.js";
 import { isValidRegexPattern } from "../services/profanity.js";
+import { isUuid } from "../auth/passkey/config.js";
 
 function requireAdmin(
   request: FastifyRequest,
@@ -392,6 +399,80 @@ export function registerAdminRoutes(
       }
       void reply.code(204);
       return;
+    },
+  );
+
+  app.get(
+    "/admin/skills",
+    adminPre,
+    async (request, reply): Promise<AdminSkillsResponse | void> => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      if (!requireAdmin(request, reply)) return;
+
+      const rows = await db.select().from(skills).orderBy(skills.label);
+      return { items: rows.map(rowToSkill) };
+    },
+  );
+
+  app.post(
+    "/admin/skills",
+    adminPre,
+    async (request, reply): Promise<AdminSkillResponse | void> => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      if (!requireAdmin(request, reply)) return;
+
+      const parsed = createSkillBodySchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.code(400).send({ error: "invalid_body" });
+      }
+
+      const [inserted] = await db
+        .insert(skills)
+        .values({ slug: parsed.data.slug, label: parsed.data.label })
+        .onConflictDoNothing({ target: skills.slug })
+        .returning();
+      if (!inserted) {
+        return reply.code(409).send({ error: "slug_taken" });
+      }
+
+      void reply.code(201);
+      return { item: rowToSkill(inserted) };
+    },
+  );
+
+  // Only `active` can change: the label gives the atom bytes (ADR 0009 §4).
+  app.patch(
+    "/admin/skills/:id",
+    adminPre,
+    async (request, reply): Promise<AdminSkillResponse | void> => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      if (!requireAdmin(request, reply)) return;
+
+      const parsed = updateSkillBodySchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.code(400).send({ error: "invalid_body" });
+      }
+
+      const { id } = request.params as { id: string };
+      if (!isUuid(id)) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+      const [updated] = await db
+        .update(skills)
+        .set({ active: parsed.data.active, updatedAt: new Date() })
+        .where(eq(skills.id, id))
+        .returning();
+      if (!updated) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+
+      return { item: rowToSkill(updated) };
     },
   );
 
