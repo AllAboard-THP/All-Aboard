@@ -7,15 +7,21 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { S3MediaConfig } from "./config.js";
-import { resetMediaStorageForTests, getMediaStorage } from "./index.js";
+import {
+  getMediaStorage,
+  resetMediaStorageForTests,
+  verifyMessageMediaStorageAccess,
+} from "./index.js";
 import {
   buildS3PublicObjectUrl,
   createS3MediaStorageProvider,
   uploadObjectIfMissing,
+  verifyS3MediaStorageAccess,
 } from "./s3-provider.js";
 
 const ENV_KEYS = [
   "MESSAGE_MEDIA_STORAGE",
+  "S3_REGION",
   "S3_BUCKET",
   "S3_ACCESS_KEY",
   "S3_SECRET_KEY",
@@ -200,6 +206,106 @@ describe("s3 media storage", () => {
 
     await expect(getMediaStorage().resolveUrl("conv/msg.webm")).resolves.toBe(
       "https://cdn.example.com/messages/conv/msg.webm",
+    );
+  });
+
+  it("verifies access with a write, a read and a delete of a probe object", async () => {
+    const s3 = client();
+    const send = vi.spyOn(s3, "send").mockResolvedValue({} as never);
+
+    await verifyS3MediaStorageAccess(config(), s3, { probeId: "probe" });
+
+    const commands = send.mock.calls.map((call) => call[0]);
+    expect(commands).toHaveLength(3);
+    expect(commands[0]).toBeInstanceOf(PutObjectCommand);
+    expect(commands[1]).toBeInstanceOf(HeadObjectCommand);
+    expect(commands[2]).toBeInstanceOf(DeleteObjectCommand);
+    for (const command of commands) {
+      expect(command).toMatchObject({
+        input: {
+          Bucket: "allaboard-media",
+          Key: "messages/_startup-check/probe.txt",
+        },
+      });
+    }
+  });
+
+  it("reports the S3 error code without leaking the keys", async () => {
+    const s3 = client();
+    const failure = Object.assign(new Error("signature mismatch"), {
+      name: "SignatureDoesNotMatch",
+      $metadata: { httpStatusCode: 403 },
+    });
+    const send = vi.spyOn(s3, "send").mockRejectedValue(failure as never);
+
+    const error = await verifyS3MediaStorageAccess(config(), s3).catch(
+      (caught: unknown) => caught as Error,
+    );
+
+    expect(error).toBeInstanceOf(Error);
+    expect(error?.message).toBe(
+      'Message media storage check failed (write) on bucket "allaboard-media" at http://127.0.0.1:9000: SignatureDoesNotMatch (HTTP 403)',
+    );
+    expect(error?.message).not.toContain("test-key");
+    expect(error?.message).not.toContain("test-secret");
+    expect(send).toHaveBeenCalledOnce();
+  });
+
+  it("reports a network error code when the endpoint does not answer", async () => {
+    const s3 = client();
+    const refused = Object.assign(new Error("connect ECONNREFUSED"), {
+      code: "ECONNREFUSED",
+    });
+    vi.spyOn(s3, "send").mockRejectedValue(refused as never);
+
+    await expect(verifyS3MediaStorageAccess(config(), s3)).rejects.toThrow(
+      /\(write\) on bucket "allaboard-media" at http:\/\/127\.0\.0\.1:9000: ECONNREFUSED$/,
+    );
+  });
+
+  it("reports a timeout when the endpoint hangs", async () => {
+    const s3 = client();
+    vi.spyOn(s3, "send").mockImplementation(((
+      _command: unknown,
+      options?: { abortSignal?: AbortSignal },
+    ) =>
+      new Promise((_resolve, reject) => {
+        options?.abortSignal?.addEventListener("abort", () =>
+          reject(Object.assign(new Error("aborted"), { name: "AbortError" })),
+        );
+      })) as never);
+
+    await expect(
+      verifyS3MediaStorageAccess(config(), s3, { timeoutMs: 50 }),
+    ).rejects.toThrow(/no answer within 0\.05 s \(check S3_ENDPOINT\)$/);
+  });
+
+  it("skips the access check in local mode", async () => {
+    process.env.MESSAGE_MEDIA_STORAGE = "local";
+    const verify = vi.fn();
+
+    await expect(verifyMessageMediaStorageAccess(verify)).resolves.toBeNull();
+    expect(verify).not.toHaveBeenCalled();
+  });
+
+  it("checks the configured bucket in s3 mode", async () => {
+    process.env.MESSAGE_MEDIA_STORAGE = "s3";
+    process.env.S3_BUCKET = "allaboard-media-dev";
+    process.env.S3_ACCESS_KEY = "test-key";
+    process.env.S3_SECRET_KEY = "test-secret";
+    process.env.S3_ENDPOINT = "https://account.eu.r2.cloudflarestorage.com";
+    process.env.S3_REGION = "auto";
+    const verify = vi.fn().mockResolvedValue(undefined);
+
+    await expect(verifyMessageMediaStorageAccess(verify)).resolves.toBe(
+      "message media: s3 bucket allaboard-media-dev reachable at https://account.eu.r2.cloudflarestorage.com",
+    );
+    expect(verify).toHaveBeenCalledWith(
+      expect.objectContaining({
+        bucket: "allaboard-media-dev",
+        region: "auto",
+        endpoint: "https://account.eu.r2.cloudflarestorage.com",
+      }),
     );
   });
 });

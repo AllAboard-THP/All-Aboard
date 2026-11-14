@@ -34,3 +34,12 @@ Reference issues [#31](https://github.com/AllAboard-THP/All-Aboard/issues/31) / 
 
 - [x] `pnpm test:e2e` (Playwright) OK on critical path — CI job `e2e`, PR #52
 - [x] [Integration guide](../guides/web-api-integration.md) journal up to date
+
+## Chat media storage (Cloudflare R2)
+
+Setup and checks: [message-media-storage.md](message-media-storage.md#cloudflare-r2-deployed-environments). Buckets in the EU jurisdiction, one bucket and one scoped token per environment, keys in Vaultwarden.
+
+- [ ] dev: bucket `allaboard-media-dev` and token created; `MESSAGE_MEDIA_STORAGE=s3` + `S3_*` set on the dev API; deploy log shows `s3 bucket allaboard-media-dev reachable`; voice and camera messages play from another account and survive a redeploy
+- [ ] staging: same with `allaboard-media-staging` on the staging API
+
+**Before promoting to production (`main`) — blocking:** create `allaboard-media-prod` (EU) and its token, set the variables on the production API before the merge, then run the same checks on `allaboard.fr`. Without it, production chat media lives on the container disk and is lost on every redeploy.

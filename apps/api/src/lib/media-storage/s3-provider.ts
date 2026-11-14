@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 import {
   DeleteObjectCommand,
   GetObjectCommand,
@@ -176,4 +178,79 @@ export async function uploadObjectIfMissing(
     }),
   );
   return "uploaded";
+}
+
+const STARTUP_CHECK_TIMEOUT_MS = 10_000;
+
+/** S3 error code and HTTP status, without request details or credentials. */
+export function describeS3Error(error: unknown): string {
+  if (!error || typeof error !== "object") {
+    return String(error);
+  }
+  const { name, Code, code: networkCode, $metadata } = error as {
+    name?: string;
+    Code?: string;
+    code?: string;
+    $metadata?: { httpStatusCode?: number };
+  };
+  const status = $metadata?.httpStatusCode;
+  if (status) {
+    return `${Code ?? name ?? "UnknownError"} (HTTP ${status})`;
+  }
+  // No HTTP answer: report the network code (ECONNREFUSED, ENOTFOUND, ...).
+  return networkCode ?? Code ?? name ?? "UnknownError";
+}
+
+/**
+ * Writes, reads back and deletes a small probe object under
+ * `{prefix}/_startup-check/`. A wrong endpoint, bucket or key then fails at
+ * startup instead of at the first chat upload.
+ */
+export async function verifyS3MediaStorageAccess(
+  config: S3MediaConfig,
+  client: S3Client = createS3Client(config),
+  options: { timeoutMs?: number; probeId?: string } = {},
+): Promise<void> {
+  const key = toS3ObjectKey(
+    `_startup-check/${options.probeId ?? randomUUID()}.txt`,
+    config.keyPrefix,
+  );
+  const timeoutMs = options.timeoutMs ?? STARTUP_CHECK_TIMEOUT_MS;
+  const target = `bucket "${config.bucket}" at ${config.endpoint ?? "AWS S3"}`;
+
+  const step = async (label: string, run: (signal: AbortSignal) => Promise<unknown>) => {
+    const signal = AbortSignal.timeout(timeoutMs);
+    try {
+      await run(signal);
+    } catch (error) {
+      const reason = signal.aborted
+        ? `no answer within ${timeoutMs / 1000} s (check S3_ENDPOINT)`
+        : describeS3Error(error);
+      throw new Error(
+        `Message media storage check failed (${label}) on ${target}: ${reason}`,
+      );
+    }
+  };
+
+  await step("write", (abortSignal) =>
+    client.send(
+      new PutObjectCommand({
+        Bucket: config.bucket,
+        Key: key,
+        Body: "ok",
+        ContentType: "text/plain",
+      }),
+      { abortSignal },
+    ),
+  );
+  await step("read", (abortSignal) =>
+    client.send(new HeadObjectCommand({ Bucket: config.bucket, Key: key }), {
+      abortSignal,
+    }),
+  );
+  await step("delete", (abortSignal) =>
+    client.send(new DeleteObjectCommand({ Bucket: config.bucket, Key: key }), {
+      abortSignal,
+    }),
+  );
 }
