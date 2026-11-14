@@ -708,6 +708,14 @@ export type HelpRequestCreatedOutboxPayload = {
   tags?: string[];
 };
 
+/** Payload outbox `certification.attested` (ADR 0009). No consumer until the publisher ships. */
+export type CertificationAttestedOutboxPayload = {
+  id: string;
+  recipientId: string;
+  attesterId: string;
+  skillId: string;
+};
+
 export type HelpRequestSummaryRequestedOutboxPayload = {
   id: string;
 };
@@ -725,4 +733,75 @@ export type OutboxEvent =
   | {
       type: "help_request.summary_requested";
       payload: HelpRequestSummaryRequestedOutboxPayload;
+    }
+  | {
+      type: "certification.attested";
+      payload: CertificationAttestedOutboxPayload;
     };
+
+/** Skill in the +1 catalogue (`GET /skills`, ADR 0009). */
+export type Skill = {
+  id: string;
+  slug: string;
+  label: string;
+  active: boolean;
+};
+
+export type SkillsResponse = {
+  items: Skill[];
+};
+
+/** Person who gave a +1, as shown on the recipient's profile. */
+export type CertificationAttester = {
+  id: string;
+  displayName: string;
+  avatarUrl?: string;
+};
+
+/** One peer +1 on a profile (`GET /users/:id/certifications`). */
+export type Certification = {
+  id: string;
+  skillId: string;
+  attester: CertificationAttester;
+  comment?: string;
+  createdAt: string;
+};
+
+export type SkillCertificationGroup = {
+  skill: Skill;
+  count: number;
+  items: Certification[];
+};
+
+export type UserCertificationsResponse = {
+  items: SkillCertificationGroup[];
+};
+
+/** `GET /users/:id/certifications/eligibility` for the signed-in viewer. */
+export type CertificationEligibilityResponse = {
+  eligible: boolean;
+  /** Skills the viewer has already +1'd on this profile (not withdrawn). */
+  attestedSkillIds: string[];
+};
+
+export type CreateCertificationBody = {
+  skillId: string;
+  comment?: string;
+};
+
+export type CreateCertificationResponse = {
+  item: Certification;
+};
+
+export type AdminSkillsResponse = {
+  items: Skill[];
+};
+
+export type CreateSkillBody = {
+  slug: string;
+  label: string;
+};
+
+export type AdminSkillResponse = {
+  item: Skill;
+};

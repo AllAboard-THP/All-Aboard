@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { hashPassword } from "../auth/password.js";
 import type { AppDatabase } from "./client.js";
-import { subjects, users } from "./schema.js";
+import { skills, subjects, users } from "./schema.js";
 import {
   demoMentorSubjectLinks,
   demoSeedUsers,
@@ -121,6 +121,27 @@ export function defaultSeedUsers(): SeedUserSpec[] {
   ];
 }
 
+export type SeedSkillSpec = {
+  slug: string;
+  label: string;
+};
+
+/** Starter skill catalogue for peer +1s (ADR 0009). */
+export function defaultSeedSkills(): SeedSkillSpec[] {
+  return [
+    { slug: "ruby-on-rails", label: "Ruby on Rails" },
+    { slug: "ruby", label: "Ruby" },
+    { slug: "javascript", label: "JavaScript" },
+    { slug: "typescript", label: "TypeScript" },
+    { slug: "react", label: "React" },
+    { slug: "nodejs", label: "Node.js" },
+    { slug: "python", label: "Python" },
+    { slug: "sql", label: "SQL" },
+    { slug: "docker", label: "Docker" },
+    { slug: "git", label: "Git" },
+  ];
+}
+
 /** Personas démo supplémentaires (même mot de passe que bob/alice). */
 export function allDemoSeedUsers(password: string): SeedUserSpec[] {
   return demoSeedUsers().map((user) => ({
@@ -160,6 +181,18 @@ export async function seedSubjects(
       });
     }
   }
+}
+
+/** Insert missing skills only: labels are frozen once created (atom bytes). */
+export async function seedSkills(
+  db: AppDatabase,
+  specs: SeedSkillSpec[],
+): Promise<void> {
+  if (specs.length === 0) return;
+  await db
+    .insert(skills)
+    .values(specs.map((spec) => ({ slug: spec.slug, label: spec.label })))
+    .onConflictDoNothing({ target: skills.slug });
 }
 
 export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise<void> {
@@ -212,6 +245,10 @@ export async function runSeedIfConfigured(db: AppDatabase | null): Promise<void>
   const subjectSpecs = defaultSeedSubjects();
   await seedSubjects(db, subjectSpecs);
   console.log(`api: seeded ${subjectSpecs.length} subject(s)`);
+
+  const skillSpecs = defaultSeedSkills();
+  await seedSkills(db, skillSpecs);
+  console.log(`api: seeded ${skillSpecs.length} skill(s)`);
 
   const password = resolveSeedPassword();
   if (!password) {
