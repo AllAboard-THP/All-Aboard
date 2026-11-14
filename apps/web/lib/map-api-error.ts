@@ -23,6 +23,12 @@ export type ApiErrorMessageKey =
   | "cguRequired"
   | "challengeExpired"
   | "verificationFailed"
+  | "notEligible"
+  | "alreadyAttested"
+  | "commentRejected"
+  | "rateLimited"
+  | "selfCertification"
+  | "skillNotFound"
   | "unknown";
 
 export type ApiErrorBody = {
@@ -71,6 +77,12 @@ const CODE_TO_KEY: Record<string, ApiErrorMessageKey> = {
   cgu_required: "cguRequired",
   challenge_expired: "challengeExpired",
   verification_failed: "verificationFailed",
+  not_eligible: "notEligible",
+  already_attested: "alreadyAttested",
+  comment_rejected: "commentRejected",
+  rate_limited: "rateLimited",
+  self_certification: "selfCertification",
+  skill_not_found: "skillNotFound",
 };
 
 const STATUS_FALLBACK: Partial<Record<number, ApiErrorMessageKey>> = {
@@ -78,6 +90,7 @@ const STATUS_FALLBACK: Partial<Record<number, ApiErrorMessageKey>> = {
   403: "forbidden",
   404: "notFound",
   409: "conflict",
+  429: "rateLimited",
   500: "serverError",
   503: "serviceUnavailable",
 };

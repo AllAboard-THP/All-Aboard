@@ -32,7 +32,13 @@
     "cguRequired": "Vous devez accepter les conditions d'utilisation.",
     "challengeExpired": "La session passkey a expiré. Réessayez.",
     "verificationFailed": "La vérification passkey a échoué. Réessayez.",
-    "unknown": "Une erreur inattendue s'est produite."
+    "unknown": "Une erreur inattendue s'est produite.",
+    "notEligible": "Vous ne pouvez donner un +1 qu'à un membre qui vous a aidé.",
+    "alreadyAttested": "Vous avez déjà donné un +1 pour cette compétence.",
+    "commentRejected": "Ce commentaire a été refusé par la modération. Reformulez-le.",
+    "rateLimited": "Trop de +1 en 24 heures. Réessayez plus tard.",
+    "selfCertification": "Vous ne pouvez pas vous donner un +1.",
+    "skillNotFound": "Cette compétence n'est plus disponible."
   },
   "auth": {
     "loginEyebrow": "Connexion",
@@ -562,7 +568,28 @@
       "paginationAria": "Pagination du profil public",
       "paginationSummary": "Page {page} sur {totalPages} — {total, plural, one {# élément} other {# éléments}}",
       "paginationPrev": "Page précédente",
-      "paginationNext": "Page suivante"
+      "paginationNext": "Page suivante",
+      "certifications": {
+        "title": "Compétences validées",
+        "description": "Des +1 donnés par les membres que cette personne a aidés.",
+        "empty": "Aucune compétence validée pour l'instant.",
+        "emptyOwn": "Vous n'avez pas encore reçu de +1. Ils arrivent quand les membres que vous aidez valident une compétence.",
+        "count": "{count, plural, one {# +1} other {# +1}}",
+        "give": "Donner un +1 à {name}",
+        "skillLabel": "Compétence",
+        "skillPlaceholder": "Choisir une compétence",
+        "commentLabel": "Commentaire (facultatif)",
+        "commentPlaceholder": "Ce qui vous a aidé, en une phrase",
+        "commentHint": "{max} caractères maximum. Le commentaire est public.",
+        "submit": "Valider (+1)",
+        "submitPending": "Envoi…",
+        "cancel": "Annuler",
+        "allGiven": "Vous avez déjà validé toutes les compétences disponibles pour ce membre.",
+        "notEligible": "Vous pourrez donner un +1 à {name} après avoir reçu son aide sur une de vos demandes.",
+        "withdraw": "Retirer",
+        "withdrawConfirm": "Retirer ce +1 ?",
+        "withdrawYes": "Oui, retirer"
+      }
     }
   },
   "social": {
