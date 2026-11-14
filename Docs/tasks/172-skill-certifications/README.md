@@ -56,6 +56,28 @@ A person who was helped gives a skill +1, with an optional comment, on the profi
 
 **Skill labels are frozen once created**, because the label gives the Intuition atom bytes. To rename a skill, create a new one and deactivate the old one.
 
+## Web (PR 2)
+
+| Piece | Location |
+| --- | --- |
+| BFF relays | [`apps/web/app/api/skills/route.ts`](../../../apps/web/app/api/skills/route.ts), [`apps/web/app/api/users/[id]/certifications/`](../../../apps/web/app/api/users/%5Bid%5D/certifications/route.ts) (`GET`, `POST`, `eligibility`, `[certificationId]` `DELETE`) |
+| Server fetchers | `fetchSkills`, `fetchUserCertifications`, `fetchCertificationEligibility` in [`apps/web/lib/api-server.ts`](../../../apps/web/lib/api-server.ts) |
+| Browser client | [`apps/web/lib/certification-client.ts`](../../../apps/web/lib/certification-client.ts) |
+| "Validated skills" card | [`user-certifications-card.tsx`](../../../apps/web/components/features/user-certifications-card.tsx), rendered by `user-public-content.tsx` under the stats |
+| +1 form | [`skill-certification-form.tsx`](../../../apps/web/components/features/skill-certification-form.tsx) |
+| Withdraw (inline confirmation) | [`certification-withdraw-button.tsx`](../../../apps/web/components/features/certification-withdraw-button.tsx) |
+| Error codes | `not_eligible`, `already_attested`, `comment_rejected`, `rate_limited`, `self_certification`, `skill_not_found` in [`map-api-error.ts`](../../../apps/web/lib/map-api-error.ts) and `errors.*` |
+| Tests | [`apps/web/tests/skill-certification-form.test.tsx`](../../../apps/web/tests/skill-certification-form.test.tsx) |
+
+**Behaviour:**
+
+- The profile page loads the +1s for everyone. When the viewer is signed in and looks at someone else, it also loads their eligibility and the skill catalogue.
+- An eligible viewer sees the form with the skills they have not validated yet. A viewer who was not helped sees a short rule instead.
+- The author of a +1 sees a "Withdraw" button next to it, with an inline confirmation.
+- If the +1s cannot be loaded (for example a non-uuid id), the card is hidden and the rest of the profile still renders.
+
+The form is inline with a native `<select>`, not a modal: `apps/web` uses no `Dialog` yet, and a native select stays testable in jsdom.
+
 ## Open for slice 2
 
 - Canonical URL of the person atom: ADR 0009 says `/u/<uuid>`, but the web route is `/[locale]/users/[id]`. Decide before publishing.

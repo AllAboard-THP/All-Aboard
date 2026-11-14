@@ -6,6 +6,7 @@ import type {
   AdminUserSummary,
   AdminUsersResponse,
   AuthMeResponse,
+  CertificationEligibilityResponse,
   ChatMessage,
   ChatMessageAttachment,
   ConversationInboxItem,
@@ -29,11 +30,13 @@ import type {
   ResourceDetailResponse,
   ResourcesListResponse,
   Response,
+  SkillsResponse,
   Subject,
   SubjectRequestStatus,
   SubjectSummary,
   SubjectsResponse,
   SubjectDetailResponse,
+  UserCertificationsResponse,
   UserRole,
 } from "@allaboard/types";
 
@@ -1435,5 +1438,71 @@ export async function fetchAdminSubjectRequests(
     accessToken,
     parseAdminSubjectRequestsResponse,
     "Admin subject requests",
+  );
+}
+
+export type FetchJsonResult<T> =
+  | { ok: true; data: T }
+  | { ok: false; error: string; status?: number };
+
+async function fetchTypedJson<T>(
+  url: string,
+  init: RequestInit,
+  label: string,
+): Promise<FetchJsonResult<T>> {
+  try {
+    const { ok, status, json } = await fetchJson(url, init);
+    if (!ok) {
+      const err =
+        typeof json === "object" &&
+        json !== null &&
+        "error" in json &&
+        typeof (json as { error: unknown }).error === "string"
+          ? (json as { error: string }).error
+          : `${label} HTTP ${status}`;
+      return { ok: false, error: err, status };
+    }
+    if (typeof json !== "object" || json === null) {
+      return { ok: false, error: `Invalid ${label} payload`, status };
+    }
+    return { ok: true, data: json as T };
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Network error";
+    return { ok: false, error: message };
+  }
+}
+
+/** Active skill catalogue (`GET /skills`). */
+export function fetchSkills(): Promise<FetchJsonResult<SkillsResponse>> {
+  return fetchTypedJson<SkillsResponse>(
+    `${getApiBaseUrl()}/skills`,
+    { cache: "no-store" },
+    "Skills",
+  );
+}
+
+/** Active +1s of a user, grouped by skill (`GET /users/:id/certifications`). */
+export function fetchUserCertifications(
+  userId: string,
+): Promise<FetchJsonResult<UserCertificationsResponse>> {
+  return fetchTypedJson<UserCertificationsResponse>(
+    `${getApiBaseUrl()}/users/${encodeURIComponent(userId)}/certifications`,
+    { cache: "no-store" },
+    "Certifications",
+  );
+}
+
+/** Whether the signed-in viewer may give this user a +1. */
+export function fetchCertificationEligibility(
+  userId: string,
+  accessToken: string,
+): Promise<FetchJsonResult<CertificationEligibilityResponse>> {
+  return fetchTypedJson<CertificationEligibilityResponse>(
+    `${getApiBaseUrl()}/users/${encodeURIComponent(userId)}/certifications/eligibility`,
+    {
+      headers: { authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    },
+    "Certification eligibility",
   );
 }
