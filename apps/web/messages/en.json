@@ -32,7 +32,13 @@
     "cguRequired": "You must accept the terms of use.",
     "challengeExpired": "The passkey session expired. Please try again.",
     "verificationFailed": "Passkey verification failed. Please try again.",
-    "unknown": "An unexpected error occurred."
+    "unknown": "An unexpected error occurred.",
+    "notEligible": "You can only give a +1 to a member who helped you.",
+    "alreadyAttested": "You already gave a +1 for this skill.",
+    "commentRejected": "This comment was rejected by moderation. Please rephrase it.",
+    "rateLimited": "Too many +1s in 24 hours. Please try again later.",
+    "selfCertification": "You cannot give yourself a +1.",
+    "skillNotFound": "This skill is no longer available."
   },
   "auth": {
     "loginEyebrow": "Sign in",
@@ -562,7 +568,28 @@
       "paginationAria": "Public profile pagination",
       "paginationSummary": "Page {page} of {totalPages} — {total, plural, one {# item} other {# items}}",
       "paginationPrev": "Previous page",
-      "paginationNext": "Next page"
+      "paginationNext": "Next page",
+      "certifications": {
+        "title": "Validated skills",
+        "description": "+1s given by members this person helped.",
+        "empty": "No validated skills yet.",
+        "emptyOwn": "You have not received any +1 yet. They come when members you help validate a skill.",
+        "count": "{count, plural, one {# +1} other {# +1s}}",
+        "give": "Give {name} a +1",
+        "skillLabel": "Skill",
+        "skillPlaceholder": "Choose a skill",
+        "commentLabel": "Comment (optional)",
+        "commentPlaceholder": "What helped you, in one sentence",
+        "commentHint": "{max} characters max. The comment is public.",
+        "submit": "Validate (+1)",
+        "submitPending": "Sending…",
+        "cancel": "Cancel",
+        "allGiven": "You have already validated every available skill for this member.",
+        "notEligible": "You can give {name} a +1 once they have helped you on one of your requests.",
+        "withdraw": "Withdraw",
+        "withdrawConfirm": "Withdraw this +1?",
+        "withdrawYes": "Yes, withdraw"
+      }
     }
   },
   "social": {
