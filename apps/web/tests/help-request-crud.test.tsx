@@ -311,3 +311,48 @@ describe("HelpRequestDetailClient response CRUD", () => {
     });
   });
 });
+
+describe("HelpRequestDetailClient response author", () => {
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllGlobals();
+  });
+
+  it("links a registered author to their profile, by name", async () => {
+    mockAuthMe(null);
+    renderWithQuery(
+      <HelpRequestDetailClient
+        requestId={requestId}
+        initialDetail={{
+          ...initialDetail,
+          responses: [
+            {
+              id: "resp-3",
+              helpRequestId: requestId,
+              body: "Reply from a registered user",
+              authorId: "3e08ba07-bc82-4d47-a3f8-bca99c378c80",
+              authorProfileId: "3e08ba07-bc82-4d47-a3f8-bca99c378c80",
+              authorDisplayName: "Ada Lovelace",
+              createdAt: "2026-06-01T13:00:00.000Z",
+            },
+            {
+              id: "resp-4",
+              helpRequestId: requestId,
+              body: "Reply from a legacy author",
+              authorId: "legacy-author",
+              createdAt: "2026-06-01T14:00:00.000Z",
+            },
+          ],
+        }}
+      />,
+    );
+
+    const link = await screen.findByRole("link", { name: "Ada Lovelace" });
+    expect(link.getAttribute("href")).toBe(
+      "/users/3e08ba07-bc82-4d47-a3f8-bca99c378c80",
+    );
+    expect(screen.queryByText("3e08ba07-bc82-4d47-a3f8-bca99c378c80")).toBeNull();
+    expect(screen.getByText("legacy-author").closest("a")).toBeNull();
+  });
+});
+

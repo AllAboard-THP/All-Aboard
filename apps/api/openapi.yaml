@@ -2606,6 +2606,9 @@ components:
         authorProfileId:
           type: string
           format: uuid
+        authorDisplayName:
+          type: string
+          description: Display name of the registered author (full name, or derived from the email). Absent when author_id matches no user.
         createdAt:
           type: string
           format: date-time
@@ -2717,6 +2720,9 @@ components:
         authorProfileId:
           type: string
           format: uuid
+        authorDisplayName:
+          type: string
+          description: Display name of the registered author (full name, or derived from the email). Absent when author_id matches no user.
         createdAt:
           type: string
           format: date-time

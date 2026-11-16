@@ -9,7 +9,7 @@ import {
 } from "../lib/feed-query.js";
 import { rowToHelpRequest } from "../lib/mappers.js";
 import { parseFeedQuery } from "../lib/schemas.js";
-import { loadProfileIdsByEmails } from "../services/user-profile.js";
+import { authorProfileFor, loadAuthorProfiles } from "../services/user-profile.js";
 
 export function registerFeedRoutes(
   app: FastifyInstance,
@@ -38,7 +38,7 @@ export function registerFeedRoutes(
       countFeedItems(db, params, subjectId ?? undefined),
     ]);
 
-    const profileIdsByEmail = await loadProfileIdsByEmails(
+    const authorProfiles = await loadAuthorProfiles(
       db,
       rows.map(({ helpRequest }) => helpRequest.authorId),
     );
@@ -48,7 +48,7 @@ export function registerFeedRoutes(
         rowToHelpRequest(
           helpRequest,
           subject,
-          profileIdsByEmail.get(helpRequest.authorId.toLowerCase()),
+          authorProfileFor(authorProfiles, helpRequest.authorId),
         ),
       ),
       pagination: {
@@ -60,7 +60,7 @@ export function registerFeedRoutes(
 
     if (params.includeWidgets) {
       const unansweredRows = await fetchUnansweredRows(db);
-      const unansweredProfileIds = await loadProfileIdsByEmails(
+      const unansweredProfiles = await loadAuthorProfiles(
         db,
         unansweredRows.map(({ helpRequest }) => helpRequest.authorId),
       );
@@ -69,7 +69,7 @@ export function registerFeedRoutes(
           rowToHelpRequest(
             helpRequest,
             subject,
-            unansweredProfileIds.get(helpRequest.authorId.toLowerCase()),
+            authorProfileFor(unansweredProfiles, helpRequest.authorId),
           ),
         ),
       };

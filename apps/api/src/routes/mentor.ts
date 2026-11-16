@@ -32,7 +32,11 @@ import {
   mapResourceBundles,
   mapResourceRow,
 } from "../services/resources.js";
-import { loadUserFromJwtSub, loadProfileIdsByEmails } from "../services/user-profile.js";
+import {
+  authorProfileFor,
+  loadAuthorProfiles,
+  loadUserFromJwtSub,
+} from "../services/user-profile.js";
 
 export function registerMentorRoutes(
   app: FastifyInstance,
@@ -90,7 +94,7 @@ export function registerMentorRoutes(
         }
       }
 
-      const profileIdsByEmail = await loadProfileIdsByEmails(
+      const authorProfiles = await loadAuthorProfiles(
         db,
         rows.map(({ helpRequest }) => helpRequest.authorId),
       );
@@ -99,7 +103,7 @@ export function registerMentorRoutes(
         const base = rowToHelpRequest(
           helpRequest,
           subject,
-          profileIdsByEmail.get(helpRequest.authorId.toLowerCase()),
+          authorProfileFor(authorProfiles, helpRequest.authorId),
         );
         const requestResponses = responsesByRequest.get(helpRequest.id) ?? [];
         const responseCount = requestResponses.length;
