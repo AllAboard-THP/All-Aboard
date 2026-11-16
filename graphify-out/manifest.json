@@ -85,8 +85,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/e2e/help-request.spec.ts": {
-    "mtime": 1793311645.4971619,
-    "ast_hash": "d9f5a6a157852457fac1865b2e9581ef",
+    "mtime": 1794827712.7701004,
+    "ast_hash": "d2f331ba75cd144cb31772ce4aaa2940",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/e2e/mentor-notifications.spec.ts": {
@@ -1315,8 +1315,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.test.ts": {
-    "mtime": 1794827343.6502464,
-    "ast_hash": "f661fdd03d9bc9b2d7418b262cf986a9",
+    "mtime": 1794828038.6347742,
+    "ast_hash": "df5a2edfa12e037da7d5e5ba940218fa",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/index.ts": {
@@ -1685,8 +1685,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/openapi.yaml": {
-    "mtime": 1794679297.3641195,
-    "ast_hash": "3052b59b89fa1fefbbfedc87da1c8d5d",
+    "mtime": 1794827447.8363326,
+    "ast_hash": "1eee1999f23bb6034654e2558c6076e8",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/ui/package.json": {
@@ -2935,8 +2935,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/dokploy-instance.md": {
-    "mtime": 1794827259.2775846,
-    "ast_hash": "7be989e7205150b897492d60514e1dd5",
+    "mtime": 1794828038.6347742,
+    "ast_hash": "d3562bf3e4fdeef1df6ac7d00b537b04",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/runbooks/dev-phase2.md": {
@@ -3425,8 +3425,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/certifications.md": {
-    "mtime": 1794827259.2775846,
-    "ast_hash": "321e28ec0e504d270586adb8224df9c9",
+    "mtime": 1794828038.6347742,
+    "ast_hash": "a6ebc64f8315c8baa5b6b96be3e01452",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0014_rename_intuition_published_at.sql": {
@@ -6960,8 +6960,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/161-certifications-spike/README.md": {
-    "mtime": 1794827259.2775846,
-    "ast_hash": "5e37416ac37eb0ce6c271beba4515fc4",
+    "mtime": 1794828038.6347742,
+    "ast_hash": "2728f8cc707148d4228c06cc64b0ed36",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0016_skill_certifications.sql": {
