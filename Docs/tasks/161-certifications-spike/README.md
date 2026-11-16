@@ -33,7 +33,7 @@ Check the assumptions of [ADR 0009](../../adr/0009-certifications-intuition.md) 
 | Does the contract accept a triple as subject? | Yes | Real transaction (below). Control in simulation: a subject that does not exist reverts with `MultiVault_TermDoesNotExist` |
 | Do the predicates already exist? | **No, on neither network** | `isTermCreated` is false for `expertIn` and `attestedBy` on testnet and mainnet |
 | Does GraphQL expose nested triples? | Yes | `subject_term.type = "Triple"` returns real rows from other apps |
-| Is GraphQL complete and fresh? | **No, on what we saw** | Our real +1 was not indexed after 35 minutes, and 5 extra blocks did not help. The newest row is still block `9375122` (2026-11-01 23:44 UTC), and the chain logs show no other MultiVault creation since. A triple from block `9373350` is also missing. Cause unknown: stalled indexer, filtering, or a longer delay |
+| Is GraphQL complete and fresh? | **No** (re-checked 2026-11-16) | Our real +1 was not indexed after 35 minutes, and 5 extra blocks did not help. The newest row is still block `9375122` (2026-11-01 23:44 UTC), and the chain logs show no other MultiVault creation since. A triple from block `9373350` is also missing. Cause unknown: stalled indexer, filtering, or a longer delay. **Re-check 2026-11-16:** the indexer is running again (newest triple at block `9378841`, 2026-11-16) and has rows in the blocks around ours, but none in blocks `9375153` to `9375155`, and neither the claim nor the +1 is indexed. Contract reads still return `isTriple = true` for both. So the indexer can skip our writes, and GraphQL is not a source of truth for publication |
 | Skill atom shape | `buildDefinedTerm` from `@0xintuition/primitives/atom` | « Ruby on Rails » gives `{"@context":"https://schema.org/","@type":"DefinedTerm","name":"Ruby on Rails"}`, 79 bytes (limit `atomDataMaxLength` = 1000) |
 | Can a +1 be redeemed? | **Only with an extra deposit** | With `assets` = triple cost, the creator holds **0 shares**. With cost + `minDeposit` (0.01): 0.009875 shares, and `redeem` returns 0.00975 |
 
@@ -74,7 +74,7 @@ Gas is negligible next to the value: about 0.00027 tTRUST for the very first +1,
 
 ## Remaining
 
-- **GraphQL read:** re-run the query for the +1 id later, and ask Intuition ([Discord](https://discord.gg/RgBenkX4mx)) whether the testnet indexer is running. Until then, reconcile with contract reads (`isTriple`) rather than GraphQL.
+- **GraphQL read:** re-checked on 2026-11-16. The indexer runs again but skipped the spike's blocks (see Results). Ask Intuition ([Discord](https://discord.gg/RgBenkX4mx)) why blocks `9375153` to `9375155` are missing. Meanwhile, slice 2 reconciles with contract reads (`isTriple`) only, as ADR 0009 section 6 already says.
 - **`@0xintuition/protocol` `2.0.3`:** not tested. The `3.0.0-alpha.0` write helpers work against the testnet contract. Mainnet may run an older implementation, so re-check before any mainnet decision.
 - **Counter vault:** test a deposit in the +1's counter vault before other apps consume the +1s or before mainnet (point 2).
 

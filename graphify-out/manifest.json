@@ -1320,8 +1320,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/index.ts": {
-    "mtime": 1781730692.1080253,
-    "ast_hash": "d8d9216c8ee39b62e7d4f97309d37939",
+    "mtime": 1794826166.136923,
+    "ast_hash": "5ce7d3bc469b5689f3ea152009a268d6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/publisher.test.ts": {
@@ -2925,8 +2925,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/staging-promotion-checklist.md": {
-    "mtime": 1782290342.4372206,
-    "ast_hash": "e661626be1bb6b32cd414340de461994",
+    "mtime": 1794826166.136923,
+    "ast_hash": "38549f6570b312bf6519b6f06dffccf3",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/environment-variables.md": {
@@ -2935,8 +2935,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/dokploy-instance.md": {
-    "mtime": 1793311442.2771945,
-    "ast_hash": "7be989e7205150b897492d60514e1dd5",
+    "mtime": 1794826185.6536732,
+    "ast_hash": "d3562bf3e4fdeef1df6ac7d00b537b04",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/runbooks/dev-phase2.md": {
@@ -3220,8 +3220,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/media-storage/index.ts": {
-    "mtime": 1793311442.2851944,
-    "ast_hash": "24c75da96c66396a6714810975a128c3",
+    "mtime": 1794826166.136923,
+    "ast_hash": "fc455ad509e25d649da47c0b46dc1ee4",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/media-storage/paths.ts": {
@@ -3385,8 +3385,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/media-storage/s3-provider.ts": {
-    "mtime": 1793311442.2891946,
-    "ast_hash": "1c092ebb4b4447bd3a8c64f8517911d1",
+    "mtime": 1794826166.136923,
+    "ast_hash": "0051bc9fae8d3b7047aad98987629a2e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/media-storage/config.ts": {
@@ -3395,8 +3395,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/media-storage/s3-provider.test.ts": {
-    "mtime": 1793311442.2891946,
-    "ast_hash": "79c23ee78016c8aa6bfc444246e2b81d",
+    "mtime": 1794826166.136923,
+    "ast_hash": "a81e4dcb90bc324e82ab154e1b02974c",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/lib/media-storage/config.test.ts": {
@@ -3420,13 +3420,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/message-media-storage.md": {
-    "mtime": 1794580304.382168,
-    "ast_hash": "65558e4b99999c864f1040f4ef3f4f2d",
+    "mtime": 1794826166.1328235,
+    "ast_hash": "e136c62d1808f19ec1cd0e9a81d5b58b",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/certifications.md": {
-    "mtime": 1794580304.4223442,
-    "ast_hash": "321e28ec0e504d270586adb8224df9c9",
+    "mtime": 1794826185.6493416,
+    "ast_hash": "a6ebc64f8315c8baa5b6b96be3e01452",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0014_rename_intuition_published_at.sql": {
@@ -6960,8 +6960,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/161-certifications-spike/README.md": {
-    "mtime": 1794580304.4303794,
-    "ast_hash": "5e37416ac37eb0ce6c271beba4515fc4",
+    "mtime": 1794826185.6536732,
+    "ast_hash": "2728f8cc707148d4228c06cc64b0ed36",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0016_skill_certifications.sql": {
