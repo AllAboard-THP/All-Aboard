@@ -1,4 +1,4 @@
-import { and, count, eq, inArray, isNull } from "drizzle-orm";
+import { and, count, eq, inArray, isNull, or } from "drizzle-orm";
 import type { SubjectSummary } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import { authorIdKeysFromRow } from "../lib/auth-helpers.js";
@@ -10,7 +10,7 @@ import {
   subjects,
   users,
 } from "../db/schema.js";
-import { rowToSubjectSummary } from "../lib/user-mappers.js";
+import { displayNameFromUser, rowToSubjectSummary } from "../lib/user-mappers.js";
 
 const LEGACY_USER_EMAIL: Record<string, string> = {
   bob: "bob@dev.local",
@@ -58,21 +58,60 @@ export async function loadCompetenceSubjects(
   return rows.map(({ subject }) => rowToSubjectSummary(subject));
 }
 
-export async function loadProfileIdsByEmails(
+/** Public identity of a help request or response author. */
+export type AuthorProfile = { id: string; displayName: string };
+
+/**
+ * Resolves `author_id` values to registered users. `author_id` is text and may
+ * hold the user uuid, the email, or a legacy short name (`bob`), so the map is
+ * keyed by every lower-cased form of each user (see `authorIdKeysFromRow`).
+ */
+export async function loadAuthorProfiles(
   db: AppDatabase,
-  emails: string[],
-): Promise<Map<string, string>> {
-  const unique = [...new Set(emails.map((email) => email.toLowerCase()))];
-  if (unique.length === 0) {
+  authorIds: string[],
+): Promise<Map<string, AuthorProfile>> {
+  const keys = [...new Set(authorIds.map((id) => id.trim().toLowerCase()))].filter(
+    Boolean,
+  );
+  if (keys.length === 0) {
+    return new Map();
+  }
+
+  const ids = keys.filter((key) => isUuid(key));
+  const emails = keys
+    .filter((key) => !isUuid(key))
+    .map((key) => (key.includes("@") ? key : (LEGACY_USER_EMAIL[key] ?? null)))
+    .filter((email): email is string => Boolean(email));
+
+  const conditions = [
+    ...(ids.length > 0 ? [inArray(users.id, ids)] : []),
+    ...(emails.length > 0 ? [inArray(users.email, emails)] : []),
+  ];
+  if (conditions.length === 0) {
     return new Map();
   }
 
   const rows = await db
-    .select({ id: users.id, email: users.email })
+    .select({ id: users.id, email: users.email, fullName: users.fullName })
     .from(users)
-    .where(inArray(users.email, unique));
+    .where(conditions.length === 1 ? conditions[0] : or(...conditions));
 
-  return new Map(rows.map((row) => [row.email.toLowerCase(), row.id]));
+  const byKey = new Map<string, AuthorProfile>();
+  for (const row of rows) {
+    const profile = { id: row.id, displayName: displayNameFromUser(row) };
+    for (const key of authorIdKeysFromRow(row)) {
+      byKey.set(key.toLowerCase(), profile);
+    }
+  }
+  return byKey;
+}
+
+/** Looks up one `author_id` in a map from {@link loadAuthorProfiles}. */
+export function authorProfileFor(
+  profiles: Map<string, AuthorProfile>,
+  authorId: string,
+): AuthorProfile | undefined {
+  return profiles.get(authorId.trim().toLowerCase());
 }
 
 export async function syncMentorSubjects(

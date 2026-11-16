@@ -748,12 +748,24 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       });
       expect(detailRes.statusCode).toBe(200);
       const detail = JSON.parse(detailRes.payload) as {
-        responses: Array<{ id: string; body: string; authorId: string }>;
+        item: { authorProfileId?: string; authorDisplayName?: string };
+        responses: Array<{
+          id: string;
+          body: string;
+          authorId: string;
+          authorProfileId?: string;
+          authorDisplayName?: string;
+        }>;
       };
       expect(detail.responses).toHaveLength(1);
       expect(detail.responses[0]?.id).toBe(posted.item.id);
       expect(detail.responses[0]?.body).toBe(responseBody);
       expect(detail.responses[0]?.authorId).toBe(aliceUserId);
+      // author_id holds the uuid: the profile link and name must still resolve.
+      expect(detail.responses[0]?.authorProfileId).toBe(aliceUserId);
+      expect(detail.responses[0]?.authorDisplayName).toBeTruthy();
+      expect(detail.item.authorProfileId).toBeTruthy();
+      expect(detail.item.authorDisplayName).toBe("Bob Dev");
     });
 
     it("GET /help-requests/:id?filterByCertifications=true returns 401 without token", async () => {

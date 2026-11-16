@@ -25,6 +25,7 @@ import {
 } from "@allaboard/ui/components/card";
 import { Label } from "@allaboard/ui/components/label";
 import { Textarea } from "@allaboard/ui/components/textarea";
+import { AuthorName } from "@/components/features/author-profile-link";
 import { Link } from "@/i18n/navigation";
 import {
   deleteResponse,
@@ -140,8 +141,14 @@ function ResponseItem({
       <Card>
         <CardContent className="pt-6">
           <p className="m-0 text-sm text-foreground">{response.body}</p>
-          <p className="mt-2 mb-0 text-xs text-muted-foreground">
-            {response.authorId}
+          <p
+            className="mt-2 mb-0 text-xs text-muted-foreground"
+            data-testid="response-author"
+          >
+            <AuthorName
+              item={response}
+              className="font-medium text-foreground hover:text-primary hover:underline"
+            />
           </p>
         </CardContent>
       </Card>
@@ -190,8 +197,14 @@ function ResponseItem({
         ) : (
           <>
             <p className="m-0 text-sm text-foreground">{response.body}</p>
-            <p className="m-0 text-xs text-muted-foreground">
-              {response.authorId}
+            <p
+              className="m-0 text-xs text-muted-foreground"
+              data-testid="response-author"
+            >
+              <AuthorName
+                item={response}
+                className="font-medium text-foreground hover:text-primary hover:underline"
+              />
             </p>
             <div className="flex flex-wrap gap-2">
               <Button

@@ -24,6 +24,8 @@ export type HelpRequest = {
   authorId: string;
   /** Public profile UUID (`users.id`) when the author is a registered user. */
   authorProfileId?: string;
+  /** Display name of the registered author (full name, or derived from the email). */
+  authorDisplayName?: string;
   createdAt: string;
   /** Tags mentor / domaine (MOC). Absent ou vide si non utilisé. */
   tags?: string[];
@@ -80,6 +82,8 @@ export type Response = {
   authorId: string;
   /** Public profile UUID (`users.id`) when the author is a registered user. */
   authorProfileId?: string;
+  /** Display name of the registered author (full name, or derived from the email). */
+  authorDisplayName?: string;
   createdAt?: string;
   codeSnippet?: string;
   codeLanguage?: string;
