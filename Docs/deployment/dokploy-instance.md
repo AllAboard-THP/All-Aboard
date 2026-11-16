@@ -4,7 +4,7 @@ This document describes the **effective** All-Aboard configuration on Dokploy, a
 
 **Product timeline:** [canonical documentation README](../README.md). **Migration:** [Pretorya migration](migration-pretorya/README.md). Smoke journal: [guides/web-api-integration.md](../guides/web-api-integration.md). Runbooks: [dev Phase 2](runbooks/dev-phase2.md), [staging Phase 2](runbooks/staging-phase2.md).
 
-**Last updated:** 2026-10-07. Public hostnames moved to org **Pretorya** (Dokploy Cloud, `https://app.dokploy.com`). Cursor MCP `user-dokploy-mcp` uses that API (`DOKPLOY_URL=https://app.dokploy.com/api`). Organization id: `Z0AxAmNeoDFUc6WbU3ueP`. Deploy server: `allaboard-pretorya` (`188.245.0.208`).
+**Last updated:** 2026-11-16 (GitHub provider link, auto-deploy). Before: 2026-10-07. Public hostnames moved to org **Pretorya** (Dokploy Cloud, `https://app.dokploy.com`). Cursor MCP `user-dokploy-mcp` uses that API (`DOKPLOY_URL=https://app.dokploy.com/api`). Organization id: `Z0AxAmNeoDFUc6WbU3ueP`. Deploy server: `allaboard-pretorya` (`188.245.0.208`).
 
 **Secrets:** database passwords, API keys, tunnel tokens, and the Dokploy API key stay in Dokploy or `.allaboard-migration/` (gitignored). Never commit them. Postgres passwords, `DATABASE_URL`, and `JWT_SECRET` were rotated on **2026-10-07** (dev, staging, production, Rails DB). `RAILS_MASTER_KEY` was not. Copy `.allaboard-migration/phase6/rotated-secrets.env` into a password manager.
 
@@ -37,6 +37,7 @@ Postgres on Pretorya was created **empty** (migrations + seed). Mestryx dumps we
 | `dockerContextPath` | `.` |
 | Git submodules | disabled (`enableSubmodules: false`) |
 | Trigger | `push`, `autoDeploy: true` on Web, API, and Storybook |
+| Git provider | GitHub App `Dokploy-2026-10-06-jvxt9b` (`githubId` `j3Oenpv8JPMTut2Em4ADc`), linked on all 7 MVP apps |
 
 | Application | Dockerfile | Port |
 |-------------|------------|------|
@@ -44,6 +45,18 @@ Postgres on Pretorya was created **empty** (migrations + seed). Mestryx dumps we
 | API | `infra/docker/Dockerfile.api` | 4000 |
 | Storybook (dev only) | `infra/docker/Dockerfile.storybook` | 8080 |
 | Rails | repo root `Dockerfile` | 3000 |
+
+---
+
+### Auto-deploy needs the GitHub provider link
+
+A push deploys an app only if the app is linked to a GitHub provider (`githubId` set). Dokploy matches the GitHub App's push event to apps through that link. With `githubId` null, the app still shows `sourceType: github`, `autoDeploy: true` and `triggerType: push`, and manual deploys still work because the repo is public, but **no push ever deploys it**.
+
+This happened after the Pretorya migration: the 7 MVP apps had `githubId` null, so nothing deployed from 2026-10-07 to 2026-11-14 although 21 PRs were merged into `Dev`. Two Dokploy GitHub Apps are installed on the org (`dokploy-2026-10-05-we3cw1` and `dokploy-2026-10-06-jvxt9b`), and only the 2026-10-06 one exists as a provider in Dokploy.
+
+**Fix (2026-11-14):** `application.saveGithubProvider` on each app with `githubId` `j3Oenpv8JPMTut2Em4ADc` and its existing owner, repository, branch, build path, watch paths and trigger. Confirmed when the merge of [#176](https://github.com/AllAboard-THP/All-Aboard/pull/176) into `Dev` deployed dev API, Web and Storybook within seconds, with no manual step.
+
+**Check:** `application.one` must return a non-null `githubId` for every app. In the UI: the app's General tab, Provider section, shows the GitHub account.
 
 ---
 
@@ -129,7 +142,7 @@ Rails env keys: `RAILS_MASTER_KEY`, `DATABASE_URL` (internal Postgres).
 
 ---
 
-## Service status (MCP, 2026-10-07)
+## Service status (MCP, 2026-10-07; auto-deploy fixed 2026-11-14)
 
 | Environment | Web | API | Postgres | Notes |
 |-------------|-----|-----|----------|-------|
