@@ -39,9 +39,10 @@ test.describe("parcours création demande", () => {
     await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
     await expect(page.getByTestId("responses-empty")).toBeVisible();
     await expect(page.getByText("Auteur :")).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: /^[0-9a-f-]{36}$/i }),
-    ).toBeVisible();
+    // The author shows by name, linked to their public profile (not the raw uuid).
+    const authorLink = page.getByRole("link", { name: "Bob Dev" });
+    await expect(authorLink).toBeVisible();
+    await expect(authorLink).toHaveAttribute("href", /\/users\/[0-9a-f-]{36}$/i);
   });
 
   test("retour feed après création et recherche filtrée", async ({ page }) => {
