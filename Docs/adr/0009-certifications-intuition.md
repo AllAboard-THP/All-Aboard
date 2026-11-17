@@ -50,7 +50,7 @@ Ids are computed locally with `@0xintuition/ids` before any publish and stored i
 
 | Product object | Atom / triple | Bytes or predicate |
 | --- | --- | --- |
-| Person receiving the +1 | Atom | Public profile URL on the production web domain, `https://<WEB_APP_URL>/u/<user uuid>`. No name, email, or avatar on-chain. Chosen over the auth-user atom from `@0xintuition/ids` (a hash of the user id) because other apps can resolve a URL, which keeps the CV reusable (decided 2026-11-13). |
+| Person receiving the +1 | Atom | Stable public profile URL `<web origin>/u/<user uuid>`, for example `https://allaboard.fr/u/3e08ba07-…`. No name, email, or avatar on-chain. **Decided 2026-11-17:** `/u/[id]` is a web alias that only redirects (308) to the current profile route (`/users/[id]`), so the atom keeps resolving if routes change. The origin is the web origin of the environment that publishes (`INTUITION_PROFILE_ORIGIN`: `https://dev.allaboard.fr` on dev, `https://allaboard.fr` in production), so each atom points to a profile that exists. Built by `personAtom` in `@allaboard/blockchain`. Chosen over the auth-user atom from `@0xintuition/ids` (a hash of the user id) because other apps can resolve a URL, which keeps the CV reusable (decided 2026-11-13). |
 | Peer giving the +1 | Atom | Same shape as the recipient |
 | Skill (« Ruby on Rails ») | Atom | Canonical JSON-LD skill term. schema.org `DefinedTerm` built with `buildDefinedTerm` from `@0xintuition/primitives/atom`, with `name` only, frozen in `packages/blockchain`. |
 | Claim | Triple | `(person) expertIn (skill)`. Created once per person and skill, shared by every +1. |
@@ -94,9 +94,10 @@ Revisit after moderation is in place, for example by publishing only a hash of t
 - `POST /users/:id/certifications` inserts the `certifications` row and a `certification.attested` outbox event (`aggregate_id` = certification id) in **one transaction**. The `201` does not wait for the chain.
 - The poller in the API process gets a second consumer, which reads only `certification.attested`. The `help_request.created` stub stays as it is.
 - The consumer:
-  1. computes the ids;
-  2. creates the missing atoms and triples (person, peer, skill, claim, +1) in one `createAtoms` / `createTriples` batch, skipping those already on-chain;
-  3. waits for the receipt and writes `tx_hash`, the triple ids and `published_at`.
+  1. reloads the `certifications` row. **If `revoked_at` is set, it marks the event processed and publishes nothing** (decided 2026-11-17): the +1 was withdrawn before it reached the chain. Withdrawing does not delete the pending event, and a +1 given again reactivates the same row and event;
+  2. computes the ids;
+  3. creates the missing atoms and triples (person, peer, skill, claim, +1) in one `createAtoms` / `createTriples` batch, skipping those already on-chain;
+  4. waits for the receipt and writes `tx_hash`, the triple ids and `published_at`.
 - **Idempotence** comes from deterministic ids: a retry checks on-chain existence before creating. Errors increment `publish_attempts` with backoff. After a ceiling, the event stays unprocessed with `publish_error` set, and an admin can replay it.
 - **Revocation** (removing a +1), decided 2026-11-13:
   - **First slice: Postgres only.** Set `revoked_at`; reads ignore revoked rows. Nothing is sent to the chain and there is no `certification.revoked` event. No app reads these +1s outside All-Aboard yet, and this avoids locking TRUST in a deposit on every +1.
