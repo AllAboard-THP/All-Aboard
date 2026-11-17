@@ -19,6 +19,7 @@ import { SkillCertificationForm } from "@/components/features/skill-certificatio
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { formatDateTime } from "@/lib/format-datetime";
+import { certificationProofUrl } from "@/lib/intuition-proof";
 
 export type UserCertificationsData = {
   groups: SkillCertificationGroup[];
@@ -46,6 +47,9 @@ export async function UserCertificationsCard({
   const attested = new Set(eligibility?.attestedSkillIds ?? []);
   const remainingSkills = data.skills.filter((skill) => !attested.has(skill.id));
   const isOwnProfile = Boolean(viewerId) && viewerId === userId;
+  const hasProof = groups.some((group) =>
+    group.items.some((item) => Boolean(item.proof)),
+  );
 
   return (
     <Card className="mb-6" data-testid="user-certifications">
@@ -90,11 +94,30 @@ export async function UserCertificationsCard({
                             {item.comment}
                           </p>
                         : null}
+                        {item.proof ?
+                          <p className="mt-1 mb-0 text-xs text-muted-foreground">
+                            {certificationProofUrl(item.proof) ?
+                              <a
+                                href={certificationProofUrl(item.proof)!}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline"
+                                data-testid="certification-proof-link"
+                              >
+                                {t("proofLink")}
+                              </a>
+                            : <span data-testid="certification-proof-published">
+                                {t("proofPublished")}
+                              </span>
+                            }
+                          </p>
+                        : null}
                       </div>
                       {viewerId && item.attester.id === viewerId ?
                         <CertificationWithdrawButton
                           recipientId={userId}
                           certificationId={item.id}
+                          published={Boolean(item.proof)}
                         />
                       : null}
                     </li>
@@ -104,6 +127,15 @@ export async function UserCertificationsCard({
             ))}
           </ul>
         }
+
+        {hasProof ?
+          <p
+            className="m-0 text-xs leading-relaxed text-muted-foreground"
+            data-testid="certification-proof-disclosure"
+          >
+            {t("proofDisclosure")}
+          </p>
+        : null}
 
         {eligibility ?
           eligibility.eligible ?

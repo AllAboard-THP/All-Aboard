@@ -763,12 +763,26 @@ export type CertificationAttester = {
 };
 
 /** One peer +1 on a profile (`GET /users/:id/certifications`). */
+/** Public proof of a +1 once the publisher wrote it on Intuition (ADR 0009 §6). */
+export type CertificationProof = {
+  network: "intuition-testnet";
+  /** `(claim) attestedBy (peer)` triple id. */
+  attestationTripleId: string;
+  /** `(person) expertIn (skill)` triple id, shared by every +1 on that skill. */
+  claimTripleId: string;
+  /** Transaction that created the +1; absent if it already existed on-chain. */
+  txHash?: string;
+  publishedAt: string;
+};
+
 export type Certification = {
   id: string;
   skillId: string;
   attester: CertificationAttester;
   comment?: string;
   createdAt: string;
+  /** Set once published on-chain; absent while pending. */
+  proof?: CertificationProof;
 };
 
 export type SkillCertificationGroup = {

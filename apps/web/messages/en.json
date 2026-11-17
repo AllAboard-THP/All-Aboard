@@ -588,7 +588,11 @@
         "notEligible": "You can give {name} a +1 once they have helped you on one of your requests.",
         "withdraw": "Withdraw",
         "withdrawConfirm": "Withdraw this +1?",
-        "withdrawYes": "Yes, withdraw"
+        "withdrawYes": "Yes, withdraw",
+        "proofLink": "Proof on Intuition ↗",
+        "proofPublished": "Published on Intuition",
+        "proofDisclosure": "These +1s are published on Intuition (testnet). All-Aboard records them on behalf of the person who gives them: they do not sign them themselves. A withdrawn +1 disappears from the profile but stays on the chain as history.",
+        "withdrawConfirmPublished": "Withdraw this +1? It will disappear from the profile but stay on the chain."
       }
     }
   },

@@ -4,6 +4,7 @@ import { cleanup, fireEvent, screen, waitFor } from "@testing-library/react";
 
 import { CertificationWithdrawButton } from "@/components/features/certification-withdraw-button";
 import { SkillCertificationForm } from "@/components/features/skill-certification-form";
+import { certificationProofUrl } from "@/lib/intuition-proof";
 import { mapApiError } from "@/lib/map-api-error";
 import { renderWithI18n } from "./i18n-test-utils";
 
@@ -140,5 +141,47 @@ describe("mapApiError for certifications", () => {
     expect(mapApiError({ status: 403, body: { error: "not_eligible" } })).toBe("notEligible");
     expect(mapApiError({ status: 422, body: { error: "comment_rejected" } })).toBe("commentRejected");
     expect(mapApiError({ status: 429 })).toBe("rateLimited");
+  });
+});
+
+describe("certification proof", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("links the +1 transaction on the testnet explorer", () => {
+    const txHash = `0x${"ab".repeat(32)}`;
+    expect(
+      certificationProofUrl({
+        network: "intuition-testnet",
+        attestationTripleId: `0x${"1".repeat(64)}`,
+        claimTripleId: `0x${"2".repeat(64)}`,
+        txHash,
+        publishedAt: "2026-11-17T10:00:00.000Z",
+      }),
+    ).toBe(`https://testnet.explorer.intuition.systems/tx/${txHash}`);
+  });
+
+  it("gives no link without a valid transaction hash", () => {
+    const base = {
+      network: "intuition-testnet" as const,
+      attestationTripleId: `0x${"1".repeat(64)}`,
+      claimTripleId: `0x${"2".repeat(64)}`,
+      publishedAt: "2026-11-17T10:00:00.000Z",
+    };
+    expect(certificationProofUrl(base)).toBeNull();
+    expect(certificationProofUrl({ ...base, txHash: "javascript:alert(1)" })).toBeNull();
+  });
+
+  it("warns that a published +1 stays on the chain when withdrawn", () => {
+    withQueryClient(
+      <CertificationWithdrawButton
+        recipientId="user-1"
+        certificationId="cert-1"
+        published
+      />,
+    );
+    fireEvent.click(screen.getByTestId("certification-withdraw"));
+    expect(screen.getByText(/restera sur la chaîne/)).toBeTruthy();
   });
 });

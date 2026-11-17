@@ -71,6 +71,17 @@ function rowToCertification(
     },
     comment: row.comment ?? undefined,
     createdAt: row.createdAt.toISOString(),
+    ...(row.publishedAt && row.attestationTripleId && row.claimTripleId
+      ? {
+          proof: {
+            network: "intuition-testnet" as const,
+            attestationTripleId: row.attestationTripleId,
+            claimTripleId: row.claimTripleId,
+            ...(row.txHash ? { txHash: row.txHash } : {}),
+            publishedAt: row.publishedAt.toISOString(),
+          },
+        }
+      : {}),
   };
 }
 

@@ -105,13 +105,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/en.json": {
-    "mtime": 1794685765.4314547,
-    "ast_hash": "191ae1575dbb028ede80babedd4d062b",
+    "mtime": 1794913170.793155,
+    "ast_hash": "6a9bb56577c5af8725cbfcc20f839eb7",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/fr.json": {
-    "mtime": 1794685765.4314547,
-    "ast_hash": "e33634a8e72fc1b6fbb204493bc782b6",
+    "mtime": 1794913170.793155,
+    "ast_hash": "132e4d9f7348a2929e8f821d5fa847e0",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/app/layout.tsx": {
@@ -1315,8 +1315,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.test.ts": {
-    "mtime": 1794828038.6347742,
-    "ast_hash": "df5a2edfa12e037da7d5e5ba940218fa",
+    "mtime": 1794913061.6180005,
+    "ast_hash": "07e05bd993bb960a26168c7ef534566f",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/index.ts": {
@@ -1685,8 +1685,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/openapi.yaml": {
-    "mtime": 1794827447.8363326,
-    "ast_hash": "1eee1999f23bb6034654e2558c6076e8",
+    "mtime": 1794913134.053417,
+    "ast_hash": "d591854c035c40e69cc53775639e10e6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/ui/package.json": {
@@ -2565,8 +2565,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/types/src/index.ts": {
-    "mtime": 1794827287.8508062,
-    "ast_hash": "6c7e1eee5b78917f4fb60445ca33c186",
+    "mtime": 1794913134.053417,
+    "ast_hash": "7c5578b4eeaceea601aef2b2c42d298b",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/config-eslint/node.mjs": {
@@ -6970,13 +6970,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/certifications.ts": {
-    "mtime": 1794912799.546498,
-    "ast_hash": "ab6f17e735f035fe50946227524bcd2d",
+    "mtime": 1794913134.053417,
+    "ast_hash": "9b783f2d776aab99972f802c0d904325",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/certifications.test.ts": {
-    "mtime": 1794679246.858522,
-    "ast_hash": "96b80da6ac80a131bb618addbdc29978",
+    "mtime": 1794913147.9976966,
+    "ast_hash": "c082d63c593329c2320bb3b370886f8e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/172-skill-certifications/README.md": {
@@ -7005,18 +7005,18 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/skill-certification-form.test.tsx": {
-    "mtime": 1794685784.4105864,
-    "ast_hash": "674409dc1f1830416288065375f584a6",
+    "mtime": 1794913184.3260398,
+    "ast_hash": "9ead91d13fc5db4306b441fd58d4b05f",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/user-certifications-card.tsx": {
-    "mtime": 1794685752.375048,
-    "ast_hash": "52d8ed145612d7bcd546ed6f61a7db16",
+    "mtime": 1794913170.7888217,
+    "ast_hash": "a2045e722401a41f770eb0500a4c815d",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/certification-withdraw-button.tsx": {
-    "mtime": 1794685729.5855079,
-    "ast_hash": "2ead2a5ba96cfab32fe3310fa3b0c460",
+    "mtime": 1794913170.7888217,
+    "ast_hash": "9e71e980f7446dafe5b83eb38e1605ac",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/skill-certification-form.tsx": {
@@ -7075,8 +7075,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/180-certifications-publish/README.md": {
-    "mtime": 1794913001.4305592,
-    "ast_hash": "2fd363bc9bc59c27164e0f764d9d36d0",
+    "mtime": 1794913192.5661013,
+    "ast_hash": "07c0b588749c8f0c04a2c99d45d98231",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0017_certification_publish_schedule.sql": {
@@ -7097,6 +7097,11 @@
   "/home/dim/AllAboard/apps/api/src/intuition/certification-publisher.ts": {
     "mtime": 1794912877.5443785,
     "ast_hash": "2d7d28fa8579d60095c6c677ecdcf486",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/lib/intuition-proof.ts": {
+    "mtime": 1794913170.775822,
+    "ast_hash": "c1986634a00861c314f8a555f383882b",
     "semantic_hash": ""
   }
 }

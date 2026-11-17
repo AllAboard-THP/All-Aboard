@@ -11,8 +11,8 @@ Publish each +1 given in slice 1 ([#172](../172-skill-certifications/README.md))
 | PR | Scope | State |
 | --- | --- | --- |
 | A | `packages/blockchain`, `/u/[id]` alias, ADR updates | [#181](https://github.com/AllAboard-THP/All-Aboard/pull/181) |
-| B | Publisher in `apps/api/src/intuition/`, env, Docker, docs | this PR |
-| C | Proof link on published +1s (web) | after B |
+| B | Publisher in `apps/api/src/intuition/`, env, Docker, docs | [#182](https://github.com/AllAboard-THP/All-Aboard/pull/182) |
+| C | Proof link on published +1s (web) | this PR |
 
 ## PR A
 
@@ -65,6 +65,15 @@ Pure code, no secrets, no network. Exact versions pinned: `@0xintuition/ids`, `@
 **Off by default.** Without `INTUITION_PUBLISHER_PRIVATE_KEY` or `INTUITION_PROFILE_ORIGIN` (defaults to `WEB_APP_URL`), the consumer logs `certification_publisher_off` and events wait. Any chain id but `13579` turns it off. At start-up it logs the operator address and balance (`lowBalance` under 1 tTRUST), never the key.
 
 **Enable on dev:** create a dedicated testnet wallet, fund it with tTRUST, then set on the dev API only: `INTUITION_PUBLISHER_PRIVATE_KEY` and `INTUITION_PROFILE_ORIGIN=https://dev.allaboard.fr`. The +1s already in the outbox are published on the next poll, except withdrawn ones.
+
+## PR C
+
+- **API:** each +1 in `GET /users/:id/certifications` carries `proof` once published: `network` (`intuition-testnet`), `attestationTripleId`, `claimTripleId`, `txHash` (when known), `publishedAt`. Absent while pending.
+- **Web:**
+  - "Proof on Intuition ↗" on each published +1 opens its transaction on `testnet.explorer.intuition.systems` (`lib/intuition-proof.ts`; only a valid `0x` hash becomes a link).
+  - The card states, as ADR 0009 §6 requires, that All-Aboard records the +1s on the giver's behalf (they do not sign) and that a withdrawn +1 stays on the chain. Shown once at least one +1 is published.
+  - Withdrawing a published +1 asks: "It will disappear from the profile but stay on the chain."
+- Pending +1s show no status: while the publisher is off, they would stay "pending" forever.
 
 ## Rules for PR B
 
