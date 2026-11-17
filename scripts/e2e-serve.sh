@@ -19,6 +19,10 @@ fi
 
 pnpm --filter api run db:migrate
 
+# The API runs from source (tsx), but imports workspace packages from their
+# dist (e.g. @allaboard/blockchain at runtime), so build its dependencies first.
+pnpm turbo run build --filter='api^...'
+
 pnpm --filter api exec tsx src/index.ts &
 API_PID=$!
 
