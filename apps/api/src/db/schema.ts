@@ -452,6 +452,8 @@ export const certifications = pgTable(
     publishedAt: timestamp("published_at", { withTimezone: true }),
     publishError: text("publish_error"),
     publishAttempts: integer("publish_attempts").notNull().default(0),
+    /** Earliest time the publisher retries after an error (ADR 0009 §5). */
+    nextPublishAt: timestamp("next_publish_at", { withTimezone: true }),
   },
   (table) => [
     uniqueIndex("certifications_recipient_attester_skill_unique").on(

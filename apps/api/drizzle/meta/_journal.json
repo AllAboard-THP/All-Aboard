@@ -120,6 +120,13 @@
       "when": 1748620800000,
       "tag": "0016_skill_certifications",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1748707200000,
+      "tag": "0017_certification_publish_schedule",
+      "breakpoints": true
     }
   ]
 }
