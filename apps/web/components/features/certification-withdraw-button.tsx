@@ -13,12 +13,15 @@ import { ApiRequestError, mapApiError } from "@/lib/map-api-error";
 type Props = {
   recipientId: string;
   certificationId: string;
+  /** Already on-chain: withdrawing hides it here, but it stays on the chain. */
+  published?: boolean;
 };
 
 /** Withdraws the viewer's own +1, after an inline confirmation. */
 export function CertificationWithdrawButton({
   recipientId,
   certificationId,
+  published = false,
 }: Props) {
   const t = useTranslations("profile.public.certifications");
   const tErrors = useTranslations("errors");
@@ -47,7 +50,7 @@ export function CertificationWithdrawButton({
       {confirming ?
         <div className="flex flex-wrap items-center justify-end gap-2">
           <span className="text-xs text-muted-foreground">
-            {t("withdrawConfirm")}
+            {published ? t("withdrawConfirmPublished") : t("withdrawConfirm")}
           </span>
           <Button
             type="button"

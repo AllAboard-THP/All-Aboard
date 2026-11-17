@@ -588,7 +588,11 @@
         "notEligible": "Vous pourrez donner un +1 à {name} après avoir reçu son aide sur une de vos demandes.",
         "withdraw": "Retirer",
         "withdrawConfirm": "Retirer ce +1 ?",
-        "withdrawYes": "Oui, retirer"
+        "withdrawYes": "Oui, retirer",
+        "proofLink": "Preuve sur Intuition ↗",
+        "proofPublished": "Publié sur Intuition",
+        "proofDisclosure": "Ces +1 sont publiés sur Intuition (testnet). All-Aboard les enregistre au nom de la personne qui les donne : elle ne les signe pas elle-même. Un +1 retiré disparaît du profil, mais reste sur la chaîne comme historique.",
+        "withdrawConfirmPublished": "Retirer ce +1 ? Il disparaîtra du profil, mais restera sur la chaîne."
       }
     }
   },
