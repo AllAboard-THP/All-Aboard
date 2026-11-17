@@ -3450,8 +3450,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0009-certifications-intuition.md": {
-    "mtime": 1794580304.4223442,
-    "ast_hash": "06ecd68cc10b09f9f05e90e1f2c2275d",
+    "mtime": 1794912278.778859,
+    "ast_hash": "6818052e092f990281db59fc774a4ad3",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard-landing-fix/apps/web/next.config.ts": {
@@ -7032,6 +7032,51 @@
   "/home/dim/AllAboard/apps/api/src/services/user-profile.test.ts": {
     "mtime": 1794827343.654473,
     "ast_hash": "e231043d5f692fe358ccead2dfe327c6",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/app/[locale]/u/[id]/page.tsx": {
+    "mtime": 1794912268.18868,
+    "ast_hash": "589f90fd5457e63997959a8b7d7ce5f5",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/tests/profile-atom-alias.test.ts": {
+    "mtime": 1794912268.1930132,
+    "ast_hash": "b69c64489aabd873196d165f881ac39a",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/web/lib/profile-atom-url.ts": {
+    "mtime": 1794912268.18868,
+    "ast_hash": "cb330e6ca26200ab426b47ce90759b67",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/blockchain/package.json": {
+    "mtime": 1794912217.1662092,
+    "ast_hash": "0666e8885803dcce2680891fa583af26",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/blockchain/eslint.config.js": {
+    "mtime": 1794912217.1704922,
+    "ast_hash": "24e5a248a827544f5f6c452b0680487c",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/blockchain/tsconfig.json": {
+    "mtime": 1794912217.1704922,
+    "ast_hash": "8a90c1e5fb83c0152d142c3cb041bf3e",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/blockchain/src/index.test.ts": {
+    "mtime": 1794912227.9218287,
+    "ast_hash": "2997fb9b5fa2b78a6624a148809f84aa",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/packages/blockchain/src/index.ts": {
+    "mtime": 1794912237.585161,
+    "ast_hash": "2b9cc3c54a94359edc9e18f701150a35",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/tasks/180-certifications-publish/README.md": {
+    "mtime": 1794912297.960121,
+    "ast_hash": "20f9f0d2d3ad96924153f8afd99f0c3f",
     "semantic_hash": ""
   }
 }
