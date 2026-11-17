@@ -78,6 +78,15 @@ importers:
 
   apps/api:
     dependencies:
+      '@0xintuition/deployments':
+        specifier: 0.1.0-alpha.1
+        version: 0.1.0-alpha.1(viem@2.57.14(typescript@5.9.3)(zod@4.4.3))
+      '@0xintuition/protocol':
+        specifier: 3.0.0-alpha.0
+        version: 3.0.0-alpha.0(viem@2.57.14(typescript@5.9.3)(zod@4.4.3))
+      '@allaboard/blockchain':
+        specifier: workspace:*
+        version: link:../../packages/blockchain
       '@allaboard/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -129,6 +138,9 @@ importers:
       pg:
         specifier: ^8.20.0
         version: 8.20.0
+      viem:
+        specifier: 2.57.14
+        version: 2.57.14(typescript@5.9.3)(zod@4.4.3)
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -479,6 +491,12 @@ packages:
     peerDependencies:
       viem: ^2.0.0
 
+  '@0xintuition/deployments@0.1.0-alpha.1':
+    resolution: {integrity: sha512-qPXUFMaS9wMk6OwGqlDCqfXkcV96gEGoa/nOXXahzW6pQBw8M+ay5FrR9NyWxzAN25Zt1LRVIWKl1mrLzBLWpA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      viem: ^2.0.0
+
   '@0xintuition/ids@0.1.0-alpha.1':
     resolution: {integrity: sha512-5DMo4dXcdQBXcYMYKPvPkRcbW2Ag6xtulSasmV6XOcg9xNmR/jlEgPpaDo64sDivQYTTvv5zcCI1k7Q+gM8Qng==}
     engines: {node: '>=20'}
@@ -505,6 +523,12 @@ packages:
 
   '@0xintuition/primitives@0.1.0-alpha.1':
     resolution: {integrity: sha512-xi3q1sbqIlYlL1FJ74gGkxUPIUT/v+7Hp95OUR0oauFNbqn0YuBbGuXJtuTtL84l9eg/IWUHejyaK1s/wFq2Ow==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      viem: ^2.0.0
+
+  '@0xintuition/protocol@3.0.0-alpha.0':
+    resolution: {integrity: sha512-kjrMRltJZkruG9NnHbkMJ3GG4uBkbt96125MJJJYV6XOeYaW3DpDqrcd+PsBGkWiTiEVuq6l6LiMuuP0M7XEMg==}
     engines: {node: '>=20'}
     peerDependencies:
       viem: ^2.0.0
@@ -6082,6 +6106,10 @@ snapshots:
       '@0xintuition/iid': 0.1.0-alpha.0(viem@2.57.14(typescript@5.9.3)(zod@4.4.3))
       viem: 2.57.14(typescript@5.9.3)(zod@4.4.3)
 
+  '@0xintuition/deployments@0.1.0-alpha.1(viem@2.57.14(typescript@5.9.3)(zod@4.4.3))':
+    dependencies:
+      viem: 2.57.14(typescript@5.9.3)(zod@4.4.3)
+
   '@0xintuition/ids@0.1.0-alpha.1(viem@2.57.14(typescript@5.9.3)(zod@4.4.3))':
     dependencies:
       viem: 2.57.14(typescript@5.9.3)(zod@4.4.3)
@@ -6108,6 +6136,11 @@ snapshots:
       '@0xintuition/iid': 0.1.0-alpha.0(viem@2.57.14(typescript@5.9.3)(zod@4.4.3))
       '@0xintuition/iid-registry': 0.1.0-alpha.0(viem@2.57.14(typescript@5.9.3)(zod@4.4.3))
       '@0xintuition/predicates': 0.1.0-alpha.1(viem@2.57.14(typescript@5.9.3)(zod@4.4.3))
+      viem: 2.57.14(typescript@5.9.3)(zod@4.4.3)
+
+  '@0xintuition/protocol@3.0.0-alpha.0(viem@2.57.14(typescript@5.9.3)(zod@4.4.3))':
+    dependencies:
+      '@0xintuition/deployments': 0.1.0-alpha.1(viem@2.57.14(typescript@5.9.3)(zod@4.4.3))
       viem: 2.57.14(typescript@5.9.3)(zod@4.4.3)
 
   '@adobe/css-tools@4.4.4': {}

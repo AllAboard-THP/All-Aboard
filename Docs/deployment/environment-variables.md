@@ -99,10 +99,12 @@ These variables concern **Phase 2** (API auth); see [ADR 0001](../adr/0001-authe
 
 | Variable | Web | API | Agent | Indexer (legacy) | Required |
 |---|:---:|:---:|:---:|:---:|:---:|
-| `INTUITION_RPC_URL` |  | x |  |  | Reserved for the certification publisher; unused today |
+| `INTUITION_PUBLISHER_PRIVATE_KEY` |  | x |  |  | **Secret.** Operator wallet that signs certification writes on testnet ([ADR 0009](../adr/0009-certifications-intuition.md)). Unset: the certification publisher stays off and +1s wait in the outbox. Never in the web app or logs |
+| `INTUITION_PROFILE_ORIGIN` |  | x |  |  | Web origin used in person atoms (`<origin>/u/<uuid>`), e.g. `https://dev.allaboard.fr`. Defaults to `WEB_APP_URL`. Required for publishing |
+| `INTUITION_RPC_URL` |  | x |  |  | Certification publisher RPC; defaults to the testnet public RPC |
 | `INTUITION_API_KEY` |  | x |  |  | Intuition Core write key (`ik_…`); never a wallet private key |
 | `INTUITION_GRAPHQL_URL` |  | x |  |  | Graph read (spike #67) |
-| `INTUITION_NETWORK_ID` |  | x |  |  | Testnet / mainnet; reserved for the certification publisher |
+| `INTUITION_NETWORK_ID` |  | x |  |  | Chain id; only testnet `13579` is accepted (default) |
 | `INTUITION_PUBLISHER_ENABLED` |  | x |  |  | Default `true`; `false` to disable poll |
 | `INTUITION_PUBLISHER_POLL_MS` |  | x |  |  | Default `5000` |
 | `INDEXER_START_BLOCK` |  |  |  | x | **Legacy** — do not reactivate |

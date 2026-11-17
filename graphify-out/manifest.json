@@ -1195,8 +1195,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/package.json": {
-    "mtime": 1794580304.382168,
-    "ast_hash": "07c497f793bd64084aafce184e8278ee",
+    "mtime": 1794912799.546498,
+    "ast_hash": "005c3288ad2264f64b073304a0b7afc3",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/eslint.config.js": {
@@ -1285,8 +1285,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/meta/_journal.json": {
-    "mtime": 1794679098.9973118,
-    "ast_hash": "3f2b9057575c004436f04a34a86a9476",
+    "mtime": 1794912799.546498,
+    "ast_hash": "1cb20f67ac91b3244f1a1a7eb4062e8b",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/migrate.ts": {
@@ -1330,23 +1330,23 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/publisher.ts": {
-    "mtime": 1793311645.7251613,
-    "ast_hash": "e83ecf609d3e241fec744bb34e39cfd2",
+    "mtime": 1794912799.546498,
+    "ast_hash": "5aee917e652ae6cec5b195536672b548",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/config.ts": {
-    "mtime": 1793311645.7251613,
-    "ast_hash": "e63aea56b1c5069999cc33591030dc87",
+    "mtime": 1794912799.546498,
+    "ast_hash": "1d5b3d663783227b12b671ec9da2fda6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/config.test.ts": {
-    "mtime": 1781730692.1080253,
-    "ast_hash": "dbb6caf859936131a74a8a846893298a",
+    "mtime": 1794912906.708766,
+    "ast_hash": "0f02c87d351f69f67b07e54ba6bba9ad",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/index.ts": {
-    "mtime": 1793311645.7251613,
-    "ast_hash": "6281a350133838b46ef1e3dbbc990eab",
+    "mtime": 1794912799.546498,
+    "ast_hash": "b5c6747fb60a2d7c0106f9b1104f73fd",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/outbox.ts": {
@@ -1420,8 +1420,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/schema.ts": {
-    "mtime": 1794679098.9773118,
-    "ast_hash": "7006d18582a290fb5ee873cb7b1414f6",
+    "mtime": 1794912799.546498,
+    "ast_hash": "34f1571924d5299d0f2200500a663c82",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/seed.ts": {
@@ -2930,8 +2930,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/environment-variables.md": {
-    "mtime": 1794580304.382168,
-    "ast_hash": "764a9b35977633d186c6ac6735885515",
+    "mtime": 1794912828.7995455,
+    "ast_hash": "9fceafa36b7d62b1919bdde30be1fa1d",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/dokploy-instance.md": {
@@ -6970,8 +6970,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/certifications.ts": {
-    "mtime": 1794679189.17828,
-    "ast_hash": "1fcc86305c21c84d5188fbc878e9cb77",
+    "mtime": 1794912799.546498,
+    "ast_hash": "ab6f17e735f035fe50946227524bcd2d",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/certifications.test.ts": {
@@ -7075,8 +7075,28 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/180-certifications-publish/README.md": {
-    "mtime": 1794912297.960121,
-    "ast_hash": "20f9f0d2d3ad96924153f8afd99f0c3f",
+    "mtime": 1794913001.4305592,
+    "ast_hash": "2fd363bc9bc59c27164e0f764d9d36d0",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/drizzle/0017_certification_publish_schedule.sql": {
+    "mtime": 1794912799.5551515,
+    "ast_hash": "4921c7f88706c2e9bff672bbbb0b5e2c",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/intuition/chain.ts": {
+    "mtime": 1794912799.5551515,
+    "ast_hash": "564fb92bc9f909d8a90796cf27b822f1",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/intuition/certification-publisher.test.ts": {
+    "mtime": 1794912877.5487118,
+    "ast_hash": "a93ae8d0b53a911ee7e3378cbfb04322",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/intuition/certification-publisher.ts": {
+    "mtime": 1794912877.5443785,
+    "ast_hash": "2d7d28fa8579d60095c6c677ecdcf486",
     "semantic_hash": ""
   }
 }

@@ -10,8 +10,8 @@ Publish each +1 given in slice 1 ([#172](../172-skill-certifications/README.md))
 
 | PR | Scope | State |
 | --- | --- | --- |
-| A | `packages/blockchain`, `/u/[id]` alias, ADR updates | this PR |
-| B | Publisher in `apps/api/src/intuition/`, env, Docker, docs | next |
+| A | `packages/blockchain`, `/u/[id]` alias, ADR updates | [#181](https://github.com/AllAboard-THP/All-Aboard/pull/181) |
+| B | Publisher in `apps/api/src/intuition/`, env, Docker, docs | this PR |
 | C | Proof link on published +1s (web) | after B |
 
 ## PR A
@@ -41,6 +41,30 @@ Pure code, no secrets, no network. Exact versions pinned: `@0xintuition/ids`, `@
 
 - `/u/[id]` only redirects (308) to `/users/[id]`, keeping the locale. Anything but a uuid gives 404.
 - The origin is the publishing environment's web origin (`INTUITION_PROFILE_ORIGIN`, added in PR B): `https://dev.allaboard.fr` on dev, `https://allaboard.fr` in production. Each atom then points to a profile that exists.
+
+## PR B
+
+| Piece | Location |
+| --- | --- |
+| Chain client (only file with a signer) | [`apps/api/src/intuition/chain.ts`](../../../apps/api/src/intuition/chain.ts) |
+| Certification consumer | [`apps/api/src/intuition/certification-publisher.ts`](../../../apps/api/src/intuition/certification-publisher.ts) |
+| Wiring, start-up checks | `createCertificationChain` and `startIntuitionPublisher` in [`publisher.ts`](../../../apps/api/src/intuition/publisher.ts) |
+| Retry schedule column | [`0017_certification_publish_schedule.sql`](../../../apps/api/drizzle/0017_certification_publish_schedule.sql) (`next_publish_at`) |
+| Reopen event on reactivation | `POST /users/:id/certifications` in [`routes/certifications.ts`](../../../apps/api/src/routes/certifications.ts) |
+| Tests | [`certification-publisher.test.ts`](../../../apps/api/src/intuition/certification-publisher.test.ts) (database + in-memory chain), `config.test.ts` |
+
+**How one event is processed:**
+
+1. Reload the +1 and its skill. Missing row: close the event. `revoked_at` set: close it and publish nothing. Already published: close it.
+2. Skip it for now if `next_publish_at` is in the future, or after 8 failed attempts (admin replay).
+3. Build the terms with `certificationTerms` (`INTUITION_PROFILE_ORIGIN`).
+4. Create the missing atoms in one `createAtoms` (both predicates the first time, the two people, the skill), then the claim if missing, then the +1 if missing. Each call waits for its receipt.
+5. Store `claim_triple_id`, `attestation_triple_id`, `tx_hash`, `published_at`, and the skill's `intuition_atom_id`; close the event.
+6. On error: `publish_attempts` + 1, `publish_error`, `next_publish_at` = now + 30 s × 2^(attempts − 1), capped at 1 h. The event stays open.
+
+**Off by default.** Without `INTUITION_PUBLISHER_PRIVATE_KEY` or `INTUITION_PROFILE_ORIGIN` (defaults to `WEB_APP_URL`), the consumer logs `certification_publisher_off` and events wait. Any chain id but `13579` turns it off. At start-up it logs the operator address and balance (`lowBalance` under 1 tTRUST), never the key.
+
+**Enable on dev:** create a dedicated testnet wallet, fund it with tTRUST, then set on the dev API only: `INTUITION_PUBLISHER_PRIVATE_KEY` and `INTUITION_PROFILE_ORIGIN=https://dev.allaboard.fr`. The +1s already in the outbox are published on the next poll, except withdrawn ones.
 
 ## Rules for PR B
 
