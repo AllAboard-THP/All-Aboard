@@ -22,6 +22,11 @@ import {
   processCertificationEvents,
   publishBackoffMs,
 } from "./certification-publisher";
+import { refreshOperatorBalance } from "./publisher";
+import {
+  getCertificationPublisherStatus,
+  setCertificationPublisherStatus,
+} from "./publisher-status";
 
 const seedPassword =
   process.env.DEV_SEED_PASSWORD?.trim() ||
@@ -349,5 +354,54 @@ describe("publishBackoffMs", () => {
     expect(publishBackoffMs(1)).toBe(30_000);
     expect(publishBackoffMs(2)).toBe(60_000);
     expect(publishBackoffMs(20)).toBe(60 * 60 * 1000);
+  });
+});
+
+describe("operator balance status", () => {
+  it("flags a low balance once, and /health shows it without the address", async () => {
+    let balance = "0.5";
+    const chain = { ...fakeChain().chain, balance: async () => balance };
+    const logs: string[] = [];
+    const log = (message: string) => logs.push(message);
+    const now = () => new Date("2026-11-18T10:00:00Z");
+
+    await refreshOperatorBalance(chain, log, now);
+    expect(getCertificationPublisherStatus()).toEqual({
+      state: "on",
+      operator: chain.operatorAddress,
+      balance: "0.5",
+      lowBalance: true,
+      balanceCheckedAt: "2026-11-18T10:00:00.000Z",
+    });
+    await refreshOperatorBalance(chain, log, now);
+    expect(logs).toEqual(["certification_publisher_low_balance"]);
+
+    const app = await buildApp({ pool: null });
+    const health = await app.inject({ method: "GET", url: "/health" });
+    expect(JSON.parse(health.payload)).toEqual({
+      status: "ok",
+      certificationPublisher: "on",
+      lowBalance: true,
+    });
+    await app.close();
+
+    balance = "3";
+    await refreshOperatorBalance(chain, log, now);
+    expect(getCertificationPublisherStatus()).toMatchObject({ lowBalance: false });
+    setCertificationPublisherStatus({ state: "off", reason: "test" });
+  });
+
+  it("keeps the last status when the balance read fails", async () => {
+    setCertificationPublisherStatus({ state: "off", reason: "test" });
+    const chain = {
+      ...fakeChain().chain,
+      balance: async (): Promise<string> => {
+        throw new Error("rpc down");
+      },
+    };
+    const logs: string[] = [];
+    await refreshOperatorBalance(chain, (message) => logs.push(message));
+    expect(logs).toEqual(["certification_publisher_balance_error"]);
+    expect(getCertificationPublisherStatus()).toEqual({ state: "off", reason: "test" });
   });
 });

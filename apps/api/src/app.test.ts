@@ -76,7 +76,10 @@ describe("api", () => {
     const app = await buildApp({ pool: null });
     const res = await app.inject({ method: "GET", url: "/health" });
     expect(res.statusCode).toBe(200);
-    expect(JSON.parse(res.payload)).toEqual({ status: "ok" });
+    expect(JSON.parse(res.payload)).toEqual({
+      status: "ok",
+      certificationPublisher: "off",
+    });
     await app.close();
   });
 

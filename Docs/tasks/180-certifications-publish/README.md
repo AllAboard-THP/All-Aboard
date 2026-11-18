@@ -70,7 +70,7 @@ Pure code, no secrets, no network. Exact versions pinned: `@0xintuition/ids`, `@
 **How one event is processed:**
 
 1. Reload the +1 and its skill. Missing row: close the event. `revoked_at` set: close it and publish nothing. Already published: close it.
-2. Skip it for now if `next_publish_at` is in the future, or after 8 failed attempts (admin replay).
+2. Skip it for now if `next_publish_at` is in the future, or after 8 failed attempts. Those wait for `POST /admin/certifications/:id/republish` ([#187](../187-publisher-ops/README.md)).
 3. Build the terms with `certificationTerms` (`INTUITION_PROFILE_ORIGIN`).
 4. Create the missing atoms in one `createAtoms` (both predicates the first time, the two people, the skill), then the claim if missing, then the +1 if missing. Each call waits for its receipt.
 5. Store `claim_triple_id`, `attestation_triple_id`, `tx_hash`, `published_at`, and the skill's `intuition_atom_id`; close the event.

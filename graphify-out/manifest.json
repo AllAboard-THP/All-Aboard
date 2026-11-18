@@ -1295,8 +1295,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.ts": {
-    "mtime": 1794679189.17828,
-    "ast_hash": "54e127165bec91cd525300c569d51fef",
+    "mtime": 1795001831.4042563,
+    "ast_hash": "cecb7d99ff8b420b7ac3bc09065de2bf",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/fastify-augmentation.ts": {
@@ -1315,8 +1315,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.test.ts": {
-    "mtime": 1794913061.6180005,
-    "ast_hash": "07e05bd993bb960a26168c7ef534566f",
+    "mtime": 1795001897.0550473,
+    "ast_hash": "3bff200812aafb3c73e870c96870cee2",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/index.ts": {
@@ -1330,8 +1330,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/publisher.ts": {
-    "mtime": 1794912799.546498,
-    "ast_hash": "5aee917e652ae6cec5b195536672b548",
+    "mtime": 1795001821.959876,
+    "ast_hash": "edc9b6cd59dc00bd04ca3e670b52fd0d",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/config.ts": {
@@ -1345,8 +1345,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/index.ts": {
-    "mtime": 1794912799.546498,
-    "ast_hash": "b5c6747fb60a2d7c0106f9b1104f73fd",
+    "mtime": 1795001831.4042563,
+    "ast_hash": "4a84d470fb3b99cdccd3b9c23b50092a",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/outbox.ts": {
@@ -1625,8 +1625,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/admin.ts": {
-    "mtime": 1794679189.17828,
-    "ast_hash": "6de95d1681708f65c65008c1edfbf874",
+    "mtime": 1795001852.9162388,
+    "ast_hash": "0a02bce864be687767e4ca0971bdd337",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/users.ts": {
@@ -1685,8 +1685,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/openapi.yaml": {
-    "mtime": 1794926910.0966368,
-    "ast_hash": "d591854c035c40e69cc53775639e10e6",
+    "mtime": 1795001923.8106053,
+    "ast_hash": "762548b98404391e4b3a974be6b3c847",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/ui/package.json": {
@@ -2565,8 +2565,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/types/src/index.ts": {
-    "mtime": 1794926910.1088796,
-    "ast_hash": "7c5578b4eeaceea601aef2b2c42d298b",
+    "mtime": 1795001794.8915777,
+    "ast_hash": "c87ec7c8752f0b32f0bea026fd62d980",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/config-eslint/node.mjs": {
@@ -3450,8 +3450,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0009-certifications-intuition.md": {
-    "mtime": 1794912278.778859,
-    "ast_hash": "6818052e092f990281db59fc774a4ad3",
+    "mtime": 1795001949.170391,
+    "ast_hash": "ea65894c770d48e916b695c7ee582a49",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard-landing-fix/apps/web/next.config.ts": {
@@ -6975,8 +6975,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/certifications.test.ts": {
-    "mtime": 1794926910.0966368,
-    "ast_hash": "c082d63c593329c2320bb3b370886f8e",
+    "mtime": 1795001897.0550473,
+    "ast_hash": "6557ddaf99f6b4ef8e0c908080eff4d5",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/172-skill-certifications/README.md": {
@@ -7075,8 +7075,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/180-certifications-publish/README.md": {
-    "mtime": 1794994040.2400827,
-    "ast_hash": "950d132f12cf565860c86cb1f0208d5e",
+    "mtime": 1795001949.170391,
+    "ast_hash": "7537f27056cfb4ef05a5119e153329fd",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0017_certification_publish_schedule.sql": {
@@ -7090,8 +7090,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/certification-publisher.test.ts": {
-    "mtime": 1794912877.5487118,
-    "ast_hash": "a93ae8d0b53a911ee7e3378cbfb04322",
+    "mtime": 1795001897.0550473,
+    "ast_hash": "aeb8a3f9a07ef3f8d828372d44b88f41",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/intuition/certification-publisher.ts": {
@@ -7102,6 +7102,16 @@
   "/home/dim/AllAboard/apps/web/lib/intuition-proof.ts": {
     "mtime": 1794926910.0966368,
     "ast_hash": "c1986634a00861c314f8a555f383882b",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/intuition/publisher-status.ts": {
+    "mtime": 1795001800.5070753,
+    "ast_hash": "62d07697db8e4a231eb165308c8690c5",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/tasks/187-publisher-ops/README.md": {
+    "mtime": 1795001949.161838,
+    "ast_hash": "ddc524179e142cd893575dd66219f6a7",
     "semantic_hash": ""
   }
 }

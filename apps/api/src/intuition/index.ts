@@ -20,6 +20,7 @@ export {
 export {
   createCertificationChain,
   processPendingOutboxEvents,
+  refreshOperatorBalance,
   startIntuitionPublisher,
   type IntuitionPublisherHandle,
   type IntuitionPublisherLog,
@@ -31,3 +32,10 @@ export {
   publishHelpRequestCreatedToIntuition,
   type PublishHelpRequestResult,
 } from "./stub-publisher.js";
+export {
+  BALANCE_REFRESH_MS,
+  getCertificationPublisherStatus,
+  isLowBalance,
+  LOW_BALANCE_THRESHOLD,
+  setCertificationPublisherStatus,
+} from "./publisher-status.js";
