@@ -28,6 +28,7 @@ import {
   getMessageMediaStorageMode,
 } from "./lib/media-storage/index.js";
 import { MESSAGE_VIDEO_MAX_BYTES } from "./services/message-media-upload-rules.js";
+import { getCertificationPublisherStatus } from "./intuition/publisher-status.js";
 import { registerOpenApiDocs } from "./openapi.js";
 import { registerAdminRoutes } from "./routes/admin.js";
 import { registerAuthRoutes } from "./routes/auth.js";
@@ -107,7 +108,18 @@ export async function buildApp(options?: BuildAppOptions) {
     },
   );
 
-  app.get("/health", async () => ({ status: "ok" as const }));
+  // Public: says whether the certification publisher runs and if its wallet
+  // needs topping up, without the address or the amount (admin route for those).
+  app.get("/health", async () => {
+    const publisher = getCertificationPublisherStatus();
+    return {
+      status: "ok" as const,
+      certificationPublisher: publisher.state,
+      ...(publisher.state === "on" && publisher.lowBalance !== null
+        ? { lowBalance: publisher.lowBalance }
+        : {}),
+    };
+  });
 
   registerFeedRoutes(app, db);
   registerSubjectRoutes(app, db);

@@ -762,7 +762,6 @@ export type CertificationAttester = {
   avatarUrl?: string;
 };
 
-/** One peer +1 on a profile (`GET /users/:id/certifications`). */
 /** Public proof of a +1 once the publisher wrote it on Intuition (ADR 0009 §6). */
 export type CertificationProof = {
   network: "intuition-testnet";
@@ -775,6 +774,7 @@ export type CertificationProof = {
   publishedAt: string;
 };
 
+/** One peer +1 on a profile (`GET /users/:id/certifications`). */
 export type Certification = {
   id: string;
   skillId: string;
@@ -822,4 +822,47 @@ export type CreateSkillBody = {
 
 export type AdminSkillResponse = {
   item: Skill;
+};
+
+/** State of the certification publisher in this API process (ADR 0009 §5). */
+export type CertificationPublisherStatus =
+  | { state: "off"; reason: string }
+  | {
+      state: "on";
+      operator: string;
+      /** Operator balance in tTRUST, null until the first read succeeds. */
+      balance: string | null;
+      lowBalance: boolean | null;
+      balanceCheckedAt: string | null;
+    };
+
+/** A +1 the publisher gave up on after the maximum number of attempts. */
+export type AdminFailedCertification = {
+  id: string;
+  recipientId: string;
+  attesterId: string;
+  skillLabel: string;
+  publishAttempts: number;
+  publishError: string | null;
+  createdAt: string;
+};
+
+/** `GET /admin/certifications/publisher`. */
+export type AdminCertificationPublisherResponse = {
+  publisher: CertificationPublisherStatus;
+  counts: {
+    published: number;
+    /** Not withdrawn, not published, still retried automatically. */
+    waiting: number;
+    /** Not withdrawn, not published, out of attempts: needs a replay. */
+    failed: number;
+  };
+  /** Oldest first, at most 50. */
+  failed: AdminFailedCertification[];
+};
+
+/** `POST /admin/certifications/:id/republish`. */
+export type RepublishCertificationResponse = {
+  id: string;
+  queued: true;
 };

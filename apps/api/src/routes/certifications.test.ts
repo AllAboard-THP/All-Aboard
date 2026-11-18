@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type {
+  AdminCertificationPublisherResponse,
   CertificationEligibilityResponse,
   CreateCertificationResponse,
   SkillsResponse,
@@ -21,6 +22,7 @@ import {
 } from "../db/schema";
 import { ensureMigrated } from "../test/ensure-migrated.js";
 import { CERTIFICATION_ATTESTED, CERTIFICATIONS_PER_DAY } from "./certifications";
+import { MAX_PUBLISH_ATTEMPTS } from "../intuition/certification-publisher";
 
 const seedPassword =
   process.env.DEV_SEED_PASSWORD?.trim() ||
@@ -341,6 +343,124 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       const list = await app.inject({ method: "GET", url: "/skills" });
       const ids = (JSON.parse(list.payload) as SkillsResponse).items.map((s) => s.id);
       expect(ids).not.toContain(item.id);
+    });
+
+    it("lets admins list +1s out of attempts and replay one", async () => {
+      const admin = await createUser("replay-admin", "admin");
+      const student = await createUser("replay-student");
+      const helper = await createUser("replay-helper");
+      await recordHelp(student, helper);
+      const given = await giveCertification(student, helper, { skillId: skillIds[0] });
+      expect(given.statusCode).toBe(201);
+      const { item } = JSON.parse(given.payload) as CreateCertificationResponse;
+
+      // As the publisher leaves it after the last failed attempt.
+      await db
+        .update(certifications)
+        .set({
+          publishAttempts: MAX_PUBLISH_ATTEMPTS,
+          publishError: "execution reverted",
+          nextPublishAt: new Date(Date.now() + 60_000),
+        })
+        .where(eq(certifications.id, item.id));
+      await db
+        .update(outboxEvents)
+        .set({ processedAt: new Date() })
+        .where(
+          and(
+            eq(outboxEvents.eventType, CERTIFICATION_ATTESTED),
+            eq(outboxEvents.aggregateId, item.id),
+          ),
+        );
+
+      const adminAuth = { authorization: `Bearer ${tokenFor(admin, "admin")}` };
+      const studentAuth = { authorization: `Bearer ${tokenFor(student)}` };
+
+      const denied = await app.inject({
+        method: "GET",
+        url: "/admin/certifications/publisher",
+        headers: studentAuth,
+      });
+      expect(denied.statusCode).toBe(403);
+
+      const status = await app.inject({
+        method: "GET",
+        url: "/admin/certifications/publisher",
+        headers: adminAuth,
+      });
+      expect(status.statusCode).toBe(200);
+      const body = JSON.parse(status.payload) as AdminCertificationPublisherResponse;
+      expect(body.publisher.state).toBe("off");
+      expect(body.counts.failed).toBeGreaterThanOrEqual(1);
+      const failed = body.failed.find((row) => row.id === item.id);
+      expect(failed).toMatchObject({
+        recipientId: helper.id,
+        attesterId: student.id,
+        publishAttempts: MAX_PUBLISH_ATTEMPTS,
+        publishError: "execution reverted",
+      });
+
+      const replayDenied = await app.inject({
+        method: "POST",
+        url: `/admin/certifications/${item.id}/republish`,
+        headers: studentAuth,
+      });
+      expect(replayDenied.statusCode).toBe(403);
+
+      const replay = await app.inject({
+        method: "POST",
+        url: `/admin/certifications/${item.id}/republish`,
+        headers: adminAuth,
+      });
+      expect(replay.statusCode).toBe(202);
+      expect(JSON.parse(replay.payload)).toEqual({ id: item.id, queued: true });
+
+      const [row] = await db
+        .select()
+        .from(certifications)
+        .where(eq(certifications.id, item.id));
+      expect(row).toMatchObject({ publishAttempts: 0, publishError: null, nextPublishAt: null });
+      const [event] = await db
+        .select({ processedAt: outboxEvents.processedAt })
+        .from(outboxEvents)
+        .where(
+          and(
+            eq(outboxEvents.eventType, CERTIFICATION_ATTESTED),
+            eq(outboxEvents.aggregateId, item.id),
+          ),
+        );
+      expect(event?.processedAt).toBeNull();
+
+      await db
+        .update(certifications)
+        .set({ publishedAt: new Date() })
+        .where(eq(certifications.id, item.id));
+      const published = await app.inject({
+        method: "POST",
+        url: `/admin/certifications/${item.id}/republish`,
+        headers: adminAuth,
+      });
+      expect(published.statusCode).toBe(409);
+      expect(JSON.parse(published.payload)).toEqual({ error: "already_published" });
+
+      await db
+        .update(certifications)
+        .set({ publishedAt: null, revokedAt: new Date() })
+        .where(eq(certifications.id, item.id));
+      const revoked = await app.inject({
+        method: "POST",
+        url: `/admin/certifications/${item.id}/republish`,
+        headers: adminAuth,
+      });
+      expect(revoked.statusCode).toBe(409);
+      expect(JSON.parse(revoked.payload)).toEqual({ error: "certification_revoked" });
+
+      const unknown = await app.inject({
+        method: "POST",
+        url: `/admin/certifications/${randomUUID()}/republish`,
+        headers: adminAuth,
+      });
+      expect(unknown.statusCode).toBe(404);
     });
   },
 );
