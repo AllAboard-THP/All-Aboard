@@ -158,6 +158,41 @@ describe.skipIf(!process.env.DATABASE_URL || !seedPassword)(
       expect(list.items[0]!.items[0]!.id).toBe(created.item.id);
     });
 
+    it("exposes the on-chain proof once the +1 is published", async () => {
+      const helper = await createUser("proof-helper");
+      const helped = await createUser("proof-helped");
+      await recordHelp(helped, helper);
+      const res = await giveCertification(helped, helper, { skillId: skillIds[2] });
+      const { item } = JSON.parse(res.payload) as CreateCertificationResponse;
+      expect(item.proof).toBeUndefined();
+
+      const claim = `0x${"a".repeat(64)}`;
+      const attestation = `0x${"b".repeat(64)}`;
+      const tx = `0x${"c".repeat(64)}`;
+      await db
+        .update(certifications)
+        .set({
+          claimTripleId: claim,
+          attestationTripleId: attestation,
+          txHash: tx,
+          publishedAt: new Date("2026-11-17T10:00:00Z"),
+        })
+        .where(eq(certifications.id, item.id));
+
+      const listRes = await app.inject({
+        method: "GET",
+        url: `/users/${helper.id}/certifications`,
+      });
+      const list = JSON.parse(listRes.payload) as UserCertificationsResponse;
+      expect(list.items[0]!.items[0]!.proof).toEqual({
+        network: "intuition-testnet",
+        attestationTripleId: attestation,
+        claimTripleId: claim,
+        txHash: tx,
+        publishedAt: "2026-11-17T10:00:00.000Z",
+      });
+    });
+
     it("rejects a +1 without prior help, or when the answer is flagged", async () => {
       const stranger = await createUser("stranger");
       const viewer = await createUser("viewer");

@@ -4002,6 +4002,23 @@ components:
         createdAt:
           type: string
           format: date-time
+        proof:
+          description: Set once the +1 is published on Intuition testnet (ADR 0009). Absent while pending.
+          type: object
+          required: [network, attestationTripleId, claimTripleId, publishedAt]
+          properties:
+            network:
+              type: string
+              enum: [intuition-testnet]
+            attestationTripleId:
+              type: string
+            claimTripleId:
+              type: string
+            txHash:
+              type: string
+            publishedAt:
+              type: string
+              format: date-time
 
     SkillCertificationGroup:
       type: object

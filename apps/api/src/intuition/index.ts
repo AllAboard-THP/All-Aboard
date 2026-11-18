@@ -4,6 +4,21 @@ export {
   HELP_REQUEST_CREATED,
 } from "./outbox.js";
 export {
+  CERTIFICATION_ATTESTED_EVENT,
+  MAX_PUBLISH_ATTEMPTS,
+  processCertificationEvents,
+  publishBackoffMs,
+  type CertificationPublishResult,
+} from "./certification-publisher.js";
+export {
+  createIntuitionChain,
+  INTUITION_TESTNET_CHAIN_ID,
+  type IntuitionChain,
+  type TripleSpec,
+  type TxReceipt,
+} from "./chain.js";
+export {
+  createCertificationChain,
   processPendingOutboxEvents,
   startIntuitionPublisher,
   type IntuitionPublisherHandle,

@@ -2,6 +2,8 @@ import { and, asc, eq, isNull } from "drizzle-orm";
 import type { HelpRequestCreatedOutboxPayload } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import { helpRequests, outboxEvents } from "../db/schema.js";
+import { createIntuitionChain, type IntuitionChain } from "./chain.js";
+import { processCertificationEvents } from "./certification-publisher.js";
 import { loadIntuitionConfig, type IntuitionConfig } from "./config.js";
 import { HELP_REQUEST_CREATED } from "./outbox.js";
 import {
@@ -159,9 +161,40 @@ export type IntuitionPublisherHandle = {
   stop: () => void;
 };
 
+/**
+ * Certification consumer, or null when it must stay off: no operator key or
+ * no profile origin. Events then wait in the outbox (ADR 0009 §1).
+ */
+export function createCertificationChain(
+  config: IntuitionConfig,
+  log: IntuitionPublisherLog,
+): IntuitionChain | null {
+  if (!config.publisherPrivateKey) {
+    log("certification_publisher_off", { reason: "no INTUITION_PUBLISHER_PRIVATE_KEY" });
+    return null;
+  }
+  if (!config.profileOrigin) {
+    log("certification_publisher_off", { reason: "no INTUITION_PROFILE_ORIGIN" });
+    return null;
+  }
+  try {
+    return createIntuitionChain({
+      privateKey: config.publisherPrivateKey,
+      rpcUrl: config.rpcUrl,
+      networkId: config.networkId,
+    });
+  } catch (err) {
+    // Never log the key; only the reason.
+    log("certification_publisher_off", {
+      reason: err instanceof Error ? err.message : "invalid configuration",
+    });
+    return null;
+  }
+}
+
 export function startIntuitionPublisher(
   db: AppDatabase,
-  options?: { log?: IntuitionPublisherLog },
+  options?: { log?: IntuitionPublisherLog; chain?: IntuitionChain | null },
 ): IntuitionPublisherHandle | null {
   const config = loadIntuitionConfig();
   if (!config.publisherEnabled) return null;
@@ -170,12 +203,39 @@ export function startIntuitionPublisher(
     console.log(`[intuition-publisher] ${message}`, meta ?? "");
   });
 
+  const chain =
+    options?.chain !== undefined
+      ? options.chain
+      : createCertificationChain(config, log);
+  if (chain) {
+    void chain
+      .balance()
+      .then((balance) =>
+        log("certification_publisher_on", {
+          operator: chain.operatorAddress,
+          balance,
+          lowBalance: Number(balance) < 1,
+        }),
+      )
+      .catch((err: unknown) =>
+        log("certification_publisher_balance_error", {
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
+  }
+
   let running = false;
   const tick = async () => {
     if (running) return;
     running = true;
     try {
       await processPendingOutboxEvents(db, { config, log });
+      if (chain && config.profileOrigin) {
+        await processCertificationEvents(db, chain, {
+          profileOrigin: config.profileOrigin,
+          log,
+        });
+      }
     } catch (err) {
       log("intuition_publisher_error", {
         error: err instanceof Error ? err.message : String(err),

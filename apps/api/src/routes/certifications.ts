@@ -71,6 +71,17 @@ function rowToCertification(
     },
     comment: row.comment ?? undefined,
     createdAt: row.createdAt.toISOString(),
+    ...(row.publishedAt && row.attestationTripleId && row.claimTripleId
+      ? {
+          proof: {
+            network: "intuition-testnet" as const,
+            attestationTripleId: row.attestationTripleId,
+            claimTripleId: row.claimTripleId,
+            ...(row.txHash ? { txHash: row.txHash } : {}),
+            publishedAt: row.publishedAt.toISOString(),
+          },
+        }
+      : {}),
   };
 }
 
@@ -310,7 +321,14 @@ export function registerCertificationRoutes(
           if (previous) {
             const [updated] = await tx
               .update(certifications)
-              .set({ revokedAt: null, comment })
+              .set({
+                revokedAt: null,
+                comment,
+                // Not on-chain yet: start the retry schedule again.
+                ...(previous.publishedAt
+                  ? {}
+                  : { publishAttempts: 0, publishError: null, nextPublishAt: null }),
+              })
               .where(eq(certifications.id, previous.id))
               .returning();
             row = updated!;
@@ -340,6 +358,19 @@ export function registerCertificationRoutes(
               },
             })
             .onConflictDoNothing();
+          if (previous && !previous.publishedAt) {
+            // The publisher may have closed this event when the +1 was withdrawn;
+            // reopen it so the reactivated +1 reaches the chain (ADR 0009 §5).
+            await tx
+              .update(outboxEvents)
+              .set({ processedAt: null })
+              .where(
+                and(
+                  eq(outboxEvents.eventType, CERTIFICATION_ATTESTED),
+                  eq(outboxEvents.aggregateId, row.id),
+                ),
+              );
+          }
           return row;
         });
       } catch (error) {
