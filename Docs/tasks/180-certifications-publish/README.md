@@ -10,9 +10,23 @@ Publish each +1 given in slice 1 ([#172](../172-skill-certifications/README.md))
 
 | PR | Scope | State |
 | --- | --- | --- |
-| A | `packages/blockchain`, `/u/[id]` alias, ADR updates | [#181](https://github.com/AllAboard-THP/All-Aboard/pull/181) |
-| B | Publisher in `apps/api/src/intuition/`, env, Docker, docs | [#182](https://github.com/AllAboard-THP/All-Aboard/pull/182) |
-| C | Proof link on published +1s (web) | this PR |
+| A | `packages/blockchain`, `/u/[id]` alias, ADR updates | [#181](https://github.com/AllAboard-THP/All-Aboard/pull/181), merged |
+| B | Publisher in `apps/api/src/intuition/`, env, Docker, docs | [#182](https://github.com/AllAboard-THP/All-Aboard/pull/182), merged |
+| C | Proof link on published +1s (web) | [#183](https://github.com/AllAboard-THP/All-Aboard/pull/183), merged |
+
+B and C were merged into their stacked base branches; [#184](https://github.com/AllAboard-THP/All-Aboard/pull/184) brought them into `Dev`.
+
+## Live on dev (2026-11-18)
+
+- **Operator:** a dedicated testnet wallet, `0x00F033726E4dc4d07bBb7a920c28871A960d0793`, funded with tTRUST. Its key is set on the dev API only and is kept outside the repo. Staging and production have no key, so they publish nothing.
+- **At start-up:** the API logged `certification_publisher_on` with the operator and its balance. It skipped the +1 withdrawn during the slice 1 test (`certification_publish_skipped_revoked`).
+- **First +1 published:** "Ruby", in transaction [`0x9af9…8265`](https://testnet.explorer.intuition.systems/tx/0x9af92866ef2caf47604ccf4b08633d5dc0604f9542a3dd12f2d38055d91a8265) (block `9378946`). It produced the +1 `0x4dfc…3408` and the claim `0xca66…8c60`.
+- **Checks:**
+  - Reading the atoms back from the chain gives `https://dev.allaboard.fr/u/<uuid>` for both people, which redirects to their profile.
+  - The skill atom is the `DefinedTerm` "Ruby".
+  - Both predicates are the registry atoms.
+  - `GET /users/:id/certifications` returns the `proof`.
+- **Cost:** 0.5 tTRUST (3 atoms and 2 triples at 0.1 each, gas is negligible). The predicates already existed from the spike. A +1 between people and a skill already on the chain costs 0.1 to 0.2.
 
 ## PR A
 
@@ -78,7 +92,7 @@ Pure code, no secrets, no network. Exact versions pinned: `@0xintuition/ids`, `@
 ## Rules for PR B
 
 - **Withdrawn before publication:** reload the row; if `revoked_at` is set, mark the event processed and publish nothing (ADR 0009 §5).
-- **Given again after that:** the route reactivates the row but `onConflictDoNothing` keeps the processed event. PR B must reset `processed_at` on reactivation when the row is not published yet, or the +1 never reaches the chain.
+- **Given again after that:** the route reactivates the row and, when the row is not published yet, resets the event's `processed_at` (done in PR B; `onConflictDoNothing` alone would keep it closed).
 - Bootstrap `expertIn` and `attestedBy` once per network; skip atoms and triples that already exist (`isTermCreated`).
 - Off without `INTUITION_PUBLISHER_PRIVATE_KEY`; testnet only (refuse any chain id but 13579).
 

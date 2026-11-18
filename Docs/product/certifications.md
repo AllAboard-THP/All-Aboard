@@ -1,6 +1,6 @@
 # Certifications — community CV on Intuition
 
-**Status:** product decision, 2026-10-19. **Slice 1 live on dev (2026-11-14):** the +1 is stored in Postgres and nothing is published on-chain yet ([#172](https://github.com/AllAboard-THP/All-Aboard/issues/172)). Slice 2 publishes it on Intuition testnet.  
+**Status:** product decision, 2026-10-19. **Slice 1 live on dev (2026-11-14):** the +1 is stored in Postgres ([#172](https://github.com/AllAboard-THP/All-Aboard/issues/172)). **Slice 2 live on dev (2026-11-18):** each +1 is also published on Intuition testnet, with a proof link on the profile ([#180](https://github.com/AllAboard-THP/All-Aboard/issues/180)). Production publishes nothing yet.  
 **Web3 scope:** certifications only. Help requests stay in Postgres.  
 **Architecture:** [ADR 0009](../adr/0009-certifications-intuition.md) (accepted 2026-11-13). The optional comment stays off-chain in the first slice (product sign-off 2026-10-30).
 
@@ -58,7 +58,14 @@ Slice 1 ([#172](https://github.com/AllAboard-THP/All-Aboard/issues/172), [task n
 - `skills` is the admin-curated catalogue, seeded with about ten skills.
 - `certifications` holds one row per +1, with the optional comment (280 characters, checked by moderation).
 - The public profile shows a "Validated skills" card. A member who was helped by the profile owner sees the +1 form; the author of a +1 can withdraw it.
-- Each +1 already writes a `certification.attested` outbox event. Nothing consumes it yet; the slice 2 publisher will also publish past +1s.
+- Each +1 writes a `certification.attested` outbox event.
+
+Slice 2 ([#180](https://github.com/AllAboard-THP/All-Aboard/issues/180), [task notes](../tasks/180-certifications-publish/README.md)) publishes those events on Intuition testnet:
+
+- The API publisher signs with a dedicated operator wallet. It creates the missing atoms (person, peer, skill), the claim `person expert in skill` and the +1 `claim attested by peer`.
+- A +1 withdrawn before publication is never published.
+- Once published, the +1 shows "Proof on Intuition", which opens its transaction on the testnet explorer. The card says that All-Aboard records the +1 on the giver's behalf and that a withdrawn +1 stays on the chain.
+- It is on for dev only. Without `INTUITION_PUBLISHER_PRIVATE_KEY`, the events wait.
 
 `users.certification_tags` is a text array on the user (seed data, or a profile patch). It filters mentor responses on a help request when tags overlap ([#83](https://github.com/AllAboard-THP/All-Aboard/issues/83)). That is not a peer +1, not a comment, and not a graph write.
 

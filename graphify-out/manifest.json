@@ -105,12 +105,12 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/en.json": {
-    "mtime": 1794913170.793155,
+    "mtime": 1794926910.0966368,
     "ast_hash": "6a9bb56577c5af8725cbfcc20f839eb7",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/messages/fr.json": {
-    "mtime": 1794913170.793155,
+    "mtime": 1794926910.1007175,
     "ast_hash": "132e4d9f7348a2929e8f821d5fa847e0",
     "semantic_hash": ""
   },
@@ -1685,7 +1685,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/openapi.yaml": {
-    "mtime": 1794913134.053417,
+    "mtime": 1794926910.0966368,
     "ast_hash": "d591854c035c40e69cc53775639e10e6",
     "semantic_hash": ""
   },
@@ -2565,7 +2565,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/types/src/index.ts": {
-    "mtime": 1794913134.053417,
+    "mtime": 1794926910.1088796,
     "ast_hash": "7c5578b4eeaceea601aef2b2c42d298b",
     "semantic_hash": ""
   },
@@ -3425,8 +3425,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/certifications.md": {
-    "mtime": 1794828038.6347742,
-    "ast_hash": "a6ebc64f8315c8baa5b6b96be3e01452",
+    "mtime": 1794994040.2358751,
+    "ast_hash": "a8ad2430039a502e166ff799122cfbad",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0014_rename_intuition_published_at.sql": {
@@ -6970,12 +6970,12 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/certifications.ts": {
-    "mtime": 1794913134.053417,
+    "mtime": 1794926910.0966368,
     "ast_hash": "9b783f2d776aab99972f802c0d904325",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/certifications.test.ts": {
-    "mtime": 1794913147.9976966,
+    "mtime": 1794926910.0966368,
     "ast_hash": "c082d63c593329c2320bb3b370886f8e",
     "semantic_hash": ""
   },
@@ -7005,17 +7005,17 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/tests/skill-certification-form.test.tsx": {
-    "mtime": 1794913184.3260398,
+    "mtime": 1794926910.1007175,
     "ast_hash": "9ead91d13fc5db4306b441fd58d4b05f",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/user-certifications-card.tsx": {
-    "mtime": 1794913170.7888217,
+    "mtime": 1794926910.0966368,
     "ast_hash": "a2045e722401a41f770eb0500a4c815d",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/components/features/certification-withdraw-button.tsx": {
-    "mtime": 1794913170.7888217,
+    "mtime": 1794926910.0966368,
     "ast_hash": "9e71e980f7446dafe5b83eb38e1605ac",
     "semantic_hash": ""
   },
@@ -7075,8 +7075,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/180-certifications-publish/README.md": {
-    "mtime": 1794913192.5661013,
-    "ast_hash": "07c0b588749c8f0c04a2c99d45d98231",
+    "mtime": 1794994040.2400827,
+    "ast_hash": "950d132f12cf565860c86cb1f0208d5e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0017_certification_publish_schedule.sql": {
@@ -7100,7 +7100,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/web/lib/intuition-proof.ts": {
-    "mtime": 1794913170.775822,
+    "mtime": 1794926910.0966368,
     "ast_hash": "c1986634a00861c314f8a555f383882b",
     "semantic_hash": ""
   }
