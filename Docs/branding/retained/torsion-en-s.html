@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Torsion en S — All-Aboard</title>
+<style>
+* { box-sizing: border-box; }
+:root { font-family: system-ui, sans-serif; color: #202020; background: #f5f4f1; }
+body { margin: 0; }
+main { max-width: 1060px; margin: auto; padding: 24px clamp(14px, 4vw, 36px) 32px; }
+header p { font-size: .78rem; color: #5d5d58; margin: 0; }
+h1 { font-size: clamp(1.6rem, 4vw, 2.25rem); line-height: 1.12; letter-spacing: -.04em; margin: 4px 0 18px; }
+figure { margin: 0; }
+canvas { display: block; width: 100%; background: white; aspect-ratio: 1.72; }
+#preview { aspect-ratio: 2.1; border: 1px solid #d3d1cd; border-radius: 8px; }
+figcaption { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 14px; margin: 14px 0 20px; }
+#description { flex: 1 1 310px; margin: 0; font-size: .9rem; color: #53534e; line-height: 1.45; max-width: 56ch; }
+#controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+#play { padding: 7px 12px; min-width: 84px; border-radius: 6px; background: #272825; border: 1px solid #272825; color: #fff; font-size: .84rem; }
+label { display: flex; gap: 7px; align-items: center; font-size: .8rem; }
+input { width: 85px; accent-color: #322f29; }
+output { min-width: 4ch; font-variant-numeric: tabular-nums; }
+button:focus-visible { outline: 2px solid #395a99; outline-offset: 3px; }
+@media (max-width: 580px) {
+  #preview { aspect-ratio: 1.45; }
+}
+</style>
+</head>
+<body>
+<main>
+  <header><p>All-Aboard</p><h1>Torsion en S</h1></header>
+  <figure>
+    <canvas id="preview" role="img" aria-label="Maillage filaire irrégulier en torsion, de gauche à droite"></canvas>
+    <figcaption>
+      <p id="description">Les cellules suivent un axe qui ondule. La rotation du tube accentue les croisements près du resserrement.</p>
+      <div id="controls">
+        <button id="play" type="button"></button>
+        <label for="speed">Vitesse <input id="speed" type="range" min="0.25" max="2" step="0.05" value="1"></label>
+        <output for="speed" id="rate">1×</output>
+      </div>
+    </figcaption>
+  </figure>
+</main>
+<script>
+"use strict";
+const model = { seed: 9, end: 0.37, twist: 2.3, bend: 0.15, wake: 0.03 };
+const period = 18;
+const circumference = 12;
+const tau = 2 * Math.PI;
+const mod = (n, by) => ((n % by) + by) % by;
+const smooth = (t) => { const x = Math.max(0, Math.min(1, t)); return x * x * (3 - 2 * x); };
+function random(col, row, seed) {
+    const value = Math.sin(col * 127.1 + row * 311.7 + seed * 43.3) * 43758.5453;
+    return value - Math.floor(value);
+}
+function cellSite(col, row, seed, jitter) {
+    const x = mod(col, period);
+    const y = mod(row, circumference);
+    return {
+        x: col + mod(row, 2) * 0.5 + (random(x, y, seed) - 0.5) * jitter,
+        y: row + (random(x, y, seed + 11) - 0.5) * jitter,
+    };
+}
+function clipToNeighbor(points, center, neighbor) {
+    const midpoint = { x: (center.x + neighbor.x) / 2, y: (center.y + neighbor.y) / 2 };
+    const signedDistance = (point) => (point.x - midpoint.x) * (neighbor.x - center.x) +
+        (point.y - midpoint.y) * (neighbor.y - center.y);
+    const clipped = [];
+    for (let i = 0; i < points.length; i++) {
+        const a = points[i];
+        const b = points[(i + 1) % points.length];
+        const da = signedDistance(a);
+        const db = signedDistance(b);
+        if (da <= 0)
+            clipped.push(a);
+        if ((da < 0 && db > 0) || (da > 0 && db < 0)) {
+            const t = da / (da - db);
+            clipped.push({ x: a.x + t * (b.x - a.x), y: a.y + t * (b.y - a.y) });
+        }
+    }
+    return clipped;
+}
+function buildMesh(model) {
+    const edges = new Map();
+    const key = (p) => [p.x, p.y].map(n => Math.round(n * 10000)).join(",");
+    const addEdge = (a, b) => {
+        const shiftX = period * Math.floor(((a.x + b.x) / 2 + 1e-8) / period);
+        const shiftY = circumference * Math.floor(((a.y + b.y) / 2 + 1e-8) / circumference);
+        const start = { x: a.x - shiftX, y: a.y - shiftY };
+        const end = { x: b.x - shiftX, y: b.y - shiftY };
+        if (key(start) !== key(end))
+            edges.set([key(start), key(end)].sort().join("/"), { a: start, b: end });
+    };
+    const jitter = 1.08;
+    for (let row = 0; row < circumference; row++) {
+        for (let col = 0; col < period; col++) {
+            const center = cellSite(col, row, model.seed, jitter);
+            const { x, y } = center;
+            let cell = [{ x: x - 2, y: y - 2 }, { x: x + 2, y: y - 2 },
+                { x: x + 2, y: y + 2 }, { x: x - 2, y: y + 2 }];
+            for (let dy = -3; dy <= 3; dy++) {
+                for (let dx = -3; dx <= 3; dx++) {
+                    if (dx || dy)
+                        cell = clipToNeighbor(cell, center, cellSite(col + dx, row + dy, model.seed, jitter));
+                }
+            }
+            cell.forEach((point, i) => addEdge(point, cell[(i + 1) % cell.length]));
+        }
+    }
+    return [...edges.values()];
+}
+const mesh = buildMesh(model);
+function meshLines(phase, width, height) {
+    const fieldWidth = 8.8;
+    const offset = mod(phase, period);
+    const project = (point, repeat) => {
+        const u = (point.x + repeat * period + offset) / fieldWidth;
+        const angle = point.y / circumference * tau + model.twist * smooth(u) + 0.38;
+        const depth = Math.cos(angle);
+        const taper = 1.53 + (model.end - 1.53) * smooth((u + 0.05) / 1.05);
+        const widthAtU = taper + model.wake * smooth((u - 0.75) / 0.25);
+        const axis = 0.50 + model.bend * Math.sin(u * 4.1 - 0.42) + 0.09 * smooth(u);
+        return {
+            x: width * (u + (0.057 - 0.029 * smooth(u)) * depth),
+            y: height * (axis + 0.5 * widthAtU * Math.sin(angle)),
+            depth,
+        };
+    };
+    const lines = [];
+    for (const edge of mesh) {
+        for (let repeat = -2; repeat <= 0; repeat++) {
+            const lo = Math.min(edge.a.x, edge.b.x) + repeat * period + offset;
+            const hi = Math.max(edge.a.x, edge.b.x) + repeat * period + offset;
+            if (hi < -2 || lo > fieldWidth + 2)
+                continue;
+            const a = project(edge.a, repeat);
+            const b = project(edge.b, repeat);
+            lines.push({ a, b, opacity: 0.5 + 0.40 * (a.depth + b.depth + 2) / 4 });
+        }
+    }
+    return lines;
+}
+function paint(canvas, phase) {
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    if (!width || !height)
+        return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const pixelWidth = Math.round(width * dpr);
+    const pixelHeight = Math.round(height * dpr);
+    if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+        canvas.width = pixelWidth;
+        canvas.height = pixelHeight;
+    }
+    const ctx = canvas.getContext("2d");
+    if (!ctx)
+        return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, width, height);
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = width < 300 ? 0.8 : 1.12;
+    for (const { a, b, opacity } of meshLines(phase, width, height)) {
+        ctx.globalAlpha = opacity;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+}
+
+const preview = document.querySelector("#preview");
+const play = document.querySelector("#play");
+const speed = document.querySelector("#speed");
+const rate = document.querySelector("#rate");
+const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
+let playing = !motionPreference.matches;
+let phase = 0.3;
+let frame = 0;
+let last = 0;
+
+function animate(now) {
+  if (last) phase = mod(phase + Math.min((now - last) / 1000, 0.05) * speed.valueAsNumber * 0.34, period);
+  last = now;
+  paint(preview, phase);
+  frame = requestAnimationFrame(animate);
+}
+function updatePlayback() {
+  play.textContent = playing ? "Pause" : "Animer";
+  cancelAnimationFrame(frame);
+  last = 0;
+  if (playing) frame = requestAnimationFrame(animate);
+}
+play.addEventListener("click", () => {
+  playing = !playing;
+  updatePlayback();
+});
+speed.addEventListener("input", () => {
+  rate.textContent = speed.valueAsNumber.toLocaleString("fr-FR") + "×";
+});
+const observer = new ResizeObserver(() => paint(preview, phase));
+observer.observe(preview);
+paint(preview, phase);
+updatePlayback();
+</script>
+</body>
+</html>
