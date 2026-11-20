@@ -35,6 +35,8 @@ Storybook: **Patterns/Legacy Brand** (`legacy-brand.stories.tsx`).
 
 - **Torsion en S** · Landing page motion concept. A black-wireframe mesh on white fills the left edge and narrows toward the right. The prototype includes play, pause and a speed control. Open the [standalone HTML prototype](retained/torsion-en-s.html) in a browser.
 
+- **Circuit** · Three retained motion studies for future refinement. The intended use is open. The [standalone prototype](retained/circuit.html) includes **Axe principal**, **Cascade de relais**, and **Lignes parallèles**.
+
 ## Production assets
 
 Production rasters ship in [`packages/ui/src/assets/`](../../packages/ui/src/assets/), bundled with `@allaboard/ui`.

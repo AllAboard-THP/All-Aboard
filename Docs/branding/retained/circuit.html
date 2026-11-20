@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Circuit — All-Aboard</title>
+  <style>
+    :root { color-scheme: light dark; --font-size-base: 16px; --foreground: light-dark(#202121, #f0f0ee); --muted: light-dark(#f2f2ef, #252625); --muted-foreground: light-dark(#575956, #b8bbb7); --viz-series-1: light-dark(#5b32c7, #bba6ff); font: 1rem/1.45 system-ui, sans-serif; }
+    body { margin: 0; color: var(--foreground); }
+    main { max-width: 58rem; margin: auto; padding: clamp(1rem, 4vw, 2rem); }
+    h1 { margin: 0 0 1rem; font-size: 1.5rem; font-weight: 500; }
+    p { margin: 0; }
+    label { display: grid; gap: .25rem; }
+    select, button { font: inherit; padding: .4rem .6rem; }
+    .text-small { font-size: .875rem; }
+    .text-muted { color: var(--muted-foreground); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Circuit</h1>
+<div id="aa-circuit-studies">
+  <style>
+    #aa-circuit-studies { --circuit-gap: calc(var(--font-size-base, 14px) * .85); display: grid; gap: var(--circuit-gap); color: var(--foreground); }
+    #aa-circuit-studies .circuit-toolbar { display: flex; flex-wrap: wrap; gap: var(--circuit-gap); align-items: end; }
+    #aa-circuit-studies .circuit-field { display: block; width: 100%; aspect-ratio: 2.42; background: var(--muted); color: var(--foreground); }
+    #aa-circuit-studies .circuit-trace { fill: none; stroke: currentColor; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+    #aa-circuit-studies .circuit-terminal { fill: currentColor; opacity: .73; }
+    #aa-circuit-studies .circuit-junction { fill: var(--muted); stroke: currentColor; stroke-width: 1.15; vector-effect: non-scaling-stroke; }
+    #aa-circuit-studies .circuit-pulse { fill: var(--viz-series-1, currentColor); }
+    #aa-circuit-studies .circuit-tail { fill: none; stroke: var(--viz-series-1, currentColor); stroke-linecap: round; stroke-width: 2; vector-effect: non-scaling-stroke; }
+  </style>
+  <div class="circuit-toolbar">
+    <label class="form-label">Variante
+      <select class="form-select" data-variant>
+        <option value="axis">Axe principal</option>
+        <option value="relay">Cascade de relais</option>
+        <option value="rails">Lignes parallèles</option>
+      </select>
+    </label>
+    <button type="button" class="btn" data-play>Jouer le signal</button>
+    <span class="sr-only" aria-live="polite" data-progress></span>
+  </div>
+  <svg class="circuit-field" data-field role="img" aria-labelledby="aa-circuit-caption" viewBox="0 0 720 298" preserveAspectRatio="xMinYMid meet"></svg>
+  <p id="aa-circuit-caption" class="text-small text-muted" aria-live="polite"></p>
+</div>
+<script>
+(() => {
+  const root = document.getElementById("aa-circuit-studies");
+  const field = root.querySelector("[data-field]");
+  const select = root.querySelector("[data-variant]");
+  const button = root.querySelector("[data-play]");
+  const caption = root.querySelector("#aa-circuit-caption");
+  const status = root.querySelector("[data-progress]");
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const namespace = "http://www.w3.org/2000/svg";
+  const variants = {
+    axis: {
+      caption: "Un axe traverse la composition. Le signal se divise vers les branches du haut et du bas.",
+      traces: [
+        [[-8,148],[482,148]],
+        [[64,148],[64,61],[210,61]],
+        [[116,148],[116,226],[246,226]],
+        [[171,148],[171,108],[345,108]],
+        [[259,148],[259,196],[388,196]],
+        [[338,148],[338,57],[420,57]],
+        [[403,148],[403,177],[448,177]],
+        [[64,61],[64,35],[122,35]],
+        [[116,226],[116,260],[191,260]]
+      ],
+      junctions: [[64,148],[116,148],[171,148],[259,148],[338,148],[338,108],[403,148],[64,61],[116,226]],
+      signals: [
+        {points:[[-8,148],[482,148]], at:0, duration:.84},
+        {points:[[116,148],[116,226],[246,226]], at:.22, duration:.48},
+        {points:[[338,148],[338,57],[420,57]], at:.59, duration:.40}
+      ]
+    },
+    relay: {
+      caption: "Le signal avance par paliers et bifurque aux relais, comme dans un schéma de connexions.",
+      traces: [
+        [[-8,225],[89,225],[89,179],[168,179],[168,121],[273,121],[273,77],[418,77],[418,55],[464,55]],
+        [[-8,106],[53,106],[53,144],[89,144]],
+        [[89,179],[89,53],[151,53]],
+        [[168,179],[226,179],[226,219],[304,219]],
+        [[210,121],[210,97],[242,97]],
+        [[273,121],[273,163],[352,163],[352,135],[388,135]],
+        [[418,77],[418,109],[455,109]],
+        [[53,106],[53,75],[76,75]]
+      ],
+      junctions: [[53,106],[89,144],[89,179],[89,225],[168,179],[210,121],[273,121],[418,77]],
+      signals: [
+        {points:[[-8,225],[89,225],[89,179],[168,179],[168,121],[273,121],[273,77],[418,77],[418,55],[464,55]], at:0, duration:.96},
+        {points:[[168,179],[226,179],[226,219],[304,219]], at:.32, duration:.43}
+      ]
+    },
+    rails: {
+      caption: "Quatre lignes décalées forment une nappe. Les signaux changent de ligne à des endroits différents.",
+      traces: [
+        [[-8,64],[244,64],[244,85],[384,85]],
+        [[-8,114],[102,114],[102,126],[471,126]],
+        [[-8,174],[193,174],[193,158],[428,158]],
+        [[-8,222],[307,222],[307,204],[395,204]],
+        [[54,64],[54,114]],
+        [[145,126],[145,174]],
+        [[193,174],[193,222]],
+        [[270,126],[270,158]],
+        [[306,85],[306,126]],
+        [[353,158],[353,204]]
+      ],
+      junctions: [[54,64],[54,114],[145,126],[145,174],[193,174],[193,222],[270,126],[270,158],[306,85],[306,126],[353,158],[353,204]],
+      signals: [
+        {points:[[-8,64],[54,64],[54,114],[102,114],[102,126],[270,126],[270,158],[428,158]], at:0, duration:.93},
+        {points:[[-8,222],[193,222],[193,158],[353,158],[353,204],[395,204]], at:.17, duration:.82}
+      ]
+    }
+  };
+  let frame = 0;
+  let signals = [];
+
+  function mark(tag, attributes) {
+    const node = document.createElementNS(namespace, tag);
+    for (const [key,value] of Object.entries(attributes)) node.setAttribute(key, String(value));
+    field.append(node);
+    return node;
+  }
+
+  const pathData = points => "M " + points.map(point => point.join(" ")).join(" L ");
+  const key = point => point.join(",");
+  function stop(message = "") {
+    cancelAnimationFrame(frame);
+    frame = 0;
+    for (const signal of signals) {
+      signal.dot.setAttribute("visibility","hidden");
+      signal.tail.setAttribute("visibility","hidden");
+    }
+    button.textContent = "Jouer le signal";
+    status.textContent = message;
+  }
+
+  function render() {
+    stop();
+    field.replaceChildren();
+    const model = variants[select.value];
+    caption.textContent = model.caption;
+    const junctionKeys = new Set(model.junctions.map(key));
+    const terminals = new Map();
+    model.traces.forEach((points,index) => {
+      mark("path",{d:pathData(points),class:"circuit-trace",opacity:index === 0 ? .69 : .42,"stroke-width":index === 0 ? 1.45 : 1.05});
+      for (const point of [points[0],points.at(-1)]) {
+        if (point[0] >= 0 && !junctionKeys.has(key(point))) terminals.set(key(point),point);
+      }
+    });
+    for (const [x,y] of terminals.values()) mark("circle",{cx:x,cy:y,r:2.75,class:"circuit-terminal"});
+    for (const [x,y] of model.junctions) mark("circle",{cx:x,cy:y,r:4.4,class:"circuit-junction"});
+    signals = model.signals.map(signal => {
+      const track = mark("path",{d:pathData(signal.points),fill:"none",stroke:"none","aria-hidden":"true"});
+      const length = track.getTotalLength();
+      const tail = mark("path",{d:pathData(signal.points),class:"circuit-tail",visibility:"hidden","aria-hidden":"true"});
+      const dot = mark("circle",{r:3.7,class:"circuit-pulse",visibility:"hidden","aria-hidden":"true"});
+      return {...signal,track,length,tail,dot};
+    });
+  }
+
+  function draw(signal,time) {
+    const local = (time - signal.at) / signal.duration;
+    const visible = local >= 0 && local <= 1;
+    for (const item of [signal.dot,signal.tail]) item.setAttribute("visibility",visible ? "visible" : "hidden");
+    if (!visible) return;
+    const distance = local * signal.length;
+    const tip = signal.track.getPointAtLength(distance);
+    signal.dot.setAttribute("cx",tip.x);
+    signal.dot.setAttribute("cy",tip.y);
+    const size = Math.min(23,distance);
+    signal.tail.setAttribute("stroke-dasharray",size + " " + (signal.length + 30));
+    signal.tail.setAttribute("stroke-dashoffset",size-distance);
+    signal.tail.setAttribute("opacity",.5);
+  }
+
+  function play() {
+    if (frame) { stop("Signal arrêté."); return; }
+    if (reducedMotion.matches) {
+      for (const signal of signals) draw(signal,signal.at + signal.duration * .66);
+      status.textContent = "Signaux affichés à l’arrêt.";
+      return;
+    }
+    const start = performance.now();
+    button.textContent = "Arrêter le signal";
+    status.textContent = "Signal en cours.";
+    function tick(now) {
+      const progress = (now-start)/3700;
+      if (progress >= 1) { stop("Trajet terminé."); return; }
+      for (const signal of signals) draw(signal,progress);
+      frame = requestAnimationFrame(tick);
+    }
+    frame = requestAnimationFrame(tick);
+  }
+  select.addEventListener("change",render);
+  button.addEventListener("click",play);
+  reducedMotion.addEventListener("change",() => stop());
+  render();
+})();
+</script>
+</main>
+</body>
+</html>
