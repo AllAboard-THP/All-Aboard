@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { hashPassword } from "../auth/password.js";
 import type { AppDatabase } from "./client.js";
-import { skills, subjects, users } from "./schema.js";
+import { oauthAccounts, skills, subjects, users } from "./schema.js";
 import {
   demoMentorSubjectLinks,
   demoSeedUsers,
@@ -19,6 +19,14 @@ export type SeedUserSpec = {
   avatarUrl?: string;
   educationLevel?: string;
   certificationTags?: string[];
+  /** Defaults to true. False leaves the CGU gate pending (onboarding demo). */
+  cguAccepted?: boolean;
+  notifyOnComment?: boolean;
+  notifyOnMessage?: boolean;
+  /** No password hash: the account can only sign in through OAuth. */
+  passwordless?: boolean;
+  /** Fake Google subject linked in oauth_accounts (admin / profile display only). */
+  googleSubject?: string;
 };
 
 export type SeedSubjectSpec = {
@@ -106,6 +114,7 @@ export function defaultSeedUsers(): SeedUserSpec[] {
       avatarUrl:
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop",
       certificationTags: ["react", "typescript", "rails", "javascript"],
+      googleSubject: "seed-google-alice-000000000001",
     },
     {
       email: "admin@dev.local",
@@ -198,7 +207,9 @@ export async function seedSkills(
 export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise<void> {
   const cguAcceptedAt = new Date();
   for (const spec of specs) {
-    const passwordHash = await hashPassword(spec.password);
+    const passwordHash = spec.passwordless
+      ? null
+      : await hashPassword(spec.password);
     const existing = await db
       .select({ id: users.id })
       .from(users)
@@ -215,7 +226,9 @@ export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise
       bio: spec.bio?.trim() || null,
       avatarUrl: spec.avatarUrl?.trim() || null,
       educationLevel: spec.educationLevel?.trim() || null,
-      cguAcceptedAt,
+      cguAcceptedAt: spec.cguAccepted === false ? null : cguAcceptedAt,
+      notifyOnComment: spec.notifyOnComment ?? true,
+      notifyOnMessage: spec.notifyOnMessage ?? true,
       updatedAt: new Date(),
     };
     if (existing.length > 0) {
@@ -228,6 +241,25 @@ export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise
         email: spec.email,
         ...profileFields,
       });
+    }
+
+    if (spec.googleSubject) {
+      const [user] = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, spec.email))
+        .limit(1);
+      if (user) {
+        await db
+          .insert(oauthAccounts)
+          .values({
+            userId: user.id,
+            provider: "google",
+            providerAccountId: spec.googleSubject,
+            email: spec.email,
+          })
+          .onConflictDoNothing();
+      }
     }
   }
 }

@@ -80,6 +80,8 @@ async function upsertHelpRequest(
     educationLevel: spec.educationLevel ?? null,
     aiSummary: spec.aiSummary ?? null,
     flaggedForModeration: spec.flaggedForModeration ?? false,
+    deletedAt:
+      spec.deletedHoursAgo === undefined ? null : hoursAgo(spec.deletedHoursAgo),
     createdAt,
     updatedAt: createdAt,
   };
@@ -106,6 +108,7 @@ async function upsertHelpRequest(
         educationLevel: values.educationLevel,
         aiSummary: values.aiSummary,
         flaggedForModeration: values.flaggedForModeration,
+        deletedAt: values.deletedAt,
         updatedAt: new Date(),
       })
       .where(eq(helpRequests.id, spec.id));
@@ -317,6 +320,7 @@ export async function seedDemoContent(db: AppDatabase): Promise<void> {
         })
         .where(eq(resources.id, spec.id));
     } else {
+      const createdAt = hoursAgo(spec.hoursAgo ?? 0);
       await db.insert(resources).values({
         id: spec.id,
         title: spec.title,
@@ -324,6 +328,8 @@ export async function seedDemoContent(db: AppDatabase): Promise<void> {
         userId,
         subjectId,
         status: spec.status,
+        createdAt,
+        updatedAt: createdAt,
       });
       resourceCount += 1;
     }
@@ -434,24 +440,6 @@ export async function seedDemoContent(db: AppDatabase): Promise<void> {
     }
     if (!conversationId) continue;
 
-    for (const userId of participantIds) {
-      const existingParticipant = await db
-        .select({ id: conversationParticipants.id })
-        .from(conversationParticipants)
-        .where(
-          and(
-            eq(conversationParticipants.conversationId, conversationId),
-            eq(conversationParticipants.userId, userId),
-          ),
-        )
-        .limit(1);
-      if (existingParticipant.length > 0) continue;
-      await db.insert(conversationParticipants).values({
-        conversationId,
-        userId,
-      });
-    }
-
     for (const msg of spec.messages) {
       const authorId = await loadUserIdByEmail(db, msg.authorEmail);
       if (!authorId) continue;
@@ -480,6 +468,56 @@ export async function seedDemoContent(db: AppDatabase): Promise<void> {
         messageCount += 1;
       }
     }
+
+    // Read state is anchored on stored message timestamps so re-runs stay stable.
+    const storedMessages = await db
+      .select({ id: messages.id, createdAt: messages.createdAt })
+      .from(messages)
+      .where(eq(messages.conversationId, conversationId));
+    const createdAtById = new Map(
+      storedMessages.map((row) => [row.id, row.createdAt]),
+    );
+
+    for (const [index, userId] of participantIds.entries()) {
+      const readUpToId = spec.readUpTo?.[index];
+      const lastReadAt = readUpToId
+        ? (createdAtById.get(readUpToId) ?? null)
+        : null;
+      const existingParticipant = await db
+        .select({ id: conversationParticipants.id })
+        .from(conversationParticipants)
+        .where(
+          and(
+            eq(conversationParticipants.conversationId, conversationId),
+            eq(conversationParticipants.userId, userId),
+          ),
+        )
+        .limit(1);
+      if (existingParticipant[0]) {
+        await db
+          .update(conversationParticipants)
+          .set({ lastReadAt, updatedAt: new Date() })
+          .where(eq(conversationParticipants.id, existingParticipant[0].id));
+        continue;
+      }
+      await db.insert(conversationParticipants).values({
+        conversationId,
+        userId,
+        lastReadAt,
+      });
+    }
+
+    const lastMessageAt = storedMessages.reduce<Date | null>(
+      (latest, row) => (!latest || row.createdAt > latest ? row.createdAt : latest),
+      null,
+    );
+    await db
+      .update(conversations)
+      .set({
+        topic: spec.topic ?? null,
+        ...(lastMessageAt ? { updatedAt: lastMessageAt } : {}),
+      })
+      .where(eq(conversations.id, conversationId));
   }
 
   await recalculateSubjectPostsCounts(db);
