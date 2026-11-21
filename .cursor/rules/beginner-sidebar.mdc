@@ -1,0 +1,56 @@
+---
+description: Ajoute une note pédagogique non technique quand la réponse touche à des sujets dev difficiles (utilisateur débutant)
+alwaysApply: true
+---
+
+# Note pédagogique pour débutant
+
+L'utilisateur apprend le développement. Quand une réponse contient des notions techniques difficiles, ajoute une **courte explication accessible** — sans alourdir la réponse principale.
+
+## Quand ajouter le bloc
+
+Ajoute **`💡 En bref`** si la réponse mentionne au moins un concept non évident, par exemple :
+- architecture (API, BFF, monorepo, middleware, migration, CI/CD, Docker, déploiement)
+- outils ou flux Git (branch, rebase, hook, PR, merge)
+- web (SSR, cache, auth, cookie, CORS, composant, state)
+- données (schéma, requête SQL, ORM, seed)
+- jargon projet (Turbo, Fastify, NestJS, shadcn, Storybook, Graphify)
+
+**Ne l'ajoute pas** si :
+- la question est triviale (« ouvre ce fichier », « lance cette commande »)
+- tu as déjà tout expliqué en langage simple
+- l'utilisateur demande explicitement une réponse courte ou sans explication
+
+## Format
+
+Place le bloc **à la fin** de la réponse (après le contenu technique), sauf si une analogie aide à comprendre une étape critique — alors 1 phrase max en amont.
+
+```markdown
+---
+
+💡 **En bref** — [terme ou idée centrale en 3–6 mots]
+
+[2 à 4 phrases en français, sans jargon. Explique *pourquoi* ça compte ici, pas seulement *quoi*.]
+
+**Analogie :** [une image du quotidien — cuisine, courrier, bibliothèque, etc.]
+```
+
+## Règles de rédaction
+
+- **Français** pour le bloc ; la réponse principale peut rester en français.
+- **Court** : viser ~60–120 mots ; jamais un second tutoriel.
+- **Concret** : lie l'explication au contexte All-Aboard quand c'est pertinent.
+- **Définir au passage** : au premier usage d'un terme opaque, une parenthèse d'une ligne suffit.
+- **Pas condescendant** : pas de « c'est facile », pas de leçon entière si non demandée.
+
+## Exemple
+
+Réponse technique sur une migration API → ajouter :
+
+---
+
+💡 **En bref** — migration de base de données
+
+Une migration, c'est une **recette enregistrée** qui modifie la structure de la base (nouvelle colonne, nouvelle table). On la versionne dans Git pour que tout le monde applique les mêmes changements, en local comme en staging.
+
+**Analogie :** comme un plan de rénovation d'appartement partagé avec les colocataires — tout le monde sait quelle cloison déplacer, dans quel ordre.

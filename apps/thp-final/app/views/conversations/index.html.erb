@@ -1,0 +1,62 @@
+<% content_for :title, "Messages" %>
+
+<div class="animate-fade-in h-[calc(100vh-8rem)]">
+  <div class="glass rounded-2xl h-full overflow-hidden flex">
+    <div class="<%= @conversation.present? && params[:id].present? ? "hidden md:flex" : "flex" %> w-full md:w-80 border-r border-white/10 flex-col">
+      <div class="p-4 border-b border-white/10">
+        <h2 class="text-xl font-bold mb-4">Messages</h2>
+        <div class="relative">
+          <input type="text" placeholder="Rechercher..." class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-primary">
+          <i class="fas fa-search absolute left-3 top-2.5 text-gray-500"></i>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto">
+        <div class="p-3 space-y-1">
+          <% @conversations.each do |conversation| %>
+            <%= render "conversation", conversation: conversation, active: conversation == @conversation %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <% if @conversation.present? %>
+      <% peer = @conversation.other_participant(current_user) %>
+      <div class="<%= params[:id].present? ? "flex" : "hidden md:flex" %> flex-1 flex-col bg-black/20">
+        <%= turbo_stream_from [@conversation, current_user] %>
+
+        <div class="p-4 border-b border-white/10 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <%= link_to conversations_path, class: "md:hidden text-gray-400 hover:text-white" do %>
+              <i class="fas fa-arrow-left"></i>
+            <% end %>
+            <img src="<%= peer.profile_avatar %>" alt="<%= peer.display_name %>" class="w-10 h-10 rounded-full">
+            <div>
+              <h4 class="font-semibold"><%= peer.display_name %></h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 overflow-hidden"
+             data-react-component="ChatApp"
+             data-react-props="<%= {
+               conversationId: @conversation.id,
+               currentUser: {
+                 id:           current_user.id,
+                 display_name: current_user.display_name,
+                 avatar_url:   current_user.profile_avatar
+               },
+               initialMessages: @messages.map(&:as_chat_json)
+             }.to_json %>">
+        </div>
+      </div>
+    <% else %>
+      <div class="hidden md:flex flex-1 items-center justify-center bg-black/20">
+        <div class="text-center text-gray-500">
+          <i class="fas fa-comments text-4xl mb-3"></i>
+          <p>Sélectionnez une conversation</p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

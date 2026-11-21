@@ -1,0 +1,47 @@
+---
+description: Pull requests in professional English with structured documentation
+alwaysApply: true
+---
+
+# Pull requests — English, professional, documented
+
+When creating or drafting a pull request (`gh pr create`, GitHub UI, or suggested PR text for the human):
+
+## Language
+
+- **Title and body in English** — clear, professional, complete sentences.
+- Do not mix French in the PR (chat with the user may stay in French).
+- Use project terms consistently (`apps/web`, `@allaboard/ui`, issue numbers).
+
+## Title
+
+- Imperative or descriptive, ≤ 72 characters.
+- Prefix when helpful: `feat`, `fix`, `docs`, `chore` (aligned with branch name).
+- Example: `feat: add session cookie refresh on BFF proxy`
+
+## Body (required sections)
+
+### Summary
+
+- 1–3 bullets: **why** this change exists and **what** it does for reviewers.
+- Link the issue: `Closes #NN` (full fix) or `Refs #NN` (partial).
+
+### Test plan
+
+- Checklist of concrete verification steps (`pnpm verify`, manual flows, Storybook if UI).
+- State what was run vs. what the reviewer should confirm.
+
+### Notes (optional)
+
+- Breaking changes, migrations, env vars, follow-ups.
+
+## Quality bar
+
+- No empty sections, no "see code" only, no placeholder text.
+- Mention `pnpm verify` outcome when the agent ran it.
+- Screenshots or Storybook links for visible UI changes (when applicable).
+
+## Reference
+
+- Template: [.github/pull_request_template.md](../../.github/pull_request_template.md)
+- Workflow: [.github/PROJECT.md](../../.github/PROJECT.md), [git-branch-workflow.mdc](./git-branch-workflow.mdc)

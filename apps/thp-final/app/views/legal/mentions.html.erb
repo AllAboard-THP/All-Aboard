@@ -1,0 +1,61 @@
+<% content_for :title, "Mentions légales – AllAboard" %>
+
+<div class="max-w-3xl mx-auto py-10 px-4">
+  <div class="glass rounded-2xl p-8 md:p-12 space-y-8">
+    <div class="border-b border-white/10 pb-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+          <i class="fas fa-graduation-cap text-white"></i>
+        </div>
+        <span class="text-xl font-bold gradient-text">AllAboard</span>
+      </div>
+      <h1 class="text-3xl font-extrabold mb-2">Mentions légales</h1>
+      <p class="text-gray-400 text-sm">Conformément aux dispositions de la loi n°2004-575 du 21 juin 2004 pour la Confiance en l'Économie Numérique</p>
+    </div>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-primary">Éditeur du site</h2>
+      <div class="text-gray-300 space-y-1">
+        <p><span class="text-white font-medium">Nom de l'application :</span> AllAboard</p>
+        <p><span class="text-white font-medium">Nature :</span> Plateforme d'entraide étudiante</p>
+        <p><span class="text-white font-medium">Contact :</span> studylink.app@gmail.com</p>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-primary">Hébergement</h2>
+      <div class="text-gray-300 space-y-1">
+        <p>Le site est hébergé par un prestataire d'hébergement cloud. Les coordonnées de l'hébergeur sont disponibles sur demande.</p>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-primary">Propriété intellectuelle</h2>
+      <p class="text-gray-300 leading-relaxed">L'ensemble des éléments constituant le site AllAboard (textes, graphismes, logiciels, animations, etc.) sont la propriété exclusive de leurs auteurs respectifs. Toute reproduction, représentation, adaptation ou exploitation partielle ou totale sans autorisation est strictement interdite.</p>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-primary">Responsabilité</h2>
+      <p class="text-gray-300 leading-relaxed">AllAboard s'efforce d'assurer l'exactitude et la mise à jour des informations diffusées sur le site. Toutefois, AllAboard ne peut garantir l'exactitude, la complétude ou l'actualité des informations publiées par les utilisateurs. En conséquence, AllAboard décline toute responsabilité pour tout dommage résultant d'une imperfection dans les informations disponibles sur le site.</p>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-primary">Données personnelles</h2>
+      <p class="text-gray-300 leading-relaxed">Pour toute information relative au traitement de vos données personnelles, consultez notre <%= link_to "Politique de confidentialité", legal_privacy_path, class: "text-primary hover:underline" %>.</p>
+      <p class="text-gray-300 leading-relaxed">Conformément à la loi « Informatique et Libertés » et au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour l'exercer, contactez-nous à l'adresse indiquée ci-dessus.</p>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-primary">Droit applicable</h2>
+      <p class="text-gray-300 leading-relaxed">Le présent site est soumis au droit français. Les tribunaux compétents en cas de litige sont ceux du ressort de la juridiction française.</p>
+    </section>
+
+    <div class="border-t border-white/10 pt-6 flex flex-wrap gap-4 text-sm text-gray-400">
+      <%= link_to "← Retour", :back, class: "hover:text-white transition-colors" %>
+      <span>•</span>
+      <%= link_to "CGU", legal_cgu_path, class: "hover:text-white transition-colors" %>
+      <span>•</span>
+      <%= link_to "Politique de confidentialité", legal_privacy_path, class: "hover:text-white transition-colors" %>
+    </div>
+  </div>
+</div>
