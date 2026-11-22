@@ -8,7 +8,7 @@ Check the assumptions of [ADR 0009](../../adr/0009-certifications-intuition.md) 
 
 ## Status (2026-11-02)
 
-**Write path confirmed, GraphQL read not confirmed.** One real +1 is on the testnet (see [Real run](#real-run)). The hosted GraphQL had not indexed it 35 minutes later. The other results below come from read calls and `eth_simulateV1` with a balance override.
+**Write path confirmed. The GraphQL gap was a wrong contract, not the indexer.** One real +1 is on the testnet (see [Real run](#real-run)), but on a retired MultiVault that no hosted indexer tracks (see [Indexer answer](#indexer-answer-2026-11-19)). The other results below come from read calls and `eth_simulateV1` with a balance override.
 
 ## Files in this folder
 
@@ -21,7 +21,7 @@ Check the assumptions of [ADR 0009](../../adr/0009-certifications-intuition.md) 
 | Item | Value |
 | --- | --- |
 | Chain | Intuition Testnet, id `13579`, token `tTRUST`, RPC `https://testnet.rpc.intuition.systems/http` |
-| MultiVault | `0xF76d6976DeBFbB012ebc53e925BC4AEFCaA7C6c6` (from `@0xintuition/deployments`) |
+| MultiVault | Spike used `0xF76d6976DeBFbB012ebc53e925BC4AEFCaA7C6c6` (from `@0xintuition/deployments`), a **retired** deployment. The indexed one is `0x2Ece8D4dEdcB9918A398528f3fa4688b1d2CAB91` |
 | Packages | `ids`, `predicates`, `primitives`, `deployments` `0.1.0-alpha.1`; `protocol` `3.0.0-alpha.0`; `viem` `2.57.14` |
 | GraphQL | `https://testnet.intuition.sh/v1/graphql` |
 
@@ -33,7 +33,7 @@ Check the assumptions of [ADR 0009](../../adr/0009-certifications-intuition.md) 
 | Does the contract accept a triple as subject? | Yes | Real transaction (below). Control in simulation: a subject that does not exist reverts with `MultiVault_TermDoesNotExist` |
 | Do the predicates already exist? | **No, on neither network** | `isTermCreated` is false for `expertIn` and `attestedBy` on testnet and mainnet |
 | Does GraphQL expose nested triples? | Yes | `subject_term.type = "Triple"` returns real rows from other apps |
-| Is GraphQL complete and fresh? | **No** (re-checked 2026-11-16) | Our real +1 was not indexed after 35 minutes, and 5 extra blocks did not help. The newest row is still block `9375122` (2026-11-01 23:44 UTC), and the chain logs show no other MultiVault creation since. A triple from block `9373350` is also missing. Cause unknown: stalled indexer, filtering, or a longer delay. **Re-check 2026-11-16:** the indexer is running again (newest triple at block `9378841`, 2026-11-16) and has rows in the blocks around ours, but none in blocks `9375153` to `9375155`, and neither the claim nor the +1 is indexed. Contract reads still return `isTriple = true` for both. So the indexer can skip our writes, and GraphQL is not a source of truth for publication |
+| Is GraphQL complete and fresh? | **No** (re-checked 2026-11-16) | Our real +1 was not indexed after 35 minutes, and 5 extra blocks did not help. The newest row is still block `9375122` (2026-11-01 23:44 UTC), and the chain logs show no other MultiVault creation since. A triple from block `9373350` is also missing. Cause unknown: stalled indexer, filtering, or a longer delay. **Re-check 2026-11-16:** the indexer is running again (newest triple at block `9378841`, 2026-11-16) and has rows in the blocks around ours, but none in blocks `9375153` to `9375155`, and neither the claim nor the +1 is indexed. Contract reads still return `isTriple = true` for both. **Explained 2026-11-19:** the writes went to a retired MultiVault that the indexer does not track; see [Indexer answer](#indexer-answer-2026-11-19) |
 | Skill atom shape | `buildDefinedTerm` from `@0xintuition/primitives/atom` | « Ruby on Rails » gives `{"@context":"https://schema.org/","@type":"DefinedTerm","name":"Ruby on Rails"}`, 79 bytes (limit `atomDataMaxLength` = 1000) |
 | Can a +1 be redeemed? | **Only with an extra deposit** | With `assets` = triple cost, the creator holds **0 shares**. With cost + `minDeposit` (0.01): 0.009875 shares, and `redeem` returns 0.00975 |
 
@@ -64,6 +64,18 @@ Gas is negligible next to the value: about 0.00027 tTRUST for the very first +1,
 - `isTriple` is true for both, and the ids in the `TripleCreated` logs match the ones computed offline.
 - Total spent: 0.70027 tTRUST, in line with the simulation.
 - `expertIn` and `attestedBy` now exist on testnet, at their registry ids.
+
+## Indexer answer (2026-11-19)
+
+Intuition support, on a Discord ticket with the transactions above:
+
+- No gap and no pending reindex. `0xF76d6976…C7C6c6` is a **retired** MultiVault that no hosted indexer tracks. `testnet.intuition.sh` indexes MultiVault `0x2Ece8D4dEdcB9918A398528f3fa4688b1d2CAB91` on chain `13579`; writes there show up within seconds.
+- Nothing is filtered: nested triples and URL atoms on any domain are indexed.
+- Block `9373350` has no MultiVault events, so no triple was missing there.
+- The old address comes from `@0xintuition/deployments`. It is still in `0.1.0` (2026-11-12), so the API no longer reads the address from that package (`INTUITION_TESTNET_MULTIVAULT_ADDRESS` in `apps/api/src/intuition/chain.ts`, override `INTUITION_MULTIVAULT_ADDRESS`).
+- No SLA or status page for testnet.
+
+Checked on 2026-11-19 against `0x2Ece…CAB91` with the same `MultiVaultAbi`: reads work and a simulated `createAtoms` succeeds. Atom cost is `0.001000000001` and triple cost `0.001000000002` tTRUST, 100 times lower than the costs in the table above. `expertIn`, `attestedBy` and the spike's claim do not exist there yet: the publisher bootstrap creates them on the first +1.
 
 ## Points for the ADR
 

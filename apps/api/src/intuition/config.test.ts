@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { loadIntuitionConfig } from "./config.js";
+import { INTUITION_TESTNET_MULTIVAULT_ADDRESS } from "./chain.js";
 import { createCertificationChain } from "./publisher.js";
 
 describe("loadIntuitionConfig", () => {
@@ -77,7 +78,31 @@ describe("loadIntuitionConfig", () => {
       log,
     );
     expect(chain?.operatorAddress).toMatch(/^0x[0-9a-fA-F]{40}$/);
+    // Not the retired address from @0xintuition/deployments.
+    expect(chain?.multiVaultAddress).toBe(INTUITION_TESTNET_MULTIVAULT_ADDRESS);
     // The key never reaches the logs.
     expect(logs.join("\n")).not.toContain("11".repeat(32));
+  });
+
+  it("uses INTUITION_MULTIVAULT_ADDRESS when set, and refuses an invalid one", () => {
+    const log = () => {};
+    const key = `0x${"11".repeat(32)}`;
+    const base = {
+      INTUITION_PUBLISHER_PRIVATE_KEY: key,
+      INTUITION_PROFILE_ORIGIN: "https://dev.allaboard.fr",
+    };
+    const custom = "0x00000000000000000000000000000000000000aa";
+    expect(
+      createCertificationChain(
+        loadIntuitionConfig({ ...base, INTUITION_MULTIVAULT_ADDRESS: custom }),
+        log,
+      )?.multiVaultAddress.toLowerCase(),
+    ).toBe(custom);
+    expect(
+      createCertificationChain(
+        loadIntuitionConfig({ ...base, INTUITION_MULTIVAULT_ADDRESS: "0x123" }),
+        log,
+      ),
+    ).toBeNull();
   });
 });

@@ -192,6 +192,7 @@ export function createCertificationChain(
       privateKey: config.publisherPrivateKey,
       rpcUrl: config.rpcUrl,
       networkId: config.networkId,
+      multiVaultAddress: config.multiVaultAddress,
     });
   } catch (err) {
     // Never log the key; only the reason.

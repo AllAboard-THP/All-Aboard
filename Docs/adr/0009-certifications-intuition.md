@@ -39,7 +39,7 @@ Sources and how they fit together: [intuition-web3.md](../integrations/intuition
 
 The API publisher writes atoms and triples to the Intuition **MultiVault** with `@0xintuition/protocol`, signed by **one operator wallet** owned by All-Aboard.
 
-- **Network:** Intuition testnet only, selected by `INTUITION_NETWORK_ID` and resolved through `@0xintuition/deployments`. Mainnet needs a separate decision: security review, funding policy, and an ADR revision.
+- **Network:** Intuition testnet only, selected by `INTUITION_NETWORK_ID`. The MultiVault is the one the hosted indexer tracks (`0x2Ece8D4dEdcB9918A398528f3fa4688b1d2CAB91`), pinned in code with an `INTUITION_MULTIVAULT_ADDRESS` override. It is not read from `@0xintuition/deployments`, which still returns a retired deployment (2026-11-19). Mainnet needs a separate decision: security review, funding policy, and an ADR revision.
 - **Signer:** new secret `INTUITION_PUBLISHER_PRIVATE_KEY`, on the API service only. It is never logged, never sent to `apps/web`, and is separate from `INTUITION_API_KEY`. No key means the publisher stays off and events wait in the outbox.
 - **Not Core's write API:** `POST /api/atoms` on an Intuition Core node writes to that node's knowledge graph, not to the chain. It also needs a node we run, built from the unreleased `feat/intuition-core-v2` branch. That does not give the public claim the product needs. Core stays a possible **read** path later.
 - **Users sign nothing.** The wallet is not a login, and users keep using passkeys. On-chain, the operator is the signer. The peer appears as an atom in the claim (section 2). Trust therefore rests on All-Aboard's operator: the claim is public and append-only, but it is not cryptographically signed by the peer. User-held wallets (embedded wallets, smart accounts) are out of scope for this ADR.
@@ -109,7 +109,7 @@ Revisit after moderation is in place, for example by publishing only a hash of t
 
 - **`packages/blockchain`** (`@allaboard/blockchain`, new): pure code with no secrets and no network calls. It holds the atom builders, the frozen bytes, id helpers over `@0xintuition/ids` and the predicate imports, and the golden-id tests. It depends on `@0xintuition/ids`, `@0xintuition/predicates`, `@0xintuition/primitives` and, if chosen, `@0xintuition/classifications`, plus `viem` for the peer dependency.
 - **`apps/api/src/intuition/`**: the certification publisher (`@0xintuition/protocol`, `@0xintuition/deployments`, `viem` wallet client). It stays in the API process, as ADR 0004 section 2 allows.
-- **Reads:** the profile shows +1s from Postgres. It is fast, works when the chain is down, and hides revoked rows. Each published +1 links to its triple in the Intuition explorer as the public proof. The proof page states that All-Aboard recorded the +1 on the peer's behalf (the peer did not sign it), and that a withdrawn +1 stays on the chain as history. Reconciliation uses contract reads (`isTriple`). The hosted GraphQL (`INTUITION_GRAPHQL_URL`) is not relied on yet: it had not indexed the spike's +1 after 35 minutes. Showing +1s that other apps wrote on the same claim is a later step.
+- **Reads:** the profile shows +1s from Postgres. It is fast, works when the chain is down, and hides revoked rows. Each published +1 links to its triple in the Intuition explorer as the public proof. The proof page states that All-Aboard recorded the +1 on the peer's behalf (the peer did not sign it), and that a withdrawn +1 stays on the chain as history. Reconciliation uses contract reads (`isTriple`). The hosted GraphQL (`INTUITION_GRAPHQL_URL`) is not relied on yet. The spike's +1 was never indexed because it went to a retired MultiVault (2026-11-19); writes to the indexed contract show up within seconds, so GraphQL can be re-evaluated as a read path. Showing +1s that other apps wrote on the same claim is a later step.
 - Pin exact alpha versions in `package.json`. The `@alpha` tag moves.
 
 ### 7. Spike before implementation
@@ -122,7 +122,7 @@ A short task, on testnet, with a throwaway wallet:
 4. Choose the skill atom shape (classification or `DefinedTerm`).
 5. Read the result back through hosted GraphQL.
 
-Results (2026-11-02): items 1 to 4 confirmed, with `@0xintuition/protocol` `3.0.0-alpha.0` on testnet. Item 5 is not confirmed. Details in the [spike notes](../tasks/161-certifications-spike/README.md).
+Results (2026-11-02): items 1 to 4 confirmed, with `@0xintuition/protocol` `3.0.0-alpha.0` on testnet. Item 5 failed because the package's MultiVault address is retired; Intuition support confirmed on 2026-11-19 that the indexed testnet MultiVault is `0x2Ece…CAB91`. Details in the [spike notes](../tasks/161-certifications-spike/README.md).
 
 ## Consequences
 

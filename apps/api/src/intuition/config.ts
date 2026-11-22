@@ -6,6 +6,8 @@ export type IntuitionConfig = {
   graphqlUrl: string | null;
   /** Chain id; only testnet `13579` is accepted (ADR 0009 §1). */
   networkId: string | null;
+  /** MultiVault override; unset uses the address the hosted testnet indexer tracks. */
+  multiVaultAddress: string | null;
   /**
    * Operator wallet key that signs certification writes. Never logged, API only.
    * Unset: the certification publisher stays off and events wait in the outbox.
@@ -27,6 +29,7 @@ export function loadIntuitionConfig(
     apiKey: env.INTUITION_API_KEY?.trim() || null,
     graphqlUrl: env.INTUITION_GRAPHQL_URL?.trim() || null,
     networkId: env.INTUITION_NETWORK_ID?.trim() || null,
+    multiVaultAddress: env.INTUITION_MULTIVAULT_ADDRESS?.trim() || null,
     publisherPrivateKey: env.INTUITION_PUBLISHER_PRIVATE_KEY?.trim() || null,
     profileOrigin:
       env.INTUITION_PROFILE_ORIGIN?.trim() || env.WEB_APP_URL?.trim() || null,
