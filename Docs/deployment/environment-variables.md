@@ -105,6 +105,7 @@ These variables concern **Phase 2** (API auth); see [ADR 0001](../adr/0001-authe
 | `INTUITION_API_KEY` |  | x |  |  | Intuition Core write key (`ik_…`); never a wallet private key |
 | `INTUITION_GRAPHQL_URL` |  | x |  |  | Graph read (spike #67) |
 | `INTUITION_NETWORK_ID` |  | x |  |  | Chain id; only testnet `13579` is accepted (default) |
+| `INTUITION_MULTIVAULT_ADDRESS` |  | x |  |  | MultiVault override. Default `0x2Ece8D4dEdcB9918A398528f3fa4688b1d2CAB91`, the one the hosted testnet indexer tracks. Do not use the address from `@0xintuition/deployments` (retired) |
 | `INTUITION_PUBLISHER_ENABLED` |  | x |  |  | Default `true`; `false` to disable poll |
 | `INTUITION_PUBLISHER_POLL_MS` |  | x |  |  | Default `5000` |
 | `INDEXER_START_BLOCK` |  |  |  | x | **Legacy** — do not reactivate |

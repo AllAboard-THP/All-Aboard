@@ -50,7 +50,7 @@ Alpha packages (install with the `@alpha` dist-tag, except `@0xintuition/protoco
 | `@0xintuition/predicates` | Shared verbs (`follow`, and the enshrined set). Import one predicate at a time, e.g. `@0xintuition/predicates/follow`. |
 | `@0xintuition/primitives` | Builders (`buildPerson`, triple helpers) returning `{ data, id }` or a typed error. |
 | `@0xintuition/protocol` | MultiVault helpers: create, deposit, redeem, preview, parse events. |
-| `@0xintuition/deployments` | Chain ids and contract addresses. |
+| `@0xintuition/deployments` | Chain ids, chain config and ABIs. Its testnet MultiVault address (`0xF76d…C7C6c6`, up to `0.1.0`) is retired and not indexed: the API pins `0x2Ece8D4dEdcB9918A398528f3fa4688b1d2CAB91` instead (2026-11-19). |
 | `@0xintuition/curves` | Bonding-curve math for TRUST deposit previews. |
 | `@0xintuition/periphery` | TRUST bridge / router helpers (Base). |
 | `@0xintuition/react` | `IntuitionProvider`, `useCreateAtom`, `useDeposit`. Browser only; the API publisher does not need it. |

@@ -46,6 +46,7 @@ function fakeChain() {
   let tx = 0;
   const chain: IntuitionChain = {
     operatorAddress: "0x0000000000000000000000000000000000000001",
+    multiVaultAddress: "0x0000000000000000000000000000000000000002",
     async isTermCreated(id) {
       return terms.has(id);
     },

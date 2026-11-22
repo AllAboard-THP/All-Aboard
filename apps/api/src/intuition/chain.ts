@@ -2,11 +2,7 @@
  * Intuition MultiVault client for the certification publisher (ADR 0009 §1).
  * The only file that holds a signer. Testnet only: any other chain id throws.
  */
-import {
-  getMultiVaultAddressFromChainId,
-  intuitionTestnet,
-  MultiVaultAbi,
-} from "@0xintuition/deployments";
+import { intuitionTestnet, MultiVaultAbi } from "@0xintuition/deployments";
 import {
   multiVaultCreateAtoms,
   multiVaultCreateTriples,
@@ -15,13 +11,24 @@ import {
   createPublicClient,
   createWalletClient,
   formatEther,
+  getAddress,
   http,
+  isAddress,
   stringToHex,
   type Hex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 export const INTUITION_TESTNET_CHAIN_ID = 13579;
+
+/**
+ * MultiVault that the hosted testnet indexer (testnet.intuition.sh) tracks.
+ * Not read from `@0xintuition/deployments`: up to 0.1.0 it still returns the
+ * retired 0xF76d6976…C7C6c6, whose writes no hosted indexer ever sees
+ * (confirmed by Intuition support, 2026-11-19).
+ */
+export const INTUITION_TESTNET_MULTIVAULT_ADDRESS =
+  "0x2Ece8D4dEdcB9918A398528f3fa4688b1d2CAB91" as const;
 
 export type TripleSpec = { subjectId: Hex; predicateId: Hex; objectId: Hex };
 
@@ -30,6 +37,8 @@ export type TxReceipt = { hash: Hex; blockNumber: bigint };
 /** What the publisher needs from the chain; tests use an in-memory fake. */
 export type IntuitionChain = {
   operatorAddress: Hex;
+  /** Contract the writes go to; must be the one the indexer tracks. */
+  multiVaultAddress: Hex;
   isTermCreated(id: Hex): Promise<boolean>;
   /** Creates atoms from their exact strings, pays the atom cost, waits for the receipt. */
   createAtoms(data: string[]): Promise<TxReceipt>;
@@ -43,6 +52,8 @@ export function createIntuitionChain(options: {
   privateKey: string;
   rpcUrl?: string | null;
   networkId?: string | null;
+  /** Defaults to {@link INTUITION_TESTNET_MULTIVAULT_ADDRESS}. */
+  multiVaultAddress?: string | null;
 }): IntuitionChain {
   const chainId = options.networkId
     ? Number(options.networkId)
@@ -52,6 +63,12 @@ export function createIntuitionChain(options: {
       `Intuition publisher runs on testnet ${INTUITION_TESTNET_CHAIN_ID} only (ADR 0009); got ${options.networkId}`,
     );
   }
+  const rawAddress =
+    options.multiVaultAddress?.trim() || INTUITION_TESTNET_MULTIVAULT_ADDRESS;
+  if (!isAddress(rawAddress, { strict: false })) {
+    throw new Error(`Invalid MultiVault address: ${rawAddress}`);
+  }
+  const address = getAddress(rawAddress) as Hex;
   const key = options.privateKey.trim();
   const account = privateKeyToAccount(
     (key.startsWith("0x") ? key : `0x${key}`) as Hex,
@@ -63,7 +80,6 @@ export function createIntuitionChain(options: {
     transport,
     account,
   });
-  const address = getMultiVaultAddressFromChainId(intuitionTestnet.id) as Hex;
   const config = { address, walletClient, publicClient };
 
   async function read<T>(functionName: string, args: unknown[] = []): Promise<T> {
@@ -92,6 +108,7 @@ export function createIntuitionChain(options: {
 
   return {
     operatorAddress: account.address,
+    multiVaultAddress: address,
     isTermCreated: (id) => read<boolean>("isTermCreated", [id]),
     async createAtoms(data) {
       await assertChain();

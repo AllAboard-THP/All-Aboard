@@ -13,6 +13,7 @@ export {
 export {
   createIntuitionChain,
   INTUITION_TESTNET_CHAIN_ID,
+  INTUITION_TESTNET_MULTIVAULT_ADDRESS,
   type IntuitionChain,
   type TripleSpec,
   type TxReceipt,
