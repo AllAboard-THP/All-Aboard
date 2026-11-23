@@ -40,7 +40,7 @@ One **canonical source** per topic. Task backlog and priorities: [GitHub Project
 | Google OAuth SSO | [adr/0007-oauth-google-sso.md](adr/0007-oauth-google-sso.md) | `GOOGLE_*` in env matrix |
 | Design system (`@allaboard/ui`, Storybook) | [design-system/README.md](design-system/README.md) | [ADR 0002](adr/0002-design-system-monorepo.md) |
 | AppShell / web navigation | [design-system/app-shell.md](design-system/app-shell.md) | [#25](https://github.com/AllAboard-THP/All-Aboard/issues/25) |
-| Branding / hero assets | [branding/README.md](branding/README.md) | `.cursor/rules/branding-hero-4k.mdc` |
+| Branding / visual library | [branding/README.md](branding/README.md) | `.cursor/rules/branding-hero-4k.mdc` |
 | i18n web FR/EN | [adr/0005-i18n-web-next-intl.md](adr/0005-i18n-web-next-intl.md) | [tasks/75-i18n-web](tasks/75-i18n-web/) |
 | Agent / Rubberduck / Intuition | [adr/0004-agent-indexer-architecture.md](adr/0004-agent-indexer-architecture.md) | [tasks/37](tasks/37-agent-indexer/), [67](tasks/67-intuition-bridge/), [68](tasks/68-agent-handoff/), [69](tasks/69-agent-ci-dokploy/) |
 | Intuition web3 sources (packages + Core) | [integrations/intuition-web3.md](integrations/intuition-web3.md) | ADR 0004, [task 67](tasks/67-intuition-bridge/) |

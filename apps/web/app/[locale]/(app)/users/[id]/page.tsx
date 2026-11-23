@@ -10,7 +10,14 @@ import { Button } from "@allaboard/ui/components/button";
 
 import { UserPublicContent } from "@/components/features/user-public-content";
 import { Link } from "@/i18n/navigation";
-import { fetchAuthMe, fetchPublicUser } from "@/lib/api-server";
+import type { UserCertificationsData } from "@/components/features/user-certifications-card";
+import {
+  fetchAuthMe,
+  fetchCertificationEligibility,
+  fetchPublicUser,
+  fetchSkills,
+  fetchUserCertifications,
+} from "@/lib/api-server";
 import { parsePublicUserSearchParams } from "@/lib/user-search-params";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +26,27 @@ type Props = {
   params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
+
+/** Loads +1s, and the viewer's eligibility when they look at someone else. */
+async function loadCertifications(
+  userId: string,
+  token: string | undefined,
+  viewerId: string | null,
+): Promise<UserCertificationsData | null> {
+  const canGive = Boolean(token) && Boolean(viewerId) && viewerId !== userId;
+  const [groupsResult, eligibilityResult, skillsResult] = await Promise.all([
+    fetchUserCertifications(userId),
+    canGive ? fetchCertificationEligibility(userId, token!) : null,
+    canGive ? fetchSkills() : null,
+  ]);
+  if (!groupsResult.ok) return null;
+  const eligibility = eligibilityResult?.ok ? eligibilityResult.data : null;
+  return {
+    groups: groupsResult.data.items,
+    eligibility,
+    skills: skillsResult?.ok ? skillsResult.data.items : [],
+  };
+}
 
 export default async function UserPublicPage({ params, searchParams }: Props) {
   const { id } = await params;
@@ -39,12 +67,14 @@ export default async function UserPublicPage({ params, searchParams }: Props) {
   const result = await fetchPublicUser(id, pageParams);
 
   if (result.ok) {
+    const certifications = await loadCertifications(id, token, viewerId);
     return (
       <UserPublicContent
         userId={id}
         data={result.data}
         params={pageParams}
         viewerId={viewerId}
+        certifications={certifications}
       />
     );
   }

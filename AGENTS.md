@@ -79,6 +79,10 @@ PRs and pushes on the main branch trigger the GitHub Actions workflow that re-ru
 - Job **`verify`**: lint, typecheck, API migrations, tests, build (excluding `apps/thp-final`).
 - Job **`storybook`** (conditional): `pnpm build:storybook` only if the diff touches `packages/ui/**`, `apps/storybook/**`, lockfile, `turbo.json`, `package.json` or `.github/workflows/ci.yml` (`dorny/paths-filter`).
 
+## Visual library
+
+When the user explicitly keeps or approves a graphic or motion concept, record it in the [visual library](Docs/branding/README.md) in the same change. Include its name, intended use and a source or preview link. Save a standalone prototype or asset under `Docs/branding/retained/` when it has no canonical file in the repository. For visual elements already shipped, link to their existing source files. Update the library entry when a concept ships or is superseded.
+
 ## Design system (Epic #24, #25)
 
 **Full docs**: [Docs/design-system/README.md](Docs/design-system/README.md) (architecture, contributor guide, CI, AppShell, journal).

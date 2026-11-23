@@ -9,6 +9,7 @@ import type {
   SubjectRequestStatus,
   SubjectSummary,
 } from "@allaboard/types";
+import type { AuthorProfile } from "../services/user-profile.js";
 import type {
   denylistPatterns,
   helpRequests,
@@ -43,7 +44,7 @@ export function rowToSubject(row: SubjectRow): Subject {
 export function rowToHelpRequest(
   row: HelpRequestRow,
   subject?: SubjectRow | null,
-  authorProfileId?: string,
+  author?: AuthorProfile,
 ): HelpRequest {
   const tags = row.tags?.length ? row.tags : undefined;
   const item: HelpRequest = {
@@ -54,7 +55,10 @@ export function rowToHelpRequest(
     ...(tags ? { tags } : {}),
   };
 
-  if (authorProfileId) item.authorProfileId = authorProfileId;
+  if (author) {
+    item.authorProfileId = author.id;
+    item.authorDisplayName = author.displayName;
+  }
 
   if (row.body.trim()) item.body = row.body;
   if (row.codeSnippet) item.codeSnippet = row.codeSnippet;
@@ -131,7 +135,7 @@ export function rowToSubjectRequest(row: SubjectRequestRow): SubjectRequest {
 
 export function rowToResponse(
   row: ResponseRow,
-  authorProfileId?: string,
+  author?: AuthorProfile,
 ): Response {
   const item: Response = {
     id: row.id,
@@ -140,7 +144,10 @@ export function rowToResponse(
     authorId: row.authorId,
     createdAt: row.createdAt.toISOString(),
   };
-  if (authorProfileId) item.authorProfileId = authorProfileId;
+  if (author) {
+    item.authorProfileId = author.id;
+    item.authorDisplayName = author.displayName;
+  }
   if (row.codeSnippet) item.codeSnippet = row.codeSnippet;
   if (row.codeLanguage) item.codeLanguage = row.codeLanguage;
   if (row.flaggedForModeration) item.flaggedForModeration = true;

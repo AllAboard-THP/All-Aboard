@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@allaboard/ui/components/card";
 
+import { authorDisplayLabel } from "@/components/features/author-profile-link";
 import { PostSocialActions } from "@/components/features/post-social-actions";
 import { Link } from "@/i18n/navigation";
 import {
@@ -82,7 +83,7 @@ export function PostCard({
           </div>
         </div>
         <CardDescription className="flex flex-wrap gap-x-3 gap-y-1">
-          <span>{labels.author(item.authorId)}</span>
+          <span>{labels.author(authorDisplayLabel(item))}</span>
           <span>{labels.formatDate(item.createdAt)}</span>
         </CardDescription>
       </CardHeader>

@@ -24,6 +24,8 @@ export type HelpRequest = {
   authorId: string;
   /** Public profile UUID (`users.id`) when the author is a registered user. */
   authorProfileId?: string;
+  /** Display name of the registered author (full name, or derived from the email). */
+  authorDisplayName?: string;
   createdAt: string;
   /** Tags mentor / domaine (MOC). Absent ou vide si non utilisé. */
   tags?: string[];
@@ -80,6 +82,8 @@ export type Response = {
   authorId: string;
   /** Public profile UUID (`users.id`) when the author is a registered user. */
   authorProfileId?: string;
+  /** Display name of the registered author (full name, or derived from the email). */
+  authorDisplayName?: string;
   createdAt?: string;
   codeSnippet?: string;
   codeLanguage?: string;
@@ -708,6 +712,14 @@ export type HelpRequestCreatedOutboxPayload = {
   tags?: string[];
 };
 
+/** Payload outbox `certification.attested` (ADR 0009). No consumer until the publisher ships. */
+export type CertificationAttestedOutboxPayload = {
+  id: string;
+  recipientId: string;
+  attesterId: string;
+  skillId: string;
+};
+
 export type HelpRequestSummaryRequestedOutboxPayload = {
   id: string;
 };
@@ -725,4 +737,132 @@ export type OutboxEvent =
   | {
       type: "help_request.summary_requested";
       payload: HelpRequestSummaryRequestedOutboxPayload;
+    }
+  | {
+      type: "certification.attested";
+      payload: CertificationAttestedOutboxPayload;
     };
+
+/** Skill in the +1 catalogue (`GET /skills`, ADR 0009). */
+export type Skill = {
+  id: string;
+  slug: string;
+  label: string;
+  active: boolean;
+};
+
+export type SkillsResponse = {
+  items: Skill[];
+};
+
+/** Person who gave a +1, as shown on the recipient's profile. */
+export type CertificationAttester = {
+  id: string;
+  displayName: string;
+  avatarUrl?: string;
+};
+
+/** Public proof of a +1 once the publisher wrote it on Intuition (ADR 0009 §6). */
+export type CertificationProof = {
+  network: "intuition-testnet";
+  /** `(claim) attestedBy (peer)` triple id. */
+  attestationTripleId: string;
+  /** `(person) expertIn (skill)` triple id, shared by every +1 on that skill. */
+  claimTripleId: string;
+  /** Transaction that created the +1; absent if it already existed on-chain. */
+  txHash?: string;
+  publishedAt: string;
+};
+
+/** One peer +1 on a profile (`GET /users/:id/certifications`). */
+export type Certification = {
+  id: string;
+  skillId: string;
+  attester: CertificationAttester;
+  comment?: string;
+  createdAt: string;
+  /** Set once published on-chain; absent while pending. */
+  proof?: CertificationProof;
+};
+
+export type SkillCertificationGroup = {
+  skill: Skill;
+  count: number;
+  items: Certification[];
+};
+
+export type UserCertificationsResponse = {
+  items: SkillCertificationGroup[];
+};
+
+/** `GET /users/:id/certifications/eligibility` for the signed-in viewer. */
+export type CertificationEligibilityResponse = {
+  eligible: boolean;
+  /** Skills the viewer has already +1'd on this profile (not withdrawn). */
+  attestedSkillIds: string[];
+};
+
+export type CreateCertificationBody = {
+  skillId: string;
+  comment?: string;
+};
+
+export type CreateCertificationResponse = {
+  item: Certification;
+};
+
+export type AdminSkillsResponse = {
+  items: Skill[];
+};
+
+export type CreateSkillBody = {
+  slug: string;
+  label: string;
+};
+
+export type AdminSkillResponse = {
+  item: Skill;
+};
+
+/** State of the certification publisher in this API process (ADR 0009 §5). */
+export type CertificationPublisherStatus =
+  | { state: "off"; reason: string }
+  | {
+      state: "on";
+      operator: string;
+      /** Operator balance in tTRUST, null until the first read succeeds. */
+      balance: string | null;
+      lowBalance: boolean | null;
+      balanceCheckedAt: string | null;
+    };
+
+/** A +1 the publisher gave up on after the maximum number of attempts. */
+export type AdminFailedCertification = {
+  id: string;
+  recipientId: string;
+  attesterId: string;
+  skillLabel: string;
+  publishAttempts: number;
+  publishError: string | null;
+  createdAt: string;
+};
+
+/** `GET /admin/certifications/publisher`. */
+export type AdminCertificationPublisherResponse = {
+  publisher: CertificationPublisherStatus;
+  counts: {
+    published: number;
+    /** Not withdrawn, not published, still retried automatically. */
+    waiting: number;
+    /** Not withdrawn, not published, out of attempts: needs a replay. */
+    failed: number;
+  };
+  /** Oldest first, at most 50. */
+  failed: AdminFailedCertification[];
+};
+
+/** `POST /admin/certifications/:id/republish`. */
+export type RepublishCertificationResponse = {
+  id: string;
+  queued: true;
+};

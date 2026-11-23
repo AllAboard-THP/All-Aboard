@@ -9,6 +9,7 @@ FROM base AS installer
 COPY . .
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter=@allaboard/types exec tsc -b --force
+RUN pnpm --filter=@allaboard/blockchain exec tsc -b --force
 RUN pnpm --filter=api exec tsc -b --force
 
 FROM base AS runner
@@ -22,6 +23,8 @@ COPY --from=installer /app/apps/api/package.json ./apps/api/package.json
 COPY --from=installer /app/node_modules ./node_modules
 COPY --from=installer /app/packages/types/dist ./packages/types/dist
 COPY --from=installer /app/packages/types/package.json ./packages/types/package.json
+COPY --from=installer /app/packages/blockchain/dist ./packages/blockchain/dist
+COPY --from=installer /app/packages/blockchain/package.json ./packages/blockchain/package.json
 
 WORKDIR /app/apps/api
 EXPOSE 4000

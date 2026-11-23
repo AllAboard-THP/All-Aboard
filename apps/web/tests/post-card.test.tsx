@@ -77,6 +77,24 @@ describe("PostCard", () => {
     expect(screen.getByText("5 likes")).toBeTruthy();
   });
 
+  it("shows the author's display name instead of the raw id", () => {
+    renderWithI18n(
+      <PostCard
+        item={{
+          id: "req-3",
+          title: "Question Rails",
+          authorId: "3e08ba07-bc82-4d47-a3f8-bca99c378c80",
+          authorProfileId: "3e08ba07-bc82-4d47-a3f8-bca99c378c80",
+          authorDisplayName: "Ada Lovelace",
+          createdAt: "2026-01-16T10:30:00.000Z",
+        }}
+        labels={labels}
+      />,
+    );
+    expect(screen.getByText("Auteur : Ada Lovelace")).toBeTruthy();
+    expect(screen.queryByText(/3e08ba07/)).toBeNull();
+  });
+
   it("uses compact layout without body preview", () => {
     renderWithI18n(
       <PostCard

@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { hashPassword } from "../auth/password.js";
 import type { AppDatabase } from "./client.js";
-import { subjects, users } from "./schema.js";
+import { oauthAccounts, skills, subjects, users } from "./schema.js";
 import {
   demoMentorSubjectLinks,
   demoSeedUsers,
@@ -19,6 +19,14 @@ export type SeedUserSpec = {
   avatarUrl?: string;
   educationLevel?: string;
   certificationTags?: string[];
+  /** Defaults to true. False leaves the CGU gate pending (onboarding demo). */
+  cguAccepted?: boolean;
+  notifyOnComment?: boolean;
+  notifyOnMessage?: boolean;
+  /** No password hash: the account can only sign in through OAuth. */
+  passwordless?: boolean;
+  /** Fake Google subject linked in oauth_accounts (admin / profile display only). */
+  googleSubject?: string;
 };
 
 export type SeedSubjectSpec = {
@@ -106,6 +114,7 @@ export function defaultSeedUsers(): SeedUserSpec[] {
       avatarUrl:
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop",
       certificationTags: ["react", "typescript", "rails", "javascript"],
+      googleSubject: "seed-google-alice-000000000001",
     },
     {
       email: "admin@dev.local",
@@ -118,6 +127,27 @@ export function defaultSeedUsers(): SeedUserSpec[] {
       avatarUrl:
         "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
     },
+  ];
+}
+
+export type SeedSkillSpec = {
+  slug: string;
+  label: string;
+};
+
+/** Starter skill catalogue for peer +1s (ADR 0009). */
+export function defaultSeedSkills(): SeedSkillSpec[] {
+  return [
+    { slug: "ruby-on-rails", label: "Ruby on Rails" },
+    { slug: "ruby", label: "Ruby" },
+    { slug: "javascript", label: "JavaScript" },
+    { slug: "typescript", label: "TypeScript" },
+    { slug: "react", label: "React" },
+    { slug: "nodejs", label: "Node.js" },
+    { slug: "python", label: "Python" },
+    { slug: "sql", label: "SQL" },
+    { slug: "docker", label: "Docker" },
+    { slug: "git", label: "Git" },
   ];
 }
 
@@ -162,10 +192,24 @@ export async function seedSubjects(
   }
 }
 
+/** Insert missing skills only: labels are frozen once created (atom bytes). */
+export async function seedSkills(
+  db: AppDatabase,
+  specs: SeedSkillSpec[],
+): Promise<void> {
+  if (specs.length === 0) return;
+  await db
+    .insert(skills)
+    .values(specs.map((spec) => ({ slug: spec.slug, label: spec.label })))
+    .onConflictDoNothing({ target: skills.slug });
+}
+
 export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise<void> {
   const cguAcceptedAt = new Date();
   for (const spec of specs) {
-    const passwordHash = await hashPassword(spec.password);
+    const passwordHash = spec.passwordless
+      ? null
+      : await hashPassword(spec.password);
     const existing = await db
       .select({ id: users.id })
       .from(users)
@@ -182,7 +226,9 @@ export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise
       bio: spec.bio?.trim() || null,
       avatarUrl: spec.avatarUrl?.trim() || null,
       educationLevel: spec.educationLevel?.trim() || null,
-      cguAcceptedAt,
+      cguAcceptedAt: spec.cguAccepted === false ? null : cguAcceptedAt,
+      notifyOnComment: spec.notifyOnComment ?? true,
+      notifyOnMessage: spec.notifyOnMessage ?? true,
       updatedAt: new Date(),
     };
     if (existing.length > 0) {
@@ -195,6 +241,25 @@ export async function seedUsers(db: AppDatabase, specs: SeedUserSpec[]): Promise
         email: spec.email,
         ...profileFields,
       });
+    }
+
+    if (spec.googleSubject) {
+      const [user] = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, spec.email))
+        .limit(1);
+      if (user) {
+        await db
+          .insert(oauthAccounts)
+          .values({
+            userId: user.id,
+            provider: "google",
+            providerAccountId: spec.googleSubject,
+            email: spec.email,
+          })
+          .onConflictDoNothing();
+      }
     }
   }
 }
@@ -212,6 +277,10 @@ export async function runSeedIfConfigured(db: AppDatabase | null): Promise<void>
   const subjectSpecs = defaultSeedSubjects();
   await seedSubjects(db, subjectSpecs);
   console.log(`api: seeded ${subjectSpecs.length} subject(s)`);
+
+  const skillSpecs = defaultSeedSkills();
+  await seedSkills(db, skillSpecs);
+  console.log(`api: seeded ${skillSpecs.length} skill(s)`);
 
   const password = resolveSeedPassword();
   if (!password) {

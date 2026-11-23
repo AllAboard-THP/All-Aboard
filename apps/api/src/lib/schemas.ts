@@ -232,3 +232,23 @@ export function parseFeedQuery(query: Record<string, unknown>): FeedQueryParams 
     includeWidgets,
   };
 }
+
+export const CERTIFICATION_COMMENT_MAX = 280;
+
+export const createCertificationBodySchema = z.object({
+  skillId: z.string().uuid(),
+  comment: z.string().max(CERTIFICATION_COMMENT_MAX).optional(),
+});
+
+export const createSkillBodySchema = z.object({
+  slug: z
+    .string()
+    .min(1)
+    .max(64)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  label: z.string().trim().min(1).max(80),
+});
+
+export const updateSkillBodySchema = z.object({
+  active: z.boolean(),
+});

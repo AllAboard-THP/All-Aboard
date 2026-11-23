@@ -65,7 +65,7 @@ SSR feed, Query foundation, Dokploy dev merge, `useQuery` + `invalidateQueries` 
 | `NEXT_PUBLIC_API_URL` | Client | HTTPS origin when the **browser** calls the API directly. **Not used** for current feed (BFF same-origin). |
 | `DATABASE_URL` | API | Postgres connection (Drizzle). Without it: `GET /feed` → 503, no persistence. |
 | `JWT_SECRET` | API | JWT signing (min. 32 chars in prod). See [ADR 0001](../adr/0001-authentication-strategy.md). |
-| `DEV_SEED_PASSWORD` | API | Password for seed accounts `bob@dev.local` / `alice@dev.local` ([ADR 0003](../adr/0003-authentication-users-production.md)). Used by `db:migrate` / `db:seed`. |
+| `DEV_SEED_PASSWORD` | API | Password for all seed accounts (`bob@dev.local`, `alice@dev.local`, … see [dev-seed.md](dev-seed.md); [ADR 0003](../adr/0003-authentication-users-production.md)). Used by `db:migrate` / `db:seed`. |
 | `MVP_LOGIN_PASSWORD` | API | **Dev/CI only**: seed alias + login fallback without DB. **Forbidden** on staging/prod (`APP_ENV`). |
 | `MVP_MENTOR_USER_IDS` | API | MVP fallback only (mentor role when no DB). Obsolete when `users` is seeded. |
 | `CORS_ALLOWED_ORIGINS` | API Fastify | Comma-separated origins: when set, `@fastify/cors` is registered (`credentials: true`). **N/A** while the browser does not call the API directly (BFF). |

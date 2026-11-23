@@ -1,19 +1,37 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { and, count, desc, eq, inArray, isNull } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  gte,
+  inArray,
+  isNotNull,
+  isNull,
+  lt,
+} from "drizzle-orm";
 import type {
+  AdminCertificationPublisherResponse,
   AdminDashboardResponse,
   AdminDenylistPatternsResponse,
+  AdminSkillResponse,
+  AdminSkillsResponse,
   AdminModerationResponse,
   AdminSubjectRequestsResponse,
   AdminUsersResponse,
   CreateDenylistPatternResponse,
+  RepublishCertificationResponse,
   UpdateAdminSubjectRequestResponse,
   UpdateDenylistPatternResponse,
 } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import {
+  certifications,
   denylistPatterns,
   helpRequests,
+  outboxEvents,
+  skills,
   resources,
   responses,
   subjectRequests,
@@ -35,13 +53,22 @@ import {
 import {
   adminSubjectRequestPatchSchema,
   createDenylistPatternBodySchema,
+  createSkillBodySchema,
   promoteAdminBodySchema,
+  updateSkillBodySchema,
 } from "../lib/schemas.js";
+import { rowToSkill } from "./certifications.js";
+import {
+  CERTIFICATION_ATTESTED_EVENT,
+  MAX_PUBLISH_ATTEMPTS,
+} from "../intuition/certification-publisher.js";
+import { getCertificationPublisherStatus } from "../intuition/publisher-status.js";
 import {
   decrementResponsesCount,
   decrementSubjectPostsCountIfNeeded,
 } from "../services/admin-moderation.js";
 import { isValidRegexPattern } from "../services/profanity.js";
+import { isUuid } from "../auth/passkey/config.js";
 
 function requireAdmin(
   request: FastifyRequest,
@@ -392,6 +419,214 @@ export function registerAdminRoutes(
       }
       void reply.code(204);
       return;
+    },
+  );
+
+  app.get(
+    "/admin/skills",
+    adminPre,
+    async (request, reply): Promise<AdminSkillsResponse | void> => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      if (!requireAdmin(request, reply)) return;
+
+      const rows = await db.select().from(skills).orderBy(skills.label);
+      return { items: rows.map(rowToSkill) };
+    },
+  );
+
+  app.post(
+    "/admin/skills",
+    adminPre,
+    async (request, reply): Promise<AdminSkillResponse | void> => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      if (!requireAdmin(request, reply)) return;
+
+      const parsed = createSkillBodySchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.code(400).send({ error: "invalid_body" });
+      }
+
+      const [inserted] = await db
+        .insert(skills)
+        .values({ slug: parsed.data.slug, label: parsed.data.label })
+        .onConflictDoNothing({ target: skills.slug })
+        .returning();
+      if (!inserted) {
+        return reply.code(409).send({ error: "slug_taken" });
+      }
+
+      void reply.code(201);
+      return { item: rowToSkill(inserted) };
+    },
+  );
+
+  // Only `active` can change: the label gives the atom bytes (ADR 0009 §4).
+  app.patch(
+    "/admin/skills/:id",
+    adminPre,
+    async (request, reply): Promise<AdminSkillResponse | void> => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      if (!requireAdmin(request, reply)) return;
+
+      const parsed = updateSkillBodySchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.code(400).send({ error: "invalid_body" });
+      }
+
+      const { id } = request.params as { id: string };
+      if (!isUuid(id)) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+      const [updated] = await db
+        .update(skills)
+        .set({ active: parsed.data.active, updatedAt: new Date() })
+        .where(eq(skills.id, id))
+        .returning();
+      if (!updated) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+
+      return { item: rowToSkill(updated) };
+    },
+  );
+
+  app.get(
+    "/admin/certifications/publisher",
+    adminPre,
+    async (
+      request,
+      reply,
+    ): Promise<AdminCertificationPublisherResponse | void> => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      if (!requireAdmin(request, reply)) return;
+
+      const unpublished = and(
+        isNull(certifications.revokedAt),
+        isNull(certifications.publishedAt),
+      );
+      const outOfAttempts = gte(
+        certifications.publishAttempts,
+        MAX_PUBLISH_ATTEMPTS,
+      );
+      const [[published], [waiting], [failedCount], failedRows] =
+        await Promise.all([
+          db
+            .select({ value: count() })
+            .from(certifications)
+            .where(isNotNull(certifications.publishedAt)),
+          db
+            .select({ value: count() })
+            .from(certifications)
+            .where(
+              and(
+                unpublished,
+                lt(certifications.publishAttempts, MAX_PUBLISH_ATTEMPTS),
+              ),
+            ),
+          db
+            .select({ value: count() })
+            .from(certifications)
+            .where(and(unpublished, outOfAttempts)),
+          db
+            .select({ certification: certifications, skillLabel: skills.label })
+            .from(certifications)
+            .innerJoin(skills, eq(certifications.skillId, skills.id))
+            .where(and(unpublished, outOfAttempts))
+            .orderBy(asc(certifications.createdAt))
+            .limit(50),
+        ]);
+
+      return {
+        publisher: getCertificationPublisherStatus(),
+        counts: {
+          published: Number(published?.value ?? 0),
+          waiting: Number(waiting?.value ?? 0),
+          failed: Number(failedCount?.value ?? 0),
+        },
+        failed: failedRows.map(({ certification, skillLabel }) => ({
+          id: certification.id,
+          recipientId: certification.recipientId,
+          attesterId: certification.attesterId,
+          skillLabel,
+          publishAttempts: certification.publishAttempts,
+          publishError: certification.publishError,
+          createdAt: certification.createdAt.toISOString(),
+        })),
+      };
+    },
+  );
+
+  /**
+   * Replay one +1: resets its retry state and reopens its outbox event, so the
+   * publisher picks it up on the next poll (ADR 0009 §5).
+   */
+  app.post(
+    "/admin/certifications/:id/republish",
+    adminPre,
+    async (request, reply): Promise<RepublishCertificationResponse | void> => {
+      if (!db) {
+        return reply.code(503).send({ error: "database_unavailable" });
+      }
+      if (!requireAdmin(request, reply)) return;
+
+      const { id } = request.params as { id: string };
+      if (!isUuid(id)) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+      const [cert] = await db
+        .select()
+        .from(certifications)
+        .where(eq(certifications.id, id))
+        .limit(1);
+      if (!cert) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+      if (cert.publishedAt) {
+        return reply.code(409).send({ error: "already_published" });
+      }
+      if (cert.revokedAt) {
+        return reply.code(409).send({ error: "certification_revoked" });
+      }
+
+      await db.transaction(async (tx) => {
+        await tx
+          .update(certifications)
+          .set({ publishAttempts: 0, publishError: null, nextPublishAt: null })
+          .where(eq(certifications.id, id));
+        await tx
+          .insert(outboxEvents)
+          .values({
+            eventType: CERTIFICATION_ATTESTED_EVENT,
+            aggregateId: cert.id,
+            payload: {
+              id: cert.id,
+              recipientId: cert.recipientId,
+              attesterId: cert.attesterId,
+              skillId: cert.skillId,
+            },
+          })
+          .onConflictDoNothing();
+        await tx
+          .update(outboxEvents)
+          .set({ processedAt: null })
+          .where(
+            and(
+              eq(outboxEvents.eventType, CERTIFICATION_ATTESTED_EVENT),
+              eq(outboxEvents.aggregateId, cert.id),
+            ),
+          );
+      });
+
+      void reply.code(202);
+      return { id: cert.id, queued: true };
     },
   );
 

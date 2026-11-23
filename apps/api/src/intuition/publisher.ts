@@ -2,8 +2,16 @@ import { and, asc, eq, isNull } from "drizzle-orm";
 import type { HelpRequestCreatedOutboxPayload } from "@allaboard/types";
 import type { AppDatabase } from "../db/client.js";
 import { helpRequests, outboxEvents } from "../db/schema.js";
+import { createIntuitionChain, type IntuitionChain } from "./chain.js";
+import { processCertificationEvents } from "./certification-publisher.js";
 import { loadIntuitionConfig, type IntuitionConfig } from "./config.js";
 import { HELP_REQUEST_CREATED } from "./outbox.js";
+import {
+  BALANCE_REFRESH_MS,
+  getCertificationPublisherStatus,
+  isLowBalance,
+  setCertificationPublisherStatus,
+} from "./publisher-status.js";
 import {
   publishHelpRequestCreatedToIntuition,
   type PublishHelpRequestResult,
@@ -159,16 +167,120 @@ export type IntuitionPublisherHandle = {
   stop: () => void;
 };
 
+/**
+ * Certification consumer, or null when it must stay off: no operator key or
+ * no profile origin. Events then wait in the outbox (ADR 0009 §1).
+ */
+function publisherOff(log: IntuitionPublisherLog, reason: string): null {
+  setCertificationPublisherStatus({ state: "off", reason });
+  log("certification_publisher_off", { reason });
+  return null;
+}
+
+export function createCertificationChain(
+  config: IntuitionConfig,
+  log: IntuitionPublisherLog,
+): IntuitionChain | null {
+  if (!config.publisherPrivateKey) {
+    return publisherOff(log, "no INTUITION_PUBLISHER_PRIVATE_KEY");
+  }
+  if (!config.profileOrigin) {
+    return publisherOff(log, "no INTUITION_PROFILE_ORIGIN");
+  }
+  try {
+    return createIntuitionChain({
+      privateKey: config.publisherPrivateKey,
+      rpcUrl: config.rpcUrl,
+      networkId: config.networkId,
+      multiVaultAddress: config.multiVaultAddress,
+    });
+  } catch (err) {
+    // Never log the key; only the reason.
+    return publisherOff(
+      log,
+      err instanceof Error ? err.message : "invalid configuration",
+    );
+  }
+}
+
+/**
+ * Reads the operator balance into the shared status. Logs
+ * `certification_publisher_low_balance` when it drops under the threshold.
+ */
+export async function refreshOperatorBalance(
+  chain: IntuitionChain,
+  log: IntuitionPublisherLog,
+  now: () => Date = () => new Date(),
+): Promise<void> {
+  const previous = getCertificationPublisherStatus();
+  const wasLow = previous.state === "on" ? previous.lowBalance : null;
+  try {
+    const balance = await chain.balance();
+    const lowBalance = isLowBalance(balance);
+    setCertificationPublisherStatus({
+      state: "on",
+      operator: chain.operatorAddress,
+      balance,
+      lowBalance,
+      balanceCheckedAt: now().toISOString(),
+    });
+    if (lowBalance && wasLow !== true) {
+      log("certification_publisher_low_balance", {
+        operator: chain.operatorAddress,
+        balance,
+      });
+    }
+  } catch (err) {
+    log("certification_publisher_balance_error", {
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+}
+
 export function startIntuitionPublisher(
   db: AppDatabase,
-  options?: { log?: IntuitionPublisherLog },
+  options?: { log?: IntuitionPublisherLog; chain?: IntuitionChain | null },
 ): IntuitionPublisherHandle | null {
   const config = loadIntuitionConfig();
-  if (!config.publisherEnabled) return null;
+  if (!config.publisherEnabled) {
+    setCertificationPublisherStatus({
+      state: "off",
+      reason: "INTUITION_PUBLISHER_ENABLED=false",
+    });
+    return null;
+  }
 
   const log = options?.log ?? ((message, meta) => {
     console.log(`[intuition-publisher] ${message}`, meta ?? "");
   });
+
+  const chain =
+    options?.chain !== undefined
+      ? options.chain
+      : createCertificationChain(config, log);
+  let balanceCheckedAt = 0;
+  if (chain) {
+    setCertificationPublisherStatus({
+      state: "on",
+      operator: chain.operatorAddress,
+      balance: null,
+      lowBalance: null,
+      balanceCheckedAt: null,
+    });
+    balanceCheckedAt = Date.now();
+    void refreshOperatorBalance(chain, log).then(() => {
+      const status = getCertificationPublisherStatus();
+      if (status.state === "on") {
+        log("certification_publisher_on", {
+          operator: status.operator,
+          balance: status.balance,
+          lowBalance: status.lowBalance,
+        });
+      }
+    });
+  } else if (options?.chain === null) {
+    setCertificationPublisherStatus({ state: "off", reason: "no chain" });
+  }
 
   let running = false;
   const tick = async () => {
@@ -176,6 +288,16 @@ export function startIntuitionPublisher(
     running = true;
     try {
       await processPendingOutboxEvents(db, { config, log });
+      if (chain && config.profileOrigin) {
+        await processCertificationEvents(db, chain, {
+          profileOrigin: config.profileOrigin,
+          log,
+        });
+        if (Date.now() - balanceCheckedAt >= BALANCE_REFRESH_MS) {
+          balanceCheckedAt = Date.now();
+          await refreshOperatorBalance(chain, log);
+        }
+      }
     } catch (err) {
       log("intuition_publisher_error", {
         error: err instanceof Error ? err.message : String(err),

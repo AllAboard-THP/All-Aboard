@@ -19,6 +19,7 @@ The database already stores a stable attachment key (`{conversationId}/{messageI
 5. **No transcoding** — the browser `MediaRecorder` blob is stored as-is.
 6. **One-shot copy** — `pnpm --filter api migrate:message-media-s3` uploads existing local files. It skips keys that already exist. Run it before switching production to `s3`.
 7. **Production** — Dokploy and Coolify API services use `s3`. Do not rely on a local volume for video. Local disk remains the dev default.
+8. **Provider** — Cloudflare R2 for the deployed environments (decided 2026-11-11). The domains already run on Cloudflare, R2 has no egress fees, and presigned URLs play in the browser without a public bucket. Use one private bucket and one bucket-scoped API token per environment. Setup: [message-media-storage.md](../deployment/message-media-storage.md#cloudflare-r2-deployed-environments).
 
 ## Consequences
 

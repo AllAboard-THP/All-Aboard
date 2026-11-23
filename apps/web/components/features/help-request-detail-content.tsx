@@ -19,7 +19,7 @@ import { PostCardCodeBlock } from "@allaboard/ui/patterns/post-card";
 
 import { HelpRequestDetailClient } from "@/components/features/help-request-detail-client";
 import { HelpRequestAiSummary } from "@/components/features/help-request-ai-summary";
-import { AuthorProfileLink } from "@/components/features/author-profile-link";
+import { AuthorName } from "@/components/features/author-profile-link";
 import { HelpRequestOwnerActions } from "@/components/features/help-request-owner-actions";
 import { PostSocialActions } from "@/components/features/post-social-actions";
 import { Link } from "@/i18n/navigation";
@@ -98,12 +98,7 @@ export async function HelpRequestDetailContent({
         <CardDescription className="flex flex-wrap gap-x-3 gap-y-1 text-base">
           <span className="inline-flex flex-wrap items-center gap-x-1">
             <span>{tCommon("authorLabel")}</span>
-            <AuthorProfileLink
-              authorId={item.authorId}
-              authorProfileId={item.authorProfileId}
-            >
-              {item.authorId}
-            </AuthorProfileLink>
+            <AuthorName item={item} />
           </span>
           <span>{formatDateTime(item.createdAt, locale)}</span>
         </CardDescription>

@@ -1,8 +1,14 @@
-# Branding — visual concepts
+# Branding and visual library
 
-**Last updated:** 2026-06-23
+**Last updated:** 2026-11-20
 
-Exploratory hero / marketing illustrations for All-Aboard. **Production rasters** ship in [`packages/ui/src/assets/`](../../packages/ui/src/assets/) (bundled with `@allaboard/ui`, Docker-safe). This folder holds **drafts**, export notes, and brand guidelines only.
+Start here to find All-Aboard’s approved visual concepts, shipped assets and earlier iterations.
+
+- [Retained prototypes](#retained-prototypes) includes concepts approved for future use.
+- [Production assets](#production-assets) links to the source files used in the app.
+- [Previous versions](#previous-versions) links to earlier implementations and drafts.
+
+When a maintainer explicitly retains or approves a visual, update this library in the same change. Add its name, intended use and source or preview link. Save a standalone prototype or source file under [`retained/`](retained/) if it has no canonical file in the repository. For an existing production asset, link to its source at its current path. Update the entry when a design ships or is superseded.
 
 ---
 
@@ -25,21 +31,31 @@ Storybook: **Patterns/Legacy Brand** (`legacy-brand.stories.tsx`).
 
 ---
 
-## Production assets (`packages/ui/src/assets/`)
+## Retained prototypes
+
+- **Torsion en S** · Landing page motion concept. A black-wireframe mesh on white fills the left edge and narrows toward the right. The prototype includes play, pause and a speed control. Open the [standalone HTML prototype](retained/torsion-en-s.html) in a browser.
+
+## Production assets
+
+Production rasters ship in [`packages/ui/src/assets/`](../../packages/ui/src/assets/), bundled with `@allaboard/ui`.
 
 **Naming:** feed rasters use `concept-feed-hero` (PNG, via `export-hero-raster-4k.mjs`). The landing hero is code, not a file in this folder.
 
 | ID | File | Usage | Notes |
 |----|------|-------|-------|
-| **landing-hero** | `LandingNetworkField` in `landing-network-field.tsx` | Landing `/` — `LandingConceptBackground` | Animated indigo/fuchsia geometric network. The mural rasters were removed. |
-| **feed-hero** | `concept-feed-hero.png` | Feed `/feed` — `FeedConceptBackground` | 2704×1520 — morning illustrated scene |
-| **logo-mark** | `logo-mark.png` · `logo-mark.svg` | App chrome, Storybook, favicon source | PNG immutable per project rule |
+| **landing-hero** | [`LandingNetworkField`](../../packages/ui/src/patterns/landing-network-field.tsx) · [geometry](../../packages/ui/src/patterns/landing-network-geometry.ts) · [styles](../../packages/ui/src/styles/globals.css) | Landing `/` — `LandingConceptBackground` | Hexagonal network on a dark stage, with mint light pulses following the links. |
+| **feed-hero** | [`concept-feed-hero.png`](../../packages/ui/src/assets/concept-feed-hero.png) | Feed `/feed` — `FeedConceptBackground` | 2704×1520 — morning illustrated scene |
+| **logo-mark** | [PNG](../../packages/ui/src/assets/logo-mark.png) · [SVG](../../packages/ui/src/assets/logo-mark.svg) | App chrome, Storybook, favicon source | PNG immutable per project rule |
 
 Index stub: [`assets/README.md`](assets/README.md) (no binaries here — `Docs/` is excluded from Docker context).
 
 ---
 
-## Drafts (`drafts/`)
+## Previous versions
+
+- **Organic landing network** · An earlier landing animation based on a hand-drawn sketch, with breathing cells and light signals. See [the original implementation](https://github.com/AllAboard-THP/All-Aboard/blob/8e2a2bc893ee69c52b2227780170bb6c9442817e/packages/ui/src/patterns/landing-cell-field.tsx) and [PR #162](https://github.com/AllAboard-THP/All-Aboard/pull/162).
+
+### Drafts (`drafts/`)
 
 Work-in-progress or reference rasters — **not** wired to production UI.
 
@@ -51,11 +67,11 @@ Work-in-progress or reference rasters — **not** wired to production UI.
 
 ---
 
-## Archived concepts (not in repo)
+### Archived concepts
 
 Earlier hero iterations (`concept-1`, `concept-2`, Seine/Vendee variants, etc.) were **removed from the repo** to reduce asset weight. Regeneration constraints: [.cursor/rules/branding-hero-4k.mdc](../../.cursor/rules/branding-hero-4k.mdc).
 
-When promoting a new concept to production: export to `packages/ui/src/assets/`, bump revision constant in `*-concept-background.tsx`, update this table.
+When shipping a new raster, export it to `packages/ui/src/assets/`, bump the revision constant in the relevant background component and update the production entry.
 
 ---
 

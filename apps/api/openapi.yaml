@@ -38,6 +38,8 @@ tags:
     description: Likes et bookmarks
   - name: users
     description: Profils utilisateur
+  - name: certifications
+    description: +1 de compétence entre pairs (ADR 0009)
   - name: legal
     description: CGU et acceptation légale
   - name: resources
@@ -629,6 +631,181 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
+  /skills:
+    get:
+      operationId: listSkills
+      tags: [certifications]
+      summary: Compétences actives proposées pour un +1
+      responses:
+        "200":
+          description: Catalogue actif, trié par libellé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SkillsResponse"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /users/{id}/certifications:
+    get:
+      operationId: listUserCertifications
+      tags: [certifications]
+      summary: +1 reçus (non retirés), groupés par compétence
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Groupes triés par nombre de +1
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCertificationsResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    post:
+      operationId: createCertification
+      tags: [certifications]
+      summary: Donner un +1 de compétence
+      description: |
+        Réservé à une personne qui a posté une demande d'aide à laquelle le profil a répondu
+        (réponse non signalée, demande non supprimée). Au plus 20 +1 donnés par 24 heures.
+        Le commentaire passe par la modération ; s'il est signalé, le +1 est refusé.
+        Un +1 retiré puis redonné est réactivé. Enregistre un événement outbox `certification.attested`.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCertificationBody"
+      responses:
+        "201":
+          description: +1 enregistré (ou réactivé)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateCertificationResponse"
+        "400":
+          description: "`invalid_body` ou `self_certification`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: "`not_eligible` — pas d'aide reçue de ce profil"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: "`user_not_found` ou `skill_not_found`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: "`already_attested`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "`comment_rejected` — commentaire refusé par la modération"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: "`rate_limited`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /users/{id}/certifications/eligibility:
+    get:
+      operationId: getCertificationEligibility
+      tags: [certifications]
+      summary: La personne connectée peut-elle donner un +1 à ce profil ?
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Éligibilité et compétences déjà validées par la personne connectée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CertificationEligibilityResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /users/{id}/certifications/{certificationId}:
+    delete:
+      operationId: withdrawCertification
+      tags: [certifications]
+      summary: Retirer un +1 (auteur du +1 uniquement)
+      description: Retrait dans Postgres uniquement. Une fois publié, le +1 reste sur la chaîne comme historique (ADR 0009 §5).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: certificationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: +1 retiré
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: Seul l'auteur du +1 peut le retirer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /legal/accept:
     post:
@@ -2115,6 +2292,168 @@ paths:
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
 
+  /admin/skills:
+    get:
+      operationId: listAdminSkills
+      tags: [admin]
+      summary: Catalogue complet des compétences (actives et inactives)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Compétences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSkillsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    post:
+      operationId: createSkill
+      tags: [admin]
+      summary: Ajouter une compétence
+      description: Le libellé est figé après création (il donne les octets de l'atome Intuition).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSkillBody"
+      responses:
+        "201":
+          description: Compétence créée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSkillResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          description: "`slug_taken`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/skills/{id}:
+    patch:
+      operationId: updateSkill
+      tags: [admin]
+      summary: Activer ou désactiver une compétence
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [active]
+              properties:
+                active:
+                  type: boolean
+      responses:
+        "200":
+          description: Compétence mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSkillResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/certifications/publisher:
+    get:
+      operationId: getCertificationPublisher
+      tags: [admin]
+      summary: Certification publisher state, counts and +1s out of attempts
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Publisher state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCertificationPublisherResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /admin/certifications/{id}/republish:
+    post:
+      operationId: republishCertification
+      tags: [admin]
+      summary: Reset a +1's retry state and reopen its outbox event
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "202":
+          description: Queued for the next publisher poll
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, queued]
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  queued:
+                    type: boolean
+                    const: true
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: "`already_published` or `certification_revoked`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /admin/users:
     get:
       operationId: listAdminUsers
@@ -2308,11 +2647,18 @@ components:
   schemas:
     HealthResponse:
       type: object
-      required: [status]
+      required: [status, certificationPublisher]
       properties:
         status:
           type: string
           const: ok
+        certificationPublisher:
+          type: string
+          enum: [on, "off"]
+          description: Whether this API process publishes +1s on Intuition testnet.
+        lowBalance:
+          type: boolean
+          description: Present once the publisher has read its wallet balance; true under 1 tTRUST.
 
     UserRole:
       type: string
@@ -2332,6 +2678,9 @@ components:
         authorProfileId:
           type: string
           format: uuid
+        authorDisplayName:
+          type: string
+          description: Display name of the registered author (full name, or derived from the email). Absent when author_id matches no user.
         createdAt:
           type: string
           format: date-time
@@ -2443,6 +2792,9 @@ components:
         authorProfileId:
           type: string
           format: uuid
+        authorDisplayName:
+          type: string
+          description: Display name of the registered author (full name, or derived from the email). Absent when author_id matches no user.
         createdAt:
           type: string
           format: date-time
@@ -3649,6 +4001,219 @@ components:
       properties:
         item:
           $ref: "#/components/schemas/AdminSubjectRequestItem"
+
+    Skill:
+      type: object
+      required: [id, slug, label, active]
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        label:
+          type: string
+        active:
+          type: boolean
+
+    SkillsResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Skill"
+
+    AdminSkillsResponse:
+      $ref: "#/components/schemas/SkillsResponse"
+
+    AdminSkillResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/Skill"
+
+    CertificationPublisherStatus:
+      oneOf:
+        - type: object
+          required: [state, reason]
+          properties:
+            state:
+              type: string
+              const: "off"
+            reason:
+              type: string
+        - type: object
+          required: [state, operator, balance, lowBalance, balanceCheckedAt]
+          properties:
+            state:
+              type: string
+              const: "on"
+            operator:
+              type: string
+              description: Operator wallet address
+            balance:
+              type: [string, "null"]
+              description: Balance in tTRUST
+            lowBalance:
+              type: [boolean, "null"]
+            balanceCheckedAt:
+              type: [string, "null"]
+              format: date-time
+
+    AdminCertificationPublisherResponse:
+      type: object
+      required: [publisher, counts, failed]
+      properties:
+        publisher:
+          $ref: "#/components/schemas/CertificationPublisherStatus"
+        counts:
+          type: object
+          required: [published, waiting, failed]
+          properties:
+            published:
+              type: integer
+            waiting:
+              type: integer
+            failed:
+              type: integer
+        failed:
+          type: array
+          maxItems: 50
+          items:
+            type: object
+            required: [id, recipientId, attesterId, skillLabel, publishAttempts, publishError, createdAt]
+            properties:
+              id:
+                type: string
+                format: uuid
+              recipientId:
+                type: string
+                format: uuid
+              attesterId:
+                type: string
+                format: uuid
+              skillLabel:
+                type: string
+              publishAttempts:
+                type: integer
+              publishError:
+                type: [string, "null"]
+              createdAt:
+                type: string
+                format: date-time
+
+    CreateSkillBody:
+      type: object
+      required: [slug, label]
+      properties:
+        slug:
+          type: string
+          pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          maxLength: 64
+        label:
+          type: string
+          minLength: 1
+          maxLength: 80
+
+    Certification:
+      type: object
+      required: [id, skillId, attester, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        skillId:
+          type: string
+          format: uuid
+        attester:
+          type: object
+          required: [id, displayName]
+          properties:
+            id:
+              type: string
+              format: uuid
+            displayName:
+              type: string
+            avatarUrl:
+              type: string
+        comment:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        proof:
+          description: Set once the +1 is published on Intuition testnet (ADR 0009). Absent while pending.
+          type: object
+          required: [network, attestationTripleId, claimTripleId, publishedAt]
+          properties:
+            network:
+              type: string
+              enum: [intuition-testnet]
+            attestationTripleId:
+              type: string
+            claimTripleId:
+              type: string
+            txHash:
+              type: string
+            publishedAt:
+              type: string
+              format: date-time
+
+    SkillCertificationGroup:
+      type: object
+      required: [skill, count, items]
+      properties:
+        skill:
+          $ref: "#/components/schemas/Skill"
+        count:
+          type: integer
+          minimum: 1
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Certification"
+
+    UserCertificationsResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SkillCertificationGroup"
+
+    CertificationEligibilityResponse:
+      type: object
+      required: [eligible, attestedSkillIds]
+      properties:
+        eligible:
+          type: boolean
+        attestedSkillIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    CreateCertificationBody:
+      type: object
+      required: [skillId]
+      properties:
+        skillId:
+          type: string
+          format: uuid
+        comment:
+          type: string
+          maxLength: 280
+
+    CreateCertificationResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/Certification"
 
     ErrorResponse:
       type: object

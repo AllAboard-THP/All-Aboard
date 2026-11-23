@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { getMessageMediaStorageMode } from "./config.js";
+import { getMessageMediaStorageMode, readS3MediaConfig } from "./config.js";
 import {
   buildAttachmentKey,
   createLocalMediaStorageProvider,
@@ -10,7 +10,10 @@ import {
   getMessageMediaStorageDir,
   messageMediaFilePath,
 } from "./paths.js";
-import { createS3MediaStorageFromEnv } from "./s3-provider.js";
+import {
+  createS3MediaStorageFromEnv,
+  verifyS3MediaStorageAccess,
+} from "./s3-provider.js";
 import type { MediaStorageProvider } from "./types.js";
 
 export { getMessageMediaStorageMode, readS3MediaConfig } from "./config.js";
@@ -70,6 +73,22 @@ export function assertMessageMediaStorageReady(): void {
   if (getMessageMediaStorageMode() === "s3") {
     getMediaStorage();
   }
+}
+
+/**
+ * In `s3` mode, proves the bucket accepts a write, a read and a delete with
+ * the configured keys. Throws a message naming the bucket, endpoint and S3
+ * error code (never the keys). Returns a log line, or null in `local` mode.
+ */
+export async function verifyMessageMediaStorageAccess(
+  verify: typeof verifyS3MediaStorageAccess = verifyS3MediaStorageAccess,
+): Promise<string | null> {
+  if (getMessageMediaStorageMode() !== "s3") {
+    return null;
+  }
+  const config = readS3MediaConfig();
+  await verify(config);
+  return `message media: s3 bucket ${config.bucket} reachable at ${config.endpoint ?? "AWS S3"}`;
 }
 
 /** Resets the cached provider (tests). */

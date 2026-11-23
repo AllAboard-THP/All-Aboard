@@ -13,6 +13,10 @@ import {
 
 import { PostCard, type PostCardLabels } from "@/components/features/post-card";
 import { StartConversationButton } from "@/components/features/start-conversation-button";
+import {
+  UserCertificationsCard,
+  type UserCertificationsData,
+} from "@/components/features/user-certifications-card";
 import { UserProfilePagination } from "@/components/features/user-profile-pagination";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
@@ -27,6 +31,8 @@ type Props = {
   data: PublicUserResponse;
   params: PublicUserPageParams;
   viewerId?: string | null;
+  /** Skill +1s; the card is hidden when they could not be loaded. */
+  certifications?: UserCertificationsData | null;
 };
 
 function profileAvatarSrc(
@@ -89,6 +95,7 @@ export async function UserPublicContent({
   data,
   params,
   viewerId,
+  certifications,
 }: Props) {
   const t = await getTranslations("profile.public");
   const tPostCard = await getTranslations("postCard");
@@ -213,6 +220,15 @@ export async function UserPublicContent({
           ))}
         </div>
       ) : null}
+
+      {certifications ?
+        <UserCertificationsCard
+          userId={userId}
+          displayName={profile.displayName}
+          viewerId={viewerId}
+          data={certifications}
+        />
+      : null}
 
       <Card>
         <CardHeader>
