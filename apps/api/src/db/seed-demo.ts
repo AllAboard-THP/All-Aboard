@@ -17,6 +17,7 @@ import {
   users,
 } from "./schema.js";
 import { directKeyFor } from "../services/conversations.js";
+import { seedDemoMissions } from "./seed-demo-missions.js";
 import {
   demoBookmarks,
   demoConversations,
@@ -522,8 +523,10 @@ export async function seedDemoContent(db: AppDatabase): Promise<void> {
 
   await recalculateSubjectPostsCounts(db);
 
+  const missionCounts = await seedDemoMissions(db);
+
   console.log(
-    `api: demo seed — ${helpRequestCount} help request(s), ${responseCount} new response(s), ${likeCount} like(s), ${bookmarkCount} bookmark(s), ${resourceCount} resource(s), ${conversationCount} conversation(s), ${messageCount} message(s)`,
+    `api: demo seed — ${helpRequestCount} help request(s), ${responseCount} new response(s), ${likeCount} like(s), ${bookmarkCount} bookmark(s), ${resourceCount} resource(s), ${conversationCount} conversation(s), ${messageCount} message(s), ${missionCounts.missions} mission(s), ${missionCounts.applications} application(s), ${missionCounts.experiences} new experience(s)`,
   );
 }
 

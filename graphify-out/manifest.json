@@ -3165,8 +3165,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/seed-demo.ts": {
-    "mtime": 1795377505.7052267,
-    "ast_hash": "f29c36eeee2071338141315a1783ee96",
+    "mtime": 1795520478.4642847,
+    "ast_hash": "3bd2d3cf1498b2ca7c4ecb48f3869046",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0013_message_attachments.sql": {
@@ -3640,8 +3640,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/guides/dev-seed.md": {
-    "mtime": 1795377505.7052267,
-    "ast_hash": "8fb263f63b24eeab96ee9a8ab2553bae",
+    "mtime": 1795520572.8702726,
+    "ast_hash": "1c8abc1b801705d75ff7640d96270306",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/branding/retained/torsion-en-s.html": {
@@ -3842,6 +3842,11 @@
   "/home/dim/AllAboard/Docs/product/video-annotations.md": {
     "mtime": 1795517590.0458524,
     "ast_hash": "1d7a7a2dd4c8d54fb887313e35420355",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/db/seed-demo-missions.ts": {
+    "mtime": 1795520467.9407508,
+    "ast_hash": "62da1a4e52e545a4b243f31fcc197b16",
     "semantic_hash": ""
   }
 }
