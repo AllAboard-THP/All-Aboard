@@ -11,13 +11,17 @@ import {
 import {
   baseMimeType,
   bindStreamEnded,
+  browserCaptureStreamFactory,
   clampRecordedDurationMs,
+  composeScreenRecording,
+  DEFAULT_SCREEN_AUDIO,
   isScreenCaptureSupported,
   kindForRecorderMode,
   mapCaptureError,
-  maxBytesForRecorderKind,
+  maxBytesForRecorderMode,
   maxDurationMsForRecorderMode,
   selectRecorderMimeType,
+  type CaptureStreamFactory,
   type MediaCaptureDevices,
   type MediaCaptureStream,
   type MediaRecorderErrorCode,
@@ -25,6 +29,8 @@ import {
   type MediaRecorderMode,
   type MediaRecorderPhase,
   type RecordedMedia,
+  type RecorderAudioWarning,
+  type ScreenAudioOptions,
 } from "./media-recorder";
 
 const DEFAULT_TICK_MS = 250;
@@ -43,6 +49,8 @@ export type UseMediaRecorderOptions = {
   isSecureContext?: boolean;
   /** How often the countdown updates. Defaults to 250ms. */
   tickMs?: number;
+  /** Builds the screen recording stream and mixes its audio. Browser default. */
+  captureStreamFactory?: CaptureStreamFactory;
 };
 
 export type UseMediaRecorderResult = {
@@ -55,7 +63,10 @@ export type UseMediaRecorderResult = {
   recording: RecordedMedia | null;
   liveStream: MediaCaptureStream | null;
   screenCaptureSupported: boolean;
-  start: (mode: MediaRecorderMode) => Promise<void>;
+  /** Screen mode only: a wanted sound source is missing, or the recording is silent. */
+  audioWarning: RecorderAudioWarning | null;
+  /** `audio` picks the sound sources of a screen recording (both on by default). */
+  start: (mode: MediaRecorderMode, audio?: ScreenAudioOptions) => Promise<void>;
   stop: () => void;
   discard: () => void;
 };
@@ -132,6 +143,9 @@ export function useMediaRecorder(
   const [error, setError] = useState<MediaRecorderErrorCode | null>(null);
   const [recording, setRecording] = useState<RecordedMedia | null>(null);
   const [liveStream, setLiveStream] = useState<MediaCaptureStream | null>(null);
+  const [audioWarning, setAudioWarning] = useState<RecorderAudioWarning | null>(
+    null,
+  );
 
   const recorderRef = useRef<MediaRecorderLike | null>(null);
   const streamRef = useRef<MediaCaptureStream | null>(null);
@@ -146,6 +160,8 @@ export function useMediaRecorder(
   const previewUrlRef = useRef<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const detachEndedRef = useRef<(() => void) | null>(null);
+  /** Screen mode: stops the source tracks behind the composed stream. */
+  const disposeSourcesRef = useRef<(() => void) | null>(null);
 
   const devices =
     options.mediaDevices === undefined
@@ -185,6 +201,8 @@ export function useMediaRecorder(
     detachEnded();
     stopStream(streamRef.current);
     streamRef.current = null;
+    disposeSourcesRef.current?.();
+    disposeSourcesRef.current = null;
     if (mountedRef.current) {
       setLiveStream(null);
     }
@@ -229,7 +247,7 @@ export function useMediaRecorder(
 
     const kind = kindForRecorderMode(activeMode);
     const sizeBytes = chunks.reduce((total, chunk) => total + chunk.size, 0);
-    if (sizeBytes > maxBytesForRecorderKind(kind)) {
+    if (sizeBytes > maxBytesForRecorderMode(activeMode)) {
       setPhase("error");
       setError("file_too_large");
       setRecording(null);
@@ -301,6 +319,7 @@ export function useMediaRecorder(
     revokePreview();
     setRecording(null);
     setError(null);
+    setAudioWarning(null);
     setElapsedMs(0);
     setPhase("idle");
     setMode(null);
@@ -308,7 +327,10 @@ export function useMediaRecorder(
   }, [clearTimer, releaseStream, revokePreview, stop]);
 
   const start = useCallback(
-    async (nextMode: MediaRecorderMode) => {
+    async (
+      nextMode: MediaRecorderMode,
+      audio: ScreenAudioOptions = DEFAULT_SCREEN_AUDIO,
+    ) => {
       if (recorderRef.current?.state === "recording") {
         return;
       }
@@ -318,6 +340,7 @@ export function useMediaRecorder(
       revokePreview();
       setRecording(null);
       setError(null);
+      setAudioWarning(null);
       setElapsedMs(0);
       setMode(nextMode);
       modeRef.current = nextMode;
@@ -359,11 +382,36 @@ export function useMediaRecorder(
       }
 
       let stream: MediaCaptureStream;
+      let disposeSources: (() => void) | null = null;
+      let warning: RecorderAudioWarning | null = null;
       try {
-        stream =
-          nextMode === "screen"
-            ? await mediaDevices.getDisplayMedia!({ video: true, audio: true })
-            : await mediaDevices.getUserMedia(constraintsForMode(nextMode));
+        if (nextMode === "screen") {
+          const display = await mediaDevices.getDisplayMedia!({
+            video: true,
+            audio: audio.screenAudio,
+          });
+          // The share is granted: a refused microphone only removes the voice.
+          let microphone: MediaCaptureStream | null = null;
+          if (audio.microphone) {
+            try {
+              microphone = await mediaDevices.getUserMedia({ audio: true });
+            } catch {
+              microphone = null;
+            }
+          }
+          const composed = composeScreenRecording(
+            display,
+            microphone,
+            audio,
+            optionsRef.current.captureStreamFactory ??
+              browserCaptureStreamFactory,
+          );
+          stream = composed.stream;
+          disposeSources = composed.dispose;
+          warning = composed.warning;
+        } else {
+          stream = await mediaDevices.getUserMedia(constraintsForMode(nextMode));
+        }
       } catch (captureError) {
         if (!mountedRef.current || generation !== generationRef.current) {
           return;
@@ -383,8 +431,10 @@ export function useMediaRecorder(
 
       if (!mountedRef.current || generation !== generationRef.current) {
         stopStream(stream);
+        disposeSources?.();
         return;
       }
+      disposeSourcesRef.current = disposeSources;
 
       const createRecorder =
         optionsRef.current.createRecorder ?? defaultCreateRecorder;
@@ -393,6 +443,8 @@ export function useMediaRecorder(
         recorder = createRecorder(stream, mimeType);
       } catch {
         stopStream(stream);
+        disposeSourcesRef.current?.();
+        disposeSourcesRef.current = null;
         if (mountedRef.current) {
           setPhase("error");
           setError("not_supported");
@@ -440,6 +492,8 @@ export function useMediaRecorder(
         recorderRef.current = null;
         stopStream(stream);
         streamRef.current = null;
+        disposeSourcesRef.current?.();
+        disposeSourcesRef.current = null;
         if (mountedRef.current) {
           setPhase("error");
           setError("not_supported");
@@ -454,11 +508,14 @@ export function useMediaRecorder(
           recorder.stop();
         } catch {
           stopStream(stream);
+          disposeSourcesRef.current?.();
+          disposeSourcesRef.current = null;
         }
         return;
       }
 
       setLiveStream(stream);
+      setAudioWarning(warning);
       setPhase("recording");
       startTimer(nextMode);
     },
@@ -485,6 +542,8 @@ export function useMediaRecorder(
         stopStream(streamRef.current);
       }
       streamRef.current = null;
+      disposeSourcesRef.current?.();
+      disposeSourcesRef.current = null;
       if (previewUrlRef.current) {
         const revoke =
           optionsRef.current.revokeObjectUrl ?? defaultRevokeObjectUrl;
@@ -508,6 +567,7 @@ export function useMediaRecorder(
     recording,
     liveStream,
     screenCaptureSupported,
+    audioWarning,
     start,
     stop,
     discard,

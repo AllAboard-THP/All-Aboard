@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import { Button } from "../components/button";
 import {
   MESSAGE_AUDIO_MAX_DURATION_MS,
+  MESSAGE_SCREEN_MAX_DURATION_MS,
   MESSAGE_VIDEO_MAX_DURATION_MS,
   formatRecorderClock,
   type MediaCaptureStream,
@@ -186,7 +187,7 @@ export function MediaRecorderPanel({
             >
               <Monitor />
               {labels.screen}
-              <LimitHint ms={MESSAGE_VIDEO_MAX_DURATION_MS} />
+              <LimitHint ms={MESSAGE_SCREEN_MAX_DURATION_MS} />
             </Button>
           </>
         ) : null}

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 
@@ -139,5 +139,67 @@ describe("ChatComposer", () => {
 
     expect(screen.getByRole("alert").textContent).toBe(labels.sendError);
     expect(screen.getByRole("button", { name: "Réessayer" })).toBeTruthy();
+  });
+
+  it("opens the screen setup with microphone and screen sound on, and confirms", () => {
+    const onScreenSetupChange = vi.fn();
+    const onConfirmScreen = vi.fn();
+    renderComposer({
+      screenSetup: { microphone: true, screenAudio: true },
+      onScreenSetupChange,
+      onConfirmScreen,
+    });
+
+    expect(screen.getByTestId("chat-screen-setup")).toBeTruthy();
+    expect(screen.queryByTestId("chat-message-input")).toBeNull();
+    expect(
+      screen.getByTestId("chat-screen-microphone").getAttribute("data-state"),
+    ).toBe("checked");
+
+    fireEvent.click(screen.getByTestId("chat-screen-sound"));
+    expect(onScreenSetupChange).toHaveBeenCalledWith({
+      microphone: true,
+      screenAudio: false,
+    });
+
+    fireEvent.click(screen.getByTestId("chat-start-screen"));
+    expect(onConfirmScreen).toHaveBeenCalled();
+  });
+
+  it("shows the audio warning while recording the screen", () => {
+    renderComposer({
+      phase: "recording",
+      mode: "screen",
+      remainingMs: 290_000,
+      audioWarning: "microphone_unavailable",
+    });
+    expect(screen.getByTestId("chat-audio-warning").textContent).toBe(
+      labels.audioMicrophoneUnavailable,
+    );
+  });
+
+  it("asks for the sound sources before sharing the screen", () => {
+    const getDisplayMedia = vi.fn();
+    const getUserMedia = vi.fn();
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: { getDisplayMedia, getUserMedia },
+    });
+    try {
+      render(
+        <ChatComposerSession
+          labels={labels}
+          onSendText={async () => {}}
+          onSendMedia={async () => {}}
+        />,
+      );
+      fireEvent.click(screen.getByTestId("chat-record-screen"));
+      expect(screen.getByTestId("chat-screen-setup")).toBeTruthy();
+      expect(getDisplayMedia).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByRole("button", { name: labels.cancel }));
+      expect(screen.queryByTestId("chat-screen-setup")).toBeNull();
+    } finally {
+      Reflect.deleteProperty(navigator, "mediaDevices");
+    }
   });
 });

@@ -49,12 +49,12 @@ describe("MediaRecorderPanel", () => {
     expect(screen.getByRole("button", { name: /Micro/ })).toBeTruthy();
   });
 
-  it("shows the 5 minute and 3 minute limits and can start a capture", () => {
+  it("shows the 5, 3 and 5 minute limits and can start a capture", () => {
     const { onStart } = renderPanel();
 
     expect(screen.getByRole("button", { name: /Micro/ }).textContent).toContain("5:00");
     expect(screen.getByRole("button", { name: /Caméra/ }).textContent).toContain("3:00");
-    expect(screen.getByRole("button", { name: /Écran/ }).textContent).toContain("3:00");
+    expect(screen.getByRole("button", { name: /Écran/ }).textContent).toContain("5:00");
 
     screen.getByRole("button", { name: /Micro/ }).click();
     expect(onStart).toHaveBeenCalledWith("microphone");

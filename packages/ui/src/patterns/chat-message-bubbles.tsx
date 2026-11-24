@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import { formatRecorderClock } from "../hooks/media-recorder";
 import { cn } from "../lib/utils";
 
@@ -139,6 +141,7 @@ export function VideoBubble({
   mine,
   pending,
   labels,
+  player,
   className,
 }: BubbleFrame & {
   src: string;
@@ -146,21 +149,25 @@ export function VideoBubble({
   durationMs?: number;
   caption?: string;
   labels: ChatBubbleLabels;
+  /** Replaces the plain video element, e.g. with an annotated player (#197). */
+  player?: ReactNode;
 }) {
   return (
     <div
       data-slot="video-bubble"
       className={cn(mediaBubbleClass(mine, pending), "min-w-64", className)}
     >
-      <video
-        controls
-        playsInline
-        preload="metadata"
-        src={src}
-        poster={poster}
-        aria-label={labels.videoMessage}
-        className="aspect-video w-full rounded-lg bg-black object-contain"
-      />
+      {player ?? (
+        <video
+          controls
+          playsInline
+          preload="metadata"
+          src={src}
+          poster={poster}
+          aria-label={labels.videoMessage}
+          className="aspect-video w-full rounded-lg bg-black object-contain"
+        />
+      )}
       <div className="flex items-center justify-between gap-2">
         <DurationLabel durationMs={durationMs} label={labels.duration} />
         {pending ? <PendingBadge label={labels.sending} /> : null}
@@ -174,10 +181,13 @@ export function ChatMessageContent({
   message,
   mine,
   labels,
+  videoPlayer,
 }: {
   message: ChatRenderedMessage;
   mine?: boolean;
   labels: ChatBubbleLabels;
+  /** Video messages only: replaces the plain video element. */
+  videoPlayer?: ReactNode;
 }) {
   if (message.kind === "audio") {
     if (!message.attachmentUrl) {
@@ -222,6 +232,7 @@ export function ChatMessageContent({
         mine={mine}
         pending={message.pending}
         labels={labels}
+        player={videoPlayer}
       />
     );
   }

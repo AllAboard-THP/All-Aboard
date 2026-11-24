@@ -1,6 +1,6 @@
 # Narrated screen recordings and video annotations
 
-**Status:** product decisions, 2026-11-24. **API built** (contract in [web-api-integration.md](../guides/web-api-integration.md#video-annotations-197), OpenAPI 0.13.0). **Web not built.** Issue: [#197](https://github.com/AllAboard-THP/All-Aboard/issues/197).  
+**Status:** product decisions, 2026-11-24. **API built** (contract in [web-api-integration.md](../guides/web-api-integration.md#video-annotations-197), OpenAPI 0.13.0). **Web built**: screen setup step (microphone and screen sound switches), audio mix, 5 min screen limit, annotated player (`packages/ui` `AnnotatedVideoPlayer`), BFF routes and live updates in the chat thread. Issue: [#197](https://github.com/AllAboard-THP/All-Aboard/issues/197).  
 **Builds on:** async chat media (audio and video messages, [ADR 0008](../adr/0008-message-media-object-storage.md), storage in [message-media-storage.md](../deployment/message-media-storage.md)).
 
 This page is the product source of truth for two chat features:

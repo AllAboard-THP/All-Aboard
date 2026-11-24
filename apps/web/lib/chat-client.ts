@@ -284,7 +284,15 @@ export function parseChatWsMessage(value: unknown): ChatMessage | null {
   }
 
   if (!attachment) return null;
-  return { ...base, kind: message.kind, attachment };
+  const counts = {
+    ...(typeof message.annotationCount === "number"
+      ? { annotationCount: message.annotationCount }
+      : {}),
+    ...(typeof message.unreadAnnotationCount === "number"
+      ? { unreadAnnotationCount: message.unreadAnnotationCount }
+      : {}),
+  };
+  return { ...base, kind: message.kind, attachment, ...counts };
 }
 
 export async function fetchConversationWsToken(
