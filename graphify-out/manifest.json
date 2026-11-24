@@ -2885,8 +2885,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/README.md": {
-    "mtime": 1794580304.4223442,
-    "ast_hash": "19c6dd8640362b4e27cb3b594be7b114",
+    "mtime": 1795514957.010282,
+    "ast_hash": "a600c9eb1c44740cc7724790095c3245",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0004-agent-indexer-architecture.md": {
@@ -3450,8 +3450,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0009-certifications-intuition.md": {
-    "mtime": 1795478301.6238503,
-    "ast_hash": "9b1ad4233aecbf7f7bc7aa1c7a87932c",
+    "mtime": 1795514957.010282,
+    "ast_hash": "af6141cdd127c35a45ff0a1efa7ac299",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/scripts/db-migrate.ts": {
@@ -3650,8 +3650,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/missions.md": {
-    "mtime": 1795478480.2075999,
-    "ast_hash": "1008a4ed15aa6ede0904861b0213d99a",
+    "mtime": 1795514957.010282,
+    "ast_hash": "0fe4261a46125eab73f1b04f349a0d33",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/adr/0010-experience-certifications-missions.md": {
+    "mtime": 1795514947.1563656,
+    "ast_hash": "4111d731c84c08a8cafa8bb1882328f3",
     "semantic_hash": ""
   }
 }
