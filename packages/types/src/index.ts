@@ -510,6 +510,10 @@ export type ChatMessage = {
   avatarUrl?: string;
   createdAt: string;
   type: "message";
+  /** Video messages only (#197): annotations not deleted. */
+  annotationCount?: number;
+  /** Video messages only: annotations and replies by the other participant, unread by the viewer. */
+  unreadAnnotationCount?: number;
 };
 
 export type ConversationInboxItem = {
@@ -558,6 +562,97 @@ export type MarkConversationReadResponse = {
   ok: true;
   lastReadAt: string;
 };
+
+/** #197 — rectangle on the video frame, relative coordinates in [0, 1]. */
+export type MessageAnnotationRect = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+};
+
+export type MessageAnnotationReply = {
+  id: string;
+  annotationId: string;
+  author: ConversationParticipantSummary;
+  /** Absent once deleted. */
+  body?: string;
+  editedAt?: string;
+  deletedAt?: string;
+  createdAt: string;
+};
+
+export type MessageAnnotation = {
+  id: string;
+  messageId: string;
+  author: ConversationParticipantSummary;
+  atMs: number;
+  rect?: MessageAnnotationRect;
+  /** Absent once deleted. */
+  body?: string;
+  resolvedAt?: string;
+  resolvedBy?: string;
+  editedAt?: string;
+  deletedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  replies: MessageAnnotationReply[];
+};
+
+export type MessageAnnotationsResponse = {
+  items: MessageAnnotation[];
+  unreadCount: number;
+};
+
+export type CreateMessageAnnotationBody = {
+  atMs: number;
+  rect?: MessageAnnotationRect;
+  body: string;
+};
+
+export type UpdateMessageAnnotationBody = {
+  body?: string;
+  resolved?: boolean;
+};
+
+export type MessageAnnotationResponse = {
+  item: MessageAnnotation;
+};
+
+export type CreateMessageAnnotationReplyBody = {
+  body: string;
+};
+
+export type MessageAnnotationReplyResponse = {
+  item: MessageAnnotationReply;
+};
+
+export type MarkMessageAnnotationsReadResponse = {
+  ok: true;
+  lastReadAt: string;
+};
+
+/** Events on the conversation WebSocket, next to bare `ChatMessage` objects (`type: "message"`). */
+export type MessageAnnotationSocketEvent = {
+  type: "annotation.created" | "annotation.updated" | "annotation.deleted";
+  messageId: string;
+  annotation: MessageAnnotation;
+};
+
+export type MessageAnnotationReplySocketEvent = {
+  type:
+    | "annotation_reply.created"
+    | "annotation_reply.updated"
+    | "annotation_reply.deleted";
+  messageId: string;
+  annotationId: string;
+  reply: MessageAnnotationReply;
+};
+
+export type ChatSocketEvent =
+  | ChatMessage
+  | MessageAnnotationSocketEvent
+  | MessageAnnotationReplySocketEvent;
 
 /** Short-lived JWT for WebSocket handoff (BFF → browser → API WS). */
 export type ConversationWsTokenResponse = {

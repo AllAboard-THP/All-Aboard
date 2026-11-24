@@ -4,6 +4,15 @@ export const MESSAGE_AUDIO_MAX_BYTES = 10 * 1024 * 1024;
 export const MESSAGE_VIDEO_MAX_BYTES = 50 * 1024 * 1024;
 export const MESSAGE_AUDIO_MAX_DURATION_MS = 300_000;
 export const MESSAGE_VIDEO_MAX_DURATION_MS = 180_000;
+/** Narrated screen recordings (#197): longer and larger than camera videos. */
+export const MESSAGE_SCREEN_MAX_BYTES = 100 * 1024 * 1024;
+export const MESSAGE_SCREEN_MAX_DURATION_MS = 300_000;
+/** Largest upload of any kind, for the multipart parser limit. */
+export const MESSAGE_MEDIA_MAX_BYTES = Math.max(
+  MESSAGE_AUDIO_MAX_BYTES,
+  MESSAGE_VIDEO_MAX_BYTES,
+  MESSAGE_SCREEN_MAX_BYTES,
+);
 
 export const AUDIO_ALLOWED_MIME_TYPES = new Set([
   "audio/webm",
@@ -91,13 +100,22 @@ export function allowedMimeTypesForKind(kind: MessageKind): Set<string> {
   return kind === "audio" ? AUDIO_ALLOWED_MIME_TYPES : VIDEO_ALLOWED_MIME_TYPES;
 }
 
-export function maxBytesForKind(kind: MessageKind): number {
-  return kind === "audio" ? MESSAGE_AUDIO_MAX_BYTES : MESSAGE_VIDEO_MAX_BYTES;
+/** Limits depend on the source: a screen recording gets more room than a camera video. */
+export function maxBytesFor(
+  kind: MessageKind,
+  source?: AttachmentSource,
+): number {
+  if (kind === "audio") return MESSAGE_AUDIO_MAX_BYTES;
+  return source === "screen" ? MESSAGE_SCREEN_MAX_BYTES : MESSAGE_VIDEO_MAX_BYTES;
 }
 
-export function maxDurationMsForKind(kind: MessageKind): number {
-  return kind === "audio"
-    ? MESSAGE_AUDIO_MAX_DURATION_MS
+export function maxDurationMsFor(
+  kind: MessageKind,
+  source?: AttachmentSource,
+): number {
+  if (kind === "audio") return MESSAGE_AUDIO_MAX_DURATION_MS;
+  return source === "screen"
+    ? MESSAGE_SCREEN_MAX_DURATION_MS
     : MESSAGE_VIDEO_MAX_DURATION_MS;
 }
 
@@ -130,8 +148,9 @@ export function validateMessageMediaSource(
 export function validateMessageMediaSize(
   kind: MessageKind,
   sizeBytes: number,
+  source?: AttachmentSource,
 ): MessageMediaValidationError | null {
-  if (sizeBytes <= 0 || sizeBytes > maxBytesForKind(kind)) {
+  if (sizeBytes <= 0 || sizeBytes > maxBytesFor(kind, source)) {
     return "file_too_large";
   }
   return null;
@@ -140,12 +159,13 @@ export function validateMessageMediaSize(
 export function validateMessageMediaDuration(
   kind: MessageKind,
   durationMs: number | undefined,
+  source?: AttachmentSource,
 ): MessageMediaValidationError | null {
   if (
     durationMs == null ||
     !Number.isFinite(durationMs) ||
     durationMs <= 0 ||
-    durationMs > maxDurationMsForKind(kind)
+    durationMs > maxDurationMsFor(kind, source)
   ) {
     return "duration_exceeded";
   }
@@ -169,7 +189,17 @@ export function validateMessageMediaUpload(params: {
     return "invalid_file_type";
   }
 
-  const sizeError = validateMessageMediaSize(params.kind, params.sizeBytes);
+  // The source sets the limits, so it is checked first.
+  const sourceError = validateMessageMediaSource(params.kind, params.source);
+  if (sourceError) {
+    return sourceError;
+  }
+
+  const sizeError = validateMessageMediaSize(
+    params.kind,
+    params.sizeBytes,
+    params.source,
+  );
   if (sizeError) {
     return sizeError;
   }
@@ -177,14 +207,10 @@ export function validateMessageMediaUpload(params: {
   const durationError = validateMessageMediaDuration(
     params.kind,
     params.durationMs,
+    params.source,
   );
   if (durationError) {
     return durationError === "duration_exceeded" ? "invalid_duration" : durationError;
-  }
-
-  const sourceError = validateMessageMediaSource(params.kind, params.source);
-  if (sourceError) {
-    return sourceError;
   }
 
   return null;

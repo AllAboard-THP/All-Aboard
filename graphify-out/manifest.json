@@ -1285,8 +1285,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/meta/_journal.json": {
-    "mtime": 1795515510.891066,
-    "ast_hash": "d1cb6d465693531148a010d1c99de006",
+    "mtime": 1795520814.0758958,
+    "ast_hash": "89fdb0a65a98fedd2d4a40e1f0e48f49",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/migrate.ts": {
@@ -1295,8 +1295,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/app.ts": {
-    "mtime": 1795515510.891066,
-    "ast_hash": "5c18974f1daef1dfab227cc630ed3d80",
+    "mtime": 1795520926.85859,
+    "ast_hash": "f49582817fbdfca6bbcc475753b23b22",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/fastify-augmentation.ts": {
@@ -1360,8 +1360,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/services/conversations.ts": {
-    "mtime": 1793311442.2891946,
-    "ast_hash": "8c7e4d7bb1df59d4fd543680680776b7",
+    "mtime": 1795520926.8628159,
+    "ast_hash": "142a9ccf60250d1b0560f161f48b727b",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/services/chat-broadcast.test.ts": {
@@ -1385,8 +1385,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/services/chat-broadcast.ts": {
-    "mtime": 1781730692.1120253,
-    "ast_hash": "a46b4b8d1716c33bde10c9f26771c396",
+    "mtime": 1795520826.5433826,
+    "ast_hash": "7470c4bd0e238be7bde3c57852ccd0e1",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/services/ai-summary-worker.ts": {
@@ -1420,8 +1420,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/schema.ts": {
-    "mtime": 1795515510.891066,
-    "ast_hash": "39555995122517ee763b7e3a88e499af",
+    "mtime": 1795520814.0587626,
+    "ast_hash": "afdcb7ccefdfca804a97be2da90c1be8",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/seed.ts": {
@@ -1645,8 +1645,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/conversations.ts": {
-    "mtime": 1785091965.6144884,
-    "ast_hash": "7845b334fe7a1e69e1530361c3ac7ac4",
+    "mtime": 1795520926.85859,
+    "ast_hash": "ab7b352d1aaca8af7b75d115d1a25bd6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/routes/avatar.ts": {
@@ -1685,8 +1685,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/openapi.yaml": {
-    "mtime": 1795515510.891066,
-    "ast_hash": "fb56c9a09be4ccd59548480bd2437319",
+    "mtime": 1795520984.3389611,
+    "ast_hash": "4f76281c35adff8c4c6df273dc086388",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/ui/package.json": {
@@ -2565,8 +2565,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/types/src/index.ts": {
-    "mtime": 1795515510.891066,
-    "ast_hash": "698618ce919ced3d6b4d0ad2bfaebe7d",
+    "mtime": 1795520826.5258617,
+    "ast_hash": "3e65f252cb7bf884254a2af65d3012d6",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/packages/config-eslint/node.mjs": {
@@ -2795,8 +2795,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/guides/web-api-integration.md": {
-    "mtime": 1795515510.891066,
-    "ast_hash": "4a514606febd72a4dd26819c9055c789",
+    "mtime": 1795521060.6982577,
+    "ast_hash": "4c8de4ab084de98c94b2a2440d6870a5",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/guides/turbo-bootstrap.md": {
@@ -3165,7 +3165,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/db/seed-demo.ts": {
-    "mtime": 1795377505.7052267,
+    "mtime": 1795520717.2293637,
     "ast_hash": "f29c36eeee2071338141315a1783ee96",
     "semantic_hash": ""
   },
@@ -3190,13 +3190,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/services/message-media-upload-rules.test.ts": {
-    "mtime": 1785091965.6144884,
-    "ast_hash": "3a19ad4d8ddbc9f903b829b071f288b2",
+    "mtime": 1795520785.6699507,
+    "ast_hash": "6d5a5228c95b12317a421448d731234e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/services/message-media-upload-rules.ts": {
-    "mtime": 1785091965.6144884,
-    "ast_hash": "5a03a41700343487610941b74c875c22",
+    "mtime": 1795520777.545985,
+    "ast_hash": "979faaa039450d673f13afa000ca0c1e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/services/message-media-upload.ts": {
@@ -3640,7 +3640,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/guides/dev-seed.md": {
-    "mtime": 1795377505.7052267,
+    "mtime": 1795520717.2293637,
     "ast_hash": "8fb263f63b24eeab96ee9a8ab2553bae",
     "semantic_hash": ""
   },
@@ -3840,8 +3840,28 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/video-annotations.md": {
-    "mtime": 1795517590.0458524,
-    "ast_hash": "1d7a7a2dd4c8d54fb887313e35420355",
+    "mtime": 1795521060.7025306,
+    "ast_hash": "d4229d934a506438a252fb417265b7f7",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/drizzle/0019_message_annotations.sql": {
+    "mtime": 1795520814.0630457,
+    "ast_hash": "15bf3d5860a6d841c8ce3cf5fd87347c",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/services/message-annotations.ts": {
+    "mtime": 1795520880.8895457,
+    "ast_hash": "a7f5d714c22b714e34146d4efd8e01a9",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/routes/message-annotations.test.ts": {
+    "mtime": 1795521034.0939372,
+    "ast_hash": "a16f26a03b7e9aa2aafbc749bdd5bb21",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/apps/api/src/routes/message-annotations.ts": {
+    "mtime": 1795520913.9732842,
+    "ast_hash": "cd0518d814f3ccde508e477b13b7ac70",
     "semantic_hash": ""
   }
 }

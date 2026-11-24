@@ -27,7 +27,7 @@ import {
   getMessageMediaStorageDir,
   getMessageMediaStorageMode,
 } from "./lib/media-storage/index.js";
-import { MESSAGE_VIDEO_MAX_BYTES } from "./services/message-media-upload-rules.js";
+import { MESSAGE_MEDIA_MAX_BYTES } from "./services/message-media-upload-rules.js";
 import { getCertificationPublisherStatus } from "./intuition/publisher-status.js";
 import { registerOpenApiDocs } from "./openapi.js";
 import { registerAdminRoutes } from "./routes/admin.js";
@@ -40,6 +40,7 @@ import { registerLegalRoutes } from "./routes/legal.js";
 import { registerMeRoutes } from "./routes/me.js";
 import { registerConversationRoutes } from "./routes/conversations.js";
 import { registerConversationWsRoutes } from "./routes/conversations-ws.js";
+import { registerMessageAnnotationRoutes } from "./routes/message-annotations.js";
 import { registerMentorRoutes } from "./routes/mentor.js";
 import { registerResourceRoutes } from "./routes/resources.js";
 import { registerSocialRoutes } from "./routes/social.js";
@@ -90,7 +91,7 @@ export async function buildApp(options?: BuildAppOptions) {
 
   await app.register(multipart, {
     limits: {
-      fileSize: MESSAGE_VIDEO_MAX_BYTES,
+      fileSize: MESSAGE_MEDIA_MAX_BYTES,
       files: 1,
     },
   });
@@ -154,6 +155,7 @@ export async function buildApp(options?: BuildAppOptions) {
   registerSubjectRequestRoutes(app, db);
   registerMentorRoutes(app, db);
   registerConversationRoutes(app, db);
+  registerMessageAnnotationRoutes(app, db);
   await registerConversationWsRoutes(app, db);
   registerAdminRoutes(app, db);
 

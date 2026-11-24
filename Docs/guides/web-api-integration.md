@@ -204,6 +204,24 @@ Product: [missions.md](../product/missions.md). Decisions: [ADR 0010](../adr/001
 
 Application messages are only returned to the mission's author and to the applicant.
 
+### Video annotations (#197)
+
+Product: [video-annotations.md](../product/video-annotations.md). Schemas: `apps/api/openapi.yaml` (0.13.0), tag `conversations`. Types: `@allaboard/types` (`MessageAnnotation`, `MessageAnnotationReply`, `ChatSocketEvent`…).
+
+| Route | Who | Notes |
+| --- | --- | --- |
+| `GET /conversations/:id/messages/:messageId/annotations` | Participant | Sorted by `atMs`, with replies; `unreadCount` for the viewer |
+| `POST /conversations/:id/messages/:messageId/annotations` | Participant | `{ atMs, rect?, body }`; **400** `not_a_video_message`, `invalid_timestamp`, `invalid_rect` |
+| `PATCH /conversations/:id/messages/:messageId/annotations/read` | Participant | Read marker for the badge |
+| `PATCH /annotations/:annotationId` | Author (`body`), participant (`resolved`) | **403** `not_author`; **409** `annotation_deleted` |
+| `DELETE /annotations/:annotationId` | Author | Soft delete: `body` gone, marker and replies stay |
+| `POST /annotations/:annotationId/replies` | Participant | **409** `annotation_deleted` |
+| `PATCH` / `DELETE /annotation-replies/:replyId` | Author | Soft delete like annotations |
+
+Outside the viewer's conversations, `/annotations/*` and `/annotation-replies/*` answer **404**. Video messages in `GET …/messages` carry `annotationCount` and `unreadAnnotationCount`. The conversation WebSocket also pushes `annotation.*` and `annotation_reply.*` events; clients ignore unknown `type` values.
+
+Media limits now depend on `source`: `microphone` 5 min / 10 MB, `camera` 3 min / 50 MB, `screen` 5 min / 100 MB. The API multipart limit is 100 MB.
+
 ---
 
 ## BFF Next (`apps/web` — same-origin)

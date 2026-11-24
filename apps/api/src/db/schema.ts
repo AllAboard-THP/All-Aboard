@@ -3,6 +3,7 @@ import {
   bigint,
   boolean,
   check,
+  doublePrecision,
   index,
   integer,
   jsonb,
@@ -374,6 +375,99 @@ export const messages = pgTable("messages", {
     .notNull()
     .defaultNow(),
 });
+
+/**
+ * #197: a question pinned to a moment of a video message, optionally on a
+ * rectangle of the frame (relative coordinates, 0..1). Soft delete keeps replies.
+ */
+export const messageAnnotations = pgTable(
+  "message_annotations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    messageId: uuid("message_id")
+      .notNull()
+      .references(() => messages.id, { onDelete: "cascade" }),
+    authorId: uuid("author_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    atMs: integer("at_ms").notNull(),
+    rectX: doublePrecision("rect_x"),
+    rectY: doublePrecision("rect_y"),
+    rectW: doublePrecision("rect_w"),
+    rectH: doublePrecision("rect_h"),
+    body: text("body").notNull(),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+    resolvedBy: uuid("resolved_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    editedAt: timestamp("edited_at", { withTimezone: true }),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("message_annotations_message_at_idx").on(table.messageId, table.atMs),
+    check("message_annotations_at_ms_non_negative", sql`${table.atMs} >= 0`),
+    check(
+      "message_annotations_rect_valid",
+      sql`(${table.rectX} IS NULL AND ${table.rectY} IS NULL AND ${table.rectW} IS NULL AND ${table.rectH} IS NULL)
+        OR (${table.rectX} >= 0 AND ${table.rectY} >= 0 AND ${table.rectW} > 0 AND ${table.rectH} > 0
+          AND ${table.rectX} + ${table.rectW} <= 1 AND ${table.rectY} + ${table.rectH} <= 1)`,
+    ),
+  ],
+);
+
+export const messageAnnotationReplies = pgTable(
+  "message_annotation_replies",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    annotationId: uuid("annotation_id")
+      .notNull()
+      .references(() => messageAnnotations.id, { onDelete: "cascade" }),
+    authorId: uuid("author_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    editedAt: timestamp("edited_at", { withTimezone: true }),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("message_annotation_replies_annotation_created_idx").on(
+      table.annotationId,
+      table.createdAt,
+    ),
+  ],
+);
+
+/** Per user and video message: annotations and replies after `last_read_at` are unread. */
+export const messageAnnotationReads = pgTable(
+  "message_annotation_reads",
+  {
+    messageId: uuid("message_id")
+      .notNull()
+      .references(() => messages.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    lastReadAt: timestamp("last_read_at", { withTimezone: true }).notNull(),
+  },
+  (table) => [
+    uniqueIndex("message_annotation_reads_message_user_unique").on(
+      table.messageId,
+      table.userId,
+    ),
+  ],
+);
 
 export const webauthnCredentials = pgTable(
   "webauthn_credentials",

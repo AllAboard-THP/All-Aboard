@@ -1,6 +1,6 @@
 # Narrated screen recordings and video annotations
 
-**Status:** product decisions, 2026-11-24. **Not built.** Issue: [#197](https://github.com/AllAboard-THP/All-Aboard/issues/197).  
+**Status:** product decisions, 2026-11-24. **API built** (contract in [web-api-integration.md](../guides/web-api-integration.md#video-annotations-197), OpenAPI 0.13.0). **Web not built.** Issue: [#197](https://github.com/AllAboard-THP/All-Aboard/issues/197).  
 **Builds on:** async chat media (audio and video messages, [ADR 0008](../adr/0008-message-media-object-storage.md), storage in [message-media-storage.md](../deployment/message-media-storage.md)).
 
 This page is the product source of truth for two chat features:
@@ -39,7 +39,7 @@ Defaults taken with these decisions (change them here if needed):
 | Delete with replies | Soft delete: the text becomes "Deleted annotation", the marker and the replies stay |
 | Resolve | Either participant can mark an annotation resolved, or reopen it |
 | Playback while annotating | Starting an annotation pauses the video |
-| Moderation | Annotation and reply texts go through the same pipeline as chat text |
+| Moderation | Same as chat text: **none** for now. The chat is a private 1:1 space and its messages are not moderated (corrected 2026-11-24 while building the API) |
 
 ---
 
@@ -109,7 +109,7 @@ The Fastify multipart `fileSize` limit is global and set to the video maximum to
 | `author_id` | FK `users`. A participant of the message's conversation |
 | `at_ms` | Integer ≥ 0. Not above the message's `attachment_duration_ms` when it is known |
 | `rect_x`, `rect_y`, `rect_w`, `rect_h` | Nullable reals in [0, 1], relative to the **video frame** (not the player box). All four null, or all four set with `w > 0`, `h > 0`, `x + w ≤ 1`, `y + h ≤ 1` |
-| `body` | Text, 1 to 1000 characters. Moderated |
+| `body` | Text, 1 to 1000 characters |
 | `resolved_at`, `resolved_by` | Nullable. Set and cleared by either participant |
 | `edited_at`, `deleted_at` | Nullable. Soft delete keeps the row and its replies |
 | `created_at`, `updated_at` | |
@@ -123,7 +123,7 @@ Index on `(message_id, at_ms)`.
 | `id` | uuid |
 | `annotation_id` | FK `message_annotations`, cascade delete |
 | `author_id` | FK `users`. A participant of the conversation |
-| `body` | Text, 1 to 1000 characters. Moderated |
+| `body` | Text, 1 to 1000 characters |
 | `edited_at`, `deleted_at`, `created_at`, `updated_at` | Same rules as annotations |
 
 **`message_annotation_reads`**: one row per `(message_id, user_id)` with `last_read_at`. Unread count for a user on a message = annotations and replies on that message, written by someone else, created after `last_read_at`. Opening the annotations of a message marks it read.
@@ -146,7 +146,7 @@ All routes require a session and check that the user is a participant of the con
 | `PATCH /annotation-replies/:replyId`, `DELETE /annotation-replies/:replyId` | Edit, soft delete. Author only |
 | `PATCH /conversations/:id/messages/:messageId/annotations/read` | Mark the message's annotations read |
 
-`ChatMessage` gains, for video messages, `annotationCount` and `unreadAnnotationCount` (for the current user). Rate limits follow the message send route. OpenAPI minor bump.
+`ChatMessage` gains, for video messages, `annotationCount` and `unreadAnnotationCount` (for the current user). No rate limit, like the message send route. OpenAPI 0.13.0.
 
 **WebSocket.** The conversation socket sends bare `ChatMessage` objects today, which already carry `type: "message"`. New events use other `type` values, so a client that ignores unknown types keeps working while the web and the API deploy separately:
 

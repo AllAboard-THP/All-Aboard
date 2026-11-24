@@ -22,6 +22,7 @@ import {
   users,
 } from "../db/schema.js";
 import { getMediaStorage } from "../lib/media-storage/index.js";
+import { loadAnnotationCounts } from "./message-annotations.js";
 import { displayNameFromUser } from "../lib/user-mappers.js";
 
 export function directKeyFor(userAId: string, userBId: string): string {
@@ -303,6 +304,7 @@ export async function loadMessagesPage(
   conversationId: string,
   offset: number,
   limit: number,
+  viewerId?: string,
 ): Promise<{ items: ChatMessage[]; total: number }> {
   const total = await countMessagesInConversation(db, conversationId);
   const rows = await db
@@ -317,6 +319,19 @@ export async function loadMessagesPage(
   const items = (
     await Promise.all(rows.map((r) => rowToChatMessage(r.message, r.user)))
   ).reverse();
+
+  // #197: annotation counts on video messages, for the viewer.
+  if (viewerId) {
+    const videoIds = items.filter((m) => m.kind === "video").map((m) => m.id);
+    const counts = await loadAnnotationCounts(db, videoIds, viewerId);
+    for (const item of items) {
+      const c = counts.get(item.id);
+      if (c) {
+        item.annotationCount = c.total;
+        item.unreadAnnotationCount = c.unread;
+      }
+    }
+  }
   return { items, total };
 }
 
@@ -395,7 +410,12 @@ export async function insertMessage(
   if (!author) {
     throw new Error("message_author_not_found");
   }
-  return await rowToChatMessage(message, author);
+  const chatMessage = await rowToChatMessage(message, author);
+  if (chatMessage.kind === "video") {
+    chatMessage.annotationCount = 0;
+    chatMessage.unreadAnnotationCount = 0;
+  }
+  return chatMessage;
 }
 
 export async function resolveHelpRequestTopic(

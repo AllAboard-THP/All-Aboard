@@ -162,6 +162,7 @@ export function registerConversationRoutes(
         conversationId,
         params.offset,
         params.limit,
+        viewer.id,
       );
 
       return {
