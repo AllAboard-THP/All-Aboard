@@ -1,4 +1,4 @@
-import type { ChatMessage } from "@allaboard/types";
+import type { ChatMessage, ChatSocketEvent } from "@allaboard/types";
 import type { WebSocket } from "ws";
 
 const OPEN = 1;
@@ -33,9 +33,17 @@ export function broadcastChatMessage(
   conversationId: string,
   message: ChatMessage,
 ): void {
+  broadcastChatEvent(conversationId, message);
+}
+
+/** Sends any conversation event: a message, or an annotation change (#197). */
+export function broadcastChatEvent(
+  conversationId: string,
+  event: ChatSocketEvent,
+): void {
   const sockets = subscribersByConversation.get(conversationId);
   if (!sockets?.size) return;
-  const payload = JSON.stringify(message);
+  const payload = JSON.stringify(event);
   for (const socket of sockets) {
     if (socket.readyState === OPEN) {
       socket.send(payload);

@@ -8,7 +8,7 @@ info:
     Modération contenu (help-requests / réponses) : regex locale + denylist admin ;
     si détection locale, second avis via `apps/agent` `POST /moderation/evaluate` (Claude).
     Variable API `MODERATION_CLAUDE_ENABLED` (défaut activé) ; fallback conservateur si agent indisponible.
-  version: 0.12.0
+  version: 0.13.0
   contact:
     name: All-Aboard THP
     url: https://github.com/AllAboard-THP/All-Aboard
@@ -1995,6 +1995,446 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /conversations/{id}/messages/{messageId}/annotations:
+    get:
+      operationId: listMessageAnnotations
+      tags: [conversations]
+      summary: Annotations of a video message, with their replies (#197)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Annotations sorted by `atMs`, and the viewer's unread count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageAnnotationsResponse"
+        "401":
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Not a participant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Message not in this conversation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Database unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createMessageAnnotation
+      tags: [conversations]
+      summary: Annotate a video message at a timestamp, optionally on a rectangle (#197)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMessageAnnotationBody"
+      responses:
+        "201":
+          description: Annotation created and pushed on the conversation WebSocket
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageAnnotationResponse"
+        "400":
+          description: "`invalid_body`, `not_a_video_message`, `invalid_timestamp` (after the video's end) or `invalid_rect` (outside the frame)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Not a participant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Message not in this conversation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Database unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /conversations/{id}/messages/{messageId}/annotations/read:
+    patch:
+      operationId: markMessageAnnotationsRead
+      tags: [conversations]
+      summary: Mark the annotations of a video message as read (#197)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Read marker updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarkMessageAnnotationsReadResponse"
+        "401":
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Not a participant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Message not in this conversation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Database unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /annotations/{annotationId}:
+    patch:
+      operationId: updateMessageAnnotation
+      tags: [conversations]
+      summary: Edit an annotation (author) or resolve / reopen it (either participant) (#197)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: annotationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMessageAnnotationBody"
+      responses:
+        "200":
+          description: Annotation updated, `annotation.updated` pushed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageAnnotationResponse"
+        "400":
+          description: Invalid body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "`not_author`: only the author edits the text"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not in one of the viewer's conversations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: "`annotation_deleted`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Database unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteMessageAnnotation
+      tags: [conversations]
+      summary: Soft delete an annotation (author only). Its marker and replies stay (#197)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: annotationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Annotation without `body`, with `deletedAt`; `annotation.deleted` pushed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageAnnotationResponse"
+        "401":
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "`not_author`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not in one of the viewer's conversations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Database unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /annotations/{annotationId}/replies:
+    post:
+      operationId: createMessageAnnotationReply
+      tags: [conversations]
+      summary: Reply in an annotation's thread (#197)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: annotationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMessageAnnotationReplyBody"
+      responses:
+        "201":
+          description: Reply created, `annotation_reply.created` pushed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageAnnotationReplyResponse"
+        "400":
+          description: Invalid body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not in one of the viewer's conversations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: "`annotation_deleted`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Database unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /annotation-replies/{replyId}:
+    patch:
+      operationId: updateMessageAnnotationReply
+      tags: [conversations]
+      summary: Edit a reply (author only) (#197)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: replyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMessageAnnotationReplyBody"
+      responses:
+        "200":
+          description: Reply updated, `annotation_reply.updated` pushed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageAnnotationReplyResponse"
+        "400":
+          description: Invalid body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "`not_author`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not in one of the viewer's conversations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: "`reply_deleted`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Database unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteMessageAnnotationReply
+      tags: [conversations]
+      summary: Soft delete a reply (author only) (#197)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: replyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Reply without `body`, with `deletedAt`; `annotation_reply.deleted` pushed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageAnnotationReplyResponse"
+        "401":
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "`not_author`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not in one of the viewer's conversations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Database unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /conversations/{id}/ws:
     get:
       operationId: subscribeConversationWebSocket
@@ -2003,6 +2443,9 @@ paths:
       description: |
         Upgrade WebSocket (RFC 6455). Auth via cookie `access_token` ou query `?token=<JWT>`.
         Le serveur pousse des payloads `ChatMessage` JSON après chaque `POST …/messages`.
+        Since 0.13.0 (#197) it also pushes annotation events, told apart by `type`
+        (`ChatSocketEvent`): `annotation.created|updated|deleted` and
+        `annotation_reply.created|updated|deleted`. Clients ignore unknown `type` values.
         Fermeture : `4401` non authentifié, `4403` non participant, `4503` base indisponible.
         Hub en mémoire — une instance API (mono-replica).
       parameters:
@@ -2020,7 +2463,7 @@ paths:
           description: JWT Bearer (alternative au cookie HttpOnly)
       responses:
         "101":
-          description: Switching Protocols — flux `ChatMessage` JSON
+          description: Switching Protocols — flux `ChatSocketEvent` JSON
         "401":
           description: JWT absent ou invalide
         "403":
@@ -4182,6 +4625,16 @@ components:
         type:
           type: string
           const: message
+        annotationCount:
+          type: integer
+          minimum: 0
+          description: Video messages only (#197). Annotations not deleted
+        unreadAnnotationCount:
+          type: integer
+          minimum: 0
+          description: >
+            Video messages only (#197). Annotations and replies by the other
+            participant written after the viewer's read marker
 
     ConversationInboxItem:
       type: object
@@ -4283,7 +4736,9 @@ components:
         durationMs:
           type: integer
           minimum: 1
-          description: Recorded duration in milliseconds (max 300000 audio, 180000 video)
+          description: >
+            Recorded duration in milliseconds. Limits by source: microphone
+            300000 ms / 10 MB, camera 180000 ms / 50 MB, screen 300000 ms / 100 MB.
         source:
           type: string
           enum: [microphone, camera, screen]
@@ -4309,6 +4764,209 @@ components:
         lastReadAt:
           type: string
           format: date-time
+
+    MessageAnnotationRect:
+      type: object
+      description: Rectangle on the video frame, relative coordinates (#197)
+      required: [x, y, w, h]
+      properties:
+        x:
+          type: number
+          minimum: 0
+          maximum: 1
+        y:
+          type: number
+          minimum: 0
+          maximum: 1
+        w:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 1
+        h:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 1
+
+    MessageAnnotationReply:
+      type: object
+      required: [id, annotationId, author, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        annotationId:
+          type: string
+          format: uuid
+        author:
+          $ref: "#/components/schemas/ConversationParticipantSummary"
+        body:
+          type: string
+          description: Absent once deleted
+        editedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    MessageAnnotation:
+      type: object
+      required: [id, messageId, author, atMs, createdAt, updatedAt, replies]
+      properties:
+        id:
+          type: string
+          format: uuid
+        messageId:
+          type: string
+          format: uuid
+        author:
+          $ref: "#/components/schemas/ConversationParticipantSummary"
+        atMs:
+          type: integer
+          minimum: 0
+        rect:
+          $ref: "#/components/schemas/MessageAnnotationRect"
+        body:
+          type: string
+          description: Absent once deleted
+        resolvedAt:
+          type: string
+          format: date-time
+        resolvedBy:
+          type: string
+          format: uuid
+        editedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        replies:
+          type: array
+          items:
+            $ref: "#/components/schemas/MessageAnnotationReply"
+
+    MessageAnnotationsResponse:
+      type: object
+      required: [items, unreadCount]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/MessageAnnotation"
+        unreadCount:
+          type: integer
+          minimum: 0
+
+    CreateMessageAnnotationBody:
+      type: object
+      required: [atMs, body]
+      additionalProperties: false
+      properties:
+        atMs:
+          type: integer
+          minimum: 0
+          description: Not after the video's duration
+        rect:
+          $ref: "#/components/schemas/MessageAnnotationRect"
+        body:
+          type: string
+          minLength: 1
+          maxLength: 1000
+
+    UpdateMessageAnnotationBody:
+      type: object
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: Author only
+        resolved:
+          type: boolean
+          description: Either participant
+
+    MessageAnnotationResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/MessageAnnotation"
+
+    CreateMessageAnnotationReplyBody:
+      type: object
+      required: [body]
+      additionalProperties: false
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 1000
+
+    MessageAnnotationReplyResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/MessageAnnotationReply"
+
+    MarkMessageAnnotationsReadResponse:
+      type: object
+      required: [ok, lastReadAt]
+      properties:
+        ok:
+          type: boolean
+          const: true
+        lastReadAt:
+          type: string
+          format: date-time
+
+    MessageAnnotationSocketEvent:
+      type: object
+      required: [type, messageId, annotation]
+      properties:
+        type:
+          type: string
+          enum: [annotation.created, annotation.updated, annotation.deleted]
+        messageId:
+          type: string
+          format: uuid
+        annotation:
+          $ref: "#/components/schemas/MessageAnnotation"
+
+    MessageAnnotationReplySocketEvent:
+      type: object
+      required: [type, messageId, annotationId, reply]
+      properties:
+        type:
+          type: string
+          enum: [annotation_reply.created, annotation_reply.updated, annotation_reply.deleted]
+        messageId:
+          type: string
+          format: uuid
+        annotationId:
+          type: string
+          format: uuid
+        reply:
+          $ref: "#/components/schemas/MessageAnnotationReply"
+
+    ChatSocketEvent:
+      description: Payload on the conversation WebSocket, told apart by `type`
+      oneOf:
+        - $ref: "#/components/schemas/ChatMessage"
+        - $ref: "#/components/schemas/MessageAnnotationSocketEvent"
+        - $ref: "#/components/schemas/MessageAnnotationReplySocketEvent"
 
     DenylistPattern:
       type: object
