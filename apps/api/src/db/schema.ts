@@ -475,3 +475,150 @@ export const certifications = pgTable(
     ),
   ],
 );
+
+/** Mission types (product spec `Docs/product/missions.md`, #193). */
+export const missionKindEnum = pgEnum("mission_kind", [
+  "personal_project",
+  "freelance",
+  "hackathon",
+]);
+
+export const missionStatusEnum = pgEnum("mission_status", [
+  "open",
+  "in_progress",
+  "completed",
+  "cancelled",
+]);
+
+export const missionApplicationStatusEnum = pgEnum(
+  "mission_application_status",
+  ["pending", "accepted", "rejected", "withdrawn"],
+);
+
+/** A mission posted by a mentor (ADR 0010). Only its URL goes on-chain. */
+export const missions = pgTable(
+  "missions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    authorId: uuid("author_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    kind: missionKindEnum("kind").notNull(),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    githubRepoUrl: text("github_repo_url"),
+    /** Free text, information only. No payment in the app. */
+    compensation: text("compensation"),
+    places: integer("places").notNull().default(1),
+    startsAt: timestamp("starts_at", { withTimezone: true }),
+    endsAt: timestamp("ends_at", { withTimezone: true }),
+    status: missionStatusEnum("status").notNull().default("open"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("missions_status_created_idx").on(table.status, table.createdAt),
+    index("missions_author_created_idx").on(table.authorId, table.createdAt),
+    check("missions_places_positive", sql`${table.places} >= 1`),
+  ],
+);
+
+export const missionSkills = pgTable(
+  "mission_skills",
+  {
+    missionId: uuid("mission_id")
+      .notNull()
+      .references(() => missions.id, { onDelete: "cascade" }),
+    skillId: uuid("skill_id")
+      .notNull()
+      .references(() => skills.id),
+  },
+  (table) => [
+    uniqueIndex("mission_skills_mission_skill_unique").on(
+      table.missionId,
+      table.skillId,
+    ),
+    index("mission_skills_skill_idx").on(table.skillId),
+  ],
+);
+
+export const missionApplications = pgTable(
+  "mission_applications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    missionId: uuid("mission_id")
+      .notNull()
+      .references(() => missions.id, { onDelete: "cascade" }),
+    applicantId: uuid("applicant_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    message: text("message").notNull(),
+    status: missionApplicationStatusEnum("status").notNull().default("pending"),
+    deliverableUrl: text("deliverable_url"),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("mission_applications_mission_applicant_unique").on(
+      table.missionId,
+      table.applicantId,
+    ),
+    index("mission_applications_applicant_idx").on(table.applicantId),
+  ],
+);
+
+/** One row per validated participant (ADR 0010 §1). Same publish columns as `certifications`. */
+export const experienceCertifications = pgTable(
+  "experience_certifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    missionId: uuid("mission_id")
+      .notNull()
+      .references(() => missions.id),
+    applicationId: uuid("application_id")
+      .notNull()
+      .unique()
+      .references(() => missionApplications.id),
+    recipientId: uuid("recipient_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    attesterId: uuid("attester_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    comment: text("comment"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    claimTripleId: text("claim_triple_id"),
+    attestationTripleId: text("attestation_triple_id"),
+    txHash: text("tx_hash"),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    publishError: text("publish_error"),
+    publishAttempts: integer("publish_attempts").notNull().default(0),
+    nextPublishAt: timestamp("next_publish_at", { withTimezone: true }),
+  },
+  (table) => [
+    uniqueIndex("experience_certifications_mission_recipient_unique").on(
+      table.missionId,
+      table.recipientId,
+    ),
+    index("experience_certifications_recipient_revoked_idx").on(
+      table.recipientId,
+      table.revokedAt,
+    ),
+    check(
+      "experience_certifications_not_self",
+      sql`${table.recipientId} <> ${table.attesterId}`,
+    ),
+  ],
+);

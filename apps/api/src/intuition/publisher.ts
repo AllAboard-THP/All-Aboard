@@ -4,6 +4,7 @@ import type { AppDatabase } from "../db/client.js";
 import { helpRequests, outboxEvents } from "../db/schema.js";
 import { createIntuitionChain, type IntuitionChain } from "./chain.js";
 import { processCertificationEvents } from "./certification-publisher.js";
+import { processExperienceEvents } from "./experience-publisher.js";
 import { loadIntuitionConfig, type IntuitionConfig } from "./config.js";
 import { HELP_REQUEST_CREATED } from "./outbox.js";
 import {
@@ -290,6 +291,10 @@ export function startIntuitionPublisher(
       await processPendingOutboxEvents(db, { config, log });
       if (chain && config.profileOrigin) {
         await processCertificationEvents(db, chain, {
+          profileOrigin: config.profileOrigin,
+          log,
+        });
+        await processExperienceEvents(db, chain, {
           profileOrigin: config.profileOrigin,
           log,
         });

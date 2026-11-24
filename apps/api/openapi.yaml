@@ -40,6 +40,8 @@ tags:
     description: Profils utilisateur
   - name: certifications
     description: +1 de compétence entre pairs (ADR 0009)
+  - name: missions
+    description: Missions, candidatures et certifications d'expérience (ADR 0010)
   - name: legal
     description: CGU et acceptation légale
   - name: resources
@@ -2604,6 +2606,482 @@ paths:
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
 
+  /missions:
+    get:
+      operationId: listMissions
+      tags: [missions]
+      summary: Missions ouvertes ou en cours (filtres type, statut, compétence)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: kind
+          in: query
+          schema:
+            $ref: "#/components/schemas/MissionKind"
+        - name: status
+          in: query
+          description: "Par défaut `open` et `in_progress`. `all` = tout sauf `cancelled`."
+          schema:
+            type: string
+            enum: [open, in_progress, completed, all]
+        - name: skill
+          in: query
+          description: Slug ou id d'une compétence du catalogue
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Missions, plus récentes d'abord
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MissionsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    post:
+      operationId: createMission
+      tags: [missions]
+      summary: Publier une mission (mentors uniquement)
+      description: |
+        Titre, description et rémunération passent par la modération. Au plus 10 missions par 24 heures.
+        Seule l'URL `/m/<id>` de la mission ira sur Intuition (ADR 0010).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMissionBody"
+      responses:
+        "201":
+          description: Mission créée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MissionResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: "`mentor_only`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: "`skill_not_found`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "`content_rejected` — refusé par la modération"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: "`rate_limited`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /missions/{id}:
+    parameters:
+      - $ref: "#/components/parameters/MissionId"
+    get:
+      operationId: getMission
+      tags: [missions]
+      summary: Détail d'une mission (avec la candidature de la personne connectée)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Mission
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MissionResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      operationId: updateMission
+      tags: [missions]
+      summary: Modifier une mission (auteur uniquement)
+      description: |
+        Refusé si la mission est `completed` ou `cancelled` (`mission_closed`).
+        `places` ne peut pas descendre sous le nombre de candidats acceptés (`places_below_accepted`).
+        `skillIds` remplace la liste des compétences.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMissionBody"
+      responses:
+        "200":
+          description: Mission modifiée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MissionResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: "`forbidden` — pas l'auteur"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: "`mission_closed` ou `places_below_accepted`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "`content_rejected`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteMission
+      tags: [missions]
+      summary: Supprimer une mission (auteur, sans aucune validation)
+      description: Une mission qui a au moins une certification d'expérience ne peut qu'être annulée (ADR 0010 §6).
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Mission supprimée
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: "`forbidden`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: "`mission_has_certifications`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /missions/{id}/applications:
+    parameters:
+      - $ref: "#/components/parameters/MissionId"
+    post:
+      operationId: applyToMission
+      tags: [missions]
+      summary: Candidater (toute personne connectée sauf l'auteur)
+      description: Mission `open` uniquement. Une candidature retirée peut être renvoyée (elle redevient `pending`).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMissionApplicationBody"
+      responses:
+        "201":
+          description: Candidature enregistrée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MissionApplicationResponse"
+        "400":
+          description: "`invalid_body` ou `own_mission`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: "`mission_not_open` ou `already_applied`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "`content_rejected`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /missions/{id}/applications/mine:
+    parameters:
+      - $ref: "#/components/parameters/MissionId"
+    delete:
+      operationId: withdrawMissionApplication
+      tags: [missions]
+      summary: Retirer sa candidature
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Candidature retirée
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: "`already_validated` — le travail est déjà validé"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /missions/{id}/applications/{applicationId}:
+    parameters:
+      - $ref: "#/components/parameters/MissionId"
+      - $ref: "#/components/parameters/MissionApplicationId"
+    patch:
+      operationId: updateMissionApplication
+      tags: [missions]
+      summary: Renseigner ou effacer son lien de livrable (candidat accepté)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMissionApplicationBody"
+      responses:
+        "200":
+          description: Candidature mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MissionApplicationResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: "`forbidden` — pas le candidat"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: "`application_not_accepted`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /missions/{id}/applications/{applicationId}/decision:
+    parameters:
+      - $ref: "#/components/parameters/MissionId"
+      - $ref: "#/components/parameters/MissionApplicationId"
+    post:
+      operationId: decideMissionApplication
+      tags: [missions]
+      summary: Accepter ou refuser un candidat (auteur)
+      description: Accepter est refusé quand toutes les places sont prises (`mission_full`) ou la mission est close.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MissionApplicationDecisionBody"
+      responses:
+        "200":
+          description: Décision enregistrée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MissionApplicationResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: "`forbidden`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: "`mission_full`, `mission_closed`, `application_withdrawn` ou `already_validated`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /missions/{id}/applications/{applicationId}/validate:
+    parameters:
+      - $ref: "#/components/parameters/MissionId"
+      - $ref: "#/components/parameters/MissionApplicationId"
+    post:
+      operationId: validateMissionApplication
+      tags: [missions]
+      summary: Valider le travail d'un participant (certification d'expérience)
+      description: |
+        Auteur uniquement, candidature `accepted`. Une mission annulée ne valide que les participants
+        qui ont un lien de livrable. Commentaire optionnel, modéré, hors chaîne. Au plus 50 validations
+        par 24 heures. Enregistre un événement outbox `experience.attested` (ADR 0010 §4) et passe
+        une mission `open` en `in_progress`. Une validation retirée puis redonnée est réactivée.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidateMissionApplicationBody"
+      responses:
+        "201":
+          description: Validation enregistrée (ou réactivée)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MissionApplicationResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: "`forbidden`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: "`application_not_accepted`, `mission_cancelled` ou `already_validated`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "`comment_rejected`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: "`rate_limited`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /missions/{id}/applications/{applicationId}/validation:
+    parameters:
+      - $ref: "#/components/parameters/MissionId"
+      - $ref: "#/components/parameters/MissionApplicationId"
+    delete:
+      operationId: withdrawMissionValidation
+      tags: [missions]
+      summary: Retirer une validation (auteur)
+      description: Retrait dans Postgres uniquement. Une fois publiée, la validation reste sur la chaîne comme historique (ADR 0010 §5).
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Validation retirée
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: "`forbidden`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /me/missions:
+    get:
+      operationId: listMyMissions
+      tags: [missions]
+      summary: Board du dashboard — mes missions et leurs candidatures (hors retirées)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Missions de l'auteur, plus récentes d'abord
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MyMissionsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /me/mission-applications:
+    get:
+      operationId: listMyMissionApplications
+      tags: [missions]
+      summary: Dashboard — mes candidatures
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Candidatures, plus récentes d'abord
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MyMissionApplicationsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /users/{id}/experiences:
+    get:
+      operationId: listUserExperiences
+      tags: [missions]
+      summary: Certifications d'expérience d'un profil (non retirées)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Expériences, plus récentes d'abord
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserExperiencesResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -2643,6 +3121,22 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
+
+  parameters:
+    MissionId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    MissionApplicationId:
+      name: applicationId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
 
   schemas:
     HealthResponse:
@@ -4232,3 +4726,352 @@ components:
         existingId:
           type: string
           format: uuid
+
+    MissionKind:
+      type: string
+      enum: [personal_project, freelance, hackathon]
+
+    MissionStatus:
+      type: string
+      enum: [open, in_progress, completed, cancelled]
+
+    MissionApplicationStatus:
+      type: string
+      enum: [pending, accepted, rejected, withdrawn]
+
+    MissionPerson:
+      type: object
+      required: [id, displayName]
+      properties:
+        id:
+          type: string
+          format: uuid
+        displayName:
+          type: string
+        avatarUrl:
+          type: string
+
+    Mission:
+      type: object
+      required: [id, kind, title, description, places, acceptedCount, applicationCount, status, skills, author, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: "#/components/schemas/MissionKind"
+        title:
+          type: string
+        description:
+          type: string
+        githubRepoUrl:
+          type: string
+          format: uri
+        compensation:
+          type: string
+          description: Texte libre, informatif. Aucun paiement dans l'app.
+        places:
+          type: integer
+          minimum: 1
+        acceptedCount:
+          type: integer
+        applicationCount:
+          type: integer
+          description: Candidatures non retirées
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+        status:
+          $ref: "#/components/schemas/MissionStatus"
+        skills:
+          type: array
+          items:
+            $ref: "#/components/schemas/Skill"
+        author:
+          $ref: "#/components/schemas/MissionPerson"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        viewerApplication:
+          type: object
+          description: Candidature de la personne connectée, si elle existe
+          required: [id, status]
+          properties:
+            id:
+              type: string
+              format: uuid
+            status:
+              $ref: "#/components/schemas/MissionApplicationStatus"
+
+    MissionsResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Mission"
+
+    MissionResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/Mission"
+
+    CreateMissionBody:
+      type: object
+      required: [kind, title, description]
+      properties:
+        kind:
+          $ref: "#/components/schemas/MissionKind"
+        title:
+          type: string
+          minLength: 3
+          maxLength: 160
+        description:
+          type: string
+          minLength: 10
+          maxLength: 10000
+        githubRepoUrl:
+          type: [string, "null"]
+          description: "`https://github.com/<owner>/<repo>`"
+        compensation:
+          type: [string, "null"]
+          maxLength: 200
+        places:
+          type: integer
+          minimum: 1
+          maximum: 500
+          default: 1
+        startsAt:
+          type: [string, "null"]
+          format: date-time
+        endsAt:
+          type: [string, "null"]
+          format: date-time
+        skillIds:
+          type: array
+          maxItems: 10
+          items:
+            type: string
+            format: uuid
+
+    UpdateMissionBody:
+      type: object
+      description: Tous les champs de CreateMissionBody sont optionnels, plus `status`.
+      properties:
+        kind:
+          $ref: "#/components/schemas/MissionKind"
+        title:
+          type: string
+          minLength: 3
+          maxLength: 160
+        description:
+          type: string
+          minLength: 10
+          maxLength: 10000
+        githubRepoUrl:
+          type: [string, "null"]
+        compensation:
+          type: [string, "null"]
+          maxLength: 200
+        places:
+          type: integer
+          minimum: 1
+          maximum: 500
+        startsAt:
+          type: [string, "null"]
+          format: date-time
+        endsAt:
+          type: [string, "null"]
+          format: date-time
+        skillIds:
+          type: array
+          maxItems: 10
+          items:
+            type: string
+            format: uuid
+        status:
+          $ref: "#/components/schemas/MissionStatus"
+
+    ExperienceProof:
+      type: object
+      description: Présent une fois la validation publiée sur Intuition testnet (ADR 0010).
+      required: [network, attestationTripleId, claimTripleId, publishedAt]
+      properties:
+        network:
+          type: string
+          enum: [intuition-testnet]
+        attestationTripleId:
+          type: string
+          description: "`(claim) attestedBy (mentor)`"
+        claimTripleId:
+          type: string
+          description: "`(person) contributedTo (mission)`"
+        txHash:
+          type: string
+        publishedAt:
+          type: string
+          format: date-time
+
+    MissionValidation:
+      type: object
+      required: [id, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        comment:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        proof:
+          $ref: "#/components/schemas/ExperienceProof"
+
+    MissionApplication:
+      type: object
+      description: Visible par l'auteur de la mission et par le candidat uniquement.
+      required: [id, missionId, applicant, message, status, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        missionId:
+          type: string
+          format: uuid
+        applicant:
+          $ref: "#/components/schemas/MissionPerson"
+        message:
+          type: string
+        status:
+          $ref: "#/components/schemas/MissionApplicationStatus"
+        deliverableUrl:
+          type: string
+          format: uri
+        decidedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        validation:
+          $ref: "#/components/schemas/MissionValidation"
+
+    MissionApplicationResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/MissionApplication"
+
+    CreateMissionApplicationBody:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 2000
+
+    MissionApplicationDecisionBody:
+      type: object
+      required: [decision]
+      properties:
+        decision:
+          type: string
+          enum: [accepted, rejected]
+
+    UpdateMissionApplicationBody:
+      type: object
+      required: [deliverableUrl]
+      properties:
+        deliverableUrl:
+          type: [string, "null"]
+          description: Lien https (pull request, dépôt, démo). `null` efface le lien.
+
+    ValidateMissionApplicationBody:
+      type: object
+      properties:
+        comment:
+          type: string
+          maxLength: 280
+
+    MyMissionsResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [mission, applications]
+            properties:
+              mission:
+                $ref: "#/components/schemas/Mission"
+              applications:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MissionApplication"
+
+    MyMissionApplicationsResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [mission, application]
+            properties:
+              mission:
+                $ref: "#/components/schemas/Mission"
+              application:
+                $ref: "#/components/schemas/MissionApplication"
+
+    ExperienceCertification:
+      type: object
+      required: [id, mission, attester, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        mission:
+          type: object
+          required: [id, kind, title]
+          properties:
+            id:
+              type: string
+              format: uuid
+            kind:
+              $ref: "#/components/schemas/MissionKind"
+            title:
+              type: string
+        attester:
+          $ref: "#/components/schemas/MissionPerson"
+        comment:
+          type: string
+        deliverableUrl:
+          type: string
+          format: uri
+        createdAt:
+          type: string
+          format: date-time
+        proof:
+          $ref: "#/components/schemas/ExperienceProof"
+
+    UserExperiencesResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExperienceCertification"
