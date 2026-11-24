@@ -69,7 +69,7 @@ The two predicates do not exist yet on testnet or mainnet (checked 2026-11-02). 
 
 The deployed testnet MultiVault accepts a triple as the subject of a triple (confirmed by a real transaction on 2026-11-02). Mainnet may run an older implementation: re-check before any mainnet decision.
 
-Experience certifications (missions) reuse this shape later with another object and predicate. They are not built now. Product spec (2026-11-24): [missions.md](../product/missions.md), which proposes `(person) contributedTo (mission)` + `attestedBy (mentor)` and needs its own ADR before code.
+Experience certifications (missions) reuse this shape later with another object and predicate. They are not built now. Product spec (2026-11-24): [missions.md](../product/missions.md), which proposes `(person) contributedTo (mission)` + `attestedBy (mentor)` and is detailed in [ADR 0010](0010-experience-certifications-missions.md).
 
 ### 3. The comment stays off-chain
 

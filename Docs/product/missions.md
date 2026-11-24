@@ -1,7 +1,7 @@
 # Missions — experience certifications
 
 **Status:** product decisions, 2026-11-24. Not implemented. Epic: [#193](https://github.com/AllAboard-THP/All-Aboard/issues/193).  
-**Builds on:** [certifications.md](certifications.md) (skill +1, live on dev) and [ADR 0009](../adr/0009-certifications-intuition.md). The on-chain part of this page needs an ADR (0010, or a revision of 0009) before code.
+**Builds on:** [certifications.md](certifications.md) (skill +1, live on dev) and [ADR 0009](../adr/0009-certifications-intuition.md). Technical decisions: [ADR 0010](../adr/0010-experience-certifications-missions.md) (proposed).
 
 This page is the product source of truth for missions. It turns the "Experience certifications (later)" section of [certifications.md](certifications.md#experience-certifications-later--do-not-implement-yet) into a spec.
 
@@ -27,6 +27,10 @@ With both types, the profile reads like a CV: skills and professional experience
 | 6 | Moderation of title and description | **Yes**, same pipeline as other user content (denylist + Claude moderation) |
 | — | Who can post a mission? | **Mentor accounts only**, for now |
 | — | Who can apply? | **Any signed-in user**, except the mission's author |
+| 7 | Cancelled mission | Accepted participants **with a deliverable link** can still be validated |
+| 8 | Deliverable link required to validate? | **No, optional.** Shown on the profile when present |
+| 9 | Can the author withdraw a validation? | **Yes**, like a +1: hidden in the app, stays on-chain if already published |
+| 10 | Comment on validation | **Optional**, 280 characters, moderated, off-chain |
 
 ---
 
@@ -83,7 +87,7 @@ The list of types is an enum, so a new one means a migration. The page and the f
 | `deliverable_url` | Nullable. The participant's PR, repository or demo |
 | `decided_at`, `created_at` | |
 
-**Experience certification**: one row per validated participant, in a new `experience_certifications` table, or in `certifications` with a `kind` column. Either way it reuses the on-chain columns of ADR 0009 §4 (`claim_triple_id`, `attestation_triple_id`, `tx_hash`, `published_at`, `publish_error`, `publish_attempts`) and `revoked_at`. Fields: `mission_id`, `recipient_id` (the participant), `attester_id` (the mission author), optional moderated comment, `created_at`. Unique on `(mission_id, recipient_id)`. To choose in the ADR.
+**Experience certification**: one row per validated participant, in a new `experience_certifications` table ([ADR 0010](../adr/0010-experience-certifications-missions.md) §1). It reuses the on-chain columns of ADR 0009 §4 (`claim_triple_id`, `attestation_triple_id`, `tx_hash`, `published_at`, `publish_error`, `publish_attempts`) and `revoked_at`. Fields: `mission_id`, `recipient_id` (the participant), `attester_id` (the mission author), optional moderated comment, `created_at`. Unique on `(mission_id, recipient_id)`.
 
 **Rules**
 
@@ -114,7 +118,7 @@ The dashboard today is `/dashboard/demo` (student inbox). The missions sections 
 
 Same pipeline as skill +1s ([ADR 0009](../adr/0009-certifications-intuition.md) §5): the validation writes a row and an outbox event (for example `experience.attested`) in one transaction. The publisher creates the missing atoms and triples with the operator wallet. Users sign nothing.
 
-Proposed shape, to settle in the ADR:
+Shape ([ADR 0010](../adr/0010-experience-certifications-missions.md) §2):
 
 | Product object | Atom / triple |
 | --- | --- |
@@ -150,9 +154,3 @@ First slice: a repository URL on the mission and a deliverable URL on each appli
 - Posting missions without the mentor role.
 - Withdrawing an experience certification on-chain. Revocation stays in Postgres, as for skills (ADR 0009 §5).
 - GitHub API checks.
-
-## Open points for the ADR
-
-- One table with `kind`, or a separate `experience_certifications` table.
-- Exact bytes of the mission atom (plain URL string, like `personAtom`, or a minimal JSON-LD with `url` only).
-- Whether a cancelled mission can still validate participants who already delivered.
