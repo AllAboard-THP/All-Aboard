@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpen,
+  Briefcase,
   Compass,
   GraduationCap,
   LayoutDashboard,
@@ -23,6 +24,7 @@ export type AppSidebarNavId =
   | "resources"
   | "newRequest"
   | "feed"
+  | "missions"
   | "messages"
   | "profile"
   | "mentor"
@@ -58,6 +60,7 @@ export const APP_SIDEBAR_NAV: AppSidebarNavDef[] = [
   { id: "resources", href: "/resources", icon: Library, group: "navigation" },
   { id: "newRequest", href: "/help/new", icon: Plus, group: "community" },
   { id: "feed", href: "/feed", icon: Users, group: "community" },
+  { id: "missions", href: "/missions", icon: Briefcase, group: "community" },
   { id: "messages", href: "/messages", icon: MessageSquare, group: "community" },
   { id: "profile", href: "/profile", icon: BookOpen, group: "community" },
 ];
@@ -355,6 +358,7 @@ export const APP_SIDEBAR_ACTIVE_ID_PATH: Record<AppSidebarNavId, string> = {
   resources: "/resources",
   newRequest: "/help/new",
   feed: "/feed",
+  missions: "/missions",
   messages: "/messages",
   profile: "/profile",
   mentor: "/mentor",
@@ -390,6 +394,7 @@ export const APP_SIDEBAR_CONTEXT_LINKS: Partial<
     { id: "browseFeed", href: "/feed" },
     { id: "inbox", href: "/messages" },
     { id: "myRequests", href: "/me/posts" },
+    { id: "missions", href: "/dashboard/missions" },
   ],
   subjects: [{ id: "explore", href: "/explore" }],
   resources: [{ id: "all", href: "/resources" }],
@@ -465,6 +470,7 @@ type SidebarContextSource = {
     browseFeed: string;
     inbox: string;
     myRequests: string;
+    missions: string;
   };
   subjects: { title: string; explore: string };
   resources: { title: string; all: string };
@@ -506,6 +512,7 @@ export function buildSidebarContextPanelLabels(
           browseFeed: context.dashboard.browseFeed,
           inbox: context.dashboard.inbox,
           myRequests: context.dashboard.myRequests,
+          missions: context.dashboard.missions,
         },
       };
     case "subjects":

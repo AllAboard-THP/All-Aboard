@@ -1,4 +1,9 @@
-import type { HelpRequest, PublicUserResponse, Response } from "@allaboard/types";
+import type {
+  ExperienceCertification,
+  HelpRequest,
+  PublicUserResponse,
+  Response,
+} from "@allaboard/types";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Badge } from "@allaboard/ui/components/badge";
@@ -17,6 +22,7 @@ import {
   UserCertificationsCard,
   type UserCertificationsData,
 } from "@/components/features/user-certifications-card";
+import { UserExperiencesCard } from "@/components/features/user-experiences-card";
 import { UserProfilePagination } from "@/components/features/user-profile-pagination";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
@@ -33,6 +39,8 @@ type Props = {
   viewerId?: string | null;
   /** Skill +1s; the card is hidden when they could not be loaded. */
   certifications?: UserCertificationsData | null;
+  /** Mission experiences; the card is hidden when they could not be loaded. */
+  experiences?: ExperienceCertification[] | null;
 };
 
 function profileAvatarSrc(
@@ -96,6 +104,7 @@ export async function UserPublicContent({
   params,
   viewerId,
   certifications,
+  experiences,
 }: Props) {
   const t = await getTranslations("profile.public");
   const tPostCard = await getTranslations("postCard");
@@ -227,6 +236,13 @@ export async function UserPublicContent({
           displayName={profile.displayName}
           viewerId={viewerId}
           data={certifications}
+        />
+      : null}
+
+      {experiences ?
+        <UserExperiencesCard
+          items={experiences}
+          isOwnProfile={Boolean(viewerId) && viewerId === userId}
         />
       : null}
 

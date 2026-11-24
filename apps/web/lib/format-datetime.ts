@@ -11,3 +11,10 @@ export function formatDateTime(iso: string, locale: AppLocale): string {
     timeStyle: "short",
   });
 }
+
+/** Date only, e.g. for mission start and end. */
+export function formatDate(iso: string, locale: AppLocale): string {
+  return new Date(iso).toLocaleDateString(localeToBcp47[locale], {
+    dateStyle: "medium",
+  });
+}

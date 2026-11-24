@@ -20,6 +20,7 @@ export type StudentDashboardLabels = {
     resources: string;
     newRequest: string;
     feed: string;
+    missions: string;
     messages: string;
     mentor: string;
     profile: string;
@@ -36,6 +37,7 @@ export type StudentDashboardLabels = {
         browseFeed: string;
         inbox: string;
         myRequests: string;
+        missions: string;
       };
       subjects: { title: string; explore: string };
       resources: { title: string; all: string };
@@ -109,6 +111,7 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
     resources: "Ressources",
     newRequest: "Nouvelle demande",
     feed: "Entraide",
+    missions: "Missions",
     messages: "Messages",
     mentor: "Espace mentor",
     profile: "Mon profil",
@@ -125,6 +128,7 @@ export const studentDashboardLabelsFr: StudentDashboardLabels = {
         browseFeed: "Parcourir le fil",
         inbox: "Messages non lus",
         myRequests: "Mes demandes en cours",
+        missions: "Mes missions",
       },
       subjects: { title: "Matières", explore: "Explorer les matières" },
       resources: { title: "Ressources", all: "Toutes les ressources" },
@@ -207,6 +211,7 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
     resources: "Resources",
     newRequest: "New request",
     feed: "Peer help",
+    missions: "Missions",
     messages: "Messages",
     mentor: "Mentor space",
     profile: "My profile",
@@ -223,6 +228,7 @@ export const studentDashboardLabelsEn: StudentDashboardLabels = {
         browseFeed: "Browse feed",
         inbox: "Unread messages",
         myRequests: "My open requests",
+        missions: "My missions",
       },
       subjects: { title: "Subjects", explore: "Explore subjects" },
       resources: { title: "Resources", all: "All resources" },

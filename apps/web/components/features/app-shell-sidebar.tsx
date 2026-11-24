@@ -45,6 +45,7 @@ function useSidebarLabelMap(): AppSidebarLabelMap {
       resources: t("resources"),
       newRequest: t("newRequest"),
       feed: t("feed"),
+      missions: t("missions"),
       messages: t("messages"),
       mentor: t("mentor"),
       profile: t("profile"),
@@ -68,6 +69,7 @@ function useSidebarContextSource() {
         browseFeed: t("dashboard.browseFeed"),
         inbox: t("dashboard.inbox"),
         myRequests: t("dashboard.myRequests"),
+        missions: t("dashboard.missions"),
       },
       subjects: {
         title: t("subjects.title"),

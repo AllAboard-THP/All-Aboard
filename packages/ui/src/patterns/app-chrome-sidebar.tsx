@@ -37,6 +37,7 @@ function buildLabelMap(labels: StudentDashboardLabels): AppSidebarLabelMap {
     resources: s.resources,
     newRequest: s.newRequest,
     feed: s.feed,
+    missions: s.missions,
     messages: s.messages,
     mentor: s.mentor,
     profile: s.profile,

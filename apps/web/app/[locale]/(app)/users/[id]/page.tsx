@@ -17,6 +17,7 @@ import {
   fetchPublicUser,
   fetchSkills,
   fetchUserCertifications,
+  fetchUserExperiences,
 } from "@/lib/api-server";
 import { parsePublicUserSearchParams } from "@/lib/user-search-params";
 
@@ -67,7 +68,10 @@ export default async function UserPublicPage({ params, searchParams }: Props) {
   const result = await fetchPublicUser(id, pageParams);
 
   if (result.ok) {
-    const certifications = await loadCertifications(id, token, viewerId);
+    const [certifications, experiencesResult] = await Promise.all([
+      loadCertifications(id, token, viewerId),
+      fetchUserExperiences(id),
+    ]);
     return (
       <UserPublicContent
         userId={id}
@@ -75,6 +79,7 @@ export default async function UserPublicPage({ params, searchParams }: Props) {
         params={pageParams}
         viewerId={viewerId}
         certifications={certifications}
+        experiences={experiencesResult.ok ? experiencesResult.data.items : null}
       />
     );
   }

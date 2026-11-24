@@ -1,6 +1,6 @@
 # Missions — experience certifications
 
-**Status:** product decisions, 2026-11-24. **API built** (routes, `experience.attested` publisher; contract in [web-api-integration.md](../guides/web-api-integration.md#missions-193-adr-0010)). Web pages not built yet. Epic: [#193](https://github.com/AllAboard-THP/All-Aboard/issues/193).  
+**Status:** product decisions, 2026-11-24. **API built** (routes, `experience.attested` publisher; contract in [web-api-integration.md](../guides/web-api-integration.md#missions-193-adr-0010)). **Web built**: `/missions`, `/missions/[id]`, `/missions/new`, `/missions/[id]/edit`, `/dashboard/missions`, the profile "Experience" card and the `/m/[id]` alias. Epic: [#193](https://github.com/AllAboard-THP/All-Aboard/issues/193).  
 **Builds on:** [certifications.md](certifications.md) (skill +1, live on dev) and [ADR 0009](../adr/0009-certifications-intuition.md). Technical decisions: [ADR 0010](../adr/0010-experience-certifications-missions.md) (proposed).
 
 This page is the product source of truth for missions. It turns the "Experience certifications (later)" section of [certifications.md](certifications.md#experience-certifications-later--do-not-implement-yet) into a spec.
@@ -105,12 +105,12 @@ The list of types is an enum, so a new one means a migration. The page and the f
 | `/missions` | Everyone signed in | List with filters by type, skill and status. Next to the feed in the navigation |
 | `/missions/[id]` | Everyone signed in | Detail, repository link, Apply button (or the user's application status) |
 | `/missions/new`, `/missions/[id]/edit` | Mentors | Create and edit form |
-| `/dashboard` → "My missions" | Mission authors | One card per mission: applicants, accept / reject, deliverable links, Validate per participant |
-| `/dashboard` → "My applications" | Everyone | Status of each application, deliverable link field once accepted |
+| `/dashboard/missions` → "My missions" | Mission authors | One card per mission: applicants, accept / reject, deliverable links, Validate per participant |
+| `/dashboard/missions` → "My applications" | Everyone | Status of each application, deliverable link field once accepted |
 | `/m/[id]` | Public | Web alias that redirects (308) to `/missions/[id]`. The stable URL of the mission atom, like `/u/[id]` for people |
 | Profile | Everyone | "Experience" card next to "Validated skills": mission title, type, mentor, date, proof link |
 
-The dashboard today is `/dashboard/demo` (student inbox). The missions sections go into the real `/dashboard` route, which the AppShell work has to provide.
+Shipped as `/dashboard/missions`, under the dashboard entry of the sidebar (its context panel links to it). The dashboard home is still `/dashboard/demo` (student inbox). The sidebar also has a "Missions" entry next to the feed.
 
 ---
 
