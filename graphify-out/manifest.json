@@ -2650,8 +2650,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/INDEX.md": {
-    "mtime": 1795377505.7052267,
-    "ast_hash": "eca4eac3f1e05835bc251194a915a42a",
+    "mtime": 1795478301.6238503,
+    "ast_hash": "bc7f82a599c505ead54bcf9b8d4d359c",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/README.md": {
@@ -2915,8 +2915,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/README.md": {
-    "mtime": 1793311442.2811944,
-    "ast_hash": "992f75be7491fcf4e414963d4fca4d53",
+    "mtime": 1795478301.6238503,
+    "ast_hash": "c9d3dc9fe3afd9141133114c710678d5",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/README.md": {
@@ -3425,8 +3425,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/certifications.md": {
-    "mtime": 1794994040.2358751,
-    "ast_hash": "a8ad2430039a502e166ff799122cfbad",
+    "mtime": 1795478301.6238503,
+    "ast_hash": "e2cf19529c8901b70f2c314be34a8afc",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0014_rename_intuition_published_at.sql": {
@@ -3450,8 +3450,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0009-certifications-intuition.md": {
-    "mtime": 1795377505.9478927,
-    "ast_hash": "e905abd2bf172d972909b573bcbc6411",
+    "mtime": 1795478301.6238503,
+    "ast_hash": "9b1ad4233aecbf7f7bc7aa1c7a87932c",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/scripts/db-migrate.ts": {
@@ -3647,6 +3647,11 @@
   "/home/dim/AllAboard/Docs/branding/retained/torsion-en-s.html": {
     "mtime": 1795377505.7052267,
     "ast_hash": "8ca90b22bb838698b622f4c20195e96b",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/product/missions.md": {
+    "mtime": 1795478480.2075999,
+    "ast_hash": "1008a4ed15aa6ede0904861b0213d99a",
     "semantic_hash": ""
   }
 }
