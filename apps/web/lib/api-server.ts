@@ -23,6 +23,10 @@ import type {
   MentorDashboardResponse,
   MentorFeedItem,
   MentorFeedResponse,
+  MissionResponse,
+  MissionsResponse,
+  MyMissionApplicationsResponse,
+  MyMissionsResponse,
   MessagesListResponse,
   MyHelpRequestsResponse,
   PublicUserResponse,
@@ -37,6 +41,7 @@ import type {
   SubjectsResponse,
   SubjectDetailResponse,
   UserCertificationsResponse,
+  UserExperiencesResponse,
   UserRole,
 } from "@allaboard/types";
 
@@ -1504,5 +1509,67 @@ export function fetchCertificationEligibility(
       cache: "no-store",
     },
     "Certification eligibility",
+  );
+}
+
+function bearer(accessToken: string): RequestInit {
+  return {
+    headers: { authorization: `Bearer ${accessToken}` },
+    cache: "no-store",
+  };
+}
+
+/** Missions list (`GET /missions`), with the query already built by the caller. */
+export function fetchMissions(
+  accessToken: string,
+  query: string,
+): Promise<FetchJsonResult<MissionsResponse>> {
+  return fetchTypedJson<MissionsResponse>(
+    `${getApiBaseUrl()}/missions${query}`,
+    bearer(accessToken),
+    "Missions",
+  );
+}
+
+export function fetchMission(
+  id: string,
+  accessToken: string,
+): Promise<FetchJsonResult<MissionResponse>> {
+  return fetchTypedJson<MissionResponse>(
+    `${getApiBaseUrl()}/missions/${encodeURIComponent(id)}`,
+    bearer(accessToken),
+    "Mission",
+  );
+}
+
+/** Dashboard board of a mission author (`GET /me/missions`). */
+export function fetchMyMissions(
+  accessToken: string,
+): Promise<FetchJsonResult<MyMissionsResponse>> {
+  return fetchTypedJson<MyMissionsResponse>(
+    `${getApiBaseUrl()}/me/missions`,
+    bearer(accessToken),
+    "My missions",
+  );
+}
+
+export function fetchMyMissionApplications(
+  accessToken: string,
+): Promise<FetchJsonResult<MyMissionApplicationsResponse>> {
+  return fetchTypedJson<MyMissionApplicationsResponse>(
+    `${getApiBaseUrl()}/me/mission-applications`,
+    bearer(accessToken),
+    "My mission applications",
+  );
+}
+
+/** Experience certifications of a profile (`GET /users/:id/experiences`, public). */
+export function fetchUserExperiences(
+  userId: string,
+): Promise<FetchJsonResult<UserExperiencesResponse>> {
+  return fetchTypedJson<UserExperiencesResponse>(
+    `${getApiBaseUrl()}/users/${encodeURIComponent(userId)}/experiences`,
+    { cache: "no-store" },
+    "Experiences",
   );
 }
