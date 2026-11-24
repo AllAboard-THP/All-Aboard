@@ -252,3 +252,81 @@ export const createSkillBodySchema = z.object({
 export const updateSkillBodySchema = z.object({
   active: z.boolean(),
 });
+
+// --- Missions (#193, ADR 0010) ---
+
+export const MISSION_TITLE_MAX = 160;
+export const MISSION_DESCRIPTION_MAX = 10_000;
+export const MISSION_COMPENSATION_MAX = 200;
+export const MISSION_APPLICATION_MESSAGE_MAX = 2_000;
+export const MISSION_PLACES_MAX = 500;
+
+/** `https://github.com/<owner>/<repo>`, optional trailing slash or `.git`. */
+export const GITHUB_REPO_URL_RE =
+  /^https:\/\/github\.com\/[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})\/[A-Za-z0-9._-]{1,100}?(?:\.git)?\/?$/;
+
+const githubRepoUrlSchema = z
+  .string()
+  .trim()
+  .max(300)
+  .regex(GITHUB_REPO_URL_RE);
+
+/** Any https link: pull request, repository, demo. */
+export const httpsUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .url()
+  .refine((value) => value.startsWith("https://"), { message: "https_only" });
+
+const optionalText = (max: number) =>
+  z.string().trim().max(max).nullable().optional();
+
+const optionalDate = z.string().datetime({ offset: true }).nullable().optional();
+
+const missionFields = {
+  kind: z.enum(["personal_project", "freelance", "hackathon"]),
+  title: z.string().trim().min(3).max(MISSION_TITLE_MAX),
+  description: z.string().trim().min(10).max(MISSION_DESCRIPTION_MAX),
+  githubRepoUrl: githubRepoUrlSchema.nullable().optional(),
+  compensation: optionalText(MISSION_COMPENSATION_MAX),
+  places: z.number().int().min(1).max(MISSION_PLACES_MAX).optional(),
+  startsAt: optionalDate,
+  endsAt: optionalDate,
+  skillIds: z.array(z.string().uuid()).max(10).optional(),
+};
+
+function datesInOrder(body: { startsAt?: string | null; endsAt?: string | null }) {
+  if (!body.startsAt || !body.endsAt) return true;
+  return new Date(body.endsAt) >= new Date(body.startsAt);
+}
+
+export const createMissionBodySchema = z
+  .object(missionFields)
+  .refine(datesInOrder, { message: "ends_before_start" });
+
+export const updateMissionBodySchema = z
+  .object({
+    ...missionFields,
+    kind: missionFields.kind.optional(),
+    title: missionFields.title.optional(),
+    description: missionFields.description.optional(),
+    status: z.enum(["open", "in_progress", "completed", "cancelled"]).optional(),
+  })
+  .refine(datesInOrder, { message: "ends_before_start" });
+
+export const createMissionApplicationBodySchema = z.object({
+  message: z.string().trim().min(1).max(MISSION_APPLICATION_MESSAGE_MAX),
+});
+
+export const missionApplicationDecisionBodySchema = z.object({
+  decision: z.enum(["accepted", "rejected"]),
+});
+
+export const updateMissionApplicationBodySchema = z.object({
+  deliverableUrl: httpsUrlSchema.nullable(),
+});
+
+export const validateMissionApplicationBodySchema = z.object({
+  comment: z.string().max(CERTIFICATION_COMMENT_MAX).optional(),
+});

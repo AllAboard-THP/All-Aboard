@@ -39,14 +39,14 @@ export type CertificationPublishResult = {
   errors: number;
 };
 
-async function markProcessed(db: AppDatabase, outboxId: string, at: Date) {
+export async function markProcessed(db: AppDatabase, outboxId: string, at: Date) {
   await db
     .update(outboxEvents)
     .set({ processedAt: at })
     .where(and(eq(outboxEvents.id, outboxId), isNull(outboxEvents.processedAt)));
 }
 
-async function createMissingAtoms(
+export async function createMissingAtoms(
   chain: IntuitionChain,
   atoms: AtomTerm[],
 ): Promise<TxReceipt | null> {
@@ -58,7 +58,7 @@ async function createMissingAtoms(
   return chain.createAtoms(missing.map((atom) => atom.data));
 }
 
-async function createTripleIfMissing(
+export async function createTripleIfMissing(
   chain: IntuitionChain,
   triple: TripleTerm,
 ): Promise<TxReceipt | null> {

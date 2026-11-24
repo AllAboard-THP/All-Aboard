@@ -33,6 +33,7 @@ import { registerOpenApiDocs } from "./openapi.js";
 import { registerAdminRoutes } from "./routes/admin.js";
 import { registerAuthRoutes } from "./routes/auth.js";
 import { registerCertificationRoutes } from "./routes/certifications.js";
+import { registerMissionRoutes } from "./routes/missions.js";
 import { registerFeedRoutes } from "./routes/feed.js";
 import { registerHelpRequestRoutes } from "./routes/help-requests.js";
 import { registerLegalRoutes } from "./routes/legal.js";
@@ -131,6 +132,7 @@ export async function buildApp(options?: BuildAppOptions) {
   registerPasskeyRoutes(app, db);
   registerUserRoutes(app, db);
   registerCertificationRoutes(app, db, evaluateModeration);
+  registerMissionRoutes(app, db, evaluateModeration);
   await ensureAvatarStorageDir();
   assertMessageMediaStorageReady();
   await app.register(fastifyStatic, {

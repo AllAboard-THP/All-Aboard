@@ -1,6 +1,6 @@
 # Missions — experience certifications
 
-**Status:** product decisions, 2026-11-24. Not implemented. Epic: [#193](https://github.com/AllAboard-THP/All-Aboard/issues/193).  
+**Status:** product decisions, 2026-11-24. **API built** (routes, `experience.attested` publisher; contract in [web-api-integration.md](../guides/web-api-integration.md#missions-193-adr-0010)). Web pages not built yet. Epic: [#193](https://github.com/AllAboard-THP/All-Aboard/issues/193).  
 **Builds on:** [certifications.md](certifications.md) (skill +1, live on dev) and [ADR 0009](../adr/0009-certifications-intuition.md). Technical decisions: [ADR 0010](../adr/0010-experience-certifications-missions.md) (proposed).
 
 This page is the product source of truth for missions. It turns the "Experience certifications (later)" section of [certifications.md](certifications.md#experience-certifications-later--do-not-implement-yet) into a spec.
