@@ -48,6 +48,7 @@ One **canonical source** per topic. Task backlog and priorities: [GitHub Project
 | Product user journeys (MOC) | [product/user-journeys.md](product/user-journeys.md) | Rails parity notes |
 | Certifications on Intuition (web3 scope) | [product/certifications.md](product/certifications.md) | [intuition-web3.md](integrations/intuition-web3.md), ADR 0004 |
 | Missions and experience certifications | [product/missions.md](product/missions.md) | [certifications.md](product/certifications.md), ADR 0009 |
+| Screen recordings and video annotations (chat) | [product/video-annotations.md](product/video-annotations.md) | ADR 0008, [message-media-storage.md](deployment/message-media-storage.md) |
 | Rails → Fastify API parity | [tasks/api-rails-parity/](tasks/api-rails-parity/README.md) | Phases [1](tasks/api-rails-parity-phase1/README.md)–[7](tasks/api-rails-parity-phase7/README.md) |
 | Long-term stack / dataflow vision | [vision/README.md](vision/README.md) | [architecture/dataflow.md](architecture/dataflow.md) |
 

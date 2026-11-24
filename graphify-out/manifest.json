@@ -2650,8 +2650,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/INDEX.md": {
-    "mtime": 1795478301.6238503,
-    "ast_hash": "bc7f82a599c505ead54bcf9b8d4d359c",
+    "mtime": 1795517595.213752,
+    "ast_hash": "5b539935f49bd4d2055601be90833100",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/README.md": {
@@ -2915,8 +2915,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/README.md": {
-    "mtime": 1795478301.6238503,
-    "ast_hash": "c9d3dc9fe3afd9141133114c710678d5",
+    "mtime": 1795517595.213752,
+    "ast_hash": "a08213149ef7ca0f0c2c171c41a2d47d",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/README.md": {
@@ -3837,6 +3837,11 @@
   "/home/dim/AllAboard/apps/web/lib/missions-search-params.ts": {
     "mtime": 1795516593.1819556,
     "ast_hash": "c1e1110fb9eba2a02dac526eec31dea4",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/product/video-annotations.md": {
+    "mtime": 1795517590.0458524,
+    "ast_hash": "1d7a7a2dd4c8d54fb887313e35420355",
     "semantic_hash": ""
   }
 }
