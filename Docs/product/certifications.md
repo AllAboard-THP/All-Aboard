@@ -84,7 +84,7 @@ All-Aboard will later offer **missions**. Completing a mission grants an **exper
 | Skill | A professional competence (example: Ruby on Rails) | First web3 slice — peer +1 on a profile |
 | Experience | A professional achievement from a completed mission | Later — same graph, different claim |
 
-Both types are certifications on the person’s profile, read from Intuition. Missions and the experience claim are out of scope until the skill +1 exists.
+Both types are certifications on the person’s profile, read from Intuition. The skill +1 now exists. The mission spec and its product decisions (2026-11-24) are in [missions.md](missions.md).
 
 ---
 
@@ -107,6 +107,6 @@ Help-request atoms (`help_request:{uuid}`, title, author triples) from the [Grap
 ## Out of scope for the first slice
 
 - Publishing help requests, responses, or the feed.
-- Mission proposals and experience certifications (recorded here so they are not forgotten).
+- Mission proposals and experience certifications, now specified in [missions.md](missions.md).
 - Replacing passkeys with a wallet login.
 - An in-repo indexer (`apps/indexer` stays forbidden).
