@@ -14,7 +14,7 @@ import {
   isScreenCaptureSupported,
   kindForRecorderMode,
   mapCaptureError,
-  maxBytesForRecorderKind,
+  maxBytesForRecorderMode,
   maxDurationMsForRecorderMode,
   selectRecorderMimeType,
 } from "./media-recorder";
@@ -25,14 +25,15 @@ describe("media recorder limits", () => {
     expect(MESSAGE_VIDEO_MAX_DURATION_MS).toBe(180_000);
     expect(maxDurationMsForRecorderMode("microphone")).toBe(300_000);
     expect(maxDurationMsForRecorderMode("camera")).toBe(180_000);
-    expect(maxDurationMsForRecorderMode("screen")).toBe(180_000);
+    expect(maxDurationMsForRecorderMode("screen")).toBe(300_000);
   });
 
   it("caps audio at 10 MB and video at 50 MB", () => {
     expect(MESSAGE_AUDIO_MAX_BYTES).toBe(10 * 1024 * 1024);
     expect(MESSAGE_VIDEO_MAX_BYTES).toBe(50 * 1024 * 1024);
-    expect(maxBytesForRecorderKind("audio")).toBe(MESSAGE_AUDIO_MAX_BYTES);
-    expect(maxBytesForRecorderKind("video")).toBe(MESSAGE_VIDEO_MAX_BYTES);
+    expect(maxBytesForRecorderMode("microphone")).toBe(MESSAGE_AUDIO_MAX_BYTES);
+    expect(maxBytesForRecorderMode("camera")).toBe(MESSAGE_VIDEO_MAX_BYTES);
+    expect(maxBytesForRecorderMode("screen")).toBe(100 * 1024 * 1024);
   });
 
   it("maps microphone to audio and camera or screen to video", () => {

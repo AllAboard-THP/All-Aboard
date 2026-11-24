@@ -15,6 +15,11 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { AppLocale } from "@/i18n/routing";
+import { VideoMessageAnnotations } from "@/components/features/video-message-annotations";
+import {
+  createAnnotationBus,
+  parseAnnotationSocketEvent,
+} from "@/lib/annotation-client";
 import {
   buildChatMediaFormData,
   fetchConversationWsToken,
@@ -96,6 +101,7 @@ export function ChatThread({
   const t = useTranslations("messages");
   const [messages, setMessages] = useState<DisplayMessage[]>(initialMessages);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [annotationBus] = useState(createAnnotationBus);
   const conversationIdRef = useRef(conversationId);
   conversationIdRef.current = conversationId;
 
@@ -130,6 +136,14 @@ export function ChatThread({
     fileTooLarge: t("recorderFileTooLarge"),
     noData: t("recorderNoData"),
     screenUnsupported: t("recorderScreenUnsupported"),
+    screenSetupTitle: t("recorderScreenSetupTitle"),
+    screenMicrophone: t("recorderScreenMicrophone"),
+    screenSound: t("recorderScreenSound"),
+    startScreen: t("recorderStartScreen"),
+    cancel: t("recorderCancel"),
+    audioMicrophoneUnavailable: t("recorderAudioMicrophoneUnavailable"),
+    audioScreenUnavailable: t("recorderAudioScreenUnavailable"),
+    audioSilent: t("recorderAudioSilent"),
   };
 
   useEffect(() => {
@@ -161,9 +175,15 @@ export function ChatThread({
 
         ws.onmessage = (event) => {
           try {
-            const message = parseChatWsMessage(JSON.parse(String(event.data)));
-            if (!message) return;
-            setMessages((prev) => upsertMessage(prev, message));
+            const payload: unknown = JSON.parse(String(event.data));
+            const message = parseChatWsMessage(payload);
+            if (message) {
+              setMessages((prev) => upsertMessage(prev, message));
+              return;
+            }
+            // #197: annotation events go to the video message they belong to.
+            const annotationEvent = parseAnnotationSocketEvent(payload);
+            if (annotationEvent) annotationBus.emit(annotationEvent);
           } catch {
             /* ignore malformed payloads */
           }
@@ -192,7 +212,7 @@ export function ChatThread({
       if (reconnectTimer) clearTimeout(reconnectTimer);
       ws?.close();
     };
-  }, [conversationId]);
+  }, [annotationBus, conversationId]);
 
   const sendText = useCallback(
     async (body: string) => {
@@ -348,6 +368,16 @@ export function ChatThread({
                   }}
                   mine={isMine}
                   labels={bubbleLabels}
+                  videoPlayer={
+                    msg.kind === "video" && msg.attachment && !msg.optimistic ? (
+                      <VideoMessageAnnotations
+                        conversationId={conversationId}
+                        message={msg}
+                        currentUserId={currentUser.userId}
+                        bus={annotationBus}
+                      />
+                    ) : undefined
+                  }
                 />
                 <span className="px-1 text-[10px] text-muted-foreground">
                   {formatMessageTime(msg.createdAt, locale)}
