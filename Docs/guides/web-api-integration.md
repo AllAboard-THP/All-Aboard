@@ -181,6 +181,47 @@ Detailed doc: [tasks/api-rails-parity-phase1/README.md](../tasks/api-rails-parit
 - **400** / **401** / **503**: see table above.
 - **409**: `{ "error": "duplicate", "existingId": string }` (whitespace / case normalization on title).
 
+### Missions (#193, ADR 0010)
+
+Product: [missions.md](../product/missions.md). Decisions: [ADR 0010](../adr/0010-experience-certifications-missions.md). Full schemas: `apps/api/openapi.yaml`, tag `missions`. Types: `@allaboard/types` (`Mission`, `MissionApplication`, `ExperienceCertification`…).
+
+| Route | Who | Notes |
+| --- | --- | --- |
+| `GET /missions?kind=&status=&skill=` | Signed in | Default status `open` + `in_progress`; `status=all` hides only `cancelled`; `skill` = slug or id |
+| `GET /missions/:id` | Signed in | Includes `viewerApplication` |
+| `POST /missions` | Mentor | **403** `mentor_only`; **422** `content_rejected`; **429** after 10 per day |
+| `PATCH /missions/:id` | Author | **409** `mission_closed`, `places_below_accepted`; `status` closes or cancels |
+| `DELETE /missions/:id` | Author | **409** `mission_has_certifications` once a validation exists |
+| `POST /missions/:id/applications` | Anyone but the author | **409** `mission_not_open`, `already_applied`; a withdrawn application can be sent again |
+| `DELETE /missions/:id/applications/mine` | Applicant | **409** `already_validated` |
+| `POST /missions/:id/applications/:applicationId/decision` | Author | `{ decision: "accepted" \| "rejected" }`; **409** `mission_full` |
+| `PATCH /missions/:id/applications/:applicationId` | Accepted applicant | `{ deliverableUrl: string \| null }` (https) |
+| `POST /missions/:id/applications/:applicationId/validate` | Author | Optional `comment` (280); **409** `application_not_accepted`, `mission_cancelled` (cancelled without deliverable), `already_validated`; writes `experience.attested` |
+| `DELETE /missions/:id/applications/:applicationId/validation` | Author | Postgres only; stays on-chain once published |
+| `GET /me/missions` | Signed in | Dashboard board: each mission with its applications (not withdrawn) |
+| `GET /me/mission-applications` | Signed in | Dashboard: the viewer's applications |
+| `GET /users/:id/experiences` | Public | Profile "Experience" card, with `proof` once published |
+
+Application messages are only returned to the mission's author and to the applicant.
+
+### Video annotations (#197)
+
+Product: [video-annotations.md](../product/video-annotations.md). Schemas: `apps/api/openapi.yaml` (0.13.0), tag `conversations`. Types: `@allaboard/types` (`MessageAnnotation`, `MessageAnnotationReply`, `ChatSocketEvent`…).
+
+| Route | Who | Notes |
+| --- | --- | --- |
+| `GET /conversations/:id/messages/:messageId/annotations` | Participant | Sorted by `atMs`, with replies; `unreadCount` for the viewer |
+| `POST /conversations/:id/messages/:messageId/annotations` | Participant | `{ atMs, rect?, body }`; **400** `not_a_video_message`, `invalid_timestamp`, `invalid_rect` |
+| `PATCH /conversations/:id/messages/:messageId/annotations/read` | Participant | Read marker for the badge |
+| `PATCH /annotations/:annotationId` | Author (`body`), participant (`resolved`) | **403** `not_author`; **409** `annotation_deleted` |
+| `DELETE /annotations/:annotationId` | Author | Soft delete: `body` gone, marker and replies stay |
+| `POST /annotations/:annotationId/replies` | Participant | **409** `annotation_deleted` |
+| `PATCH` / `DELETE /annotation-replies/:replyId` | Author | Soft delete like annotations |
+
+Outside the viewer's conversations, `/annotations/*` and `/annotation-replies/*` answer **404**. Video messages in `GET …/messages` carry `annotationCount` and `unreadAnnotationCount`. The conversation WebSocket also pushes `annotation.*` and `annotation_reply.*` events; clients ignore unknown `type` values.
+
+Media limits now depend on `source`: `microphone` 5 min / 10 MB, `camera` 3 min / 50 MB, `screen` 5 min / 100 MB. The API multipart limit is 100 MB.
+
 ---
 
 ## BFF Next (`apps/web` — same-origin)

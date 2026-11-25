@@ -4,8 +4,11 @@ import { Mic, Monitor, Square, Video } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { Button } from "../components/button";
+import { Checkbox } from "../components/checkbox";
 import {
+  DEFAULT_SCREEN_AUDIO,
   MESSAGE_AUDIO_MAX_DURATION_MS,
+  MESSAGE_SCREEN_MAX_DURATION_MS,
   MESSAGE_VIDEO_MAX_DURATION_MS,
   formatRecorderClock,
   type MediaCaptureStream,
@@ -13,6 +16,8 @@ import {
   type MediaRecorderMode,
   type MediaRecorderPhase,
   type RecordedMedia,
+  type RecorderAudioWarning,
+  type ScreenAudioOptions,
 } from "../hooks/media-recorder";
 import { useMediaRecorder } from "../hooks/use-media-recorder";
 import { cn } from "../lib/utils";
@@ -47,6 +52,14 @@ export type ChatComposerLabels = {
   fileTooLarge: string;
   noData: string;
   screenUnsupported: string;
+  screenSetupTitle: string;
+  screenMicrophone: string;
+  screenSound: string;
+  startScreen: string;
+  cancel: string;
+  audioMicrophoneUnavailable: string;
+  audioScreenUnavailable: string;
+  audioSilent: string;
 };
 
 export const chatComposerLabelsFr: ChatComposerLabels = {
@@ -74,7 +87,31 @@ export const chatComposerLabelsFr: ChatComposerLabels = {
   noData: "Aucun son ni image n'a été enregistré.",
   screenUnsupported:
     "La capture d'écran n'est pas disponible sur ce navigateur. C'est souvent le cas sur Safari mobile.",
+  screenSetupTitle: "Enregistrer l'écran",
+  screenMicrophone: "Micro (votre voix)",
+  screenSound: "Son de l'écran",
+  startScreen: "Choisir l'écran à partager",
+  cancel: "Annuler",
+  audioMicrophoneUnavailable:
+    "Micro indisponible : l'enregistrement continue sans votre voix.",
+  audioScreenUnavailable:
+    "Ce navigateur ne partage pas le son de cet écran : seul le micro est enregistré.",
+  audioSilent: "Aucun son n'est enregistré.",
 };
+
+export function audioWarningText(
+  warning: RecorderAudioWarning,
+  labels: ChatComposerLabels,
+): string {
+  switch (warning) {
+    case "microphone_unavailable":
+      return labels.audioMicrophoneUnavailable;
+    case "screen_audio_unavailable":
+      return labels.audioScreenUnavailable;
+    case "silent":
+      return labels.audioSilent;
+  }
+}
 
 export type ChatComposerProps = {
   labels: ChatComposerLabels;
@@ -85,6 +122,9 @@ export type ChatComposerProps = {
   recording: RecordedMedia | null;
   liveStream?: MediaCaptureStream | null;
   screenCaptureSupported: boolean;
+  /** Screen recording setup step: the sound sources, or null when closed. */
+  screenSetup?: ScreenAudioOptions | null;
+  audioWarning?: RecorderAudioWarning | null;
   input: string;
   caption: string;
   uploadProgress: number;
@@ -95,6 +135,9 @@ export type ChatComposerProps = {
   onCaptionChange: (value: string) => void;
   onSubmitText: () => void;
   onStart: (mode: MediaRecorderMode) => void;
+  onScreenSetupChange?: (next: ScreenAudioOptions) => void;
+  onConfirmScreen?: () => void;
+  onCancelScreen?: () => void;
   onStop: () => void;
   onDiscard: () => void;
   onSendMedia: () => void;
@@ -131,6 +174,8 @@ export function ChatComposer({
   recording,
   liveStream = null,
   screenCaptureSupported,
+  screenSetup = null,
+  audioWarning = null,
   input,
   caption,
   uploadProgress,
@@ -141,12 +186,15 @@ export function ChatComposer({
   onCaptionChange,
   onSubmitText,
   onStart,
+  onScreenSetupChange,
+  onConfirmScreen,
+  onCancelScreen,
   onStop,
   onDiscard,
   onSendMedia,
   className,
 }: ChatComposerProps) {
-  const showIdleRow = phase === "idle" || phase === "error";
+  const showIdleRow = (phase === "idle" || phase === "error") && !screenSetup;
   const showVideoPreview = phase === "recording" && mode !== "microphone";
   const busy = sendingText || phase === "uploading";
   const alertMessage =
@@ -171,6 +219,26 @@ export function ChatComposer({
       {alertMessage ? (
         <p role="alert" className="text-sm text-destructive">
           {alertMessage}
+        </p>
+      ) : null}
+
+      {screenSetup && (phase === "idle" || phase === "error") ? (
+        <ScreenSetup
+          labels={labels}
+          value={screenSetup}
+          onChange={onScreenSetupChange}
+          onConfirm={onConfirmScreen}
+          onCancel={onCancelScreen}
+        />
+      ) : null}
+
+      {phase === "recording" && audioWarning ? (
+        <p
+          role="status"
+          data-testid="chat-audio-warning"
+          className="m-0 text-sm text-muted-foreground"
+        >
+          {audioWarningText(audioWarning, labels)}
         </p>
       ) : null}
 
@@ -284,7 +352,7 @@ export function ChatComposer({
           </CaptureButton>
           <CaptureButton
             label={labels.screen}
-            limitMs={MESSAGE_VIDEO_MAX_DURATION_MS}
+            limitMs={MESSAGE_SCREEN_MAX_DURATION_MS}
             testId="chat-record-screen"
             disabled={busy || !screenCaptureSupported}
             title={screenCaptureSupported ? undefined : labels.screenUnsupported}
@@ -316,6 +384,68 @@ export function ChatComposer({
         </form>
       ) : null}
     </div>
+  );
+}
+
+function ScreenSetup({
+  labels,
+  value,
+  onChange,
+  onConfirm,
+  onCancel,
+}: {
+  labels: ChatComposerLabels;
+  value: ScreenAudioOptions;
+  onChange?: (next: ScreenAudioOptions) => void;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+}) {
+  return (
+    <fieldset
+      data-testid="chat-screen-setup"
+      className="m-0 flex max-w-md flex-col gap-3 rounded-lg border border-border p-3"
+    >
+      <legend className="px-1 text-sm font-medium">
+        {labels.screenSetupTitle}{" "}
+        <span className="font-normal tabular-nums text-muted-foreground">
+          ({formatRecorderClock(MESSAGE_SCREEN_MAX_DURATION_MS)})
+        </span>
+      </legend>
+      <label className="flex items-center gap-2 text-sm">
+        <Checkbox
+          checked={value.microphone}
+          onCheckedChange={(checked) =>
+            onChange?.({ ...value, microphone: checked === true })
+          }
+          data-testid="chat-screen-microphone"
+        />
+        {labels.screenMicrophone}
+      </label>
+      <label className="flex items-center gap-2 text-sm">
+        <Checkbox
+          checked={value.screenAudio}
+          onCheckedChange={(checked) =>
+            onChange?.({ ...value, screenAudio: checked === true })
+          }
+          data-testid="chat-screen-sound"
+        />
+        {labels.screenSound}
+      </label>
+      <div className="flex flex-wrap gap-2">
+        <Button
+          type="button"
+          size="sm"
+          onClick={onConfirm}
+          data-testid="chat-start-screen"
+        >
+          <Monitor />
+          {labels.startScreen}
+        </Button>
+        <Button type="button" variant="outline" size="sm" onClick={onCancel}>
+          {labels.cancel}
+        </Button>
+      </div>
+    </fieldset>
   );
 }
 
@@ -459,6 +589,9 @@ export function ChatComposerSession({
   className?: string;
 }) {
   const recorder = useMediaRecorder();
+  const [screenSetup, setScreenSetup] = useState<ScreenAudioOptions | null>(
+    null,
+  );
   const [input, setInput] = useState("");
   const [caption, setCaption] = useState("");
   const [sendingText, setSendingText] = useState(false);
@@ -523,6 +656,8 @@ export function ChatComposerSession({
       recording={recorder.recording}
       liveStream={recorder.liveStream}
       screenCaptureSupported={recorder.screenCaptureSupported}
+      screenSetup={screenSetup}
+      audioWarning={recorder.audioWarning}
       input={input}
       caption={caption}
       uploadProgress={uploadProgress}
@@ -537,8 +672,21 @@ export function ChatComposerSession({
       onStart={(mode) => {
         setTextError(null);
         setUploadError(null);
+        if (mode === "screen") {
+          // Sound sources are picked first. The share starts on the next click,
+          // which the browser needs as a user gesture.
+          setScreenSetup(DEFAULT_SCREEN_AUDIO);
+          return;
+        }
         void recorder.start(mode);
       }}
+      onScreenSetupChange={setScreenSetup}
+      onConfirmScreen={() => {
+        const audio = screenSetup ?? DEFAULT_SCREEN_AUDIO;
+        setScreenSetup(null);
+        void recorder.start("screen", audio);
+      }}
+      onCancelScreen={() => setScreenSetup(null)}
       onStop={recorder.stop}
       onDiscard={() => {
         setCaption("");

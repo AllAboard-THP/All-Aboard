@@ -11,6 +11,10 @@ export {
   type CertificationPublishResult,
 } from "./certification-publisher.js";
 export {
+  EXPERIENCE_ATTESTED_EVENT,
+  processExperienceEvents,
+} from "./experience-publisher.js";
+export {
   createIntuitionChain,
   INTUITION_TESTNET_CHAIN_ID,
   INTUITION_TESTNET_MULTIVAULT_ADDRESS,

@@ -127,6 +127,20 @@
       "when": 1748707200000,
       "tag": "0017_certification_publish_schedule",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1748793600000,
+      "tag": "0018_missions",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1748880000000,
+      "tag": "0019_message_annotations",
+      "breakpoints": true
     }
   ]
 }

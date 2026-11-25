@@ -510,6 +510,10 @@ export type ChatMessage = {
   avatarUrl?: string;
   createdAt: string;
   type: "message";
+  /** Video messages only (#197): annotations not deleted. */
+  annotationCount?: number;
+  /** Video messages only: annotations and replies by the other participant, unread by the viewer. */
+  unreadAnnotationCount?: number;
 };
 
 export type ConversationInboxItem = {
@@ -558,6 +562,97 @@ export type MarkConversationReadResponse = {
   ok: true;
   lastReadAt: string;
 };
+
+/** #197 — rectangle on the video frame, relative coordinates in [0, 1]. */
+export type MessageAnnotationRect = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+};
+
+export type MessageAnnotationReply = {
+  id: string;
+  annotationId: string;
+  author: ConversationParticipantSummary;
+  /** Absent once deleted. */
+  body?: string;
+  editedAt?: string;
+  deletedAt?: string;
+  createdAt: string;
+};
+
+export type MessageAnnotation = {
+  id: string;
+  messageId: string;
+  author: ConversationParticipantSummary;
+  atMs: number;
+  rect?: MessageAnnotationRect;
+  /** Absent once deleted. */
+  body?: string;
+  resolvedAt?: string;
+  resolvedBy?: string;
+  editedAt?: string;
+  deletedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  replies: MessageAnnotationReply[];
+};
+
+export type MessageAnnotationsResponse = {
+  items: MessageAnnotation[];
+  unreadCount: number;
+};
+
+export type CreateMessageAnnotationBody = {
+  atMs: number;
+  rect?: MessageAnnotationRect;
+  body: string;
+};
+
+export type UpdateMessageAnnotationBody = {
+  body?: string;
+  resolved?: boolean;
+};
+
+export type MessageAnnotationResponse = {
+  item: MessageAnnotation;
+};
+
+export type CreateMessageAnnotationReplyBody = {
+  body: string;
+};
+
+export type MessageAnnotationReplyResponse = {
+  item: MessageAnnotationReply;
+};
+
+export type MarkMessageAnnotationsReadResponse = {
+  ok: true;
+  lastReadAt: string;
+};
+
+/** Events on the conversation WebSocket, next to bare `ChatMessage` objects (`type: "message"`). */
+export type MessageAnnotationSocketEvent = {
+  type: "annotation.created" | "annotation.updated" | "annotation.deleted";
+  messageId: string;
+  annotation: MessageAnnotation;
+};
+
+export type MessageAnnotationReplySocketEvent = {
+  type:
+    | "annotation_reply.created"
+    | "annotation_reply.updated"
+    | "annotation_reply.deleted";
+  messageId: string;
+  annotationId: string;
+  reply: MessageAnnotationReply;
+};
+
+export type ChatSocketEvent =
+  | ChatMessage
+  | MessageAnnotationSocketEvent
+  | MessageAnnotationReplySocketEvent;
 
 /** Short-lived JWT for WebSocket handoff (BFF → browser → API WS). */
 export type ConversationWsTokenResponse = {
@@ -720,6 +815,14 @@ export type CertificationAttestedOutboxPayload = {
   skillId: string;
 };
 
+/** Payload outbox `experience.attested` (ADR 0010 §4). */
+export type ExperienceAttestedOutboxPayload = {
+  id: string;
+  missionId: string;
+  recipientId: string;
+  attesterId: string;
+};
+
 export type HelpRequestSummaryRequestedOutboxPayload = {
   id: string;
 };
@@ -741,6 +844,10 @@ export type OutboxEvent =
   | {
       type: "certification.attested";
       payload: CertificationAttestedOutboxPayload;
+    }
+  | {
+      type: "experience.attested";
+      payload: ExperienceAttestedOutboxPayload;
     };
 
 /** Skill in the +1 catalogue (`GET /skills`, ADR 0009). */
@@ -865,4 +972,155 @@ export type AdminCertificationPublisherResponse = {
 export type RepublishCertificationResponse = {
   id: string;
   queued: true;
+};
+
+// --- Missions and experience certifications (#193, ADR 0010) ---
+
+export type MissionKind = "personal_project" | "freelance" | "hackathon";
+
+export type MissionStatus = "open" | "in_progress" | "completed" | "cancelled";
+
+export type MissionApplicationStatus =
+  | "pending"
+  | "accepted"
+  | "rejected"
+  | "withdrawn";
+
+/** A person as shown on missions: author, applicant, validator. */
+export type MissionPerson = {
+  id: string;
+  displayName: string;
+  avatarUrl?: string;
+};
+
+/** The viewer's own application, embedded in a mission they applied to. */
+export type MissionViewerApplication = {
+  id: string;
+  status: MissionApplicationStatus;
+};
+
+export type Mission = {
+  id: string;
+  kind: MissionKind;
+  title: string;
+  description: string;
+  githubRepoUrl?: string;
+  /** Free text, information only. */
+  compensation?: string;
+  places: number;
+  acceptedCount: number;
+  /** Applications not withdrawn. */
+  applicationCount: number;
+  startsAt?: string;
+  endsAt?: string;
+  status: MissionStatus;
+  skills: Skill[];
+  author: MissionPerson;
+  createdAt: string;
+  updatedAt: string;
+  viewerApplication?: MissionViewerApplication;
+};
+
+export type MissionsResponse = {
+  items: Mission[];
+};
+
+export type MissionResponse = {
+  item: Mission;
+};
+
+export type CreateMissionBody = {
+  kind: MissionKind;
+  title: string;
+  description: string;
+  githubRepoUrl?: string | null;
+  compensation?: string | null;
+  places?: number;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  skillIds?: string[];
+};
+
+/** Author edit. `status` only moves to `completed` or `cancelled`, or back to `open`. */
+export type UpdateMissionBody = Partial<CreateMissionBody> & {
+  status?: MissionStatus;
+};
+
+/** Public proof of a validation once published (ADR 0010 §2). */
+export type ExperienceProof = {
+  network: "intuition-testnet";
+  /** `(claim) attestedBy (mentor)` triple id. */
+  attestationTripleId: string;
+  /** `(person) contributedTo (mission)` triple id. */
+  claimTripleId: string;
+  txHash?: string;
+  publishedAt: string;
+};
+
+/** The validation of one application, as the author and the applicant see it. */
+export type MissionValidation = {
+  id: string;
+  comment?: string;
+  createdAt: string;
+  proof?: ExperienceProof;
+};
+
+/** Visible to the mission's author and to the applicant only. */
+export type MissionApplication = {
+  id: string;
+  missionId: string;
+  applicant: MissionPerson;
+  message: string;
+  status: MissionApplicationStatus;
+  deliverableUrl?: string;
+  decidedAt?: string;
+  createdAt: string;
+  validation?: MissionValidation;
+};
+
+export type CreateMissionApplicationBody = {
+  message: string;
+};
+
+export type MissionApplicationResponse = {
+  item: MissionApplication;
+};
+
+/** Author decision on a pending (or previously decided) application. */
+export type MissionApplicationDecisionBody = {
+  decision: "accepted" | "rejected";
+};
+
+/** Applicant update once accepted. `null` clears the link. */
+export type UpdateMissionApplicationBody = {
+  deliverableUrl: string | null;
+};
+
+export type ValidateMissionApplicationBody = {
+  comment?: string;
+};
+
+/** `GET /me/missions`: the dashboard board of a mission author. */
+export type MyMissionsResponse = {
+  items: { mission: Mission; applications: MissionApplication[] }[];
+};
+
+/** `GET /me/mission-applications`: the applicant's side of the dashboard. */
+export type MyMissionApplicationsResponse = {
+  items: { mission: Mission; application: MissionApplication }[];
+};
+
+/** One experience certification on a profile (`GET /users/:id/experiences`). */
+export type ExperienceCertification = {
+  id: string;
+  mission: { id: string; kind: MissionKind; title: string };
+  attester: MissionPerson;
+  comment?: string;
+  deliverableUrl?: string;
+  createdAt: string;
+  proof?: ExperienceProof;
+};
+
+export type UserExperiencesResponse = {
+  items: ExperienceCertification[];
 };

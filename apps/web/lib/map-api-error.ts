@@ -29,6 +29,20 @@ export type ApiErrorMessageKey =
   | "rateLimited"
   | "selfCertification"
   | "skillNotFound"
+  | "alreadyApplied"
+  | "alreadyValidated"
+  | "applicationNotAccepted"
+  | "applicationNotFound"
+  | "applicationWithdrawn"
+  | "mentorOnly"
+  | "missionCancelled"
+  | "missionClosed"
+  | "missionFull"
+  | "missionHasCertifications"
+  | "missionNotFound"
+  | "missionNotOpen"
+  | "ownMission"
+  | "placesBelowAccepted"
   | "unknown";
 
 export type ApiErrorBody = {
@@ -83,6 +97,22 @@ const CODE_TO_KEY: Record<string, ApiErrorMessageKey> = {
   rate_limited: "rateLimited",
   self_certification: "selfCertification",
   skill_not_found: "skillNotFound",
+  mentor_only: "mentorOnly",
+  content_rejected: "contentModeration",
+  mission_not_found: "missionNotFound",
+  application_not_found: "applicationNotFound",
+  validation_not_found: "notFound",
+  mission_full: "missionFull",
+  mission_closed: "missionClosed",
+  mission_not_open: "missionNotOpen",
+  mission_cancelled: "missionCancelled",
+  already_applied: "alreadyApplied",
+  own_mission: "ownMission",
+  already_validated: "alreadyValidated",
+  application_not_accepted: "applicationNotAccepted",
+  application_withdrawn: "applicationWithdrawn",
+  places_below_accepted: "placesBelowAccepted",
+  mission_has_certifications: "missionHasCertifications",
 };
 
 const STATUS_FALLBACK: Partial<Record<number, ApiErrorMessageKey>> = {

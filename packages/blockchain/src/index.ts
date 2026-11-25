@@ -14,6 +14,10 @@ import {
   attestedByAtomData,
   attestedById,
 } from "@0xintuition/predicates/attestedBy";
+import {
+  contributedToAtomData,
+  contributedToId,
+} from "@0xintuition/predicates/contributedTo";
 import { expertInAtomData, expertInId } from "@0xintuition/predicates/expertIn";
 import { buildDefinedTerm } from "@0xintuition/primitives/atom";
 
@@ -51,15 +55,20 @@ function triple(subjectId: Hex, predicateId: Hex, objectId: Hex): TripleTerm {
   };
 }
 
-/** `expertIn` and `attestedBy` from the canonical registry (ADR 0009 §2). */
+/**
+ * Predicates from the canonical registry: `expertIn` and `attestedBy`
+ * (ADR 0009 §2), `contributedTo` for missions (ADR 0010 §2).
+ */
 export const PREDICATES = {
   expertIn: atom(atomString(expertInAtomData)),
   attestedBy: atom(atomString(attestedByAtomData)),
+  contributedTo: atom(atomString(contributedToAtomData)),
 } as const;
 
 if (
   PREDICATES.expertIn.id !== expertInId ||
-  PREDICATES.attestedBy.id !== attestedById
+  PREDICATES.attestedBy.id !== attestedById ||
+  PREDICATES.contributedTo.id !== contributedToId
 ) {
   throw new Error("Predicate atom bytes do not match the Intuition registry");
 }
@@ -109,6 +118,17 @@ export function skillAtom(label: string): AtomTerm {
     throw new Error(`Invalid skill atom for "${name}"`);
   }
   return atom(atomString(built.value.data));
+}
+
+/**
+ * Mission atom: the stable public URL `<origin>/m/<mission uuid>`, nothing else.
+ * No title, type or description on-chain (ADR 0010 §2).
+ */
+export function missionAtom(origin: string, missionId: string): AtomTerm {
+  if (!UUID_RE.test(missionId)) {
+    throw new Error(`Mission atom needs a mission uuid, got: ${missionId}`);
+  }
+  return atom(`${normalizeProfileOrigin(origin)}/m/${missionId.toLowerCase()}`);
 }
 
 /** `(person) expertIn (skill)`: shared by every +1 on that person and skill. */
@@ -171,5 +191,63 @@ export function certificationAtoms(terms: CertificationTerms): AtomTerm[] {
     terms.recipient,
     terms.attester,
     terms.skill,
+  ];
+}
+
+/** `(person) contributedTo (mission)`: one per participant and mission (ADR 0010 §2). */
+export function experienceClaimTriple(
+  personAtomId: Hex,
+  missionAtomId: Hex,
+): TripleTerm {
+  return triple(personAtomId, PREDICATES.contributedTo.id, missionAtomId);
+}
+
+export type ExperienceInput = {
+  /** Web origin of the environment, e.g. `https://dev.allaboard.fr`. */
+  profileOrigin: string;
+  missionId: string;
+  /** The participant whose work is validated. */
+  recipientId: string;
+  /** The mission's author, who validates. */
+  attesterId: string;
+};
+
+/** Every term one validation needs: atoms, then claim, then validation. */
+export type ExperienceTerms = {
+  recipient: AtomTerm;
+  attester: AtomTerm;
+  mission: AtomTerm;
+  predicates: typeof PREDICATES;
+  claim: TripleTerm;
+  attestation: TripleTerm;
+};
+
+export function experienceTerms(input: ExperienceInput): ExperienceTerms {
+  if (input.recipientId.toLowerCase() === input.attesterId.toLowerCase()) {
+    throw new Error("A validation needs two different people");
+  }
+  const recipient = personAtom(input.profileOrigin, input.recipientId);
+  const attester = personAtom(input.profileOrigin, input.attesterId);
+  const mission = missionAtom(input.profileOrigin, input.missionId);
+  const claim = experienceClaimTriple(recipient.id, mission.id);
+  const attestation = attestationTriple(claim.id, attester.id);
+  return {
+    recipient,
+    attester,
+    mission,
+    predicates: PREDICATES,
+    claim,
+    attestation,
+  };
+}
+
+/** Atoms of a validation, in the order the publisher creates them. */
+export function experienceAtoms(terms: ExperienceTerms): AtomTerm[] {
+  return [
+    terms.predicates.contributedTo,
+    terms.predicates.attestedBy,
+    terms.recipient,
+    terms.attester,
+    terms.mission,
   ];
 }

@@ -2,7 +2,7 @@
 
 The API seeds the database on every boot (`db:migrate` → `runSeedIfConfigured`) and with `pnpm --filter api db:seed`. Users and demo content are only written when `DEV_SEED_PASSWORD` (or `MVP_LOGIN_PASSWORD` in dev/CI) is set. All accounts share that password.
 
-The seed is idempotent: stable UUIDs, upserts, and counters (`likes_count`, `responses_count`, `bookmarks_count`, `posts_count`) recomputed at the end. Data lives in [`apps/api/src/db/seed-demo-data.ts`](../../apps/api/src/db/seed-demo-data.ts).
+The seed is idempotent: stable UUIDs, upserts, and counters (`likes_count`, `responses_count`, `bookmarks_count`, `posts_count`) recomputed at the end. Data lives in [`apps/api/src/db/seed-demo-data.ts`](../../apps/api/src/db/seed-demo-data.ts), and missions in [`seed-demo-missions.ts`](../../apps/api/src/db/seed-demo-missions.ts).
 
 Peer +1s (`certifications`) are **not** seeded: the skill catalogue exists, but no attestation rows.
 
@@ -10,8 +10,8 @@ Peer +1s (`certifications`) are **not** seeded: the skill catalogue exists, but 
 
 | Email | Role | What to test with it |
 |-------|------|----------------------|
-| `bob@dev.local` | student | Main student: open and resolved posts, bookmarks, 3 unread messages, pending subject request |
-| `alice@dev.local` | mentor | Main mentor: answers across React/Rails/TS, linked Google account, moderation chat with Claire |
+| `bob@dev.local` | student | Main student: open and resolved posts, bookmarks, 3 unread messages, pending subject request, a pending mission application and one experience on the profile |
+| `alice@dev.local` | mentor | Main mentor: answers across React/Rails/TS, linked Google account, moderation chat with Claire, a missions board with applicants to accept or reject |
 | `admin@dev.local` | admin | Moderation queue, subject requests, denylist |
 | `claire@dev.local` | admin | Second admin |
 | `lucas@`, `sofia@`, `kevin@`, `nadia@`, `julien@` | mentor | Subject experts (JS/Rails/Mobile, Python/IA/DB, DevOps/Algo, Cyber/Node, TS/Node/Git). Julien has comment notifications off |
@@ -29,5 +29,7 @@ Peer +1s (`certifications`) are **not** seeded: the skill catalogue exists, but 
 - **Subject requests** (7): pending, approved, rejected.
 - **Denylist** (4): 2 active demo tokens (`spam-link-demo`, `phone-leak-demo`), 2 inactive (one regex).
 - **Conversations** (12): read, unread and never-opened threads; inbox ordered by last message.
+- **Missions** (8, [missions.md](../product/missions.md)): every type and status (open, in progress, completed, cancelled), posted by Alice, Lucas, Sofia, Kevin, Nadia and Julien. 17 applications: pending, accepted, rejected, with and without a deliverable link. Sofia has an accepted participant ready to validate.
+- **Experience certifications** (3): Bob (Alice's design system), Romain and Léa (Kevin's hackathon). They have no outbox event, so they are never published on Intuition and the profile shows the proof as pending.
 
-Not seeded: audio/video messages (they need S3 objects), passkeys, outbox events, peer +1s.
+Not seeded: audio/video messages (they need S3 objects), passkeys, outbox events, peer +1s. Cancelled missions are hidden from `/missions`; Lucas's cancelled mission shows on his board and in Hugo's applications.

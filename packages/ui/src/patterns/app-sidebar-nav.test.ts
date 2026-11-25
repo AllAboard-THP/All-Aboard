@@ -82,7 +82,7 @@ describe("app-sidebar-nav", () => {
     expect(mentorOnAdmin.showAdminSection).toBe(false);
   });
 
-  it("builds student sections with seven navigation+community items", () => {
+  it("builds student sections with eight navigation+community items", () => {
     const labels = {
       navigationGroup: "Nav",
       communityGroup: "Comm",
@@ -97,6 +97,7 @@ describe("app-sidebar-nav", () => {
       resources: "Resources",
       newRequest: "New",
       feed: "Feed",
+      missions: "Missions",
       messages: "Messages",
       profile: "Profile",
       mentor: "Mentor",
@@ -112,7 +113,7 @@ describe("app-sidebar-nav", () => {
 
     expect(sections).toHaveLength(2);
     expect(sections[0]?.items).toHaveLength(3);
-    expect(sections[1]?.items).toHaveLength(4);
+    expect(sections[1]?.items).toHaveLength(5);
   });
 
   it("grants admin role mentor section access", () => {
@@ -131,6 +132,7 @@ describe("app-sidebar-nav", () => {
         browseFeed: "Browse feed",
         inbox: "Unread messages",
         myRequests: "My requests",
+        missions: "My missions",
       },
       subjects: { title: "Subjects", explore: "Explore" },
       resources: { title: "Resources", all: "All" },
@@ -161,7 +163,7 @@ describe("app-sidebar-nav", () => {
 
     const panel = resolveAppSidebarContextPanel("dashboard", labels);
     expect(panel?.title).toBe("On this page");
-    expect(panel?.links).toHaveLength(4);
+    expect(panel?.links).toHaveLength(5);
     expect(panel?.links[0]?.href).toBe("/help/new");
     expect(panel?.links[3]?.href).toBe("/me/posts");
   });

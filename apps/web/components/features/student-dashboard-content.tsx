@@ -52,6 +52,7 @@ function useStudentDashboardLabels(): StudentDashboardLabels {
       resources: t("sidebar.resources"),
       newRequest: t("sidebar.newRequest"),
       feed: t("sidebar.feed"),
+      missions: t("sidebar.missions"),
       messages: t("sidebar.messages"),
       mentor: t("sidebar.mentor"),
       profile: t("sidebar.profile"),
@@ -68,6 +69,7 @@ function useStudentDashboardLabels(): StudentDashboardLabels {
           browseFeed: t("sidebar.context.dashboard.browseFeed"),
           inbox: t("sidebar.context.dashboard.inbox"),
           myRequests: t("sidebar.context.dashboard.myRequests"),
+          missions: t("sidebar.context.dashboard.missions"),
         },
         subjects: {
           title: t("sidebar.context.subjects.title"),

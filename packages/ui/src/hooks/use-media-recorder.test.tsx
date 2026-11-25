@@ -4,7 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   MESSAGE_AUDIO_MAX_BYTES,
   MESSAGE_AUDIO_MAX_DURATION_MS,
+  MESSAGE_SCREEN_MAX_DURATION_MS,
   MESSAGE_VIDEO_MAX_DURATION_MS,
+  type CaptureStreamFactory,
   type MediaCaptureStream,
   type MediaCaptureTrack,
   type MediaRecorderLike,
@@ -39,9 +41,10 @@ class MockRecorder implements MediaRecorderLike {
   }
 }
 
-function createTrack(): MockTrack {
+function createTrack(kind?: string): MockTrack {
   const listeners = new Set<() => void>();
   return {
+    kind,
     stop: vi.fn(),
     addEventListener: (_type: "ended", listener: () => void) => {
       listeners.add(listener);
@@ -57,9 +60,26 @@ function createTrack(): MockTrack {
   };
 }
 
-function createStream(): { stream: MediaCaptureStream; tracks: MockTrack[] } {
-  const tracks = [createTrack(), createTrack()];
+function createStream(
+  kinds: string[] = ["video", "audio"],
+): { stream: MediaCaptureStream; tracks: MockTrack[] } {
+  const tracks = kinds.map((kind) => createTrack(kind));
   return { stream: { getTracks: () => tracks }, tracks };
+}
+
+/** Fake stream builder: records what was mixed and composed. */
+function createFactory() {
+  const mixedTrack = createTrack("audio");
+  const dispose = vi.fn();
+  const composed: MediaCaptureTrack[][] = [];
+  const factory: CaptureStreamFactory = {
+    createStream: (tracks) => {
+      composed.push(tracks);
+      return { getTracks: () => tracks };
+    },
+    mixAudio: vi.fn(() => ({ track: mixedTrack, dispose })),
+  };
+  return { factory, mixedTrack, dispose, composed };
 }
 
 function blobWithSize(size: number, type: string): Blob {
@@ -71,10 +91,11 @@ function blobWithSize(size: number, type: string): Blob {
 function setup(chunk = new Blob(["webm"], { type: "audio/webm" })) {
   const created: MockRecorder[] = [];
   const sessions = {
-    microphone: createStream(),
+    microphone: createStream(["audio"]),
     camera: createStream(),
     screen: createStream(),
   };
+  const capture = createFactory();
   const getUserMedia = vi.fn(async (constraints: MediaStreamConstraints) => {
     if (constraints.video) {
       return sessions.camera.stream;
@@ -99,11 +120,13 @@ function setup(chunk = new Blob(["webm"], { type: "audio/webm" })) {
       revokeObjectUrl,
       isSecureContext: true,
       tickMs: 1_000,
+      captureStreamFactory: capture.factory,
     }),
   );
 
   return {
     ...hook,
+    capture,
     created,
     sessions,
     getUserMedia,
@@ -194,7 +217,7 @@ describe("useMediaRecorder", () => {
     expect(harness.result.current.liveStream).toBe(harness.sessions.camera.stream);
   });
 
-  it("records a screen share and stops when the user ends it", async () => {
+  it("records a screen share with the microphone and the screen sound mixed", async () => {
     const harness = setup(new Blob(["video"], { type: "video/webm" }));
 
     await act(async () => {
@@ -205,7 +228,18 @@ describe("useMediaRecorder", () => {
       video: true,
       audio: true,
     });
-    expect(harness.getUserMedia).not.toHaveBeenCalled();
+    expect(harness.getUserMedia).toHaveBeenCalledWith({ audio: true });
+    expect(harness.capture.factory.mixAudio).toHaveBeenCalledWith([
+      harness.sessions.microphone.tracks[0],
+      harness.sessions.screen.tracks[1],
+    ]);
+    // One video track and the single mixed audio track go to MediaRecorder.
+    expect(harness.capture.composed[0]).toEqual([
+      harness.sessions.screen.tracks[0],
+      harness.capture.mixedTrack,
+    ]);
+    expect(harness.result.current.audioWarning).toBeNull();
+    expect(harness.result.current.maxDurationMs).toBe(MESSAGE_SCREEN_MAX_DURATION_MS);
 
     act(() => {
       harness.sessions.screen.tracks[0]?.emitEnded();
@@ -217,6 +251,91 @@ describe("useMediaRecorder", () => {
       source: "screen",
       mimeType: "video/webm",
     });
+    expect(harness.sessions.microphone.tracks[0]?.stop).toHaveBeenCalled();
+    expect(harness.sessions.screen.tracks[1]?.stop).toHaveBeenCalled();
+    expect(harness.capture.dispose).toHaveBeenCalled();
+  });
+
+  it("gives screen recordings 5 minutes", async () => {
+    const harness = setup(new Blob(["video"], { type: "video/webm" }));
+
+    await act(async () => {
+      await harness.result.current.start("screen");
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(MESSAGE_VIDEO_MAX_DURATION_MS + 1_000);
+    });
+    expect(harness.result.current.phase).toBe("recording");
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(MESSAGE_SCREEN_MAX_DURATION_MS);
+    });
+    expect(harness.result.current.phase).toBe("preview");
+    expect(harness.result.current.recording?.durationMs).toBe(
+      MESSAGE_SCREEN_MAX_DURATION_MS,
+    );
+  });
+
+  it("keeps recording the screen without voice when the microphone is refused", async () => {
+    const harness = setup(new Blob(["video"], { type: "video/webm" }));
+    harness.getUserMedia.mockRejectedValueOnce(
+      new DOMException("denied", "NotAllowedError"),
+    );
+
+    await act(async () => {
+      await harness.result.current.start("screen");
+    });
+
+    expect(harness.result.current.phase).toBe("recording");
+    expect(harness.result.current.audioWarning).toBe("microphone_unavailable");
+    expect(harness.capture.factory.mixAudio).not.toHaveBeenCalled();
+    expect(harness.capture.composed[0]).toEqual(harness.sessions.screen.tracks);
+  });
+
+  it("leaves the screen sound out when it is switched off", async () => {
+    const harness = setup(new Blob(["video"], { type: "video/webm" }));
+    harness.getDisplayMedia.mockResolvedValueOnce(createStream(["video"]).stream);
+
+    await act(async () => {
+      await harness.result.current.start("screen", {
+        microphone: true,
+        screenAudio: false,
+      });
+    });
+
+    expect(harness.getDisplayMedia).toHaveBeenCalledWith({
+      video: true,
+      audio: false,
+    });
+    expect(harness.result.current.audioWarning).toBeNull();
+    expect(harness.capture.factory.mixAudio).not.toHaveBeenCalled();
+  });
+
+  it("warns when the browser shares no screen sound", async () => {
+    const harness = setup(new Blob(["video"], { type: "video/webm" }));
+    harness.getDisplayMedia.mockResolvedValueOnce(createStream(["video"]).stream);
+
+    await act(async () => {
+      await harness.result.current.start("screen");
+    });
+
+    expect(harness.result.current.audioWarning).toBe("screen_audio_unavailable");
+  });
+
+  it("warns that a screen recording with both sources off is silent", async () => {
+    const harness = setup(new Blob(["video"], { type: "video/webm" }));
+
+    await act(async () => {
+      await harness.result.current.start("screen", {
+        microphone: false,
+        screenAudio: false,
+      });
+    });
+
+    expect(harness.getUserMedia).not.toHaveBeenCalled();
+    expect(harness.result.current.audioWarning).toBe("silent");
+    expect(harness.sessions.screen.tracks[1]?.stop).toHaveBeenCalled();
+    expect(harness.capture.composed[0]).toEqual([harness.sessions.screen.tracks[0]]);
   });
 
   it("returns to idle when the screen picker is dismissed", async () => {

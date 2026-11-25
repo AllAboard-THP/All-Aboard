@@ -64,6 +64,7 @@ describe("app-shell-sidebar", () => {
       resources: "Resources",
       newRequest: "New",
       feed: "Feed",
+      missions: "Missions",
       messages: "Messages",
       profile: "Profile",
       mentor: "Mentor",

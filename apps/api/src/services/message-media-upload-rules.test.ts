@@ -2,12 +2,16 @@ import { describe, expect, it } from "vitest";
 
 import {
   MESSAGE_AUDIO_MAX_BYTES,
+  MESSAGE_SCREEN_MAX_BYTES,
+  MESSAGE_SCREEN_MAX_DURATION_MS,
+  MESSAGE_VIDEO_MAX_BYTES,
   MESSAGE_VIDEO_MAX_DURATION_MS,
   bufferMatchesMimeType,
   validateMessageMediaDuration,
   validateMessageMediaMimeType,
   validateMessageMediaSize,
   validateMessageMediaSource,
+  validateMessageMediaUpload,
 } from "./message-media-upload-rules.js";
 
 const webmHeader = Buffer.from([0x1a, 0x45, 0xdf, 0xa3, 0x00]);
@@ -54,6 +58,48 @@ describe("message-media-upload-rules", () => {
         MESSAGE_VIDEO_MAX_DURATION_MS + 1,
       ),
     ).toBe("duration_exceeded");
+  });
+
+  it("gives screen recordings 5 min and 100 MB, camera videos keep 3 min and 50 MB", () => {
+    expect(MESSAGE_SCREEN_MAX_BYTES).toBe(100 * 1024 * 1024);
+    expect(MESSAGE_SCREEN_MAX_DURATION_MS).toBe(300_000);
+
+    expect(
+      validateMessageMediaSize("video", MESSAGE_SCREEN_MAX_BYTES, "screen"),
+    ).toBeNull();
+    expect(
+      validateMessageMediaSize("video", MESSAGE_SCREEN_MAX_BYTES + 1, "screen"),
+    ).toBe("file_too_large");
+    expect(
+      validateMessageMediaSize("video", MESSAGE_VIDEO_MAX_BYTES + 1, "camera"),
+    ).toBe("file_too_large");
+
+    expect(
+      validateMessageMediaDuration("video", MESSAGE_SCREEN_MAX_DURATION_MS, "screen"),
+    ).toBeNull();
+    expect(
+      validateMessageMediaDuration("video", MESSAGE_SCREEN_MAX_DURATION_MS + 1, "screen"),
+    ).toBe("duration_exceeded");
+    expect(
+      validateMessageMediaDuration("video", MESSAGE_VIDEO_MAX_DURATION_MS + 1, "camera"),
+    ).toBe("duration_exceeded");
+  });
+
+  it("applies the screen limits to a whole upload", () => {
+    const upload = {
+      kind: "video" as const,
+      mimeType: "video/webm",
+      sizeBytes: 80 * 1024 * 1024,
+      durationMs: 240_000,
+      buffer: webmHeader,
+    };
+    expect(validateMessageMediaUpload({ ...upload, source: "screen" })).toBeNull();
+    expect(validateMessageMediaUpload({ ...upload, source: "camera" })).toBe(
+      "file_too_large",
+    );
+    expect(
+      validateMessageMediaUpload({ ...upload, sizeBytes: 1024, source: "camera" }),
+    ).toBe("invalid_duration");
   });
 
   it("sniffs magic bytes for supported containers", () => {

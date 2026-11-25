@@ -50,6 +50,8 @@ apps/web/app/
 │   │   ├── layout.tsx              # <AppShell>{children}</AppShell>
 │   │   ├── feed/…
 │   │   ├── dashboard/demo/         # dashboard (content only)
+│   │   ├── dashboard/missions/     # missions board (#193)
+│   │   ├── missions/…              # list, detail, new, edit (#193)
 │   │   └── …
 │   └── (public)/                   # landing, legal, auth — no sidebar
 ```
