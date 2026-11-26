@@ -2650,8 +2650,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/INDEX.md": {
-    "mtime": 1795517595.213752,
-    "ast_hash": "5b539935f49bd4d2055601be90833100",
+    "mtime": 1795698830.000797,
+    "ast_hash": "e7b6047ac4cf908eb9736a7048e4fd22",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/README.md": {
@@ -2865,8 +2865,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/vision/README.md": {
-    "mtime": 1781730692.1080253,
-    "ast_hash": "b4f92b2706588358f78b3c1ba21670cb",
+    "mtime": 1795698830.000797,
+    "ast_hash": "546e4fa66ad615110f4c095d4bd89cb9",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/vision/technical-stack-proposal-2026.md": {
@@ -2915,8 +2915,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/README.md": {
-    "mtime": 1795517595.213752,
-    "ast_hash": "a08213149ef7ca0f0c2c171c41a2d47d",
+    "mtime": 1795692356.924495,
+    "ast_hash": "7f80603197abfc9a27cc35473ed0f3cb",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/deployment/README.md": {
@@ -3425,8 +3425,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/certifications.md": {
-    "mtime": 1795478301.6238503,
-    "ast_hash": "e2cf19529c8901b70f2c314be34a8afc",
+    "mtime": 1795692356.924495,
+    "ast_hash": "50e007fbabd0d7ec92cf07c062371519",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/drizzle/0014_rename_intuition_published_at.sql": {
@@ -3937,6 +3937,16 @@
   "/home/dim/AllAboard/packages/ui/src/patterns/annotated-video-player.stories.tsx": {
     "mtime": 1795522707.3948689,
     "ast_hash": "4356c0b2ae4e8e3311c6e409492cac2a",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/product/resource-votes.md": {
+    "mtime": 1795692350.101177,
+    "ast_hash": "78832844cc4914de3426f79fb63d7361",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/vision/monetization-ideas.md": {
+    "mtime": 1795698824.359997,
+    "ast_hash": "b1f8633fa9580ee447dfdead306bc94b",
     "semantic_hash": ""
   }
 }
