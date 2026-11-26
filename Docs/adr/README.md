@@ -18,3 +18,4 @@ Format: `NNNN-short-title.md` (incrementing number, **no duplicates**).
 | [0008](0008-message-media-object-storage.md) | Message media object storage (S3 / MinIO) | Proposé — 2026-10-16 |
 | [0009](0009-certifications-intuition.md) | Skill certifications on Intuition (operator publisher, testnet) | Accepté — 2026-11-13 ([#161](https://github.com/AllAboard-THP/All-Aboard/issues/161)) |
 | [0010](0010-experience-certifications-missions.md) | Experience certifications from missions (`contributedTo`, mission URL atom) | Proposé — 2026-11-24 ([#193](https://github.com/AllAboard-THP/All-Aboard/issues/193)) |
+| [0011](0011-member-smart-accounts.md) | Member smart accounts (passkey, ERC-4337): members sign their attestations, All-Aboard pays | Proposé — 2026-11-26 |

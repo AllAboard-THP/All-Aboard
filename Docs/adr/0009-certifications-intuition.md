@@ -4,6 +4,8 @@
 
 Accepted — 2026-11-13. Proposed 2026-10-30; spike [#161](../tasks/161-certifications-spike/README.md): a real +1 was written on testnet on 2026-11-02. Reading it back through the hosted GraphQL is not confirmed, so the read path does not depend on it (section 6).
 
+**Signer revision proposed:** [ADR 0011](0011-member-smart-accounts.md) (2026-11-26) moves attestations to member smart accounts. Until it is accepted, this ADR applies.
+
 Implements the product decision in [certifications.md](../product/certifications.md) (2026-10-19). Settles the points [ADR 0004](0004-agent-indexer-architecture.md) left open in its 2026-10-28 revision: package stack, on-chain identity, and signer.
 
 ## Context

@@ -2885,8 +2885,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/README.md": {
-    "mtime": 1795515508.7659187,
-    "ast_hash": "a600c9eb1c44740cc7724790095c3245",
+    "mtime": 1795702008.3094,
+    "ast_hash": "cdbc80f6b124a2462ca02998dcd23735",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0004-agent-indexer-architecture.md": {
@@ -2915,7 +2915,7 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/README.md": {
-    "mtime": 1795692356.924495,
+    "mtime": 1795701852.6694,
     "ast_hash": "7f80603197abfc9a27cc35473ed0f3cb",
     "semantic_hash": ""
   },
@@ -3450,8 +3450,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0009-certifications-intuition.md": {
-    "mtime": 1795515508.7659187,
-    "ast_hash": "af6141cdd127c35a45ff0a1efa7ac299",
+    "mtime": 1795702008.3094,
+    "ast_hash": "79c0aba1794868447d03793a8cdb743e",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/apps/api/src/scripts/db-migrate.ts": {
@@ -3940,13 +3940,18 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/product/resource-votes.md": {
-    "mtime": 1795692350.101177,
+    "mtime": 1795701852.6694,
     "ast_hash": "78832844cc4914de3426f79fb63d7361",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/vision/monetization-ideas.md": {
     "mtime": 1795698824.359997,
     "ast_hash": "b1f8633fa9580ee447dfdead306bc94b",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/adr/0011-member-smart-accounts.md": {
+    "mtime": 1795701999.0210621,
+    "ast_hash": "974cc3642c638eb5eb7c13b6a8a07bbd",
     "semantic_hash": ""
   }
 }
