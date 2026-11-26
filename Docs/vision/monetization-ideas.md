@@ -78,7 +78,7 @@ Crossing any one of these destroys the credibility of the CV:
 
 ## Cost to cover
 
-If All-Aboard sponsors gas and deposits for members (target model: members sign with a passkey-driven smart account, All-Aboard pays), that cost **grows with usage**. B2B revenue (schools, recruiters) has to fund it. Measure the real cost of one validation during the smart account spike, so the business model holds.
+If All-Aboard sponsors gas and deposits for members (target model: members sign with a passkey-driven smart account, All-Aboard pays), that cost **grows with usage**. B2B revenue (schools, recruiters) has to fund it. Measured in the smart account spike ([#205](../tasks/205-member-accounts-spike/README.md#results-2026-11-26), testnet, 2026-11-26): about **0.00004 TRUST of gas per validation** (0.00006 for a member's first one), plus the deposit, which is recoverable minus about 2% fees. Mainnet gas prices and the TRUST price will set the real figure.
 
 ---
 
