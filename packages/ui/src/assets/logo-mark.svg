@@ -1,0 +1,7 @@
+<svg width="41" height="54" viewBox="0 0 41 54"
+  xmlns="http://www.w3.org/2000/svg" role="img" aria-label="All-Aboard logo mark">
+  <!-- Vector trace from logo-mark.png — export-logo-mark-svg.py -->
+  <polygon points="22,13 22,44 10,44" fill="#052775"/>
+  <polygon points="25,13 25,44 35,44" fill="#dd3465"/>
+  <path d="M9 45 L17 45 L17 46 L21 46 L30 46 L29 47 L16 47 Z M22 45 L23 45 L21 46 Z" fill="#052775"/>
+</svg>

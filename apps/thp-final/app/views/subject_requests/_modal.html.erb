@@ -1,0 +1,44 @@
+<div id="request-subject-modal" data-modal-container class="fixed inset-0 z-[60] hidden">
+  <button type="button" class="absolute inset-0 bg-black/80 backdrop-blur-sm w-full h-full cursor-default" data-action="modal#close"></button>
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div class="glass w-full max-w-lg rounded-2xl p-6 animate-slide-up">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h3 class="text-xl font-bold">Proposer une nouvelle matière</h3>
+          <p class="text-sm text-gray-400 mt-1">Votre demande sera examinée par l'équipe AllAboard</p>
+        </div>
+        <button type="button" data-action="modal#close" class="text-gray-400 hover:text-white">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+
+      <%= form_with model: subject_request, url: subject_requests_path, class: "space-y-4" do |form| %>
+        <% if subject_request.errors.any? %>
+          <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-sm text-red-400">
+            <%= subject_request.errors.full_messages.to_sentence %>
+          </div>
+        <% end %>
+
+        <div>
+          <%= form.label :name, "Nom de la matière", class: "block text-sm font-medium mb-2 text-gray-300" %>
+          <%= form.text_field :name, placeholder: "Ex: Philosophie, Architecture, Marketing...", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary", value: subject_request.name %>
+        </div>
+
+        <div>
+          <%= form.label :description, "Pourquoi cette matière ?", class: "block text-sm font-medium mb-2 text-gray-300" %>
+          <%= form.text_area :description, rows: 3, placeholder: "Décrivez brièvement l'intérêt d'ajouter cette matière à la plateforme...", class: "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary resize-none text-sm", value: subject_request.description %>
+        </div>
+
+        <div class="flex items-center gap-3 p-3 bg-primary/10 border border-primary/20 rounded-xl text-sm text-gray-300">
+          <i class="fas fa-info-circle text-primary"></i>
+          <span>Si approuvée, la matière sera disponible pour tous les étudiants.</span>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" data-action="modal#close" class="flex-1 py-3 rounded-xl border border-white/20 hover:bg-white/5 transition-colors">Annuler</button>
+          <%= form.submit "Envoyer la demande", class: "flex-1 py-3 rounded-xl bg-primary hover:bg-primary/80 text-white font-medium transition-colors cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

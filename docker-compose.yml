@@ -1,0 +1,15 @@
+# Postgres local pour l’API (`apps/api`). Voir `.env.example` (DATABASE_URL).
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: allaboard
+      POSTGRES_PASSWORD: allaboard
+      POSTGRES_DB: allaboard
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U allaboard -d allaboard"]
+      interval: 3s
+      timeout: 5s
+      retries: 5

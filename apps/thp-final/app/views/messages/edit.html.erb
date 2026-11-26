@@ -1,0 +1,19 @@
+<%= turbo_frame_tag dom_id(@message) do %>
+  <div class="chat-row" data-author-id="<%= @message.user_id %>">
+    <img src="<%= @message.user.profile_avatar %>" alt="<%= @message.user.display_name %>" class="message-avatar w-8 h-8 rounded-full">
+    <div class="message-bubble rounded-2xl px-4 py-3 flex-1">
+      <%= form_with url: conversation_message_path(@conversation, @message), method: :patch, scope: :message do |f| %>
+        <%= f.text_field :body, value: @message.body,
+            class: "w-full bg-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary",
+            autofocus: true,
+            placeholder: "Modifier le message..." %>
+        <div class="flex items-center gap-2 mt-2">
+          <%= f.submit "Enregistrer",
+              class: "text-xs px-3 py-1.5 bg-primary hover:bg-primary/80 text-white rounded-lg cursor-pointer transition-colors" %>
+          <%= link_to "Annuler", conversation_message_path(@conversation, @message),
+              class: "text-xs px-3 py-1.5 bg-white/10 hover:bg-white/20 text-gray-300 rounded-lg transition-colors" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,150 @@
+<% content_for :title, "Admin - Événements candidats" %>
+
+<div class="max-w-7xl mx-auto py-8 px-4">
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold mb-2">Événements — Modération</h1>
+      <p class="text-gray-400">Gérez les événements publiés sur la plateforme.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm font-medium">
+        <%= @pending.count %> en attente
+      </span>
+      <%= button_to fetch_admin_event_candidates_path, method: :post,
+          class: "px-4 py-2 bg-primary/20 hover:bg-primary/40 text-primary rounded-lg text-sm font-medium transition-colors flex items-center gap-2",
+          data: { turbo_confirm: "Lancer une recherche IA d'événements tech ? (peut prendre 10-20 secondes)" } do %>
+        <i class="fas fa-robot"></i> Lancer la recherche IA
+      <% end %>
+      <%= link_to new_admin_event_path, class: "px-4 py-2 bg-accent hover:bg-accent/80 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2" do %>
+        <i class="fas fa-plus"></i> Créer un événement
+      <% end %>
+    </div>
+  </div>
+
+  <%= link_to admin_dashboard_path, class: "text-primary hover:underline text-sm inline-block mb-6" do %>
+    <i class="fas fa-arrow-left mr-2"></i>Retour au tableau de bord
+  <% end %>
+
+  <%# ——— EN ATTENTE ——— %>
+  <h2 class="text-xl font-semibold mb-4 text-yellow-400">
+    <i class="fas fa-clock mr-2"></i>En attente (<%= @pending.count %>)
+  </h2>
+
+  <% if @pending.any? %>
+    <div class="space-y-3 mb-10">
+      <% @pending.each do |candidate| %>
+        <div class="glass rounded-2xl p-5">
+          <div class="flex items-start gap-4">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap mb-1">
+                <h3 class="font-semibold"><%= candidate.title %></h3>
+                <span class="text-xs px-2 py-0.5 bg-white/10 rounded-full"><%= candidate.event_type_label %></span>
+                <span class="text-xs px-2 py-0.5 bg-indigo-500/20 text-indigo-300 rounded-full">
+                  <%= candidate.subject&.name || "Général" %>
+                </span>
+                <% if candidate.online? %>
+                  <span class="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full">En ligne</span>
+                <% end %>
+              </div>
+              <p class="text-gray-400 text-sm line-clamp-2 mb-2"><%= candidate.description.truncate(200) %></p>
+              <div class="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
+                <% if candidate.starts_at %>
+                  <span><i class="fas fa-calendar mr-1"></i><%= candidate.starts_at.strftime("%d/%m/%Y à %Hh%M") %></span>
+                <% end %>
+                <% if candidate.location.present? %>
+                  <span><i class="fas fa-map-marker-alt mr-1"></i><%= candidate.location %></span>
+                <% end %>
+                <% if candidate.organizer.present? %>
+                  <span><i class="fas fa-building mr-1"></i><%= candidate.organizer %></span>
+                <% end %>
+                <% if candidate.external_url.present? %>
+                  <%= link_to candidate.external_url, target: "_blank", class: "text-primary hover:underline" do %>
+                    <i class="fas fa-external-link-alt mr-1"></i>Voir sur Eventbrite
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2 shrink-0">
+              <%= button_to approve_admin_event_candidate_path(candidate), method: :post,
+                  class: "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg text-sm font-medium transition-colors",
+                  data: { turbo_confirm: "Publier cet événement ?" } do %>
+                <i class="fas fa-check mr-1"></i>Approuver
+              <% end %>
+              <%= button_to reject_admin_event_candidate_path(candidate), method: :post,
+                  class: "px-4 py-2 bg-white/5 hover:bg-red-500/20 text-red-400 rounded-lg text-sm font-medium transition-colors",
+                  data: { turbo_confirm: "Rejeter ce candidat ?" } do %>
+                <i class="fas fa-times mr-1"></i>Rejeter
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="glass rounded-2xl p-8 text-center text-gray-400 mb-10">
+      <i class="fas fa-check-circle text-emerald-400 text-3xl mb-3 block"></i>
+      <p>Aucun candidat en attente. La recherche IA tourne automatiquement chaque lundi.</p>
+    </div>
+  <% end %>
+
+  <%# ——— APPROUVÉS ——— %>
+  <% if @approved.any? %>
+    <h2 class="text-xl font-semibold mb-4 text-emerald-400">
+      <i class="fas fa-check-circle mr-2"></i>Récemment approuvés (<%= @approved.count %>)
+    </h2>
+    <div class="glass rounded-2xl overflow-hidden mb-10">
+      <table class="w-full text-sm">
+        <thead class="bg-white/10">
+          <tr>
+            <th class="px-4 py-3 text-left">Titre</th>
+            <th class="px-4 py-3 text-left">Catégorie</th>
+            <th class="px-4 py-3 text-left">Date</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @approved.each do |c| %>
+            <tr class="border-t border-white/10">
+              <td class="px-4 py-3 text-gray-300"><%= c.title.truncate(60) %></td>
+              <td class="px-4 py-3 text-gray-400"><%= c.subject&.name || "Général" %></td>
+              <td class="px-4 py-3 text-gray-400"><%= c.starts_at&.strftime("%d/%m/%Y") || "—" %></td>
+              <td class="px-4 py-3">
+                <% event = Event.find_by(external_id: c.external_id, source: c.source) %>
+                <% if event %>
+                  <%= button_to admin_event_path(event), method: :delete, class: "text-xs text-red-400 hover:text-red-300", data: { turbo_confirm: "Supprimer cet événement ?" } do %>
+                    <i class="fas fa-trash"></i>
+                  <% end %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <%# ——— REJETÉS ——— %>
+  <% if @rejected.any? %>
+    <h2 class="text-xl font-semibold mb-4 text-red-400">
+      <i class="fas fa-times-circle mr-2"></i>Récemment rejetés (<%= @rejected.count %>)
+    </h2>
+    <div class="glass rounded-2xl overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-white/10">
+          <tr>
+            <th class="px-4 py-3 text-left">Titre</th>
+            <th class="px-4 py-3 text-left">Source</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @rejected.each do |c| %>
+            <tr class="border-t border-white/10">
+              <td class="px-4 py-3 text-gray-500"><%= c.title.truncate(60) %></td>
+              <td class="px-4 py-3 text-gray-500"><%= c.source %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>
