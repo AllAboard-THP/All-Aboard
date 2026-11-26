@@ -30,7 +30,7 @@ Login stays passkeys ([ADR 0006](../adr/0006-authentication-passkeys.md)). A wal
 | Skill or experience being attested | Yes — a shared entry the community reuses |
 | The +1 (who attested, to whom, for which skill) | Yes — this is the certification |
 | The optional short comment | No (first slice) — kept in Postgres so it can be moderated and erased. See [ADR 0009](../adr/0009-certifications-intuition.md) §3 |
-| Help requests, feed, chat, resources, admin | No |
+| Help requests, feed, chat, resources, admin | No. Exception, specified but not built: community votes on resources ([resource-votes.md](resource-votes.md)) |
 | Passkey login | No |
 
 A help interaction can be the reason someone gives a +1. The help request itself is not published.
