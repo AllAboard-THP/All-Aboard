@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed — 2026-11-26. No issue yet. Needs a spike (section 9) before it can be accepted.
+Proposed — 2026-11-26. Needs a spike before it can be accepted: [#205](https://github.com/AllAboard-THP/All-Aboard/issues/205), [task notes](../tasks/205-member-accounts-spike/README.md) (section 9).
 
 Revises the signer decision of [ADR 0009](0009-certifications-intuition.md) §1 ("Users sign nothing"). The rest of ADR 0009 (graph shape, comment off-chain, Postgres as product source of truth, outbox) stays. Applies to skill +1s ([certifications.md](../product/certifications.md)), mission validations ([ADR 0010](0010-experience-certifications-missions.md)) and resource votes ([resource-votes.md](../product/resource-votes.md)).
 

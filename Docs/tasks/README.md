@@ -75,6 +75,7 @@ Avoid editing the same shared `Docs/` file as another active task — use the de
 | [67-intuition-bridge/](67-intuition-bridge/) | [#67 Intuition bridge](https://github.com/AllAboard-THP/All-Aboard/issues/67) — outbox + publisher |
 | [68-agent-handoff/](68-agent-handoff/) | [#68 API→Agent handoff](https://github.com/AllAboard-THP/All-Aboard/issues/68) — ✅ shipped |
 | [69-agent-ci-dokploy/](69-agent-ci-dokploy/) | [#69 Agent CI + Dokploy](https://github.com/AllAboard-THP/All-Aboard/issues/69) — ✅ shipped |
+| [205-member-accounts-spike/](205-member-accounts-spike/) | [#205 Spike member smart accounts](https://github.com/AllAboard-THP/All-Aboard/issues/205) — [ADR 0011](../adr/0011-member-smart-accounts.md) |
 
 ### Phase 2b — Responses MOC (epic #78)
 

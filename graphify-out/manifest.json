@@ -2655,8 +2655,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/README.md": {
-    "mtime": 1785091965.6104882,
-    "ast_hash": "a32cf3c060c2813cf4454a31972987c2",
+    "mtime": 1795702292.0995402,
+    "ast_hash": "d5bfa3296587bba59cd8560be741dee3",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/tasks/25-app-shell-navigation/README.md": {
@@ -2885,8 +2885,8 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/README.md": {
-    "mtime": 1795702008.3094,
-    "ast_hash": "cdbc80f6b124a2462ca02998dcd23735",
+    "mtime": 1795702292.0995402,
+    "ast_hash": "d8c9cf473a523b7077deb99d51c6fd50",
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0004-agent-indexer-architecture.md": {
@@ -3950,8 +3950,13 @@
     "semantic_hash": ""
   },
   "/home/dim/AllAboard/Docs/adr/0011-member-smart-accounts.md": {
-    "mtime": 1795701999.0210621,
-    "ast_hash": "974cc3642c638eb5eb7c13b6a8a07bbd",
+    "mtime": 1795702292.0995402,
+    "ast_hash": "ee3c43a90b8ece86af5c980c25e7d958",
+    "semantic_hash": ""
+  },
+  "/home/dim/AllAboard/Docs/tasks/205-member-accounts-spike/README.md": {
+    "mtime": 1795702292.0821297,
+    "ast_hash": "de2bd01f11cfd94cc660498192aee2c9",
     "semantic_hash": ""
   }
 }
