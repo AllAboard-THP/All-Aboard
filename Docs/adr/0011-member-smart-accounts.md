@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed — 2026-11-26. Needs a spike before it can be accepted: [#205](https://github.com/AllAboard-THP/All-Aboard/issues/205), [task notes](../tasks/205-member-accounts-spike/README.md) (section 9).
+Proposed — 2026-11-26. Spike [#205](https://github.com/AllAboard-THP/All-Aboard/issues/205): on-chain part done on testnet the same day ([results](../tasks/205-member-accounts-spike/README.md#results-2026-11-26)). The browser prompt test and the profile-link predicate remain before acceptance (section 9).
 
 Revises the signer decision of [ADR 0009](0009-certifications-intuition.md) §1 ("Users sign nothing"). The rest of ADR 0009 (graph shape, comment off-chain, Postgres as product source of truth, outbox) stays. Applies to skill +1s ([certifications.md](../product/certifications.md)), mission validations ([ADR 0010](0010-experience-certifications-missions.md)) and resource votes ([resource-votes.md](../product/resource-votes.md)).
 
@@ -28,9 +28,11 @@ Intuition Network is an Arbitrum Orbit L3 that settles to Base, with a single se
 | ERC-4337 EntryPoint v0.8 `0x4337084D9E255Ff0702461CF8895CE9E3b5Ff108` | Deployed | Deployed |
 | EntryPoint v0.6 | Absent | Absent |
 | Coinbase Smart Wallet factory v1.1 `0xBA5ED110eFDBa3D005bfC882d75358ACBbB85842` | Absent | Absent |
+| ZeroDev Kernel v3.3 factory `0x2577507b78c2008Ff367261CB6285d44ba5eF2E9` and passkey validator 0.0.3 `0x7ab16Ff354AcB328452F1D445b3Ddee9a91e9e69` | Deployed | Absent |
+| Arachnid deterministic deployer, CreateX | Deployed | Deployed |
 | Safe singleton factory `0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7` | Absent | Deployed |
 
-So passkey signatures can be verified on-chain cheaply (about 3,450 gas instead of about 300,000 in Solidity), and the EntryPoint is there. No passkey smart account factory is deployed, and no bundler or paymaster service for these chains is known.
+So passkey signatures can be verified on-chain cheaply, and the EntryPoint is there. A passkey smart account (Kernel v3.3) is already deployed on testnet, not on mainnet. Coinbase Smart Wallet targets EntryPoint v0.6 only, which is absent. No bundler or paymaster service for these chains is known.
 
 State of the repo:
 
@@ -48,7 +50,7 @@ State of the repo:
 - Each member gets a smart account on Intuition. Its owners are the member's **P-256 passkeys**. The signature is checked through the RIP-7212 precompile.
 - **All-Aboard is never an owner.** An All-Aboard owner could sign on the member's behalf, which brings back the problem this ADR solves.
 - The address is **counterfactual**: computed from the passkey public key before any deployment, stored in Postgres, deployed with the member's first operation.
-- **Implementation: Coinbase Smart Wallet contracts** (open source, audited, several owners, WebAuthn, `toCoinbaseSmartAccount` in viem). All-Aboard deploys the factory on testnet and later on mainnet, because it is not there. The spike confirms the deployment path; Kernel with a WebAuthn validator is the fallback.
+- **Implementation: ZeroDev Kernel v3.3 with the passkey (WebAuthn) validator 0.0.3, EntryPoint v0.7** (open source, audited, modular validators, `@zerodev/sdk` and `@zerodev/passkey-validator` on viem). Already deployed on testnet; on mainnet, All-Aboard deploys the same bytecode through the deterministic deployer (path to confirm). The SDK must be told that Intuition has the RIP-7212 precompile, otherwise it verifies in Solidity (about 330,000 more gas per operation, measured). Coinbase Smart Wallet was the first choice but needs EntryPoint v0.6, absent on Intuition.
 - **Login does not change.** The account is a signer behind the passkey, not a way to sign in.
 - **One account per environment**, because passkeys are bound to the relying party id. Testnet accounts and mainnet accounts are separate anyway.
 
@@ -92,7 +94,7 @@ If the member cancels the prompt, the row stays with "not signed yet": it counts
 
 ### 6. Passkey requirements
 
-- **Several passkeys per member** (phone, laptop): drop the unique index on `webauthn_credentials.user_id`. Each new passkey is added as an owner of the account by an operation signed with an existing one.
+- **Several passkeys per member** (phone, laptop): drop the unique index on `webauthn_credentials.user_id`. Each new passkey is added to the account by an operation signed with an existing one (with Kernel: a second validator or a weighted validator; not tested in the spike).
 - **P-256 only for signing.** New registrations set `supportedAlgorithmIDs: [-7]` (ES256). A member whose only passkey is RS256 or EdDSA, or a Google-only member, is asked to create a P-256 passkey before their first attestation.
 - **Lost passkeys:** with no All-Aboard owner, losing every passkey loses the account. The stakes are small (sponsored balance only). The member creates a new passkey and a new account; the operator links the new address to the profile; past attestations stay on-chain under the old address, and the profile keeps showing them from Postgres. No social recovery in this ADR.
 
@@ -105,7 +107,7 @@ If the member cancels the prompt, the row stays with "not signed yet": it counts
 
 ### 8. Code placement
 
-- **`packages/blockchain`**: counterfactual address computation, user operation encoding helpers, golden tests. No secrets, no network.
+- **`packages/blockchain`**: counterfactual address computation, user operation encoding helpers, WebAuthn signature encoding for the validator, golden tests. No secrets, no network.
 - **`apps/api/src/intuition/`**: account service (address, deployment, top-ups), user operation builder, paymaster signer, bundler client, receipt tracking in the outbox poller.
 - **`apps/web`**: a "sign" step that calls WebAuthn with a challenge from the API and posts the assertion to the BFF. No viem, no bundler, no keys.
 - **Postgres**: `member_accounts` (`user_id`, `address`, `deployed_at`, `factory_version`), per-environment; attestation rows gain `user_op_hash`, `signed_at`, `signer_address`.
@@ -114,15 +116,21 @@ If the member cancels the prompt, the row stays with "not signed yet": it counts
 
 On testnet, with a throwaway passkey:
 
-1. Deploy the Coinbase Smart Wallet factory and implementation on chain 13579. Confirm the deterministic address and a CREATE2 path that works on both chains (the Safe singleton factory is missing on testnet).
-2. Create an account owned by a browser passkey, and check the counterfactual address matches `packages/blockchain`.
-3. Deploy a verifying paymaster and run Alto against the testnet RPC.
-4. Send a sponsored `deposit` on an existing triple, signed by the passkey, then a `redeem`. Measure gas and the minimum deposit.
-5. Confirm the hosted indexer shows the deposit under the account address.
-6. Check the WebAuthn prompt flow in Chrome, Safari and on a phone, including a passkey synced through iCloud or Google.
-7. Choose the predicate for the profile-to-account link.
+1. ~~Deploy the Coinbase Smart Wallet factory on chain 13579~~. Replaced: Kernel v3.3 is already there. **Open:** confirm the mainnet deployment path for Kernel and the validator.
+2. Done (2026-11-26): an account owned by a passkey (simulated in Node, WebAuthn assertion format), counterfactual address equal to the deployed one.
+3. Done: eth-infinitism `VerifyingPaymaster` (0.7.0) deployed; Alto runs against the testnet RPC with `--chain-type arbitrum`.
+4. Done: sponsored `deposit` then `redeem` on an existing triple. Minimum deposit 0.001 tTRUST; about 1% fee on entry and 1% on exit.
+5. Done: the hosted indexer shows deposits and redemptions with the account as sender and receiver.
+6. **Open:** the WebAuthn prompt flow in Chrome, Safari and on a phone, including a passkey synced through iCloud or Google.
+7. **Open:** the predicate for the profile-to-account link.
 
-Exit criterion: a passkey-signed, paymaster-sponsored deposit visible in the explorer and the indexer, with a cost per attestation known.
+Exit criterion: a passkey-signed, paymaster-sponsored deposit visible in the explorer and the indexer, with a cost per attestation known. **Met** on testnet:
+
+| Operation (testnet, 0.1 gwei) | Gas | Cost |
+| --- | --- | --- |
+| First attestation (deploys the account) | 622,846 | 0.000063 tTRUST |
+| Attestation (deposit) | 395,871 | 0.000040 tTRUST |
+| Withdrawal (redeem) | 368,039 | 0.000037 tTRUST |
 
 ## Consequences
 
@@ -138,7 +146,8 @@ Exit criterion: a passkey-signed, paymaster-sponsored deposit visible in the exp
   - Costs grow with usage and are paid by All-Aboard ([monetization-ideas.md](../vision/monetization-ideas.md)).
   - The proof page has two cases to explain (operator-recorded, member-signed).
 - **Risks:**
-  - **Self-deployed contracts:** use the audited Coinbase contracts unchanged; any change needs a review.
+  - **Self-deployed contracts:** deploy the audited Kernel, validator and paymaster bytecode unchanged; any change needs a review.
+  - **Vendor SDK:** the account depends on ZeroDev's SDK and contracts. They are open source and need no ZeroDev service (own bundler and paymaster).
   - **Paymaster drain:** strict sponsorship rules (section 4) and a balance alert like the operator's.
   - **Sybil accounts:** creating accounts is free for members, so eligibility rules and rate limits stay the real defence.
   - **Mainnet:** same as ADR 0009, a separate decision (security review, funding policy).
@@ -150,6 +159,7 @@ Exit criterion: a passkey-signed, paymaster-sponsored deposit visible in the exp
 | --- | --- |
 | Keep the operator as the only signer | The proof stays "All-Aboard says", which does not meet the product goal at scale (Context) |
 | Members pay deposits and gas | Stops most students before their first vote, biases votes toward crypto holders, crypto promotion rules (MiCA, AMF), schools will not ask students to buy crypto |
+| Coinbase Smart Wallet | Needs EntryPoint v0.6, absent on Intuition; factory not deployed (spike, 2026-11-26) |
 | Embedded wallet provider (Privy, Dynamic, Web3Auth) | A third party holds or shards the key and becomes a dependency for every attestation. Kept as the fallback if the spike fails |
 | Browser wallet (MetaMask, Rabby) | Excludes most of the audience |
 | EIP-7702 on an EOA | Needs a secp256k1 private key held somewhere, which passkeys do not give |
@@ -161,4 +171,4 @@ Exit criterion: a passkey-signed, paymaster-sponsored deposit visible in the exp
 
 - Product: [resource-votes.md](../product/resource-votes.md), [certifications.md](../product/certifications.md), [missions.md](../product/missions.md), [monetization-ideas.md](../vision/monetization-ideas.md)
 - Previous decisions: [ADR 0009](0009-certifications-intuition.md), [ADR 0010](0010-experience-certifications-missions.md), [ADR 0006](0006-authentication-passkeys.md), [ADR 0007](0007-oauth-google-sso.md)
-- Sources: [Immunefi — Intuition scope](https://immunefi.com/bug-bounty/intuition/scope/), [RIP-7212](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md), [viem — toCoinbaseSmartAccount](https://viem.sh/account-abstraction/accounts/smart/toCoinbaseSmartAccount), [viem — toWebAuthnAccount](https://viem.sh/account-abstraction/accounts/webauthn/toWebAuthnAccount)
+- Sources: [Immunefi — Intuition scope](https://immunefi.com/bug-bounty/intuition/scope/), [RIP-7212](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md), [ZeroDev — passkeys](https://docs.zerodev.app/sdk/advanced/passkeys), [viem — toWebAuthnAccount](https://viem.sh/account-abstraction/accounts/webauthn/toWebAuthnAccount)
